@@ -1,0 +1,83 @@
+{
+  "name": "sentaurus-tcad-syntax",
+  "displayName": "Sentaurus TCAD Syntax",
+  "description": "Syntax highlighting for Sentaurus TCAD files",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "sde",
+        "aliases": ["Sentaurus Structure Editor", "SDE"],
+        "extensions": [".cmd", ".scm"],
+        "filenames": [],
+        "filenamePatterns": ["*_dvs.cmd"],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "sdevice",
+        "aliases": ["Sentaurus Device", "SDEVICE"],
+        "extensions": [".cmd"],
+        "filenames": [],
+        "filenamePatterns": ["*_des.cmd"],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "sprocess",
+        "aliases": ["Sentaurus Process", "SPROCESS"],
+        "extensions": [".cmd", ".fps"],
+        "filenames": [],
+        "filenamePatterns": ["*_fps.cmd"],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "emw",
+        "aliases": ["Sentaurus EMW", "EMW"],
+        "extensions": [".cmd"],
+        "filenames": [],
+        "filenamePatterns": ["*_eml.cmd", "*_emw.cmd"],
+        "configuration": "./language-configuration.json"
+      },
+      {
+        "id": "inspect",
+        "aliases": ["Sentaurus Inspect", "INSPECT"],
+        "extensions": [".cmd"],
+        "filenames": [],
+        "filenamePatterns": ["*_ins.cmd"],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "sde",
+        "scopeName": "source.sentaurus.sde",
+        "path": "./syntaxes/sde.tmLanguage.json"
+      },
+      {
+        "language": "sdevice",
+        "scopeName": "source.sentaurus.sdevice",
+        "path": "./syntaxes/sdevice.tmLanguage.json"
+      },
+      {
+        "language": "sprocess",
+        "scopeName": "source.sentaurus.sprocess",
+        "path": "./syntaxes/sprocess.tmLanguage.json"
+      },
+      {
+        "language": "emw",
+        "scopeName": "source.sentaurus.emw",
+        "path": "./syntaxes/emw.tmLanguage.json"
+      },
+      {
+        "language": "inspect",
+        "scopeName": "source.sentaurus.inspect",
+        "path": "./syntaxes/inspect.tmLanguage.json"
+      }
+    ]
+  }
+}

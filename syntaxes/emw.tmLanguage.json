@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Sentaurus EMW",
+  "patterns": [
+    {
+      "match": "\\b(CodeVExcitation|PECMedia|Detector|RTA|Acceleware|Monitor|Plot|DFT|TruncatedPlaneWaveExcitation|Sensor|Farfield|Globals|PMCMedia|Save|GaussianBeamExcitation|Extractor|DispersiveMedia|PlaneWaveExcitation|ComplexRefractiveIndex|Boundary)\\b",
+      "name": "keyword.control.emw"
+    },
+    {
+      "match": "\\b(SigmaMax|PolarCutRange|Tolerance|BeamPower|Polarization|Model|DeltaK|EllipticalPolarizationMagnitude|PhaseShift|OrderKappa|DownSampling|GridFile|NumericalAperture|PolarizationAngle|Location|TemperatureDep|BreakOnError|Sides|FailureOnUnreachedTolerance|LogFilePrefix|Sensors|NumberOfThreads|PlaneX|BoxCorner2|WavelengthPrecision|FieldDataFile|Mode|EndTick|PolarRange|ResultFile|StepZ|StartTick|InterfaceAveraging|AlphaProfile|OrderAlpha|ExcludeMaterial|ScatteredFieldOnly|Frequency|ParameterFile|PlaneZ|OverSampling|KappaMax|AlphaMax|CRIModel|Log|PlaneY|Extrapolate|MinWavelength|Amplitude|Axis|ExcludeRegion|EllipticalPolarizationPhase|ModelParameters|Field|StepY|AzimuthalCutList|BoxCorner1|Phase|AnchorPoint1|NumberOfPlaneWaves|InputDataFile|TickStep|StartTime|Theta|UnavailableLicenseAction|Thickness|Direction|DomainDecomposition|Name|Phi|AmplitudeScaling|BeamCenter|WavelengthList|LoadFile|RotationAngles|SigmaProfile|TotalSimulationTime|Delay|Signal|Domain|Region|LibraryPath|Radius|Intensity|Psi|Material|MaxWavelength|FinalPlot|Temperature|EndTime|BeamRadius|GainDep|AzimuthalCutRange|AnchorPoint2|PolarCutList|IgnoreMaterials|TimeStep|WriteBehavior|ParallelLicenses|LogFile|StepX|IntegrationRange|CompressTDR|BoxDimensions|BoxCenter|Domains|KappaProfile|NRise|Quantity|WavelengthDep|OrderSigma|WavelengthRange|OutputFilePrefix|TdrNativeTensorGridUnit|LogLevel|CarrierDep|AzimuthalRange|PartialCoherenceFactor|CoordinateTransformation|TotalTimeSteps|Sigma|Type|Interpolation|CRIMIPath|LogPrecision|ArraySize|NumberOfWavelengths|Wavelength)\\b",
+      "name": "constant.character.emw"
+    },
+    {
+      "match": "\\b(ImagMagneticFieldZ|ImagElectricFieldZ|Dfgeo|PeriodicOblique|Homogeneous|SingleDipoleDrude|Numbered|AbsElectricDisplacement|um|ImagElectricFieldY|MixedElement|TFSF|IncoherentImagEy|Local|Auto|m|Mur|RelativePermittivityYY|serial|Intersecting|Hybrid|CplxMagneticField|SingleDipoleDebye|IncoherentImagEz|OverwriteAndNumbered|ElectricConductivityZZ|TM|ElectricConductivityYY|DrudeModLorentz|RealLin|Higdon|TE|reduce|IncoherentRealEz|Decayed|CplxElectricField|PMC|No|CplxEMField|SMP|RelativePermeabilityZZ|RelativePermittivityZZ|Harmonic|ElectricFieldIntensity|all|Synopsys|RealElectricFieldZ|RelativePermeabilityYY|Separate|RealElectricFieldY|DrudeLorentz|AbsorbedPhotonDensity|IncoherentRealHx|ASCII|Gauss|Z|cplxRefIndex|All|global|maxcomp|RealMagneticField|MagneticConductivityZZ|AbsElectricField|AbsMagneticInduction|United|CplxExtCoeffXX|AbsMagneticField|PEC|IncoherentRealEy|Zmin|Inhomogeneous|E|IncoherentRealHz|MagneticConductivityYY|CPML|max|Automatic|PlaneWave|UserDefined|Real|Integrate|ijk|RelativePermeabilityXX|IncoherentImagHy|PhotonFluxDensity|l2scaled|Xmax|Acceleware|Tnorm|CodeV|Volume|IncoherentOpticalGeneration|Debye|ConductionCurrentDensity|IncoherentImagEx|IncoherentRealHy|Y|Hard|CplxRefIndexZZ|cplxExtCoeff|Yes|Xmin|Lorentz|ImagElectricFieldX|IncoherentImagHx|ComputeFromComplexRefractiveIndex|Software|CplxRefIndexXX|Unified|UseCRI|Target|ImagMagneticFieldX|Anorm|MPI|Region|Global|ImagMagneticFieldY|CplxExtCoeffZZ|IncoherentRealEx|H|GaussianBeam|Transient|IncoherentIntensity|Tensor|Ymin|none|RealMagneticFieldY|RelativePermittivityXX|Zmax|PointSource|Rnorm|Simple|RaiseError|RealElectricFieldX|BackwardCompatibility|Average|TimeAveraged|Default|PoyntingVectorSurfaceIntegral|fromTop|Ymax|min|AbsorbedPowerDensity|ImagMagneticField|Binary|Bulk|RTA|ModLorentz|maxmag|xyz|fromBottom|RealMagneticFieldZ|T|IncoherentAbsorbedPhotonDensity|Overwrite|l2|abort|FromFile|RealLog|PowerFluxDensity|Maximum|Source|MagneticConductivityXX|IncoherentImagHz|RealElectricField|RealMagneticFieldX|ImagElectricField|X|CplxExtCoeffYY|A|Periodic|OpticalGeneration|wait|R|ElectricConductivityXX|Imag|CplxRefIndexYY|Conservative|Hardware|Surface|Standard|TruncatedPlaneWave|Profile|Dfise|Drude)\\b",
+      "name": "string.quoted.emw"
+    },
+    {
+      "name": "comment.line.hash",
+      "match": "#.*$"
+    },
+    {
+      "name": "comment.line.asterisk",
+      "match": "\\*.*$"
+    },
+    {
+      "name": "comment.line.double-slash",
+      "match": "//.*$"
+    },
+    {
+      "name": "string.quoted.double",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape",
+          "match": "\\\\."
+        }
+      ]
+    }
+  ],
+  "repository": {},
+  "scopeName": "source.sentaurus.emw"
+}

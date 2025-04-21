@@ -1,0 +1,51 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Sentaurus INSPECT",
+  "patterns": [
+    {
+      "match": "\\b(cv_nextLine|tpnx_plot_par|cv_scale|tpnx_plotMSG|tpnx_characteristic_impedance|rfx_abs2_c|ExtractIoff|rfx_S2K|cv_linTransCurve|cvcmp_DeltaTwoCurves|tpnx_plotONE|cv_getVals|proj_getGroups|gr_setGridAttr|ft_scalar|tpnx_startfq|load_library|ltranspose|tpnx_setdBPoint|rfx_GetFmax|cv_lineColor|cv_disp|proj_getList|fi_writeBitmap|rfx_im_c|gr_formatAxis|cv_getXaxis|rfx_ReIm2Phase|tpnx_plotK|rfx_Y|f_Rout|f_KP|cv_setCurveAttr|gb_setpreferences|iccap_Write|cv_getXmax|ExtractBVi|cv_getLocalExtrema|cv_exists|cv_write|cv_display|f_VT|gr_createLabel|cv_printVals|rfx_Export2csv|ExtractGm|param_load|rfx_Z2U|rfx_PolarBackdrop|dbputs|cv_getValsY|gr_setAxisAttr|gr_setStyle|ExtractBVv|cv_split_disc|cv_addCurve|rfx_NumberOfFrequencies|cv_getRange|cv_resetLine|rfx_sub_c|rfx_RFCList|proj_getNodeList|proj_unload|cv_abs|ExtractVtgm|tpnx_GetBias|rfx_Y2S|rfx_GetNearestIndex|tpnx_ac2h|rfx_abs_c|tpnx_list_fq|tpnx_plotXdB|gr_setGeneralAttr|rfx_BiasPoints|rfx_sign|f_hideInternalCurves|tpnx_CurveDisplayList|cv_scaleCurve|cv_getZero|ExtractMax|cv_createWithFormula|rfx_con_c|ExtractSS|cv_getGlobalExtrema|cv_resetStyle|ldiff|tpnx_frequency_high|rfx_GetK_MSG_MAG|fi_writePs|tpnx_plot_dB|tpnx_y2MUG|proj_write|f_Gamma|cv_getXmin|cv_nextSymbol|fi_readTxtFileHeader|ExtractVti|lunion|cv_monotonicX|cv_getYmin|script_exit|ExtractGmb|tpnx_load|cv_nextColor|cv_logScale|rfx_GetFK1|macro_define|cv_setSymbol|param_write|cv_set_interpol|tpnx_bias_high|cv_resetFillColor|cv_resetSymbol|ExtractVtgmb|cv_getYaxis|rfx_load|fi_writeEps|cv_renameCurve|cv_setFillColor|script_sleep|cv_addDataset|cv_round|rfx_NumberOfBiasPoints|graph_load|gr_setLegendAttr|tpnx_DevWidth|tpnx_polarplot|script_break|cv_sort|cv_integrate|tpnx_biasPointNo|f_gm|rfx_SmithBackdrop|gr_resetAxis|f_error|rfx_re_c|cv_linTrans|rfx_Y2H|proj_groupExists|gr_axis|cv_compute|rfx_ExtractVal|ExtractRon|f_VT2|rfx_GetMUG|cv_isVisible|ds_getValue|rfx_Y2Z|tpnx_ac2y|f_IDSS|rfx_mul_c|proj_datasetExists|rfx_CharacteristicImpedance|gr_mappedAxis|cv_createDS|cv_resetColor|cv_getYmax|cv_createFromScript|cv_linFit|tpnx_createSmithBack|cv_reset|cv_delete|fi_readTxtFile|gr_setTitleAttr|cv_inv|proj_load|gr_deleteLabel|gr_precision|tpnx_GetParsAtPoint|cvcmp_CompareTwoCurves|ExtractValue|cv_create|cv_split|cv_getNames|cv_log10Scale|cv_autoIncrStyle|tpnx_bias_low|f_TetaG|proj_getDataSet|tpnx_frequency_low|gr_setLegendPos|rfx_GetFt|tpnx_y2MSG|cv_getValsX|rfx_Y2U|rfx_div_c|proj_loadPlx|rfx_Frequencies|FilterTable|f_Ron|rfx_Y2K|proj_check|tpnx_y2MAG|lintersect|f_showInternalCurves|rfx_ReIm2Abs|rfx_add_c|tpnx_ac2s|ExtractEarlyV|tpnx_list_Bias|cv_delPts|gr_setLegend|tpnx_frequencyPointNo|cv_lineStyle|tpnx_ac2z|f_VT1|graph_write|rfx_mag_phase)\\b",
+      "name": "keyword.control.inspect"
+    },
+    {
+      "match": "\\b(True|y2|italic|solid|default|fixed|white|False|curvecomp|underline|defcolor|diamond|red|free|LOG|plus|w|cross|ne|frequency|z|false|EXTRACT|brown|helvetica|right|PhysicalConstants|Y|Y2|se|sw|circle|bottom|n|h|AUTO|center|splus|RFX|y|X|overstrike|square|LIN|nodisplay|dotted|nw|violet|fextract|left|s|magenta|black|x|green|plot|extend|engineering|none|ise2iccap|orange|bias|e|top|bold|scientific|triangle|dashed|true|blue|scross)\\b",
+      "name": "keyword.other.inspect"
+    },
+    {
+      "match": "\\b(T_Total|MaxTemperature|QuasiFermiPotential|eDissipationRate|R_Total|ModelParameter|ImACPhotonPhase|InputSignalPower|MinActiveTemperature|PowerRight|Capacitance|FaradayConstant|OpticalLoss|DisplacementCurrent|Current|Photon_ExtEfficiency|Power_Absorption|rDissipationRate|ImACPhotonRate|AbsAC_LaserPower|eDensity|ReACLaserPower|nNbVertices|Photon_NonActiveAbsorb|MinTemperature|T_TE|B2B\\-Generation|Energy|ElectronVolt|Parameter|AbsACLaserPower|Permittivity|ProtonMass|RydbergConstant|SpeedOfLight|NoisePhotonNumberSpectralDensity|Charge|OptConfinementFactor|AveTemperature|Admittance|DissipationRate|Frequency|eHeatFlux|Power_Spontaneous|EPower_dBm|Power_Total|Heat|GravitationConstant|OutcouplingLossLeft|Tindex|ElementaryCharge|SpaceCharge|Power_NetPhotonRecycle|SRH\\-Recombination|MolarVolume|Time|ReACPhotonRate|Alpha\\-Generation|Findex|Amorphous\\-Recombination|Auger\\-Recombination|EPower|Optical\\-Generation|OpticalGain|hAmorphousTrappedCharge|ReACPhotonPhase|ImACLaserPower|MagneticFluxQuantum|AGMDissipationRate|RefIndexChange|LedWavelength|StimEmission|AbsDissipationRate|PlanckConstant|hCurrent|Total\\-Recombination|Permeability|ElectronMass|EffectiveIndex|TotalPhotons|InnerVoltage|Voltage|lHeatFlux|OutcouplingLossRight|TransitionEnergy|MaxActiveTemperature|R_TM|Photon_NetPhotonRecycle|FineStructureConstant|hDensity|TotalPower|AtomicMassConstant|SlackVariable|time|FreeSpaceImpedance|R_TE|OuterVoltage|SpontEmission|PowerLeft|Temperature|NbVertices|A_Total|CDL\\-Recombination|HeavyIon\\-Generation|Wavelength\\-m|Power_ReEmit|hHeatFlux|hDissipationRate|IonizationIntegral|StefanBoltzmannConstant|AvogadroConstant|PhotoCapacitance|AbsACPhotonPhase|BohrMagneton|Photon_Spontaneous|ElectricField|TotalOutcouplingLoss|T_TM|eCurrent|Power_ASE|Power_ExtEfficiency|A_TM|PhotoAdmittance|TotalCurrent|Photon_Exited|A_TE|Power_SpecConvertGain|Ava\\-Generation|BoltzmannConstant|Pi|Hindex|eAmorphousTrappedCharge|Wavelength)\\b",
+      "name": "entity.name.tag.inspect"
+    },
+    {
+      "match": "\\b(erfc|atan|floor|tanh|vecvalx|fftabs|fabs|sinh|atan2|acosh|hypot|veczero|diff|j1|maxslope|cfftim|y0|vecvaly|minslope|cifftre|double|cfftre|fmod|ifftre|vecmax|round|acos|gamma|integr|j0|y1|cos|cbrt|log|exp|tan|tangent|vecmin|ceil|ifftim|cifftim|log10|asin|cosh|sin|intercept|fftim|abs|atanh|asinh|lgamma|sqrt|erf|int|pow|fftre)\\b",
+      "name": "support.class.inspect"
+    },
+    {
+      "match": "\\b(package|interp|string|proc|while|glob|registry|after|regsub|switch|elseif|console|list|tcl_startOfNextWord|bgerror|update|pwd|read|auto_load|close|subst|else|argc|argv|exit|split|auto_mkindex_old|cd|auto_mkindex|msgcat|array|tcl_findLibrary|join|socket|vwait|append|return|lappend|tell|tcl_startOfPreviousWord|global|file|foreach|format|uplevel|catch|unset|regexp|tcl_endOfWord|namespace|fblocked|lsort|history|open|continue|encoding|concat|unknown|filename|auto_import|auto_reset|resource|flush|memory|lset|clock|fconfigure|eval|lrange|source|variable|seek|lindex|puts|argv0|time|scan|binary|load|set|fcopy|pkg_mkIndex|upvar|error|trace|incr|parray|dde|rename|auto_execok|fileevent|lreplace|tcl_wordBreakAfter|expr|pid|gets|linsert|for|tcl_wordBreakBefore|pkg::create|info|lsearch|llength|break|exec|http|if|eof|auto_qualify)\\b",
+      "name": "entity.name.function.inspect"
+    },
+    {
+      "name": "comment.line.hash",
+      "match": "#.*$"
+    },
+    {
+      "name": "comment.line.asterisk",
+      "match": "\\*.*$"
+    },
+    {
+      "name": "comment.line.double-slash",
+      "match": "//.*$"
+    },
+    {
+      "name": "string.quoted.double",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape",
+          "match": "\\\\."
+        }
+      ]
+    }
+  ],
+  "repository": {},
+  "scopeName": "source.sentaurus.inspect"
+}
