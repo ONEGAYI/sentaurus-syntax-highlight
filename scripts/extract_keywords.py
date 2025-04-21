@@ -46,7 +46,6 @@ def process_all_mode_files(directory):
 
 def save_results_as_json(results, output_file):
     """Save the extracted keywords as JSON."""
-    # 将所有的 set 转换为 list，以便 JSON 序列化
     def convert_sets_to_lists(obj):
         if isinstance(obj, dict):
             return {key: convert_sets_to_lists(value) for key, value in obj.items()}
@@ -141,7 +140,6 @@ def main():
             grammar = create_textmate_grammar(mode, all_keywords[mode])
             grammar_path = os.path.join(output_dir, f'{mode}.tmLanguage.json')
             with open(grammar_path, 'w', encoding='utf-8') as f:
-                # 在这里不需要特别处理，因为 create_textmate_grammar 已经创建了适合 JSON 序列化的结构
                 json.dump(grammar, f, indent=2)
             print(f"Created TextMate grammar for {mode}")
         else:
