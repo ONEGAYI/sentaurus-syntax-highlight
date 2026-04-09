@@ -6,3 +6,9 @@ CLAUDE.md
 scripts/**
 package-lock.json
 *.vsix
+assets/**
+# claude code local
+.claude/**
+
+# display test files
+display_test/**
