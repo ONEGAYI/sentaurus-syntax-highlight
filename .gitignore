@@ -3,3 +3,9 @@
 
 # vscode extension build files
 *.vsix
+
+# claude code local
+.claude/
+
+# display test files
+display_test/
