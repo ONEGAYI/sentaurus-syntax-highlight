@@ -22,6 +22,10 @@
 | Sentaurus EMW | `*_eml.cmd`、`*_emw.cmd` |
 | Sentaurus Inspect | `*_ins.cmd` |
 
+### 效果展示
+
+![效果展示](<assets/pics/vscode 插件效果演示 - 自动补全+语法高亮.png>)
+
 ## 安装
 
 ### VSIX 命令行安装（推荐离线环境）
