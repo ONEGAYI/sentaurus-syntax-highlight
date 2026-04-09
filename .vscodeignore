@@ -1,0 +1,8 @@
+.vscode/**
+.serena/**
+.gitignore
+.git/**
+CLAUDE.md
+scripts/**
+package-lock.json
+*.vsix

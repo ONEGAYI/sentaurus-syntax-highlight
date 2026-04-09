@@ -75,7 +75,7 @@ def create_textmate_grammar(mode_name, keywords):
         'KEYWORD2': 'keyword.other',
         'KEYWORD3': 'entity.name.tag',
         'KEYWORD4': 'support.class',
-        'LITERAL1': 'constant.character',
+        'LITERAL1': 'constant.numeric',
         'LITERAL2': 'constant.numeric',
         'LITERAL3': 'string.quoted',
         'FUNCTION': 'entity.name.function',
@@ -97,10 +97,6 @@ def create_textmate_grammar(mode_name, keywords):
             "match": "#.*$"
         },
         {
-            "name": "comment.line.asterisk",
-            "match": "\\*.*$"
-        },
-        {
             "name": "comment.line.double-slash",
             "match": "//.*$"
         }
@@ -118,7 +114,25 @@ def create_textmate_grammar(mode_name, keywords):
             }
         ]
     })
-    
+
+    # Numeric literals: int, float, scientific notation (green in most themes)
+    grammar["patterns"].append({
+        "match": "\\b(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?\\b",
+        "name": "constant.numeric"
+    })
+
+    # SWB parameter substitution: @var@, @param:+2@, @<expr>@
+    grammar["patterns"].append({
+        "match": "@[a-zA-Z_<][^@]*@",
+        "name": "variable.parameter"
+    })
+
+    # Catch-all: any remaining identifier → variable (bright blue in most themes)
+    grammar["patterns"].append({
+        "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
+        "name": "variable.other"
+    })
+
     return grammar
 
 def main():

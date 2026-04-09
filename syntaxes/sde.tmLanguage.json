@@ -27,12 +27,12 @@
       "match": "#.*$"
     },
     {
-      "name": "comment.line.asterisk",
-      "match": "\\*.*$"
-    },
-    {
       "name": "comment.line.double-slash",
       "match": "//.*$"
+    },
+    {
+      "name": "comment.line.semicolon",
+      "match": ";.*$"
     },
     {
       "name": "string.quoted.double",
@@ -44,6 +44,18 @@
           "match": "\\\\."
         }
       ]
+    },
+    {
+      "match": "\\b(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?\\b",
+      "name": "constant.numeric"
+    },
+    {
+      "match": "@[a-zA-Z_<][^@]*@",
+      "name": "variable.parameter"
+    },
+    {
+      "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
+      "name": "variable.other"
     }
   ],
   "repository": {},
