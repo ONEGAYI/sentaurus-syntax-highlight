@@ -1,2665 +1,2665 @@
 {
-  "#f": {
-    "signature": "#f",
-    "description": "布尔假值。在条件表达式中，只有 #f 被视为假，其他所有值（包括 0、空列表 '()）均被视为真。",
-    "parameters": [],
-    "example": "(if #f \"yes\" \"no\")  => \"no\""
-  },
-  "#t": {
-    "signature": "#t",
-    "description": "布尔真值。布尔常量自求值，无需引用。",
-    "parameters": [],
-    "example": "(if #t \"yes\" \"no\")  => \"yes\""
-  },
-  "boolean?": {
-    "signature": "(boolean? obj)",
-    "description": "判断 obj 是否为布尔值（#t 或 #f），返回 #t 或 #f。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(boolean? #f)  => #t\n(boolean? 0)   => #f"
-  },
-  "char->integer": {
-    "signature": "(char->integer char)",
-    "description": "返回字符 char 对应的精确整数（字符的序数值/码点）。char->integer 和 integer->char 在字符序与整数序之间构成保序同构。",
-    "parameters": [
-      {
-        "name": "char",
-        "type": "char",
-        "desc": "字符"
-      }
-    ],
-    "example": "(char->integer #\\A)  => 65\n(char->integer #\\0)  => 48"
-  },
-  "char-alphabetic?": {
-    "signature": "(char-alphabetic? char)",
-    "description": "判断 char 是否为字母字符，返回 #t 或 #f。字母字符包括 52 个大小写英文字母。",
-    "parameters": [
-      {
-        "name": "char",
-        "type": "char",
-        "desc": "字符"
-      }
-    ],
-    "example": "(char-alphabetic? #\\a)  => #t\n(char-alphabetic? #\\0)  => #f"
-  },
-  "char-ci=?": {
-    "signature": "(char-ci=? char1 char2)",
-    "description": "忽略大小写比较两个字符是否相等。等价于 (char=? (char-upcase char1) (char-upcase char2))。",
-    "parameters": [
-      {
-        "name": "char1",
-        "type": "char",
-        "desc": "第一个字符"
-      },
-      {
-        "name": "char2",
-        "type": "char",
-        "desc": "第二个字符"
-      }
-    ],
-    "example": "(char-ci=? #\\A #\\a)  => #t\n(char-ci=? #\\a #\\b)  => #f"
-  },
-  "char-downcase": {
-    "signature": "(char-downcase char)",
-    "description": "返回 char 对应的小写字符。如果 char 是字母，则返回其小写形式；否则返回 char 本身。结果保证满足 (char-ci=? char result)。",
-    "parameters": [
-      {
-        "name": "char",
-        "type": "char",
-        "desc": "字符"
-      }
-    ],
-    "example": "(char-downcase #\\A)  => #\\a\n(char-downcase #\\0)  => #\\0"
-  },
-  "char-lower-case?": {
-    "signature": "(char-lower-case? char)",
-    "description": "判断 char 是否为小写字母字符，返回 #t 或 #f。",
-    "parameters": [
-      {
-        "name": "char",
-        "type": "char",
-        "desc": "字符"
-      }
-    ],
-    "example": "(char-lower-case? #\\a)  => #t\n(char-lower-case? #\\A)  => #f"
-  },
-  "char-numeric?": {
-    "signature": "(char-numeric? char)",
-    "description": "判断 char 是否为数字字符（十进制数字 0-9），返回 #t 或 #f。",
-    "parameters": [
-      {
-        "name": "char",
-        "type": "char",
-        "desc": "字符"
-      }
-    ],
-    "example": "(char-numeric? #\\5)  => #t\n(char-numeric? #\\a)  => #f"
-  },
-  "char-ready?": {
-    "signature": "(char-ready?)",
-    "description": "判断当前输入端口上是否有字符可读。如果返回 #t，则下一次 read-char 操作保证不会阻塞。如果端口已到达文件末尾，也返回 #t。端口参数可省略，默认为 current-input-port。",
-    "parameters": [],
-    "example": "(char-ready?)  => #t"
-  },
-  "char-upcase": {
-    "signature": "(char-upcase char)",
-    "description": "返回 char 对应的大写字符。如果 char 是字母，则返回其大写形式；否则返回 char 本身。结果保证满足 (char-ci=? char result)。",
-    "parameters": [
-      {
-        "name": "char",
-        "type": "char",
-        "desc": "字符"
-      }
-    ],
-    "example": "(char-upcase #\\a)  => #\\A\n(char-upcase #\\0)  => #\\0"
-  },
-  "char-upper-case?": {
-    "signature": "(char-upper-case? char)",
-    "description": "判断 char 是否为大写字母字符，返回 #t 或 #f。",
-    "parameters": [
-      {
-        "name": "char",
-        "type": "char",
-        "desc": "字符"
-      }
-    ],
-    "example": "(char-upper-case? #\\A)  => #t\n(char-upper-case? #\\a)  => #f"
-  },
-  "char-whitespace?": {
-    "signature": "(char-whitespace? char)",
-    "description": "判断 char 是否为空白字符，返回 #t 或 #f。空白字符包括空格、制表符、换行符、换页符和回车符。",
-    "parameters": [
-      {
-        "name": "char",
-        "type": "char",
-        "desc": "字符"
-      }
-    ],
-    "example": "(char-whitespace? #\\space)  => #t\n(char-whitespace? #\\a)     => #f"
-  },
-  "char=?": {
-    "signature": "(char=? char1 char2)",
-    "description": "判断两个字符是否相同。与 char<? 等过程一起对字符集定义全序关系。",
-    "parameters": [
-      {
-        "name": "char1",
-        "type": "char",
-        "desc": "第一个字符"
-      },
-      {
-        "name": "char2",
-        "type": "char",
-        "desc": "第二个字符"
-      }
-    ],
-    "example": "(char=? #\\a #\\a)  => #t\n(char=? #\\a #\\b)  => #f"
-  },
-  "char?": {
-    "signature": "(char? obj)",
-    "description": "判断 obj 是否为字符，返回 #t 或 #f。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(char? #\\a)  => #t\n(char? \"a\")  => #f"
-  },
-  "eq?": {
-    "signature": "(eq? obj1 obj2)",
-    "description": "最精细的等价谓词。比较两个对象是否在内存中是同一对象（指针相等）。对于符号、布尔值、空列表、序对和过程，行为与 eqv? 一致；对数字和字符的结果与实现有关。通常作为指针比较实现，效率高于 eqv?。",
-    "parameters": [
-      {
-        "name": "obj1",
-        "type": "any",
-        "desc": "第一个对象"
-      },
-      {
-        "name": "obj2",
-        "type": "any",
-        "desc": "第二个对象"
-      }
-    ],
-    "example": "(eq? 'a 'a)  => #t\n(eq? (list 'a) (list 'a))  => #f"
-  },
-  "equal?": {
-    "signature": "(equal? obj1 obj2)",
-    "description": "最粗粒度的等价谓词。递归比较序对、向量和字符串的内容，对其他对象（数字、符号等）使用 eqv? 比较。经验规则：如果两个对象打印结果相同，则它们通常 equal?。注意：对循环数据结构可能无法终止。",
-    "parameters": [
-      {
-        "name": "obj1",
-        "type": "any",
-        "desc": "第一个对象"
-      },
-      {
-        "name": "obj2",
-        "type": "any",
-        "desc": "第二个对象"
-      }
-    ],
-    "example": "(equal? '(a (b) c) '(a (b) c))  => #t\n(equal? (list 1 2) (list 1 2))    => #t"
-  },
-  "eqv?": {
-    "signature": "(eqv? obj1 obj2)",
-    "description": "中等粒度的等价谓词。对符号、布尔值、精确/非精确数字、字符、空列表、同一存储位置的序对/向量/字符串、以及位置标签相等的过程返回 #t。是 eq? 和 equal? 之间的折中——比 eq? 更精确（数字和字符保证正确），比 equal? 更粗略（不递归比较复合结构）。",
-    "parameters": [
-      {
-        "name": "obj1",
-        "type": "any",
-        "desc": "第一个对象"
-      },
-      {
-        "name": "obj2",
-        "type": "any",
-        "desc": "第二个对象"
-      }
-    ],
-    "example": "(eqv? 2 2)  => #t\n(eqv? 'a 'b)  => #f\n(eqv? (cons 1 2) (cons 1 2))  => #f"
-  },
-  "integer->char": {
-    "signature": "(integer->char n)",
-    "description": "返回精确整数 n 对应的字符。n 必须是 char->integer 某次调用返回的有效值。与 char->integer 一起在字符序与整数子集之间构成保序同构。",
-    "parameters": [
-      {
-        "name": "n",
-        "type": "integer",
-        "desc": "精确整数（字符的序数值）"
-      }
-    ],
-    "example": "(integer->char 65)  => #\\A\n(integer->char 48)  => #\\0"
-  },
-  "not": {
-    "signature": "(not obj)",
-    "description": "逻辑非。如果 obj 为 #f，返回 #t；否则返回 #f。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(not #f)        => #t\n(not #t)        => #f\n(not 3)         => #f\n(not '())       => #f"
-  },
-  "symbol->string": {
-    "signature": "(symbol->string symbol)",
-    "description": "返回符号 symbol 的名称字符串。如果符号来自字面量或 read 过程，返回实现首选大小写的字符串。对返回的字符串使用 string-set! 等变更操作是错误的。",
-    "parameters": [
-      {
-        "name": "symbol",
-        "type": "symbol",
-        "desc": "符号"
-      }
-    ],
-    "example": "(symbol->string 'hello)  => \"hello\""
-  },
-  "symbol?": {
-    "signature": "(symbol? obj)",
-    "description": "判断 obj 是否为符号，返回 #t 或 #f。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(symbol? 'foo)       => #t\n(symbol? (car '(a b))) => #t\n(symbol? \"bar\")       => #f"
-  },
-  "char>=?": {
-    "signature": "(char>=? char1 char2)",
-    "description": "判断 char1 的字符序是否大于或等于 char2。与 char<? 等过程一起对字符集定义全序关系。",
-    "parameters": [
-      {
-        "name": "char1",
-        "type": "char",
-        "desc": "第一个字符"
-      },
-      {
-        "name": "char2",
-        "type": "char",
-        "desc": "第二个字符"
-      }
-    ],
-    "example": "(char>=? #\\z #\\a)  => #t\n(char>=? #\\a #\\a)  => #t"
-  },
-  "char>?": {
-    "signature": "(char>? char1 char2)",
-    "description": "判断 char1 的字符序是否大于 char2。与 char<? 等过程一起对字符集定义全序关系。",
-    "parameters": [
-      {
-        "name": "char1",
-        "type": "char",
-        "desc": "第一个字符"
-      },
-      {
-        "name": "char2",
-        "type": "char",
-        "desc": "第二个字符"
-      }
-    ],
-    "example": "(char>? #\\z #\\a)  => #t\n(char>? #\\a #\\z)  => #f"
-  },
-  "char<=?": {
-    "signature": "(char<=? char1 char2)",
-    "description": "判断 char1 的字符序是否小于或等于 char2。与 char<? 等过程一起对字符集定义全序关系。",
-    "parameters": [
-      {
-        "name": "char1",
-        "type": "char",
-        "desc": "第一个字符"
-      },
-      {
-        "name": "char2",
-        "type": "char",
-        "desc": "第二个字符"
-      }
-    ],
-    "example": "(char<=? #\\a #\\z)  => #t\n(char<=? #\\a #\\a)  => #t"
-  },
-  "char<?": {
-    "signature": "(char<? char1 char2)",
-    "description": "判断 char1 的字符序是否小于 char2。保证大写字母、小写字母和数字各自按序排列。数字与字母之间的相对顺序取决于实现。",
-    "parameters": [
-      {
-        "name": "char1",
-        "type": "char",
-        "desc": "第一个字符"
-      },
-      {
-        "name": "char2",
-        "type": "char",
-        "desc": "第二个字符"
-      }
-    ],
-    "example": "(char<? #\\a #\\b)  => #t\n(char<? #\\0 #\\9)  => #t\n(char<? #\\A #\\B)  => #t"
-  },
-  "char-ci>=?": {
-    "signature": "(char-ci>=? char1 char2)",
-    "description": "忽略大小写，判断 char1 的字符序是否大于或等于 char2。",
-    "parameters": [
-      {
-        "name": "char1",
-        "type": "char",
-        "desc": "第一个字符"
-      },
-      {
-        "name": "char2",
-        "type": "char",
-        "desc": "第二个字符"
-      }
-    ],
-    "example": "(char-ci>=? #\\Z #\\a)  => #t\n(char-ci>=? #\\a #\\A)  => #t"
-  },
-  "char-ci>?": {
-    "signature": "(char-ci>? char1 char2)",
-    "description": "忽略大小写，判断 char1 的字符序是否大于 char2。",
-    "parameters": [
-      {
-        "name": "char1",
-        "type": "char",
-        "desc": "第一个字符"
-      },
-      {
-        "name": "char2",
-        "type": "char",
-        "desc": "第二个字符"
-      }
-    ],
-    "example": "(char-ci>? #\\z #\\A)  => #t\n(char-ci>? #\\a #\\Z)  => #f"
-  },
-  "char-ci<=?": {
-    "signature": "(char-ci<=? char1 char2)",
-    "description": "忽略大小写，判断 char1 的字符序是否小于或等于 char2。",
-    "parameters": [
-      {
-        "name": "char1",
-        "type": "char",
-        "desc": "第一个字符"
-      },
-      {
-        "name": "char2",
-        "type": "char",
-        "desc": "第二个字符"
-      }
-    ],
-    "example": "(char-ci<=? #\\a #\\Z)  => #t\n(char-ci<=? #\\A #\\a)  => #t"
-  },
-  "char-ci<?": {
-    "signature": "(char-ci<? char1 char2)",
-    "description": "忽略大小写，判断 char1 的字符序是否小于 char2。等价于对两个字符统一转换大小写后进行 char<? 比较。",
-    "parameters": [
-      {
-        "name": "char1",
-        "type": "char",
-        "desc": "第一个字符"
-      },
-      {
-        "name": "char2",
-        "type": "char",
-        "desc": "第二个字符"
-      }
-    ],
-    "example": "(char-ci<? #\\a #\\B)  => #t\n(char-ci<? #\\A #\\b)  => #t"
-  },
-  "append": {
-    "signature": "(append list ...)",
-    "description": "返回由各列表参数的元素依次连接而成的新列表。结果列表总是新分配的，但与最后一个列表参数共享结构。最后一个参数可以是任意对象，如果不是正规列表则产生非正规列表。",
-    "parameters": [
-      {
-        "name": "list",
-        "type": "list",
-        "desc": "要连接的列表，最后一个参数可以是任意对象"
-      }
-    ],
-    "example": "(append '(a b) '(c d))  => (a b c d)\n(append '(a) '(b c d))  => (a b c d)\n(append '() '())  => ()\n(append '(a b) '(c . d))  => (a b c . d)\n(append '() 'a)  => a"
-  },
-  "assoc": {
-    "signature": "(assoc obj alist)",
-    "description": "在关联列表 alist（由 pair 组成的列表）中查找第一个 car 字段等于 obj 的 pair，返回该 pair。若未找到则返回 #f。使用 equal? 进行比较。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "要查找的键值"
-      },
-      {
-        "name": "alist",
-        "type": "list",
-        "desc": "关联列表（association list），每个元素必须为 pair"
-      }
-    ],
-    "example": "(assoc 'a '((a 1) (b 2) (c 3)))  => (a 1)\n(assoc 'b '((a 1) (b 2) (c 3)))  => (b 2)\n(assoc 'd '((a 1) (b 2) (c 3)))  => #f\n(assoc 5 '((2 3) (5 7) (11 13)))  => (5 7)"
-  },
-  "assq": {
-    "signature": "(assq obj alist)",
-    "description": "在关联列表 alist 中查找第一个 car 字段等于 obj 的 pair，返回该 pair。若未找到则返回 #f。使用 eq? 进行比较（指针/标识相等）。适合用于键为符号等原子值的情况。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "要查找的键值"
-      },
-      {
-        "name": "alist",
-        "type": "list",
-        "desc": "关联列表，每个元素必须为 pair"
-      }
-    ],
-    "example": "(assq 'a '((a 1) (b 2)))  => (a 1)\n(assq '(a) '(((a) 1) ((b) 2)))  => #f"
-  },
-  "assv": {
-    "signature": "(assv obj alist)",
-    "description": "在关联列表 alist 中查找第一个 car 字段等于 obj 的 pair，返回该 pair。若未找到则返回 #f。使用 eqv? 进行比较（值相等）。对于数值和字符等自动比较类型通常更合适。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "要查找的键值"
-      },
-      {
-        "name": "alist",
-        "type": "list",
-        "desc": "关联列表，每个元素必须为 pair"
-      }
-    ],
-    "example": "(assv 5 '((2 3) (5 7) (11 13)))  => (5 7)\n(assv 101 '(100 101 102))  => #f"
-  },
   "caaar": {
     "signature": "(caaar pair)",
-    "description": "等价于 (car (car (car pair)))。返回 pair 的三层 car 嵌套取值。",
+    "description": "Is equivalent to (car (car (car pair))). Returns the result of three-level car nesting on pair.",
     "parameters": [
       {
         "name": "pair",
         "type": "pair",
-        "desc": "至少三层嵌套的 pair"
+        "desc": "a pair nested at least three levels deep"
       }
     ],
     "example": "(caaar '(((a b) c) d))  => a"
   },
   "caadr": {
     "signature": "(caadr pair)",
-    "description": "等价于 (car (car (cdr pair)))。先取 cdr 再取两次 car。",
+    "description": "Is equivalent to (car (car (cdr pair))). Takes the cdr first, then car twice.",
     "parameters": [
       {
         "name": "pair",
         "type": "pair",
-        "desc": "至少三层嵌套的 pair"
+        "desc": "a pair nested at least three levels deep"
       }
     ],
     "example": "(caadr '((a b) (c d)))  => c"
   },
   "caar": {
     "signature": "(caar pair)",
-    "description": "等价于 (car (car pair))。返回 pair 的 car 的 car。",
+    "description": "Is equivalent to (car (car pair)). Returns the car of the car of pair.",
     "parameters": [
       {
         "name": "pair",
         "type": "pair",
-        "desc": "至少两层嵌套的 pair"
+        "desc": "a pair nested at least two levels deep"
       }
     ],
     "example": "(caar '((a b) c d))  => a\n(caar '((1 2) 3 4))  => 1"
   },
   "cadar": {
     "signature": "(cadar pair)",
-    "description": "等价于 (car (cdr (car pair)))。先取 car 再取 cdr 再取 car。",
+    "description": "Is equivalent to (car (cdr (car pair))). Takes the car first, then cdr, then car.",
     "parameters": [
       {
         "name": "pair",
         "type": "pair",
-        "desc": "至少三层嵌套的 pair"
+        "desc": "a pair nested at least three levels deep"
       }
     ],
     "example": "(cadar '((a b c) d e))  => b"
   },
   "caddr": {
     "signature": "(caddr pair)",
-    "description": "等价于 (car (cdr (cdr pair)))。返回列表的第三个元素。",
+    "description": "Is equivalent to (car (cdr (cdr pair))). Returns the third element of a list.",
     "parameters": [
       {
         "name": "pair",
         "type": "pair",
-        "desc": "至少包含三个元素的列表或嵌套 pair"
+        "desc": "a list with at least three elements or a nested pair"
       }
     ],
     "example": "(caddr '(a b c d))  => c\n(caddr '((a b) (c d) (e f)))  => (e f)"
   },
   "cadr": {
     "signature": "(cadr pair)",
-    "description": "等价于 (car (cdr pair))。返回列表的第二个元素。",
+    "description": "Is equivalent to (car (cdr pair)). Returns the second element of a list.",
     "parameters": [
       {
         "name": "pair",
         "type": "pair",
-        "desc": "至少包含两个元素的列表"
+        "desc": "a list with at least two elements"
       }
     ],
     "example": "(cadr '(a b c))  => b\n(cadr '((a 1) (b 2)))  => (b 2)"
   },
-  "car": {
-    "signature": "(car pair)",
-    "description": "返回 pair 的 car 字段内容。对空列表取 car 是错误的。",
-    "parameters": [
-      {
-        "name": "pair",
-        "type": "pair",
-        "desc": "一个 pair（不能是空列表）"
-      }
-    ],
-    "example": "(car '(a b c))  => a\n(car '((a) b c d))  => (a)\n(car '(1 . 2))  => 1"
-  },
   "cdaar": {
     "signature": "(cdaar pair)",
-    "description": "等价于 (cdr (car (car pair)))。先取两次 car 再取 cdr。",
+    "description": "Is equivalent to (cdr (car (car pair))). Takes car twice, then cdr.",
     "parameters": [
       {
         "name": "pair",
         "type": "pair",
-        "desc": "至少三层嵌套的 pair"
+        "desc": "a pair nested at least three levels deep"
       }
     ],
     "example": "(cdaar '(((a b) c) d))  => (b)"
   },
   "cdadr": {
     "signature": "(cdadr pair)",
-    "description": "等价于 (cdr (car (cdr pair)))。先取 cdr 再取 car 再取 cdr。",
+    "description": "Is equivalent to (cdr (car (cdr pair))). Takes cdr first, then car, then cdr.",
     "parameters": [
       {
         "name": "pair",
         "type": "pair",
-        "desc": "至少三层嵌套的 pair"
+        "desc": "a pair nested at least three levels deep"
       }
     ],
     "example": "(cdadr '((a b) (c d)))  => (d)"
   },
   "cdar": {
     "signature": "(cdar pair)",
-    "description": "等价于 (cdr (car pair))。返回 pair 的 car 的 cdr。",
+    "description": "Is equivalent to (cdr (car pair)). Returns the cdr of the car of pair.",
     "parameters": [
       {
         "name": "pair",
         "type": "pair",
-        "desc": "至少两层嵌套的 pair"
+        "desc": "a pair nested at least two levels deep"
       }
     ],
     "example": "(cdar '((a b) c d))  => (b)\n(cdar '((1 2 3) 4))  => (2 3)"
   },
   "cddar": {
     "signature": "(cddar pair)",
-    "description": "等价于 (cdr (cdr (car pair)))。先取 car 再取两次 cdr。",
+    "description": "Is equivalent to (cdr (cdr (car pair))). Takes car first, then cdr twice.",
     "parameters": [
       {
         "name": "pair",
         "type": "pair",
-        "desc": "至少三层嵌套的 pair"
+        "desc": "a pair nested at least three levels deep"
       }
     ],
     "example": "(cddar '((a b c) d))  => (c)"
   },
   "cdddr": {
     "signature": "(cdddr pair)",
-    "description": "等价于 (cdr (cdr (cdr pair)))。返回去掉前三个元素后的子列表。",
+    "description": "Is equivalent to (cdr (cdr (cdr pair))). Returns the sublist after removing the first three elements.",
     "parameters": [
       {
         "name": "pair",
         "type": "pair",
-        "desc": "至少包含三个元素的列表"
+        "desc": "a list with at least three elements"
       }
     ],
     "example": "(cdddr '(a b c d e))  => (d e)"
   },
   "cddr": {
     "signature": "(cddr pair)",
-    "description": "等价于 (cdr (cdr pair))。返回去掉前两个元素后的子列表。",
+    "description": "Is equivalent to (cdr (cdr pair)). Returns the sublist after removing the first two elements.",
     "parameters": [
       {
         "name": "pair",
         "type": "pair",
-        "desc": "至少包含两个元素的列表"
+        "desc": "a list with at least two elements"
       }
     ],
     "example": "(cddr '(a b c d))  => (c d)\n(cddr '(1 2 . 3))  => 3"
   },
-  "cdr": {
-    "signature": "(cdr pair)",
-    "description": "返回 pair 的 cdr 字段内容。对空列表取 cdr 是错误的。",
-    "parameters": [
-      {
-        "name": "pair",
-        "type": "pair",
-        "desc": "一个 pair（不能是空列表）"
-      }
-    ],
-    "example": "(cdr '((a) b c d))  => (b c d)\n(cdr '(1 . 2))  => 2"
-  },
-  "cons": {
-    "signature": "(cons obj1 obj2)",
-    "description": "返回一个新分配的 pair，其 car 为 obj1，cdr 为 obj2。该 pair 保证与所有已存在对象不同（eqv? 意义上）。",
-    "parameters": [
-      {
-        "name": "obj1",
-        "type": "any",
-        "desc": "car 部分的值"
-      },
-      {
-        "name": "obj2",
-        "type": "any",
-        "desc": "cdr 部分的值"
-      }
-    ],
-    "example": "(cons 'a '())  => (a)\n(cons '(a) '(b c d))  => ((a) b c d)\n(cons 'a 3)  => (a . 3)\n(cons '(a b) 'c)  => ((a b) . c)"
-  },
-  "for-each": {
-    "signature": "(for-each proc list1 list2 ...)",
-    "description": "参数与 map 类似，但 for-each 为副作用而调用 proc，而非为返回值。与 map 不同，for-each 保证按从第一个元素到最后一个元素的顺序依次调用 proc，返回值未指定。",
-    "parameters": [
-      {
-        "name": "proc",
-        "type": "procedure",
-        "desc": "接受与列表数量相同参数的过程"
-      },
-      {
-        "name": "list1",
-        "type": "list",
-        "desc": "第一个列表"
-      },
-      {
-        "name": "list2",
-        "type": "list",
-        "desc": "第二个列表（可选），多列表时所有列表长度必须相同"
-      }
-    ],
-    "example": "(for-each display '(1 2 3))  ; 输出 123\n(for-each (lambda (a b) (display (+ a b))) '(1 2 3) '(4 5 6))  ; 输出 6810"
-  },
-  "length": {
-    "signature": "(length list)",
-    "description": "返回列表 list 的长度（元素个数）。",
-    "parameters": [
-      {
-        "name": "list",
-        "type": "list",
-        "desc": "一个正规列表"
-      }
-    ],
-    "example": "(length '(a b c))  => 3\n(length '(a (b) (c d e)))  => 3\n(length '())  => 0"
-  },
-  "list": {
-    "signature": "(list obj ...)",
-    "description": "返回一个新分配的列表，包含所有参数作为元素。无参数时返回空列表。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "列表元素，可变数量"
-      }
-    ],
-    "example": "(list 'a (+ 3 4) 'c)  => (a 7 c)\n(list)  => ()\n(list 1 2 3)  => (1 2 3)"
-  },
-  "list-ref": {
-    "signature": "(list-ref list k)",
-    "description": "返回列表 list 的第 k 个元素（零基索引）。等价于 (car (list-tail list k))。若 list 元素少于 k+1 个则报错。",
-    "parameters": [
-      {
-        "name": "list",
-        "type": "list",
-        "desc": "一个正规列表"
-      },
-      {
-        "name": "k",
-        "type": "exact non-negative integer",
-        "desc": "元素的零基索引"
-      }
-    ],
-    "example": "(list-ref '(a b c d) 2)  => c\n(list-ref '(a b c d) 0)  => a"
-  },
-  "list-tail": {
-    "signature": "(list-tail list k)",
-    "description": "返回 list 去掉前 k 个元素后的子列表。若 list 元素少于 k 个则报错。等价于 (define list-tail (lambda (x k) (if (zero? k) x (list-tail (cdr x) (- k 1)))))。",
-    "parameters": [
-      {
-        "name": "list",
-        "type": "list",
-        "desc": "一个正规列表"
-      },
-      {
-        "name": "k",
-        "type": "exact non-negative integer",
-        "desc": "要跳过的元素个数"
-      }
-    ],
-    "example": "(list-tail '(a b c d) 2)  => (c d)\n(list-tail '(a b c d) 0)  => (a b c d)"
-  },
-  "list?": {
-    "signature": "(list? obj)",
-    "description": "若 obj 是正规列表则返回 #t，否则返回 #f。根据定义，所有正规列表具有有限长度且以空列表结尾。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "要判断的对象"
-      }
-    ],
-    "example": "(list? '(a b c))  => #t\n(list? '())  => #t\n(list? '(a . b))  => #f\n(let ((x (list 'a))) (set-cdr! x x) (list? x))  => #f"
-  },
-  "map": {
-    "signature": "(map proc list1 list2 ...)",
-    "description": "各列表参数必须为列表，proc 必须是接受与列表数量相同参数并返回单个值的过程。若提供多个列表则长度必须相同。Map 对列表元素逐位应用 proc，返回结果列表。proc 应用到各元素的动态顺序未指定。",
-    "parameters": [
-      {
-        "name": "proc",
-        "type": "procedure",
-        "desc": "接受与列表数量相同参数并返回单个值的过程"
-      },
-      {
-        "name": "list1",
-        "type": "list",
-        "desc": "第一个列表"
-      },
-      {
-        "name": "list2",
-        "type": "list",
-        "desc": "第二个列表（可选），多列表时所有列表长度必须相同"
-      }
-    ],
-    "example": "(map cadr '((a b) (d e) (g h)))  => (b e h)\n(map + '(1 2 3) '(4 5 6))  => (5 7 9)\n(map (lambda (n) (* n n)) '(1 2 3 4 5))  => (1 4 9 16 25)"
-  },
-  "member": {
-    "signature": "(member obj list)",
-    "description": "返回 list 中第一个 car 等于 obj 的子列表。若 obj 不在 list 中则返回 #f（不是空列表）。使用 equal? 进行比较。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "要查找的对象"
-      },
-      {
-        "name": "list",
-        "type": "list",
-        "desc": "要搜索的列表"
-      }
-    ],
-    "example": "(member 'a '(a b c))  => (a b c)\n(member 'b '(a b c))  => (b c)\n(member 'a '(b c d))  => #f\n(member '(a) '(b (a) c))  => ((a) c)"
-  },
-  "memq": {
-    "signature": "(memq obj list)",
-    "description": "返回 list 中第一个 car 等于 obj 的子列表。若 obj 不在 list 中则返回 #f（不是空列表）。使用 eq? 进行比较（指针/标识相等）。适合用于查找符号等原子值。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "要查找的对象"
-      },
-      {
-        "name": "list",
-        "type": "list",
-        "desc": "要搜索的列表"
-      }
-    ],
-    "example": "(memq 'a '(a b c))  => (a b c)\n(memq 'b '(a b c))  => (b c)\n(memq 'a '(b c d))  => #f\n(memq '(a) '(b (a) c))  => #f"
-  },
-  "memv": {
-    "signature": "(memv obj list)",
-    "description": "返回 list 中第一个 car 等于 obj 的子列表。若 obj 不在 list 中则返回 #f（不是空列表）。使用 eqv? 进行比较（值相等）。对于数值和字符类型通常更可靠。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "要查找的对象"
-      },
-      {
-        "name": "list",
-        "type": "list",
-        "desc": "要搜索的列表"
-      }
-    ],
-    "example": "(memv 101 '(100 101 102))  => (101 102)\n(memv 'a '(b c d))  => #f"
-  },
-  "null?": {
-    "signature": "(null? obj)",
-    "description": "若 obj 是空列表则返回 #t，否则返回 #f。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "要判断的对象"
-      }
-    ],
-    "example": "(null? '())  => #t\n(null? '(a b))  => #f\n(null? #f)  => #f"
-  },
-  "pair?": {
-    "signature": "(pair? obj)",
-    "description": "若 obj 是 pair 则返回 #t，否则返回 #f。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "要判断的对象"
-      }
-    ],
-    "example": "(pair? '(a . b))  => #t\n(pair? '(a b c))  => #t\n(pair? '())  => #f\n(pair? '#(a b))  => #f"
-  },
-  "reverse": {
-    "signature": "(reverse list)",
-    "description": "返回一个新分配的列表，元素顺序与 list 相反。",
-    "parameters": [
-      {
-        "name": "list",
-        "type": "list",
-        "desc": "一个正规列表"
-      }
-    ],
-    "example": "(reverse '(a b c))  => (c b a)\n(reverse '(a (b c) d (e (f))))  => ((e (f)) d (b c) a)\n(reverse '())  => ()"
-  },
-  "set-car!": {
-    "signature": "(set-car! pair obj)",
-    "description": "将 obj 存入 pair 的 car 字段。返回值未指定。这是一个变异操作（mutation），会修改 pair 的内容。",
-    "parameters": [
-      {
-        "name": "pair",
-        "type": "pair",
-        "desc": "要修改的 pair"
-      },
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "要存入 car 字段的新值"
-      }
-    ],
-    "example": "(define p (cons 1 2))\n(set-car! p 3)\np  => (3 . 2)"
-  },
-  "set-cdr!": {
-    "signature": "(set-cdr! pair obj)",
-    "description": "将 obj 存入 pair 的 cdr 字段。返回值未指定。这是一个变异操作（mutation），会修改 pair 的内容。注意：使用 set-cdr! 可以将一个列表变为非正规列表，或创建循环结构。",
-    "parameters": [
-      {
-        "name": "pair",
-        "type": "pair",
-        "desc": "要修改的 pair"
-      },
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "要存入 cdr 字段的新值"
-      }
-    ],
-    "example": "(define p (cons 1 2))\n(set-cdr! p 3)\np  => (1 . 3)"
-  },
-  "abs": {
-    "signature": "(abs x)",
-    "description": "返回 x 的绝对值。x 必须是实数。",
-    "parameters": [
-      {
-        "name": "x",
-        "type": "real",
-        "desc": "实数"
-      }
-    ],
-    "example": "(abs -7)  => 7\n(abs -3.5)  => 3.5\n(abs 0)  => 0"
-  },
-  "acos": {
-    "signature": "(acos z)",
-    "description": "返回 z 的反余弦值（arccosine）。结果以弧度为单位。对于实数参数，z 必须在 [-1, 1] 范围内，结果在 [0, π] 范围内。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "number",
-        "desc": "数值"
-      }
-    ],
-    "example": "(acos 1.0)  => 0.0\n(acos 0.0)  => 1.5707963267949\n(acos -1.0)  => 3.14159265358979"
-  },
-  "angle": {
-    "signature": "(angle z)",
-    "description": "返回复数 z 的辐角（角度），以弧度为单位。结果范围是 (-π, π]。若 z = x + yi = r·e^(iθ)，则返回 θ。等价于 (atan y x)。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "complex",
-        "desc": "复数"
-      }
-    ],
-    "example": "(angle 1)  => 0.0\n(angle +i)  => 1.5707963267949\n(angle -1)  => 3.14159265358979\n(angle (make-rectangular 1 1))  => 0.785398163397448"
-  },
-  "asin": {
-    "signature": "(asin z)",
-    "description": "返回 z 的反正弦值（arcsine）。结果以弧度为单位。对于实数参数，z 必须在 [-1, 1] 范围内，结果在 [-π/2, π/2] 范围内。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "number",
-        "desc": "数值"
-      }
-    ],
-    "example": "(asin 0.0)  => 0.0\n(asin 1.0)  => 1.5707963267949\n(asin -1.0)  => -1.5707963267949"
-  },
-  "atan": {
-    "signature": "(atan y)\n(atan y x)",
-    "description": "返回反正切值（arctangent），结果以弧度为单位。单参数形式 (atan y) 返回 y 的反正切，结果在 (-π/2, π/2) 范围内。双参数形式 (atan y x) 返回以正 x 轴为起点到点 (x, y) 的角度，结果在 (-π, π] 范围内，等价于 (angle (make-rectangular x y))。",
-    "parameters": [
-      {
-        "name": "y",
-        "type": "real",
-        "desc": "纵坐标或数值"
-      },
-      {
-        "name": "x",
-        "type": "real",
-        "desc": "横坐标（仅双参数形式）"
-      }
-    ],
-    "example": "(atan 1.0)  => 0.785398163397448\n(atan -1.0 0.0)  => -1.5707963267949\n(atan 1.0 1.0)  => 0.785398163397448\n(atan -1.0 -1.0)  => -2.35619449019234"
-  },
-  "ceiling": {
-    "signature": "(ceiling x)",
-    "description": "返回不小于 x 的最小整数（向上取整）。若参数为不精确数，结果也为不精确数。",
-    "parameters": [
-      {
-        "name": "x",
-        "type": "real",
-        "desc": "实数"
-      }
-    ],
-    "example": "(ceiling -4.3)  => -4.0\n(ceiling 3.5)  => 4.0\n(ceiling 7)  => 7"
-  },
-  "complex?": {
-    "signature": "(complex? obj)",
-    "description": "判断 obj 是否为复数。在 R5RS 数值类型层级中，所有数值都是复数（number ⊃ complex ⊃ real ⊃ rational ⊃ integer），因此 (complex? obj) 对任何数值都返回 #t。对于非数值返回 #f。在许多实现中 complex? 与 number? 等价。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(complex? 3+4i)  => #t\n(complex? 3)  => #t\n(complex? \"hello\")  => #f"
-  },
-  "cos": {
-    "signature": "(cos z)",
-    "description": "返回 z 的余弦值，z 以弧度为单位。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "number",
-        "desc": "数值（弧度）"
-      }
-    ],
-    "example": "(cos 0)  => 1.0\n(cos 3.14159265358979)  => -1.0"
-  },
-  "even?": {
-    "signature": "(even? n)",
-    "description": "判断整数 n 是否为偶数。返回 #t 或 #f。",
-    "parameters": [
-      {
-        "name": "n",
-        "type": "integer",
-        "desc": "整数"
-      }
-    ],
-    "example": "(even? 4)  => #t\n(even? 7)  => #f\n(even? -2)  => #t"
-  },
-  "exact->inexact": {
-    "signature": "(exact->inexact z)",
-    "description": "返回 z 的不精确表示。返回值是数值上最接近参数的不精确数。若精确参数没有合理接近的不精确等价值，则可能报告实现限制违规。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "number",
-        "desc": "精确数"
-      }
-    ],
-    "example": "(exact->inexact 7)  => 7.0\n(exact->inexact 22/7)  => 3.14285714285714"
-  },
-  "exact?": {
-    "signature": "(exact? z)",
-    "description": "判断 z 是否为精确数。精确数是通过精确常量或仅使用精确操作从精确数推导而来的数。对于任意 Scheme 数值，exact? 和 inexact? 中恰好有一个为 #t。精确性与数值类型（integer/real/complex 等）正交。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(exact? 3)  => #t\n(exact? 3.0)  => #f\n(exact? 22/7)  => #t"
-  },
-  "exp": {
-    "signature": "(exp z)",
-    "description": "返回 e 的 z 次幂（指数函数）。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "number",
-        "desc": "数值"
-      }
-    ],
-    "example": "(exp 0)  => 1.0\n(exp 1)  => 2.71828182845905"
-  },
-  "expt": {
-    "signature": "(expt z1 z2)",
-    "description": "返回 z1 的 z2 次幂。对于 z1 ≠ 0，等价于 e^(z2·log(z1))。0^0 为 1，0^z（z ≠ 0）为 0。当参数均为精确整数时，结果尽可能返回精确整数。",
-    "parameters": [
-      {
-        "name": "z1",
-        "type": "number",
-        "desc": "底数"
-      },
-      {
-        "name": "z2",
-        "type": "number",
-        "desc": "指数"
-      }
-    ],
-    "example": "(expt 2 10)  => 1024\n(expt 4 0.5)  => 2.0\n(expt 2 -3)  => 1/8"
-  },
-  "floor": {
-    "signature": "(floor x)",
-    "description": "返回不大于 x 的最大整数（向下取整）。若参数为不精确数，结果也为不精确数。",
-    "parameters": [
-      {
-        "name": "x",
-        "type": "real",
-        "desc": "实数"
-      }
-    ],
-    "example": "(floor -4.3)  => -5.0\n(floor 3.5)  => 3.0\n(floor 7)  => 7"
-  },
-  "gcd": {
-    "signature": "(gcd n1 ...)",
-    "description": "返回参数的最大公约数。结果始终为非负数。无参数时返回 0。当参数均为精确整数时，结果为精确非负整数。",
-    "parameters": [
-      {
-        "name": "n1",
-        "type": "integer",
-        "desc": "整数（可变参数）"
-      }
-    ],
-    "example": "(gcd 32 -36)  => 4\n(gcd)  => 0\n(gcd 12 18 24)  => 6"
-  },
-  "imag-part": {
-    "signature": "(imag-part z)",
-    "description": "返回复数 z 的虚部。若 z = x + yi，则返回 y。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "complex",
-        "desc": "复数"
-      }
-    ],
-    "example": "(imag-part 3+4i)  => 4\n(imag-part 5)  => 0\n(imag-part -2.5+0.0i)  => 0.0"
-  },
-  "inexact?": {
-    "signature": "(inexact? z)",
-    "description": "判断 z 是否为不精确数。不精确性具有传染性：含有小数点、指数或不精确成分的数均为不精确数。对于任意 Scheme 数值，exact? 和 inexact? 中恰好有一个为 #t。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(inexact? 3.0)  => #t\n(inexact? 3)  => #f\n(inexact? 22/7)  => #f"
-  },
-  "integer?": {
-    "signature": "(integer? obj)",
-    "description": "判断 obj 是否为整数。在 R5RS 数值类型层级中（number ⊃ complex ⊃ real ⊃ rational ⊃ integer），整数是最内层子类型。对于不精确实数 x，(integer? x) 为 #t 当且仅当 (= x (round x))。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(integer? 3)  => #t\n(integer? 3.0)  => #t\n(integer? 8/4)  => #t\n(integer? 3+0i)  => #t\n(integer? 3.5)  => #f"
-  },
-  "lcm": {
-    "signature": "(lcm n1 ...)",
-    "description": "返回参数的最小公倍数。结果始终为非负数。无参数时返回 1。当任一参数为不精确数时，结果也为不精确数。",
-    "parameters": [
-      {
-        "name": "n1",
-        "type": "integer",
-        "desc": "整数（可变参数）"
-      }
-    ],
-    "example": "(lcm 32 -36)  => 288\n(lcm)  => 1\n(lcm 32.0 -36)  => 288.0"
-  },
-  "log": {
-    "signature": "(log z)",
-    "description": "返回 z 的自然对数（以 e 为底），而非常用对数（以 10 为底）。结果的虚部范围是 (-π, π]。(log 0) 未定义。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "number",
-        "desc": "数值"
-      }
-    ],
-    "example": "(log 1)  => 0.0\n(log (exp 1))  => 1.0"
-  },
-  "magnitude": {
-    "signature": "(magnitude z)",
-    "description": "返回复数 z 的模（绝对值）。若 z = x + yi，则返回 sqrt(x^2 + y^2)。对于实数参数，magnitude 等价于 abs。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "complex",
-        "desc": "复数"
-      }
-    ],
-    "example": "(magnitude 3+4i)  => 5\n(magnitude 5)  => 5\n(magnitude -3+4i)  => 5"
-  },
   "make-polar": {
     "signature": "(make-polar r theta)",
-    "description": "根据极坐标构造复数。返回 r·e^(i·theta)。r 为模（非负实数），theta 为辐角（弧度）。",
+    "description": "Constructs a complex number from polar coordinates. Returns r*exp(i*theta). r is the magnitude (a non-negative real number), theta is the angle (in radians).",
     "parameters": [
       {
         "name": "r",
         "type": "real",
-        "desc": "模（非负实数）"
+        "desc": "magnitude (non-negative real number)"
       },
       {
         "name": "theta",
         "type": "real",
-        "desc": "辐角（弧度）"
+        "desc": "angle (in radians)"
       }
     ],
     "example": "(make-polar 1 0)  => 1\n(make-polar 1 3.14159265358979)  => -1\n(make-polar 5 0.927295218001612)  => 3+4i"
   },
-  "make-rectangular": {
-    "signature": "(make-rectangular x y)",
-    "description": "根据直角坐标构造复数。返回 x + yi。",
-    "parameters": [
-      {
-        "name": "x",
-        "type": "real",
-        "desc": "实部"
-      },
-      {
-        "name": "y",
-        "type": "real",
-        "desc": "虚部"
-      }
-    ],
-    "example": "(make-rectangular 3 4)  => 3+4i\n(make-rectangular 1 0)  => 1\n(make-rectangular 0 1)  => +i"
-  },
-  "max": {
-    "signature": "(max x1 x2 ...)",
-    "description": "返回所有参数中的最大值。若任一参数为不精确数，则结果也为不精确数。",
-    "parameters": [
-      {
-        "name": "x1",
-        "type": "real",
-        "desc": "实数（可变参数，至少一个）"
-      }
-    ],
-    "example": "(max 3 4)  => 4\n(max 3.9 4)  => 4.0"
-  },
-  "min": {
-    "signature": "(min x1 x2 ...)",
-    "description": "返回所有参数中的最小值。若任一参数为不精确数，则结果也为不精确数。",
-    "parameters": [
-      {
-        "name": "x1",
-        "type": "real",
-        "desc": "实数（可变参数，至少一个）"
-      }
-    ],
-    "example": "(min 3 4)  => 3\n(min 3.9 4)  => 3.9"
-  },
-  "modulo": {
-    "signature": "(modulo n1 n2)",
-    "description": "返回 n1 除以 n2 的模运算结果。n2 不应为零。结果为整数，满足：n1 = n2·q + m，其中 q 为向负无穷截断的商，|m| < |n2|，m 与 n2 同号。与 remainder 的区别在于：remainder 的结果与被除数 n1 同号，而 modulo 的结果与除数 n2 同号。",
-    "parameters": [
-      {
-        "name": "n1",
-        "type": "integer",
-        "desc": "被除数"
-      },
-      {
-        "name": "n2",
-        "type": "integer",
-        "desc": "除数（非零）"
-      }
-    ],
-    "example": "(modulo 13 4)  => 1\n(modulo -13 4)  => 3\n(modulo 13 -4)  => -3\n(modulo -13 -4)  => -1"
-  },
-  "negative?": {
-    "signature": "(negative? x)",
-    "description": "判断实数 x 是否为负数。返回 #t 或 #f。",
-    "parameters": [
-      {
-        "name": "x",
-        "type": "real",
-        "desc": "实数"
-      }
-    ],
-    "example": "(negative? -5)  => #t\n(negative? 0)  => #f\n(negative? 3.2)  => #f"
-  },
-  "number->string": {
-    "signature": "(number->string num)\n(number->string num radix)",
-    "description": "将数值 num 转换为字符串表示。radix 必须是精确整数 2、8、10 或 16，默认为 10。对于不精确数且 radix 为 10 时，结果包含小数点并使用最少位数表示。结果字符串不包含显式基数前缀。",
-    "parameters": [
-      {
-        "name": "num",
-        "type": "number",
-        "desc": "数值"
-      },
-      {
-        "name": "radix",
-        "type": "integer",
-        "desc": "基数：2、8、10 或 16，默认 10"
-      }
-    ],
-    "example": "(number->string 100)  => \"100\"\n(number->string 256 16)  => \"100\"\n(number->string 3.14)  => \"3.14\""
-  },
-  "number?": {
-    "signature": "(number? obj)",
-    "description": "判断 obj 是否为数值。在 R5RS 数值类型层级中（number ⊃ complex ⊃ real ⊃ rational ⊃ integer），这是最外层的类型谓词，对所有数值返回 #t。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(number? 3)  => #t\n(number? 3+4i)  => #t\n(number? \"hello\")  => #f\n(number? #t)  => #f"
-  },
-  "odd?": {
-    "signature": "(odd? n)",
-    "description": "判断整数 n 是否为奇数。返回 #t 或 #f。",
-    "parameters": [
-      {
-        "name": "n",
-        "type": "integer",
-        "desc": "整数"
-      }
-    ],
-    "example": "(odd? 7)  => #t\n(odd? 4)  => #f\n(odd? -3)  => #t"
-  },
-  "positive?": {
-    "signature": "(positive? x)",
-    "description": "判断实数 x 是否为正数。返回 #t 或 #f。",
-    "parameters": [
-      {
-        "name": "x",
-        "type": "real",
-        "desc": "实数"
-      }
-    ],
-    "example": "(positive? 5)  => #t\n(positive? 0)  => #f\n(positive? -3.2)  => #f"
-  },
-  "quotient": {
-    "signature": "(quotient n1 n2)",
-    "description": "返回 n1 除以 n2 的整数商（向零截断）。n2 不应为零。与 modulo 和 remainder 一起实现数论整除：n1 = n2·q + r，其中 q = (quotient n1 n2) 向零截断，r = (remainder n1 n2) 与 n1 同号。",
-    "parameters": [
-      {
-        "name": "n1",
-        "type": "integer",
-        "desc": "被除数"
-      },
-      {
-        "name": "n2",
-        "type": "integer",
-        "desc": "除数（非零）"
-      }
-    ],
-    "example": "(quotient 13 4)  => 3\n(quotient -13 4)  => -3\n(quotient 13 -4)  => -3\n(quotient -13 -4)  => 3"
-  },
-  "rational?": {
-    "signature": "(rational? obj)",
-    "description": "判断 obj 是否为有理数。在 R5RS 数值类型层级中（number ⊃ complex ⊃ real ⊃ rational ⊃ integer），有理数包含所有整数和分数。在许多实现中 rational? 与 real? 等价，因为通常不精确数也被视为有理数的近似。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(rational? 6/10)  => #t\n(rational? 6/3)  => #t\n(rational? 3.5)  => #t"
-  },
-  "real-part": {
-    "signature": "(real-part z)",
-    "description": "返回复数 z 的实部。若 z = x + yi，则返回 x。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "complex",
-        "desc": "复数"
-      }
-    ],
-    "example": "(real-part 3+4i)  => 3\n(real-part 5)  => 5\n(real-part -2.5+0.0i)  => -2.5"
-  },
-  "real?": {
-    "signature": "(real? obj)",
-    "description": "判断 obj 是否为实数。在 R5RS 数值类型层级中（number ⊃ complex ⊃ real ⊃ rational ⊃ integer），实数是虚部为零的复数。对于不精确复数 z，(real? z) 为 #t 当且仅当 (zero? (imag-part z)) 为 #t。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(real? 3)  => #t\n(real? -2.5+0.0i)  => #t\n(real? 3+4i)  => #f"
-  },
-  "remainder": {
-    "signature": "(remainder n1 n2)",
-    "description": "返回 n1 除以 n2 的余数。n2 不应为零。结果为整数，满足：n1 = n2·q + r，其中 q = (quotient n1 n2) 向零截断，|r| < |n2|，r 与 n1 同号。与 modulo 的区别在于：remainder 结果与被除数 n1 同号，modulo 结果与除数 n2 同号。",
-    "parameters": [
-      {
-        "name": "n1",
-        "type": "integer",
-        "desc": "被除数"
-      },
-      {
-        "name": "n2",
-        "type": "integer",
-        "desc": "除数（非零）"
-      }
-    ],
-    "example": "(remainder 13 4)  => 1\n(remainder -13 4)  => -1\n(remainder 13 -4)  => 1\n(remainder -13 -4)  => -1"
-  },
-  "round": {
-    "signature": "(round x)",
-    "description": "返回最接近 x 的整数（四舍五入）。当 x 恰好在两个整数中间时，向偶数舍入（与 IEEE 754 浮点标准默认舍入模式一致）。若参数为不精确数，结果也为不精确数。",
-    "parameters": [
-      {
-        "name": "x",
-        "type": "real",
-        "desc": "实数"
-      }
-    ],
-    "example": "(round -4.3)  => -4.0\n(round 3.5)  => 4.0\n(round 7/2)  => 4\n(round 7)  => 7"
-  },
-  "sin": {
-    "signature": "(sin z)",
-    "description": "返回 z 的正弦值，z 以弧度为单位。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "number",
-        "desc": "数值（弧度）"
-      }
-    ],
-    "example": "(sin 0)  => 0.0\n(sin 1.5707963267949)  => 1.0"
-  },
-  "sqrt": {
-    "signature": "(sqrt z)",
-    "description": "返回 z 的主平方根。结果的实部为正，或实部为零且虚部非负。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "number",
-        "desc": "数值"
-      }
-    ],
-    "example": "(sqrt 4)  => 2\n(sqrt 2)  => 1.4142135623731\n(sqrt -1)  => +i"
-  },
-  "tan": {
-    "signature": "(tan z)",
-    "description": "返回 z 的正切值，z 以弧度为单位。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "number",
-        "desc": "数值（弧度）"
-      }
-    ],
-    "example": "(tan 0)  => 0.0\n(tan 0.785398163397448)  => 1.0"
-  },
-  "truncate": {
-    "signature": "(truncate x)",
-    "description": "返回向零方向截断后的整数。即去掉小数部分，保留整数部分。若参数为不精确数，结果也为不精确数。",
-    "parameters": [
-      {
-        "name": "x",
-        "type": "real",
-        "desc": "实数"
-      }
-    ],
-    "example": "(truncate -4.3)  => -4.0\n(truncate 3.5)  => 3.0\n(truncate 7)  => 7"
-  },
-  "zero?": {
-    "signature": "(zero? z)",
-    "description": "判断数值 z 是否为零。返回 #t 或 #f。",
-    "parameters": [
-      {
-        "name": "z",
-        "type": "number",
-        "desc": "数值"
-      }
-    ],
-    "example": "(zero? 0)  => #t\n(zero? 0.0)  => #t\n(zero? 1)  => #f\n(zero? -0.0)  => #t"
-  },
-  "make-string": {
-    "signature": "(make-string k)",
-    "description": "返回一个新分配的长度为 k 的字符串。若提供 char，则字符串中所有字符初始化为 char；否则字符串内容未指定。",
-    "parameters": [
-      {
-        "name": "k",
-        "type": "exact non-negative integer",
-        "desc": "字符串长度"
-      },
-      {
-        "name": "char",
-        "type": "char",
-        "desc": "可选，初始化字符"
-      }
-    ],
-    "example": "(make-string 3 #\\a)  => \"aaa\""
-  },
-  "make-vector": {
-    "signature": "(make-vector k)",
-    "description": "返回一个新分配的包含 k 个元素的向量。若提供 fill，则每个元素初始化为 fill；否则每个元素的初始内容未指定。",
-    "parameters": [
-      {
-        "name": "k",
-        "type": "exact non-negative integer",
-        "desc": "向量长度"
-      },
-      {
-        "name": "fill",
-        "type": "any",
-        "desc": "可选，初始化值"
-      }
-    ],
-    "example": "(make-vector 3 0)  => #(0 0 0)"
-  },
-  "procedure?": {
-    "signature": "(procedure? obj)",
-    "description": "如果 obj 是一个过程则返回 #t，否则返回 #f。注意：过程的名称（如 'car 的引用）不是过程本身。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(procedure? car)  => #t\n(procedure? 'car)  => #f\n(procedure? (lambda (x) (* x x)))  => #t"
-  },
-  "string": {
-    "signature": "(string char ...)",
-    "description": "返回由给定字符参数组成的新分配字符串。是字符串的构造函数。",
-    "parameters": [
-      {
-        "name": "char",
-        "type": "char",
-        "desc": "一个或多个字符"
-      }
-    ],
-    "example": "(string #\\H #\\e #\\l #\\l #\\o)  => \"Hello\""
-  },
-  "string-append": {
-    "signature": "(string-append string ...)",
-    "description": "返回一个新分配的字符串，其字符由所有给定字符串按顺序拼接而成。",
-    "parameters": [
-      {
-        "name": "string",
-        "type": "string",
-        "desc": "一个或多个待拼接的字符串"
-      }
-    ],
-    "example": "(string-append \"Hello\" \" \" \"World\")  => \"Hello World\""
-  },
-  "string-ci=?": {
-    "signature": "(string-ci=? string1 string2)",
-    "description": "如果两个字符串长度相同且对应位置的字符相同（忽略大小写），则返回 #t，否则返回 #f。",
-    "parameters": [
-      {
-        "name": "string1",
-        "type": "string",
-        "desc": "第一个字符串"
-      },
-      {
-        "name": "string2",
-        "type": "string",
-        "desc": "第二个字符串"
-      }
-    ],
-    "example": "(string-ci=? \"Hello\" \"hello\")  => #t\n(string-ci=? \"abc\" \"abd\")  => #f"
-  },
-  "string-copy": {
-    "signature": "(string-copy string)",
-    "description": "返回给定字符串的一个新分配的副本。",
-    "parameters": [
-      {
-        "name": "string",
-        "type": "string",
-        "desc": "字符串"
-      }
-    ],
-    "example": "(string-copy \"abc\")  => \"abc\""
-  },
-  "string-fill!": {
-    "signature": "(string-fill! string char)",
-    "description": "将 char 存储在给定字符串的每个元素中。返回值未指定。此操作会修改原字符串。",
-    "parameters": [
-      {
-        "name": "string",
-        "type": "string",
-        "desc": "字符串"
-      },
-      {
-        "name": "char",
-        "type": "char",
-        "desc": "填充字符"
-      }
-    ],
-    "example": "(let ((s (make-string 3 #\\x))) (string-fill! s #\\a) s)  => \"aaa\""
-  },
-  "string-length": {
-    "signature": "(string-length string)",
-    "description": "返回给定字符串中的字符数量。",
-    "parameters": [
-      {
-        "name": "string",
-        "type": "string",
-        "desc": "字符串"
-      }
-    ],
-    "example": "(string-length \"abc\")  => 3\n(string-length \"\")  => 0"
-  },
-  "string-ref": {
-    "signature": "(string-ref string k)",
-    "description": "k 必须是 string 的有效索引（0 到字符串长度减 1）。使用从零开始的索引，返回 string 中第 k 个字符。",
-    "parameters": [
-      {
-        "name": "string",
-        "type": "string",
-        "desc": "字符串"
-      },
-      {
-        "name": "k",
-        "type": "exact non-negative integer",
-        "desc": "字符索引（从 0 开始）"
-      }
-    ],
-    "example": "(string-ref \"abc\" 0)  => #\\a\n(string-ref \"abc\" 2)  => #\\c"
-  },
-  "string-set!": {
-    "signature": "(string-set! string k char)",
-    "description": "k 必须是 string 的有效索引。将 char 存储到 string 的第 k 个位置。返回值未指定。此操作会修改原字符串。",
-    "parameters": [
-      {
-        "name": "string",
-        "type": "string",
-        "desc": "字符串"
-      },
-      {
-        "name": "k",
-        "type": "exact non-negative integer",
-        "desc": "字符索引（从 0 开始）"
-      },
-      {
-        "name": "char",
-        "type": "char",
-        "desc": "要存储的字符"
-      }
-    ],
-    "example": "(let ((s (string #\\a #\\b #\\c))) (string-set! s 0 #\\z) s)  => \"zbc\""
-  },
-  "string=?": {
-    "signature": "(string=? string1 string2)",
-    "description": "如果两个字符串长度相同且对应位置的字符完全相同，则返回 #t，否则返回 #f。区分大小写。",
-    "parameters": [
-      {
-        "name": "string1",
-        "type": "string",
-        "desc": "第一个字符串"
-      },
-      {
-        "name": "string2",
-        "type": "string",
-        "desc": "第二个字符串"
-      }
-    ],
-    "example": "(string=? \"abc\" \"abc\")  => #t\n(string=? \"abc\" \"ABC\")  => #f\n(string=? \"abc\" \"ab\")  => #f"
-  },
-  "string?": {
-    "signature": "(string? obj)",
-    "description": "如果 obj 是字符串则返回 #t，否则返回 #f。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(string? \"hello\")  => #t\n(string? 'hello)  => #f\n(string? 123)  => #f"
-  },
-  "vector": {
-    "signature": "(vector obj ...)",
-    "description": "返回一个新分配的向量，其元素为给定的参数。类似于 list，但返回的是向量而非列表。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "一个或多个任意对象"
-      }
-    ],
-    "example": "(vector 'a 'b 'c)  => #(a b c)"
-  },
-  "vector-fill!": {
-    "signature": "(vector-fill! vector fill)",
-    "description": "将 fill 存储在向量的每个元素中。返回值未指定。此操作会修改原向量。",
-    "parameters": [
-      {
-        "name": "vector",
-        "type": "vector",
-        "desc": "向量"
-      },
-      {
-        "name": "fill",
-        "type": "any",
-        "desc": "填充值"
-      }
-    ],
-    "example": "(let ((v (make-vector 3 0))) (vector-fill! v 1) v)  => #(1 1 1)"
-  },
-  "vector-length": {
-    "signature": "(vector-length vector)",
-    "description": "返回向量中元素的数量，为精确整数。",
-    "parameters": [
-      {
-        "name": "vector",
-        "type": "vector",
-        "desc": "向量"
-      }
-    ],
-    "example": "(vector-length #(a b c))  => 3\n(vector-length #())  => 0"
-  },
-  "vector-ref": {
-    "signature": "(vector-ref vector k)",
-    "description": "k 必须是 vector 的有效索引（0 到向量长度减 1）。返回向量中第 k 个元素的内容。",
-    "parameters": [
-      {
-        "name": "vector",
-        "type": "vector",
-        "desc": "向量"
-      },
-      {
-        "name": "k",
-        "type": "exact non-negative integer",
-        "desc": "元素索引（从 0 开始）"
-      }
-    ],
-    "example": "(vector-ref #(1 1 2 3 5 8 13 21) 5)  => 8"
-  },
-  "vector-set!": {
-    "signature": "(vector-set! vector k obj)",
-    "description": "k 必须是 vector 的有效索引。将 obj 存储到向量的第 k 个位置。返回值未指定。此操作会修改原向量。注意：不能对常量向量使用 vector-set!。",
-    "parameters": [
-      {
-        "name": "vector",
-        "type": "vector",
-        "desc": "向量"
-      },
-      {
-        "name": "k",
-        "type": "exact non-negative integer",
-        "desc": "元素索引（从 0 开始）"
-      },
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "要存储的值"
-      }
-    ],
-    "example": "(let ((v (vector 0 1 2))) (vector-set! v 1 \"foo\") v)  => #(0 \"foo\" 2)"
-  },
-  "vector?": {
-    "signature": "(vector? obj)",
-    "description": "如果 obj 是向量则返回 #t，否则返回 #f。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(vector? #(a b c))  => #t\n(vector? '(a b c))  => #f\n(vector? 123)  => #f"
-  },
-  "list->string": {
-    "signature": "(list->string list)",
-    "description": "返回由列表 list 中的字符组成的新分配字符串。list 必须是字符列表。list->string 和 string->list 互为逆操作（就 equal? 而言）。",
-    "parameters": [
-      {
-        "name": "list",
-        "type": "list",
-        "desc": "字符列表"
-      }
-    ],
-    "example": "(list->string '(#\\a #\\b #\\c))  => \"abc\""
-  },
-  "list->vector": {
-    "signature": "(list->vector list)",
-    "description": "返回一个新创建的向量，其元素初始化为列表 list 中的元素。",
-    "parameters": [
-      {
-        "name": "list",
-        "type": "list",
-        "desc": "任意对象的列表"
-      }
-    ],
-    "example": "(list->vector '(dah dah didah))  => #(dah dah didah)"
-  },
-  "string->list": {
-    "signature": "(string->list string)",
-    "description": "返回由给定字符串中的字符组成的新分配列表。string->list 和 list->string 互为逆操作（就 equal? 而言）。",
-    "parameters": [
-      {
-        "name": "string",
-        "type": "string",
-        "desc": "字符串"
-      }
-    ],
-    "example": "(string->list \"abc\")  => (#\\a #\\b #\\c)"
-  },
-  "string->number": {
-    "signature": "(string->number string)",
-    "description": "返回由给定字符串表示的最大精度数值。可选参数 radix 必须是精确整数 2、8、10 或 16，作为默认进制，可被字符串中的显式进制前缀（如 \"#o177\"）覆盖。若字符串不是合法的数值表示，则返回 #f。",
-    "parameters": [
-      {
-        "name": "string",
-        "type": "string",
-        "desc": "数值的字符串表示"
-      },
-      {
-        "name": "radix",
-        "type": "exact integer",
-        "desc": "可选，进制（2、8、10 或 16）"
-      }
-    ],
-    "example": "(string->number \"100\")  => 100\n(string->number \"100\" 16)  => 256\n(string->number \"1e2\")  => 100.0\n(string->number \"hello\")  => #f"
-  },
-  "string->symbol": {
-    "description": "返回名称为 string 的符号。此过程可创建名称包含特殊字符或非标准大小写字母的符号，但通常不建议这样做，因为在某些 Scheme 实现中它们无法被读取。与 symbol->string 互为逆操作。",
-    "example": "(string->symbol \"foo\")  => foo\n(string->symbol \"mISSISSIPpi\")  => the symbol with name \"mISSISSIPpi\"",
-    "parameters": [
-      {
-        "name": "string",
-        "type": "string",
-        "desc": "符号名称字符串"
-      }
-    ],
-    "signature": "(string->symbol string)"
-  },
-  "vector->list": {
-    "signature": "(vector->list vector)",
-    "description": "返回一个新分配的列表，包含向量中所有元素。",
-    "parameters": [
-      {
-        "name": "vector",
-        "type": "vector",
-        "desc": "向量"
-      }
-    ],
-    "example": "(vector->list #(dah dah didah))  => (dah dah didah)"
-  },
-  "string>=?": {
-    "signature": "(string>=? string1 string2)",
-    "description": "基于字符的字典序比较两个字符串。如果 string1 在字典序上大于或等于 string2，则返回 #t，否则返回 #f。如果两个字符串长度不同但短字符串是长字符串的前缀，则较长的字符串在字典序上更大。",
-    "parameters": [
-      {
-        "name": "string1",
-        "type": "string",
-        "desc": "第一个字符串"
-      },
-      {
-        "name": "string2",
-        "type": "string",
-        "desc": "第二个字符串"
-      }
-    ],
-    "example": "(string>=? \"abc\" \"abc\")  => #t\n(string>=? \"abd\" \"abc\")  => #t\n(string>=? \"abc\" \"abd\")  => #f"
-  },
-  "string>?": {
-    "signature": "(string>? string1 string2)",
-    "description": "基于字符的字典序比较两个字符串。如果 string1 在字典序上严格大于 string2，则返回 #t，否则返回 #f。",
-    "parameters": [
-      {
-        "name": "string1",
-        "type": "string",
-        "desc": "第一个字符串"
-      },
-      {
-        "name": "string2",
-        "type": "string",
-        "desc": "第二个字符串"
-      }
-    ],
-    "example": "(string>? \"abd\" \"abc\")  => #t\n(string>? \"abc\" \"abd\")  => #f\n(string>? \"abc\" \"abc\")  => #f"
-  },
-  "string<=?": {
-    "signature": "(string<=? string1 string2)",
-    "description": "基于字符的字典序比较两个字符串。如果 string1 在字典序上小于或等于 string2，则返回 #t，否则返回 #f。",
-    "parameters": [
-      {
-        "name": "string1",
-        "type": "string",
-        "desc": "第一个字符串"
-      },
-      {
-        "name": "string2",
-        "type": "string",
-        "desc": "第二个字符串"
-      }
-    ],
-    "example": "(string<=? \"abc\" \"abc\")  => #t\n(string<=? \"abc\" \"abd\")  => #t\n(string<=? \"abd\" \"abc\")  => #f"
-  },
-  "string<?": {
-    "signature": "(string<? string1 string2)",
-    "description": "基于字符的字典序比较两个字符串。如果 string1 在字典序上严格小于 string2，则返回 #t，否则返回 #f。是由 char<? 诱导的字符串字典序。",
-    "parameters": [
-      {
-        "name": "string1",
-        "type": "string",
-        "desc": "第一个字符串"
-      },
-      {
-        "name": "string2",
-        "type": "string",
-        "desc": "第二个字符串"
-      }
-    ],
-    "example": "(string<? \"abc\" \"abd\")  => #t\n(string<? \"abd\" \"abc\")  => #f\n(string<? \"abc\" \"abc\")  => #f"
-  },
-  "string-ci>=?": {
-    "signature": "(string-ci>=? string1 string2)",
-    "description": "大小写不敏感的字符串字典序比较。如果 string1 在忽略大小写的字典序上大于或等于 string2，则返回 #t，否则返回 #f。",
-    "parameters": [
-      {
-        "name": "string1",
-        "type": "string",
-        "desc": "第一个字符串"
-      },
-      {
-        "name": "string2",
-        "type": "string",
-        "desc": "第二个字符串"
-      }
-    ],
-    "example": "(string-ci>=? \"ABC\" \"abc\")  => #t\n(string-ci>=? \"abc\" \"abd\")  => #f"
-  },
-  "string-ci>?": {
-    "signature": "(string-ci>? string1 string2)",
-    "description": "大小写不敏感的字符串字典序比较。如果 string1 在忽略大小写的字典序上严格大于 string2，则返回 #t，否则返回 #f。",
-    "parameters": [
-      {
-        "name": "string1",
-        "type": "string",
-        "desc": "第一个字符串"
-      },
-      {
-        "name": "string2",
-        "type": "string",
-        "desc": "第二个字符串"
-      }
-    ],
-    "example": "(string-ci>? \"abd\" \"ABC\")  => #t\n(string-ci>? \"abc\" \"ABD\")  => #f"
-  },
-  "string-ci<=?": {
-    "signature": "(string-ci<=? string1 string2)",
-    "description": "大小写不敏感的字符串字典序比较。如果 string1 在忽略大小写的字典序上小于或等于 string2，则返回 #t，否则返回 #f。",
-    "parameters": [
-      {
-        "name": "string1",
-        "type": "string",
-        "desc": "第一个字符串"
-      },
-      {
-        "name": "string2",
-        "type": "string",
-        "desc": "第二个字符串"
-      }
-    ],
-    "example": "(string-ci<=? \"abc\" \"ABD\")  => #t\n(string-ci<=? \"abd\" \"ABC\")  => #f"
-  },
-  "string-ci<?": {
-    "signature": "(string-ci<? string1 string2)",
-    "description": "大小写不敏感的字符串字典序比较。如果 string1 在忽略大小写的字典序上严格小于 string2，则返回 #t，否则返回 #f。",
-    "parameters": [
-      {
-        "name": "string1",
-        "type": "string",
-        "desc": "第一个字符串"
-      },
-      {
-        "name": "string2",
-        "type": "string",
-        "desc": "第二个字符串"
-      }
-    ],
-    "example": "(string-ci<? \"abc\" \"ABD\")  => #t\n(string-ci<? \"abd\" \"ABC\")  => #f"
-  },
   "and": {
     "signature": "(and test1 ...)",
-    "description": "特殊形式（库语法）。从左到右依次求值各 test 表达式，返回第一个求值为假值（#f）的表达式的值，其余表达式不再求值。如果所有表达式都求值为真值，则返回最后一个表达式的值。如果没有表达式，则返回 #t。短路求值形式。",
+    "description": "Special form (library syntax). Evaluates the test expressions from left to right and returns the value of the first expression that evaluates to a false value (#f). The remaining expressions are not evaluated. If all expressions evaluate to true values, the value of the last expression is returned. If there are no expressions, #t is returned. A short-circuit evaluation form.",
     "parameters": [
       {
         "name": "test1 ...",
         "type": "expression",
-        "desc": "零个或多个测试表达式"
+        "desc": "zero or more test expressions"
       }
     ],
     "example": "(and (= 2 2) (> 2 1))  => #t\n(and (= 2 2) (< 2 1))  => #f\n(and 1 2 'c '(f g))  => (f g)\n(and)  => #t"
   },
   "apply": {
     "signature": "(apply proc arg1 ... args)",
-    "description": "过程。proc 必须是过程，args 必须是列表。以 (append (list arg1 ...) args) 的元素作为实际参数调用 proc。",
+    "description": "Procedure. proc must be a procedure and args must be a list. Calls proc with the elements of (append (list arg1 ...) args) as actual arguments.",
     "parameters": [
       {
         "name": "proc",
         "type": "procedure",
-        "desc": "被调用的过程"
+        "desc": "procedure to be called"
       },
       {
         "name": "arg1 ...",
         "type": "any",
-        "desc": "零个或多个前置参数"
+        "desc": "zero or more leading arguments"
       },
       {
         "name": "args",
         "type": "list",
-        "desc": "最后一个参数必须是列表，其元素作为剩余实际参数"
+        "desc": "the last argument must be a list; its elements become the remaining arguments"
       }
     ],
     "example": "(apply + (list 3 4))  => 7\n(apply + 1 2 '(3 4))  => 10"
   },
   "begin": {
     "signature": "(begin expr1 expr2 ...)",
-    "description": "特殊形式（库语法）。从左到右顺序求值各表达式，返回最后一个表达式的值。用于序列化副作用操作（如输入输出）。",
+    "description": "Special form (library syntax). Evaluates the expressions from left to right and returns the value of the last expression. Used for sequencing side-effecting operations (such as input/output).",
     "parameters": [
       {
         "name": "expr1 expr2 ...",
         "type": "expression",
-        "desc": "一个或多个表达式，顺序求值"
+        "desc": "one or more expressions, evaluated sequentially"
       }
     ],
     "example": "(define x 0)\n(begin (set! x 5) (+ x 1))  => 6"
   },
   "call-with-current-continuation": {
     "signature": "(call-with-current-continuation proc)",
-    "description": "过程。proc 必须是接受一个参数的过程。将当前续延（continuation）封装为\"转义过程\"并传递给 proc。转义过程被调用时，将放弃当前续延，转而使用创建转义过程时的续延。转义过程的范围不受限制，可以存储并在任意时刻多次调用。",
+    "description": "Procedure. proc must be a procedure that accepts one argument. Encapsulates the current continuation as an \"escape procedure\" and passes it to proc. When the escape procedure is called, it abandons the current continuation and uses the continuation that was in effect when the escape procedure was created. The extent of the escape procedure is unlimited; it can be stored and called multiple times at any point.",
     "parameters": [
       {
         "name": "proc",
         "type": "procedure",
-        "desc": "接受一个参数（续延）的过程"
+        "desc": "procedure that accepts one argument (the continuation)"
       }
     ],
     "example": "(call-with-current-continuation\n  (lambda (exit)\n    (for-each (lambda (x)\n                (if (negative? x) (exit x)))\n              '(5 4 0 -3 2 4 5))\n    #t))  => -3"
   },
-  "call-with-input-file": {
-    "signature": "(call-with-input-file string proc)",
-    "description": "库过程。string 应为文件名字符串，proc 应为接受一个参数的过程。打开指定文件获取输入端口，以该端口为参数调用 proc。proc 返回后端口自动关闭，返回 proc 的结果值。如果文件无法打开则报错。",
-    "parameters": [
-      {
-        "name": "string",
-        "type": "string",
-        "desc": "文件名"
-      },
-      {
-        "name": "proc",
-        "type": "procedure",
-        "desc": "接受一个端口参数的过程"
-      }
-    ],
-    "example": "(call-with-input-file \"data.txt\"\n  (lambda (port)\n    (read port)))"
-  },
-  "call-with-output-file": {
-    "signature": "(call-with-output-file string proc)",
-    "description": "库过程。string 应为文件名字符串，proc 应为接受一个参数的过程。打开指定文件获取输出端口，以该端口为参数调用 proc。proc 返回后端口自动关闭，返回 proc 的结果值。如果文件已存在则效果未指定。如果文件无法打开则报错。",
-    "parameters": [
-      {
-        "name": "string",
-        "type": "string",
-        "desc": "文件名"
-      },
-      {
-        "name": "proc",
-        "type": "procedure",
-        "desc": "接受一个端口参数的过程"
-      }
-    ],
-    "example": "(call-with-output-file \"out.txt\"\n  (lambda (port)\n    (write \"hello\" port)))"
-  },
   "call-with-values": {
     "signature": "(call-with-values producer consumer)",
-    "description": "过程。以无值续延调用 producer（过程），当 producer 通过 values 返回一些值时，以这些值作为参数调用 consumer。consumer 的调用续延是 call-with-values 的调用续延。",
+    "description": "Procedure. Calls producer (a procedure) with a values continuation. When producer returns some values via values, consumer is called with those values as arguments. The continuation of the call to consumer is the continuation of the call to call-with-values.",
     "parameters": [
       {
         "name": "producer",
         "type": "procedure",
-        "desc": "无参数的生产者过程，通过 values 返回值"
+        "desc": "a zero-argument producer procedure that returns values via values"
       },
       {
         "name": "consumer",
         "type": "procedure",
-        "desc": "接受 producer 返回值作为参数的消费者过程"
+        "desc": "a consumer procedure that accepts the values returned by producer as arguments"
       }
     ],
     "example": "(call-with-values (lambda () (values 4 5))\n  (lambda (a b) b))  => 5\n(call-with-values * -)  => -1"
   },
   "call/cc": {
     "signature": "(call/cc proc)",
-    "description": "过程。call-with-current-continuation 的简写别名。将当前续延封装为转义过程并传递给 proc。功能与 call-with-current-continuation 完全相同。",
+    "description": "Procedure. Syntactic sugar for call-with-current-continuation. Encapsulates the current continuation as an escape procedure and passes it to proc. Behavior is identical to call-with-current-continuation.",
     "parameters": [
       {
         "name": "proc",
         "type": "procedure",
-        "desc": "接受一个参数（续延）的过程"
+        "desc": "procedure that accepts one argument (the continuation)"
       }
     ],
     "example": "(call/cc (lambda (exit) (exit 42)))  => 42"
   },
   "case": {
     "signature": "(case key ((datum ...) expr1 ...) ... [(else expr1 ...)])",
-    "description": "特殊形式（库语法）。求值 key，将结果与各 datum 使用 eqv? 进行比较。如果匹配某个子句的 datum，则顺序求值该子句的表达式，返回最后一个表达式的值。如果没有匹配且存在 else 子句，则求值 else 子句的表达式。各子句中的 datum 必须互不相同。",
+    "description": "Special form (library syntax). Evaluates key and compares the result with each datum using eqv?. If the result matches a datum in some clause, the expressions of that clause are evaluated sequentially and the value of the last expression is returned. If no match is found and an else clause exists, the expressions in the else clause are evaluated. The datums within each clause must be distinct.",
     "parameters": [
       {
         "name": "key",
         "type": "expression",
-        "desc": "被匹配的关键表达式"
+        "desc": "the key expression to be matched"
       },
       {
         "name": "((datum ...) expr1 ...)",
         "type": "clause",
-        "desc": "一个或多个匹配子句，datum 为外部表示，使用 eqv? 比较"
+        "desc": "one or more matching clauses; datums are external representations compared using eqv?"
       },
       {
         "name": "(else expr1 ...)",
         "type": "clause",
-        "desc": "可选的默认子句"
+        "desc": "an optional else clause"
       }
     ],
     "example": "(case (* 2 3)\n  ((2 3 5 7) 'prime)\n  ((1 4 6 8 9) 'composite))  => composite\n(case (car '(c d))\n  ((a e i o u) 'vowel)\n  ((w y) 'semivowel)\n  (else 'consonant))  => consonant"
   },
-  "close-input-port": {
-    "signature": "(close-input-port port)",
-    "description": "过程。关闭与 port 关联的文件，使端口不再能交付字符。如果文件已关闭则无效。返回值未指定。",
-    "parameters": [
-      {
-        "name": "port",
-        "type": "input-port",
-        "desc": "要关闭的输入端口"
-      }
-    ],
-    "example": "(define p (open-input-file \"data.txt\"))\n(close-input-port p)"
-  },
-  "close-output-port": {
-    "signature": "(close-output-port port)",
-    "description": "过程。关闭与 port 关联的文件，使端口不再能接受字符。如果文件已关闭则无效。返回值未指定。",
-    "parameters": [
-      {
-        "name": "port",
-        "type": "output-port",
-        "desc": "要关闭的输出端口"
-      }
-    ],
-    "example": "(define p (open-output-file \"out.txt\"))\n(write \"hello\" p)\n(close-output-port p)"
-  },
   "cond": {
     "signature": "(cond (test expr1 ...) ... [(else expr1 ...)])",
-    "description": "特殊形式（库语法）。从左到右依次求值各子句的 test 表达式，直到某个 test 求值为真值。此时顺序求值该子句的剩余表达式，返回最后一个表达式的值。如果子句只有 test 没有表达式，则返回 test 的值。如果所有 test 均为假值且存在 else 子句，则求值 else 子句。支持 => 语法：(test => proc)，此时 proc 以 test 的值为参数被调用。如果所有 test 均为假值且无 else 子句，则结果未指定。",
+    "description": "Special form (library syntax). Evaluates the test expressions of each clause from left to right until a test evaluates to a true value. The remaining expressions in that clause are then evaluated sequentially and the value of the last expression is returned. If a clause contains only a test and no expressions, the value of the test is returned. If all tests yield false values and an else clause exists, the else clause is evaluated. Supports the => syntax: (test => proc), where proc is called with the value of the test as its argument. If all tests yield false values and there is no else clause, the result is unspecified.",
     "parameters": [
       {
         "name": "(test expr1 ...)",
         "type": "clause",
-        "desc": "一个或多个条件子句，test 为测试表达式"
+        "desc": "one or more conditional clauses; test is the test expression"
       },
       {
         "name": "(else expr1 ...)",
         "type": "clause",
-        "desc": "可选的默认子句，只能作为最后一个子句"
+        "desc": "an optional else clause, which must be the last clause"
       }
     ],
     "example": "(cond ((> 3 2) 'greater)\n      ((< 3 2) 'less)\n      (else 'equal))  => greater\n(cond ((assv 'b '((a 1) (b 2))) => cdr)\n      (else #f))  => 2"
   },
-  "current-input-port": {
-    "signature": "(current-input-port)",
-    "description": "过程。返回当前的默认输入端口。",
-    "parameters": [],
-    "example": "(current-input-port)  => #<input-port>"
-  },
-  "current-output-port": {
-    "signature": "(current-output-port)",
-    "description": "过程。返回当前的默认输出端口。",
-    "parameters": [],
-    "example": "(current-output-port)  => #<output-port>"
-  },
   "define": {
     "signature": "(define var expr)\n(define (var args ...) body ...)",
-    "description": "特殊形式。定义形式。第一种形式将 var 绑定到 expr 的值。第二种形式等价于 (define var (lambda (args ...) body ...))，是定义过程的简写。还支持可变参数形式 (define (var . formal) body ...)，等价于 (define var (lambda formal body ...))。只能在程序顶层或 body 开头使用。",
+    "description": "Special form. Definition form. The first form binds var to the value of expr. The second form is equivalent to (define var (lambda (args ...) body ...)), which is syntactic sugar for defining a procedure. Also supports the rest argument form (define (var . formal) body ...), which is equivalent to (define var (lambda formal body ...)). May only be used at the top level of a program or at the beginning of a body.",
     "parameters": [
       {
         "name": "var",
         "type": "identifier",
-        "desc": "变量名"
+        "desc": "variable name"
       },
       {
         "name": "expr",
         "type": "expression",
-        "desc": "变量绑定到的表达式（第一种形式）"
+        "desc": "expression the variable is bound to (first form)"
       },
       {
         "name": "args",
         "type": "identifier",
-        "desc": "形式参数列表（第二种形式）"
+        "desc": "formal parameter list (second form)"
       },
       {
         "name": "body",
         "type": "expression",
-        "desc": "过程体，一个或多个表达式（第二种形式）"
+        "desc": "procedure body, one or more expressions (second form)"
       }
     ],
     "example": "(define x 28)\nx  => 28\n(define add3 (lambda (x) (+ x 3)))\n(add3 3)  => 6\n(define (square x) (* x x))\n(square 5)  => 25"
   },
   "delay": {
     "signature": "(delay expression)",
-    "description": "特殊形式（库语法）。与 force 过程配合实现惰性求值（按需调用）。返回一个称为 promise（承诺）的对象，该对象在将来被 force 时才会求值 expression 并交付结果。promise 的值会被缓存（记忆化），多次 force 只计算一次。expression 返回多个值的效果未指定。",
+    "description": "Special form (library syntax). Used with the force procedure to implement lazy evaluation (call-by-need). Returns an object called a promise, which will evaluate expression and deliver the result only when forced in the future. The value of the promise is cached (memoized); multiple force calls compute the value only once. The effect of expression returning multiple values is unspecified.",
     "parameters": [
       {
         "name": "expression",
         "type": "expression",
-        "desc": "被延迟求值的表达式"
+        "desc": "the expression whose evaluation is delayed"
       }
     ],
     "example": "(force (delay (+ 1 2)))  => 3\n(define p (delay (begin (display \"hi\") 1)))\n(list (force p) (force p))  => (1 1)，只打印一次 hi"
   },
-  "display": {
-    "signature": "(display obj)\n(display obj port)",
-    "description": "库过程。将 obj 的人类可读表示写入给定端口。字符串不包含双引号，字符串内的字符不转义，字符对象以 write-char 的方式输出（不带 #\\ 前缀）。返回值未指定。port 可省略，默认为 current-output-port。与 write 不同，display 适合输出给人阅读。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "要显示的对象"
-      },
-      {
-        "name": "port",
-        "type": "output-port",
-        "desc": "可选，输出端口，默认为当前输出端口"
-      }
-    ],
-    "example": "(display \"hello\")  => 打印 hello（无引号）\n(display #\\A)  => 打印 A（无 #\\ 前缀）"
-  },
   "do": {
     "signature": "(do ((var init step) ...) (test expr ...) body ...)",
-    "description": "特殊形式（库语法）。迭代构造。指定一组变量、其初始值和每轮迭代的步进表达式。首先求值各 init 表达式并绑定变量，然后进入迭代：求值 test，如果为真则顺序求值 expr 并返回最后一个 expr 的值（无 expr 则返回值未指定）；如果为假则顺序求值 body（副作用），然后求值各 step 表达式更新变量，进入下一轮迭代。step 可省略，省略时变量保持不变。变量的作用域为整个 do 表达式（不含 init）。",
+    "description": "Special form (library syntax). Iteration construct. Specifies a set of variables, their initial values, and step expressions for each iteration. First, the init expressions are evaluated and the variables are bound. Then iteration begins: test is evaluated; if the result is true, the expr expressions are evaluated sequentially and the value of the last expr is returned (if no expr is present, the return value is unspecified); if the result is false, the body expressions are evaluated sequentially (for side effects), then the step expressions are evaluated to update the variables, and the next iteration begins. The step may be omitted, in which case the variable remains unchanged. The scope of each variable is the entire do expression (excluding the init expressions).",
     "parameters": [
       {
         "name": "var",
         "type": "identifier",
-        "desc": "循环变量"
+        "desc": "loop variable"
       },
       {
         "name": "init",
         "type": "expression",
-        "desc": "变量的初始值表达式"
+        "desc": "initial value expression for the variable"
       },
       {
         "name": "step",
         "type": "expression",
-        "desc": "可选，每轮迭代后更新变量的表达式"
+        "desc": "optional; expression to update the variable after each iteration"
       },
       {
         "name": "test",
         "type": "expression",
-        "desc": "终止测试表达式"
+        "desc": "termination test expression"
       },
       {
         "name": "expr",
         "type": "expression",
-        "desc": "可选，test 为真时顺序求值并返回最后一个的值"
+        "desc": "optional; evaluated sequentially when test is true; the value of the last one is returned"
       },
       {
         "name": "body",
         "type": "expression",
-        "desc": "可选，每轮迭代中求值的命令表达式"
+        "desc": "optional; command expressions evaluated during each iteration"
       }
     ],
     "example": "(do ((vec (make-vector 5))\n     (i 0 (+ i 1)))\n    ((= i 5) vec)\n  (vector-set! vec i i))  => #(0 1 2 3 4)\n(do ((x '(1 3 5 7 9) (cdr x))\n     (sum 0 (+ sum (car x))))\n    ((null? x) sum))  => 25"
   },
   "dynamic-wind": {
     "signature": "(dynamic-wind before thunk after)",
-    "description": "过程。调用 thunk（无参数），返回其结果。before 和 after 亦无参数，按以下规则调用：每当执行进入 thunk 调用的动态范围时调用 before，每当离开时调用 after。动态范围包括 thunk 的正常返回，以及通过 call-with-current-continuation 捕获的续延进入或退出。嵌套的 dynamic-wind 调用遵循正确的进出顺序。",
+    "description": "Procedure. Calls thunk (a zero-argument procedure) and returns its result. before and after are also zero-argument procedures, called according to the following rules: before is called whenever execution enters the dynamic extent of the thunk call, and after is called whenever it leaves. The dynamic extent includes normal return from thunk, as well as entry or exit via continuations captured with call-with-current-continuation. Nested dynamic-wind calls follow the correct entry and exit order.",
     "parameters": [
       {
         "name": "before",
         "type": "procedure",
-        "desc": "无参数过程，进入动态范围时调用"
+        "desc": "zero-argument procedure called when entering the dynamic extent"
       },
       {
         "name": "thunk",
         "type": "procedure",
-        "desc": "无参数过程，动态范围主体"
+        "desc": "zero-argument procedure; the body of the dynamic extent"
       },
       {
         "name": "after",
         "type": "procedure",
-        "desc": "无参数过程，离开动态范围时调用"
+        "desc": "zero-argument procedure called when leaving the dynamic extent"
       }
     ],
     "example": "(let ((path '())\n      (c #f))\n  (dynamic-wind\n    (lambda () (set! path (cons 'connect path)))\n    (lambda ()\n      (set! path (cons (call-with-current-continuation\n                        (lambda (c0) (set! c c0) 'talk1))\n                      path)))\n    (lambda () (set! path (cons 'disconnect path))))\n  (if (< (length path) 4)\n      (c 'talk2)\n      (reverse path)))  => (connect talk1 disconnect connect talk2 disconnect)"
   },
   "else": {
     "signature": "else",
-    "description": "特殊形式（语法关键字）。只能在 cond 或 case 表达式的最后一个子句中使用。当 cond 的所有 test 均为假值或 case 的 key 不匹配任何 datum 时，执行 else 子句中的表达式。",
+    "description": "Special form (syntax keyword). May only be used in the last clause of a cond or case expression. When all tests in cond yield false values, or when the key in case matches no datum, the expressions in the else clause are evaluated.",
     "parameters": [],
     "example": "(cond ((< x 0) 'negative)\n      (else 'non-negative))"
   },
-  "eof-object?": {
-    "description": "过程。判断 obj 是否为文件末尾对象，返回 #t 或 #f。EOF 对象的具体集合因实现而异，但任何 EOF 对象都不能通过 read 读入。",
-    "signature": "(eof-object? obj)",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(eof-object? (read))  => 当输入结束时返回 #t\n(eof-object? 42)  => #f"
-  },
   "eval": {
     "signature": "(eval expression environment-specifier)",
-    "description": "过程。在指定环境中求值 expression 并返回其值。expression 必须是表示为数据的合法 Scheme 表达式，environment-specifier 必须是 scheme-report-environment、null-environment 或 interaction-environment 返回的值。",
+    "description": "Procedure. Evaluates expression in the specified environment and returns its value. expression must be a valid Scheme expression represented as data, and environment-specifier must be the value returned by scheme-report-environment, null-environment, or interaction-environment.",
     "parameters": [
       {
         "name": "expression",
         "type": "any",
-        "desc": "表示 Scheme 表达式的数据对象"
+        "desc": "data object representing a Scheme expression"
       },
       {
         "name": "environment-specifier",
         "type": "environment-specifier",
-        "desc": "环境说明符"
+        "desc": "environment specifier"
       }
     ],
     "example": "(eval '(* 7 3) (scheme-report-environment 5))  => 21"
   },
   "force": {
     "signature": "(force promise)",
-    "description": "库过程。对 promise（由 delay 创建）求值。如果 promise 尚未计算过值，则计算并返回该值；promise 的值会被缓存（记忆化），后续 force 调用直接返回缓存的值。force 与 delay 主要用于函数式风格的惰性求值编程。",
+    "description": "Library procedure. Forces the evaluation of a promise (created by delay). If the promise has not yet been evaluated, computes and returns the value. The value of the promise is cached (memoized); subsequent force calls return the cached value directly. force and delay are primarily used for lazy evaluation in a functional style.",
     "parameters": [
       {
         "name": "promise",
         "type": "promise",
-        "desc": "由 delay 创建的承诺对象"
+        "desc": "a promise object created by delay"
       }
     ],
     "example": "(force (delay (+ 1 2)))  => 3\n(define p (delay (begin (display \"once\") 1)))\n(force p)  => 1，打印 once\n(force p)  => 1，不打印"
   },
   "if": {
     "signature": "(if test consequent [alternate])",
-    "description": "特殊形式。求值 test，如果结果为真值则求值 consequent 并返回其值；否则求值 alternate（如果提供）并返回其值。如果 test 为假值且未提供 alternate，则结果未指定。在 Scheme 中，只有 #f 是假值，其他所有值（包括 0、空列表）均为真值。",
+    "description": "Special form. Evaluates test; if the result is a true value, evaluates consequent and returns its value; otherwise evaluates alternate (if provided) and returns its value. If test yields a false value and no alternate is provided, the result is unspecified. In Scheme, only #f is a false value; all other values (including 0 and the empty list) are true values.",
     "parameters": [
       {
         "name": "test",
         "type": "expression",
-        "desc": "测试表达式"
+        "desc": "test expression"
       },
       {
         "name": "consequent",
         "type": "expression",
-        "desc": "测试为真时求值的表达式"
+        "desc": "expression evaluated when the test is true"
       },
       {
         "name": "alternate",
         "type": "expression",
-        "desc": "可选，测试为假时求值的表达式"
+        "desc": "optional; expression evaluated when the test is false"
       }
     ],
     "example": "(if (> 3 2) 'yes 'no)  => yes\n(if (> 2 3) 'yes 'no)  => no\n(if #f 1)  => 未指定"
   },
-  "input-port?": {
-    "signature": "(input-port? obj)",
-    "description": "过程。判断 obj 是否为输入端口，返回 #t 或 #f。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(input-port? (current-input-port))  => #t\n(input-port? (open-output-file \"x\"))  => #f"
-  },
   "lambda": {
     "signature": "(lambda (args ...) body ...)\n(lambda args body ...)\n(lambda (args ... . rest) body ...)",
-    "description": "特殊形式。求值为过程。记住 lambda 求值时的环境。调用时扩展该环境，将形参绑定到实参的新位置，然后顺序求值 body 中的表达式，返回最后一个表达式的值。形参有三种形式：固定参数列表 (x y)、可变参数 x（接收所有参数为列表）、混合形式 (x y . rest)（rest 接收剩余参数为列表）。同一形参不能出现多次。",
+    "description": "Special form. Evaluates to a procedure. Remembers the environment in which the lambda expression was evaluated. When called, extends that environment by binding the formal parameters to new locations with the actual arguments, then evaluates the expressions in body sequentially, returning the value of the last expression. Formal parameters have three forms: a fixed parameter list (x y), a rest argument x (receives all arguments as a list), or a hybrid form (x y . rest) (rest receives the remaining arguments as a list). The same formal parameter may not appear more than once.",
     "parameters": [
       {
         "name": "args",
         "type": "identifier",
-        "desc": "形式参数"
+        "desc": "formal parameters"
       },
       {
         "name": "body",
         "type": "expression",
-        "desc": "过程体，一个或多个表达式"
+        "desc": "procedure body, one or more expressions"
       }
     ],
     "example": "((lambda (x) (+ x x)) 4)  => 8\n((lambda x x) 3 4 5 6)  => (3 4 5 6)\n((lambda (x y . z) z) 3 4 5 6)  => (5 6)"
   },
   "let": {
     "signature": "(let ((var init) ...) body ...)",
-    "description": "特殊形式（库语法）。绑定构造。先在当前环境中求值所有 init 表达式（顺序未指定），然后将各 var 绑定到对应 init 的值的新位置，在扩展环境中求值 body，返回最后一个表达式的值。所有 init 在任何 var 绑定之前求值。还支持命名 let 形式：(let name ((var init) ...) body ...)，name 在 body 中绑定为一个递归过程。同一 var 不能出现多次。",
+    "description": "Special form (library syntax). Binding construct. First evaluates all init expressions in the current environment (the order of evaluation is unspecified), then binds each var to a new location holding the value of the corresponding init, and evaluates body in the extended environment, returning the value of the last expression. All init expressions are evaluated before any var is bound. Also supports the named let form: (let name ((var init) ...) body ...), where name is bound within body as a recursive procedure. The same var may not appear more than once.",
     "parameters": [
       {
         "name": "var",
         "type": "identifier",
-        "desc": "被绑定的变量"
+        "desc": "variable to be bound"
       },
       {
         "name": "init",
         "type": "expression",
-        "desc": "变量的初始值表达式"
+        "desc": "initial value expression for the variable"
       },
       {
         "name": "body",
         "type": "expression",
-        "desc": "一个或多个表达式"
+        "desc": "one or more expressions"
       }
     ],
     "example": "(let ((x 2) (y 3))\n  (+ x y))  => 6\n(let ((x 2) (y 3))\n  (let ((x 7)\n        (z (+ x y)))\n    (* z x)))  => 35"
   },
   "let*": {
     "signature": "(let* ((var init) ...) body ...)",
-    "description": "特殊形式（库语法）。绑定构造。类似 let，但绑定从左到右顺序执行，每个绑定的可见区域是该 let* 表达式中其右侧的部分。因此第二个绑定可以在第一个绑定的可见环境中求值。",
+    "description": "Special form (library syntax). Binding construct. Similar to let, but the bindings are performed sequentially from left to right. The region of each binding is the portion of the let* expression to its right. Thus, the second binding can be evaluated in the environment where the first binding is visible.",
     "parameters": [
       {
         "name": "var",
         "type": "identifier",
-        "desc": "被绑定的变量"
+        "desc": "variable to be bound"
       },
       {
         "name": "init",
         "type": "expression",
-        "desc": "变量的初始值表达式，可在前面绑定可见的环境中求值"
+        "desc": "initial value expression for the variable; may be evaluated in the environment where preceding bindings are visible"
       },
       {
         "name": "body",
         "type": "expression",
-        "desc": "一个或多个表达式"
+        "desc": "one or more expressions"
       }
     ],
     "example": "(let ((x 2) (y 3))\n  (let* ((x 7)\n         (z (+ x y)))\n    (* z x)))  => 70"
   },
   "letrec": {
     "signature": "(letrec ((var init) ...) body ...)",
-    "description": "特殊形式（库语法）。绑定构造。各 var 绑定到持有未定义值的新位置，然后在产生的环境中求值各 init 表达式（顺序未指定），将各 var 赋值为对应 init 的结果，最后在结果环境中求值 body。每个 var 的绑定区域为整个 letrec 表达式，因此可以定义相互递归的过程。重要限制：必须能够在不引用任何 var 值的情况下求值每个 init。同一 var 不能出现多次。",
+    "description": "Special form (library syntax). Binding construct. Each var is bound to a new location holding an undefined value. The init expressions are then evaluated in the resulting environment (the order of evaluation is unspecified), each var is assigned the result of the corresponding init, and body is evaluated in the resulting environment. The binding region of each var is the entire letrec expression, allowing the definition of mutually recursive procedures. Important restriction: it must be possible to evaluate each init without referencing the value of any var. The same var may not appear more than once.",
     "parameters": [
       {
         "name": "var",
         "type": "identifier",
-        "desc": "被绑定的变量"
+        "desc": "variable to be bound"
       },
       {
         "name": "init",
         "type": "expression",
-        "desc": "变量的初始值表达式，通常为 lambda 表达式"
+        "desc": "initial value expression for the variable; typically a lambda expression"
       },
       {
         "name": "body",
         "type": "expression",
-        "desc": "一个或多个表达式"
+        "desc": "one or more expressions"
       }
     ],
     "example": "(letrec ((even?\n          (lambda (n)\n            (if (zero? n) #t (odd? (- n 1)))))\n         (odd?\n          (lambda (n)\n            (if (zero? n) #f (even? (- n 1))))))\n  (even? 88))  => #t"
   },
-  "load": {
-    "signature": "(load filename)",
-    "description": "过程。读取并求值 filename 指定的文件中的表达式和定义。filename 为字符串。load 是许多 Scheme 实现提供的扩展过程，不属于 R5RS 标准，但在 SDE 环境中广泛使用。",
-    "parameters": [
-      {
-        "name": "filename",
-        "type": "string",
-        "desc": "要加载的文件名"
-      }
-    ],
-    "example": "(load \"my-functions.scm\")"
-  },
-  "newline": {
-    "signature": "(newline)\n(newline port)",
-    "description": "库过程。向给定端口写入一个换行符。具体实现因操作系统而异。返回值未指定。port 可省略，默认为 current-output-port。",
-    "parameters": [
-      {
-        "name": "port",
-        "type": "output-port",
-        "desc": "可选，输出端口，默认为当前输出端口"
-      }
-    ],
-    "example": "(display \"hello\")\n(newline)  => 打印 hello 并换行"
-  },
-  "open-input-file": {
-    "signature": "(open-input-file filename)",
-    "description": "过程。接受一个字符串参数，该字符串命名一个已存在的文件，返回一个能够从该文件交付字符的输入端口。如果文件无法打开则报错。",
-    "parameters": [
-      {
-        "name": "filename",
-        "type": "string",
-        "desc": "已存在的文件名"
-      }
-    ],
-    "example": "(define p (open-input-file \"data.txt\"))\n(read p)"
-  },
-  "open-output-file": {
-    "signature": "(open-output-file filename)",
-    "description": "过程。接受一个字符串参数，该字符串命名一个输出文件，返回一个能够向该文件写入字符的输出端口。如果文件无法打开则报错。如果同名文件已存在，效果未指定。",
-    "parameters": [
-      {
-        "name": "filename",
-        "type": "string",
-        "desc": "输出文件名"
-      }
-    ],
-    "example": "(define p (open-output-file \"out.txt\"))\n(write \"hello\" p)\n(close-output-port p)"
-  },
   "or": {
     "signature": "(or test1 ...)",
-    "description": "特殊形式（库语法）。从左到右依次求值各 test 表达式，返回第一个求值为真值的表达式的值，其余表达式不再求值。如果所有表达式都求值为假值，则返回最后一个表达式的值。如果没有表达式，则返回 #f。短路求值形式。",
+    "description": "Special form (library syntax). Evaluates the test expressions from left to right and returns the value of the first expression that evaluates to a true value. The remaining expressions are not evaluated. If all expressions evaluate to false values, the value of the last expression is returned. If there are no expressions, #f is returned. A short-circuit evaluation form.",
     "parameters": [
       {
         "name": "test1 ...",
         "type": "expression",
-        "desc": "零个或多个测试表达式"
+        "desc": "zero or more test expressions"
       }
     ],
     "example": "(or (= 2 2) (> 2 1))  => #t\n(or (= 2 2) (< 2 1))  => #t\n(or #f #f #f)  => #f\n(or)  => #f"
   },
-  "output-port?": {
-    "signature": "(output-port? obj)",
-    "description": "过程。判断 obj 是否为输出端口，返回 #t 或 #f。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(output-port? (current-output-port))  => #t\n(output-port? (open-input-file \"x\"))  => #f"
-  },
-  "peek-char": {
-    "signature": "(peek-char)\n(peek-char port)",
-    "description": "过程。返回输入端口上的下一个字符，但不更新端口位置（即不消耗该字符）。如果没有更多字符可用，返回 EOF 对象。port 可省略，默认为 current-input-port。下次 read-char 或 peek-char 将返回相同的字符。",
-    "parameters": [
-      {
-        "name": "port",
-        "type": "input-port",
-        "desc": "可选，输入端口，默认为当前输入端口"
-      }
-    ],
-    "example": "(peek-char)  => 返回下一个字符但不消耗\n(let ((c (peek-char)))\n  (list c (read-char)))  => 例如 (#\\a #\\a)"
-  },
-  "port?": {
-    "signature": "(port? obj)",
-    "description": "过程。判断 obj 是否为端口（输入端口或输出端口），返回 #t 或 #f。R5RS 类型系统中 port 是与 boolean、pair、symbol、number、char、string、vector、procedure 并列的顶层类型。",
-    "parameters": [
-      {
-        "name": "obj",
-        "type": "any",
-        "desc": "任意对象"
-      }
-    ],
-    "example": "(port? (current-input-port))  => #t\n(port? 42)  => #f"
-  },
   "quasiquote": {
     "signature": "(quasiquote qq-template)",
-    "description": "特殊形式。与 quote 类似，但允许在模板中使用 unquote（,）和 unquote-splicing（,@）嵌入求值。如果模板中不包含逗号，则等价于 quote。逗号后的表达式被求值并插入结果。,@ 后的表达式必须求值为列表，其元素被拼接插入。反引号 ` 是 quasiquote 的语法简写。quasiquote 可以嵌套，替换只在最外层反引号的嵌套层级进行。",
+    "description": "Special form. Similar to quote, but allows unquote (,) and unquote-splicing (,@) within the template to embed evaluated expressions. If the template contains no commas, it is equivalent to quote. The expression following a comma is evaluated and inserted into the result. The expression following ,@ must evaluate to a list, whose elements are spliced into the result. The backquote character ` is syntactic sugar for quasiquote. quasiquotes can be nested; substitution occurs only at the nesting level of the outermost backquote.",
     "parameters": [
       {
         "name": "qq-template",
         "type": "expression",
-        "desc": "准引用模板，可包含 ,expr 和 ,@expr"
+        "desc": "quasiquote template, which may contain ,expr and ,@expr"
       }
     ],
     "example": "`(list ,(+ 1 2) 4)  => (list 3 4)\n(let ((name 'a))\n  `(list ,name ',name))  => (list a (quote a))\n`(a ,(+ 1 2) ,@(map abs '(4 -5 6)) b)  => (a 3 4 5 6 b)"
   },
   "quote": {
     "signature": "(quote datum)",
-    "description": "特殊形式。返回 datum 的值，不对 datum 进行求值。datum 可以是任何 Scheme 对象的外部表示。'datum 是 (quote datum) 的语法简写。数值常量、字符串常量、字符常量和布尔常量自求值，无需引用。",
+    "description": "Special form. Returns the value of datum without evaluating datum. datum may be the external representation of any Scheme object. 'datum is syntactic sugar for (quote datum). Numeric constants, string constants, character constants, and boolean constants are self-evaluating and need not be quoted.",
     "parameters": [
       {
         "name": "datum",
         "type": "any",
-        "desc": "不被求值的数据对象"
+        "desc": "unevaluated data object"
       }
     ],
     "example": "(quote a)  => a\n(quote (+ 1 2))  => (+ 1 2)\n'a  => a\n'(+ 1 2)  => (+ 1 2)"
   },
-  "read": {
-    "signature": "(read)\n(read port)",
-    "description": "库过程。从给定输入端口读取 Scheme 对象的外部表示并转换为对象本身。返回下一个可解析的对象，更新端口位置。如果在找到任何可构成对象的字符之前遇到 EOF，则返回 EOF 对象。如果在对象表示的中间遇到 EOF，则报错。从已关闭端口读取是错误。port 可省略，默认为 current-input-port。",
-    "parameters": [
-      {
-        "name": "port",
-        "type": "input-port",
-        "desc": "可选，输入端口，默认为当前输入端口"
-      }
-    ],
-    "example": "(read)  => 等待用户输入并返回解析的对象\n(read (open-input-file \"data.scm\"))  => 读取文件中的第一个对象"
-  },
-  "read-char": {
-    "signature": "(read-char)\n(read-char port)",
-    "description": "过程。返回输入端口上的下一个字符，并更新端口位置。如果没有更多字符可用，返回 EOF 对象。port 可省略，默认为 current-input-port。",
-    "parameters": [
-      {
-        "name": "port",
-        "type": "input-port",
-        "desc": "可选，输入端口，默认为当前输入端口"
-      }
-    ],
-    "example": "(read-char)  => 返回下一个字符"
-  },
-  "read-line": {
-    "signature": "(read-line)\n(read-line port)",
-    "description": "过程。从输入端口读取一行文本（直到换行符或 EOF），返回字符串。换行符不包含在返回的字符串中。如果到达 EOF 且没有读取到任何字符，返回 EOF 对象。许多 Scheme 实现提供的扩展过程，不属于 R5RS 标准。",
-    "parameters": [
-      {
-        "name": "port",
-        "type": "input-port",
-        "desc": "可选，输入端口，默认为当前输入端口"
-      }
-    ],
-    "example": "(read-line)  => 等待用户输入一行并返回字符串"
-  },
   "set!": {
     "signature": "(set! variable expression)",
-    "description": "特殊形式。求值 expression，将结果存储到 variable 绑定的位置。variable 必须在某个包含 set! 表达式的区域或顶层已绑定。返回值未指定。",
+    "description": "Special form. Evaluates expression and stores the result in the location bound to variable. variable must already be bound in some region containing the set! expression or at the top level. The return value is unspecified.",
     "parameters": [
       {
         "name": "variable",
         "type": "identifier",
-        "desc": "已绑定的变量名"
+        "desc": "name of an already-bound variable"
       },
       {
         "name": "expression",
         "type": "expression",
-        "desc": "赋值表达式"
+        "desc": "assignment expression"
       }
     ],
     "example": "(define x 2)\n(+ x 1)  => 3\n(set! x 5)  => 未指定\n(+ x 1)  => 6"
   },
   "values": {
     "signature": "(values obj ...)",
-    "description": "过程。将所有参数交付给当前续延。除 call-with-values 创建的续延外，所有续延恰好接受一个值。传递零个或多个值给不接受该数量的续延的效果未指定。",
+    "description": "Procedure. Delivers all arguments to the current continuation. All continuations except those created by call-with-values accept exactly one value. The effect of passing zero or more values to a continuation that does not accept that number of values is unspecified.",
     "parameters": [
       {
         "name": "obj ...",
         "type": "any",
-        "desc": "零个或多个要返回的值"
+        "desc": "zero or more values to be returned"
       }
     ],
     "example": "(values 4 5)  => 返回两个值 4 和 5\n(call-with-values (lambda () (values 1 2 3)) list)  => (1 2 3)"
   },
-  "with-input-from-file": {
-    "signature": "(with-input-from-file string thunk)",
-    "description": "可选库过程。string 应为已存在文件的名字符串，thunk 应为无参数过程。打开文件获取输入端口，将其设为 current-input-port 的默认值，调用 thunk。thunk 返回后关闭端口并恢复之前的默认端口。返回 thunk 的结果值。使用转义过程退出时行为依赖于实现。",
+  "#f": {
+    "signature": "#f",
+    "description": "Boolean false value. In conditional expressions, only #f is treated as false; all other values (including 0 and the empty list '()) are treated as true.",
+    "parameters": [],
+    "example": "(if #f \"yes\" \"no\")  => \"no\""
+  },
+  "#t": {
+    "signature": "#t",
+    "description": "Boolean true value. Boolean constants are self-evaluating and need not be quoted.",
+    "parameters": [],
+    "example": "(if #t \"yes\" \"no\")  => \"yes\""
+  },
+  "boolean?": {
+    "signature": "(boolean? obj)",
+    "description": "Tests whether obj is a boolean (#t or #f). Returns #t or #f.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(boolean? #f)  => #t\n(boolean? 0)   => #f"
+  },
+  "char?": {
+    "signature": "(char? obj)",
+    "description": "Tests whether obj is a character. Returns #t or #f.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(char? #\\a)  => #t\n(char? \"a\")  => #f"
+  },
+  "eq?": {
+    "signature": "(eq? obj1 obj2)",
+    "description": "The finest equivalence predicate. Tests whether two objects are the same object in memory (pointer equality). For symbols, booleans, the empty list, pairs, and procedures, behavior is consistent with eqv?; for numbers and characters, the result is implementation-dependent. Typically implemented as pointer comparison, which is more efficient than eqv?.",
+    "parameters": [
+      {
+        "name": "obj1",
+        "type": "any",
+        "desc": "the first object"
+      },
+      {
+        "name": "obj2",
+        "type": "any",
+        "desc": "the second object"
+      }
+    ],
+    "example": "(eq? 'a 'a)  => #t\n(eq? (list 'a) (list 'a))  => #f"
+  },
+  "equal?": {
+    "signature": "(equal? obj1 obj2)",
+    "description": "The coarsest equivalence predicate. Recursively compares the contents of pairs, vectors, and strings, and uses eqv? for other objects (numbers, symbols, etc.). Rule of thumb: if two objects print the same, they are generally equal?. Note: may not terminate on cyclic data structures.",
+    "parameters": [
+      {
+        "name": "obj1",
+        "type": "any",
+        "desc": "the first object"
+      },
+      {
+        "name": "obj2",
+        "type": "any",
+        "desc": "the second object"
+      }
+    ],
+    "example": "(equal? '(a (b) c) '(a (b) c))  => #t\n(equal? (list 1 2) (list 1 2))    => #t"
+  },
+  "eqv?": {
+    "signature": "(eqv? obj1 obj2)",
+    "description": "An intermediate-granularity equivalence predicate. Returns #t for symbols, booleans, exact/inexact numbers, characters, the empty list, pairs/vectors/strings at the same storage location, and procedures with the same location tag. It is a compromise between eq? and equal? -- more precise than eq? (guaranteed correct for numbers and characters) and coarser than equal? (does not recursively compare compound structures).",
+    "parameters": [
+      {
+        "name": "obj1",
+        "type": "any",
+        "desc": "the first object"
+      },
+      {
+        "name": "obj2",
+        "type": "any",
+        "desc": "the second object"
+      }
+    ],
+    "example": "(eqv? 2 2)  => #t\n(eqv? 'a 'b)  => #f\n(eqv? (cons 1 2) (cons 1 2))  => #f"
+  },
+  "not": {
+    "signature": "(not obj)",
+    "description": "Logical negation. If obj is #f, returns #t; otherwise returns #f.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(not #f)        => #t\n(not #t)        => #f\n(not 3)         => #f\n(not '())       => #f"
+  },
+  "symbol?": {
+    "signature": "(symbol? obj)",
+    "description": "Tests whether obj is a symbol. Returns #t or #f.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(symbol? 'foo)       => #t\n(symbol? (car '(a b))) => #t\n(symbol? \"bar\")       => #f"
+  },
+  "list?": {
+    "signature": "(list? obj)",
+    "description": "Returns #t if obj is a proper list, otherwise returns #f. By definition, all proper lists have finite length and terminate with the empty list.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "the object to be tested"
+      }
+    ],
+    "example": "(list? '(a b c))  => #t\n(list? '())  => #t\n(list? '(a . b))  => #f\n(let ((x (list 'a))) (set-cdr! x x) (list? x))  => #f"
+  },
+  "null?": {
+    "signature": "(null? obj)",
+    "description": "Returns #t if obj is the empty list, otherwise returns #f.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "the object to be tested"
+      }
+    ],
+    "example": "(null? '())  => #t\n(null? '(a b))  => #f\n(null? #f)  => #f"
+  },
+  "pair?": {
+    "signature": "(pair? obj)",
+    "description": "Returns #t if obj is a pair, otherwise returns #f.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "the object to be tested"
+      }
+    ],
+    "example": "(pair? '(a . b))  => #t\n(pair? '(a b c))  => #t\n(pair? '())  => #f\n(pair? '#(a b))  => #f"
+  },
+  "complex?": {
+    "signature": "(complex? obj)",
+    "description": "Tests whether obj is a complex number. In the R5RS numeric type hierarchy, all numbers are complex numbers (number > complex > real > rational > integer), so (complex? obj) returns #t for any number. Returns #f for non-numbers. In many implementations, complex? is equivalent to number?.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(complex? 3+4i)  => #t\n(complex? 3)  => #t\n(complex? \"hello\")  => #f"
+  },
+  "even?": {
+    "signature": "(even? n)",
+    "description": "Tests whether the integer n is even. Returns #t or #f.",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "desc": "integer"
+      }
+    ],
+    "example": "(even? 4)  => #t\n(even? 7)  => #f\n(even? -2)  => #t"
+  },
+  "exact?": {
+    "signature": "(exact? z)",
+    "description": "Tests whether z is an exact number. An exact number is one that is derived from exact constants or from exact numbers using only exact operations. For any Scheme number, exactly one of exact? and inexact? is #t. Exactness is orthogonal to the numeric type (integer/real/complex, etc.).",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(exact? 3)  => #t\n(exact? 3.0)  => #f\n(exact? 22/7)  => #t"
+  },
+  "inexact?": {
+    "signature": "(inexact? z)",
+    "description": "Tests whether z is an inexact number. Inexactness is contagious: numbers containing a decimal point, exponent, or inexact component are all inexact. For any Scheme number, exactly one of exact? and inexact? is #t.",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(inexact? 3.0)  => #t\n(inexact? 3)  => #f\n(inexact? 22/7)  => #f"
+  },
+  "integer?": {
+    "signature": "(integer? obj)",
+    "description": "Tests whether obj is an integer. In the R5RS numeric type hierarchy (number > complex > real > rational > integer), integer is the innermost subtype. For an inexact real number x, (integer? x) is #t if and only if (= x (round x)).",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(integer? 3)  => #t\n(integer? 3.0)  => #t\n(integer? 8/4)  => #t\n(integer? 3+0i)  => #t\n(integer? 3.5)  => #f"
+  },
+  "negative?": {
+    "signature": "(negative? x)",
+    "description": "Tests whether the real number x is negative. Returns #t or #f.",
+    "parameters": [
+      {
+        "name": "x",
+        "type": "real",
+        "desc": "real number"
+      }
+    ],
+    "example": "(negative? -5)  => #t\n(negative? 0)  => #f\n(negative? 3.2)  => #f"
+  },
+  "number?": {
+    "signature": "(number? obj)",
+    "description": "Tests whether obj is a number. In the R5RS numeric type hierarchy (number > complex > real > rational > integer), this is the outermost type predicate, returning #t for all numbers.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(number? 3)  => #t\n(number? 3+4i)  => #t\n(number? \"hello\")  => #f\n(number? #t)  => #f"
+  },
+  "odd?": {
+    "signature": "(odd? n)",
+    "description": "Tests whether the integer n is odd. Returns #t or #f.",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "desc": "integer"
+      }
+    ],
+    "example": "(odd? 7)  => #t\n(odd? 4)  => #f\n(odd? -3)  => #t"
+  },
+  "positive?": {
+    "signature": "(positive? x)",
+    "description": "Tests whether the real number x is positive. Returns #t or #f.",
+    "parameters": [
+      {
+        "name": "x",
+        "type": "real",
+        "desc": "real number"
+      }
+    ],
+    "example": "(positive? 5)  => #t\n(positive? 0)  => #f\n(positive? -3.2)  => #f"
+  },
+  "rational?": {
+    "signature": "(rational? obj)",
+    "description": "Tests whether obj is a rational number. In the R5RS numeric type hierarchy (number > complex > real > rational > integer), rational numbers include all integers and fractions. In many implementations, rational? is equivalent to real?, since inexact numbers are typically treated as approximations of rational numbers.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(rational? 6/10)  => #t\n(rational? 6/3)  => #t\n(rational? 3.5)  => #t"
+  },
+  "real?": {
+    "signature": "(real? obj)",
+    "description": "Tests whether obj is a real number. In the R5RS numeric type hierarchy (number > complex > real > rational > integer), a real number is a complex number with a zero imaginary part. For an inexact complex number z, (real? z) is #t if and only if (zero? (imag-part z)) is #t.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(real? 3)  => #t\n(real? -2.5+0.0i)  => #t\n(real? 3+4i)  => #f"
+  },
+  "zero?": {
+    "signature": "(zero? z)",
+    "description": "Tests whether the number z is zero. Returns #t or #f.",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "number"
+      }
+    ],
+    "example": "(zero? 0)  => #t\n(zero? 0.0)  => #t\n(zero? 1)  => #f\n(zero? -0.0)  => #t"
+  },
+  "procedure?": {
+    "signature": "(procedure? obj)",
+    "description": "Returns #t if obj is a procedure, otherwise returns #f. Note: the name of a procedure (such as the quoted symbol 'car) is not itself a procedure.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(procedure? car)  => #t\n(procedure? 'car)  => #f\n(procedure? (lambda (x) (* x x)))  => #t"
+  },
+  "string?": {
+    "signature": "(string? obj)",
+    "description": "Returns #t if obj is a string, otherwise returns #f.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(string? \"hello\")  => #t\n(string? 'hello)  => #f\n(string? 123)  => #f"
+  },
+  "vector?": {
+    "signature": "(vector? obj)",
+    "description": "Returns #t if obj is a vector, otherwise returns #f.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(vector? #(a b c))  => #t\n(vector? '(a b c))  => #f\n(vector? 123)  => #f"
+  },
+  "eof-object?": {
+    "description": "Procedure. Tests whether obj is an end-of-file object. Returns #t or #f. The specific set of EOF objects is implementation-dependent, but no EOF object can be read in via read.",
+    "signature": "(eof-object? obj)",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(eof-object? (read))  => 当输入结束时返回 #t\n(eof-object? 42)  => #f"
+  },
+  "input-port?": {
+    "signature": "(input-port? obj)",
+    "description": "Procedure. Tests whether obj is an input port. Returns #t or #f.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(input-port? (current-input-port))  => #t\n(input-port? (open-output-file \"x\"))  => #f"
+  },
+  "output-port?": {
+    "signature": "(output-port? obj)",
+    "description": "Procedure. Tests whether obj is an output port. Returns #t or #f.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(output-port? (current-output-port))  => #t\n(output-port? (open-input-file \"x\"))  => #f"
+  },
+  "port?": {
+    "signature": "(port? obj)",
+    "description": "Procedure. Tests whether obj is a port (input port or output port). Returns #t or #f. In the R5RS type system, port is a top-level type alongside boolean, pair, symbol, number, char, string, vector, and procedure.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "any object"
+      }
+    ],
+    "example": "(port? (current-input-port))  => #t\n(port? 42)  => #f"
+  },
+  "string->symbol": {
+    "description": "Returns the symbol whose name is string. This procedure can create symbols whose names contain special characters or non-standard case letters, but this is generally not recommended, as such symbols may not be readable in some Scheme implementations. It is the inverse of symbol->string.",
+    "example": "(string->symbol \"foo\")  => foo\n(string->symbol \"mISSISSIPpi\")  => the symbol with name \"mISSISSIPpi\"",
     "parameters": [
       {
         "name": "string",
         "type": "string",
-        "desc": "已存在的文件名"
+        "desc": "symbol name string"
+      }
+    ],
+    "signature": "(string->symbol string)"
+  },
+  "append": {
+    "signature": "(append list ...)",
+    "description": "Returns a new list consisting of the elements of the list arguments concatenated sequentially. The result list is always newly allocated, except that it shares structure with the last list argument. The last argument may be any object; if it is not a proper list, the result is an improper list.",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "lists to concatenate; the last argument may be any object"
+      }
+    ],
+    "example": "(append '(a b) '(c d))  => (a b c d)\n(append '(a) '(b c d))  => (a b c d)\n(append '() '())  => ()\n(append '(a b) '(c . d))  => (a b c . d)\n(append '() 'a)  => a"
+  },
+  "assoc": {
+    "signature": "(assoc obj alist)",
+    "description": "Finds the first pair in the association list alist whose car field is equal to obj, and returns that pair. If no such pair exists, returns #f. Uses equal? for comparison.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "key to look up"
+      },
+      {
+        "name": "alist",
+        "type": "list",
+        "desc": "association list; each element must be a pair"
+      }
+    ],
+    "example": "(assoc 'a '((a 1) (b 2) (c 3)))  => (a 1)\n(assoc 'b '((a 1) (b 2) (c 3)))  => (b 2)\n(assoc 'd '((a 1) (b 2) (c 3)))  => #f\n(assoc 5 '((2 3) (5 7) (11 13)))  => (5 7)"
+  },
+  "assq": {
+    "signature": "(assq obj alist)",
+    "description": "Finds the first pair in the association list alist whose car field is equal to obj, and returns that pair. If no such pair exists, returns #f. Uses eq? for comparison (pointer/identity equality). Suitable for keys that are atomic values such as symbols.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "key to look up"
+      },
+      {
+        "name": "alist",
+        "type": "list",
+        "desc": "association list; each element must be a pair"
+      }
+    ],
+    "example": "(assq 'a '((a 1) (b 2)))  => (a 1)\n(assq '(a) '(((a) 1) ((b) 2)))  => #f"
+  },
+  "assv": {
+    "signature": "(assv obj alist)",
+    "description": "Finds the first pair in the association list alist whose car field is equal to obj, and returns that pair. If no such pair exists, returns #f. Uses eqv? for comparison (value equality). Generally more appropriate for keys that are numbers, characters, or other types with automatic comparison.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "key to look up"
+      },
+      {
+        "name": "alist",
+        "type": "list",
+        "desc": "association list; each element must be a pair"
+      }
+    ],
+    "example": "(assv 5 '((2 3) (5 7) (11 13)))  => (5 7)\n(assv 101 '(100 101 102))  => #f"
+  },
+  "car": {
+    "signature": "(car pair)",
+    "description": "Returns the contents of the car field of pair. It is an error to take the car of the empty list.",
+    "parameters": [
+      {
+        "name": "pair",
+        "type": "pair",
+        "desc": "a pair (not the empty list)"
+      }
+    ],
+    "example": "(car '(a b c))  => a\n(car '((a) b c d))  => (a)\n(car '(1 . 2))  => 1"
+  },
+  "cdr": {
+    "signature": "(cdr pair)",
+    "description": "Returns the contents of the cdr field of pair. It is an error to take the cdr of the empty list.",
+    "parameters": [
+      {
+        "name": "pair",
+        "type": "pair",
+        "desc": "a pair (not the empty list)"
+      }
+    ],
+    "example": "(cdr '((a) b c d))  => (b c d)\n(cdr '(1 . 2))  => 2"
+  },
+  "cons": {
+    "signature": "(cons obj1 obj2)",
+    "description": "Returns a newly allocated pair whose car is obj1 and whose cdr is obj2. The pair is guaranteed to be different (in the sense of eqv?) from every existing object.",
+    "parameters": [
+      {
+        "name": "obj1",
+        "type": "any",
+        "desc": "value for the car field"
+      },
+      {
+        "name": "obj2",
+        "type": "any",
+        "desc": "value for the cdr field"
+      }
+    ],
+    "example": "(cons 'a '())  => (a)\n(cons '(a) '(b c d))  => ((a) b c d)\n(cons 'a 3)  => (a . 3)\n(cons '(a b) 'c)  => ((a b) . c)"
+  },
+  "for-each": {
+    "signature": "(for-each proc list1 list2 ...)",
+    "description": "The arguments are the same as for map, but for-each calls proc for its side effects rather than for its return value. Unlike map, for-each is guaranteed to call proc on the elements of the lists in order from the first element to the last. The return value is unspecified.",
+    "parameters": [
+      {
+        "name": "proc",
+        "type": "procedure",
+        "desc": "procedure accepting as many arguments as there are lists"
+      },
+      {
+        "name": "list1",
+        "type": "list",
+        "desc": "first list"
+      },
+      {
+        "name": "list2",
+        "type": "list",
+        "desc": "second list (optional); all lists must have the same length when multiple lists are provided"
+      }
+    ],
+    "example": "(for-each display '(1 2 3))  ; outputs 123\n(for-each (lambda (a b) (display (+ a b))) '(1 2 3) '(4 5 6))  ; outputs 6810"
+  },
+  "length": {
+    "signature": "(length list)",
+    "description": "Returns the length of list (the number of elements).",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "a proper list"
+      }
+    ],
+    "example": "(length '(a b c))  => 3\n(length '(a (b) (c d e)))  => 3\n(length '())  => 0"
+  },
+  "list": {
+    "signature": "(list obj ...)",
+    "description": "Returns a newly allocated list containing its arguments. With no arguments, returns the empty list.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "list elements, variable number"
+      }
+    ],
+    "example": "(list 'a (+ 3 4) 'c)  => (a 7 c)\n(list)  => ()\n(list 1 2 3)  => (1 2 3)"
+  },
+  "list-ref": {
+    "signature": "(list-ref list k)",
+    "description": "Returns the kth element of list (zero-based index). Equivalent to (car (list-tail list k)). If list has fewer than k+1 elements, an error is signaled.",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "a proper list"
+      },
+      {
+        "name": "k",
+        "type": "exact non-negative integer",
+        "desc": "zero-based index of the element"
+      }
+    ],
+    "example": "(list-ref '(a b c d) 2)  => c\n(list-ref '(a b c d) 0)  => a"
+  },
+  "list-tail": {
+    "signature": "(list-tail list k)",
+    "description": "Returns the sublist of list obtained by omitting the first k elements. If list has fewer than k elements, an error is signaled. Equivalent to (define list-tail (lambda (x k) (if (zero? k) x (list-tail (cdr x) (- k 1))))).",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "a proper list"
+      },
+      {
+        "name": "k",
+        "type": "exact non-negative integer",
+        "desc": "number of elements to skip"
+      }
+    ],
+    "example": "(list-tail '(a b c d) 2)  => (c d)\n(list-tail '(a b c d) 0)  => (a b c d)"
+  },
+  "map": {
+    "signature": "(map proc list1 list2 ...)",
+    "description": "The list arguments must be lists, and proc must be a procedure accepting as many arguments as there are lists and returning a single value. If more than one list is given, they must all have the same length. Map applies proc element-wise to the elements of the lists and returns a list of the results. The dynamic order in which proc is applied to the elements is unspecified.",
+    "parameters": [
+      {
+        "name": "proc",
+        "type": "procedure",
+        "desc": "procedure accepting as many arguments as there are lists and returning a single value"
+      },
+      {
+        "name": "list1",
+        "type": "list",
+        "desc": "first list"
+      },
+      {
+        "name": "list2",
+        "type": "list",
+        "desc": "second list (optional); all lists must have the same length when multiple lists are provided"
+      }
+    ],
+    "example": "(map cadr '((a b) (d e) (g h)))  => (b e h)\n(map + '(1 2 3) '(4 5 6))  => (5 7 9)\n(map (lambda (n) (* n n)) '(1 2 3 4 5))  => (1 4 9 16 25)"
+  },
+  "member": {
+    "signature": "(member obj list)",
+    "description": "Returns the first sublist of list whose car is equal to obj. If obj does not occur in list, returns #f (not the empty list). Uses equal? for comparison.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "object to look for"
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "list to search"
+      }
+    ],
+    "example": "(member 'a '(a b c))  => (a b c)\n(member 'b '(a b c))  => (b c)\n(member 'a '(b c d))  => #f\n(member '(a) '(b (a) c))  => ((a) c)"
+  },
+  "memq": {
+    "signature": "(memq obj list)",
+    "description": "Returns the first sublist of list whose car is equal to obj. If obj does not occur in list, returns #f (not the empty list). Uses eq? for comparison (pointer/identity equality). Suitable for looking up atomic values such as symbols.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "object to look for"
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "list to search"
+      }
+    ],
+    "example": "(memq 'a '(a b c))  => (a b c)\n(memq 'b '(a b c))  => (b c)\n(memq 'a '(b c d))  => #f\n(memq '(a) '(b (a) c))  => #f"
+  },
+  "memv": {
+    "signature": "(memv obj list)",
+    "description": "Returns the first sublist of list whose car is equal to obj. If obj does not occur in list, returns #f (not the empty list). Uses eqv? for comparison (value equality). Generally more reliable for keys that are numbers or characters.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "object to look for"
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "list to search"
+      }
+    ],
+    "example": "(memv 101 '(100 101 102))  => (101 102)\n(memv 'a '(b c d))  => #f"
+  },
+  "reverse": {
+    "signature": "(reverse list)",
+    "description": "Returns a newly allocated list consisting of the elements of list in reverse order.",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "a proper list"
+      }
+    ],
+    "example": "(reverse '(a b c))  => (c b a)\n(reverse '(a (b c) d (e (f))))  => ((e (f)) d (b c) a)\n(reverse '())  => ()"
+  },
+  "set-car!": {
+    "signature": "(set-car! pair obj)",
+    "description": "Stores obj in the car field of pair. The return value is unspecified. This is a mutation operation that modifies the contents of pair.",
+    "parameters": [
+      {
+        "name": "pair",
+        "type": "pair",
+        "desc": "pair to modify"
+      },
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "new value to store in the car field"
+      }
+    ],
+    "example": "(define p (cons 1 2))\n(set-car! p 3)\np  => (3 . 2)"
+  },
+  "set-cdr!": {
+    "signature": "(set-cdr! pair obj)",
+    "description": "Stores obj in the cdr field of pair. The return value is unspecified. This is a mutation operation that modifies the contents of pair. Note: using set-cdr! can turn a proper list into an improper list, or create a cyclic structure.",
+    "parameters": [
+      {
+        "name": "pair",
+        "type": "pair",
+        "desc": "pair to modify"
+      },
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "new value to store in the cdr field"
+      }
+    ],
+    "example": "(define p (cons 1 2))\n(set-cdr! p 3)\np  => (1 . 3)"
+  },
+  "string-append": {
+    "signature": "(string-append string ...)",
+    "description": "Returns a newly allocated string whose characters are the concatenation of the given strings in order.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "one or more strings to concatenate"
+      }
+    ],
+    "example": "(string-append \"Hello\" \" \" \"World\")  => \"Hello World\""
+  },
+  "string-length": {
+    "signature": "(string-length string)",
+    "description": "Returns the number of characters in the given string.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "string"
+      }
+    ],
+    "example": "(string-length \"abc\")  => 3\n(string-length \"\")  => 0"
+  },
+  "vector-length": {
+    "signature": "(vector-length vector)",
+    "description": "Returns the number of elements in vector as an exact integer.",
+    "parameters": [
+      {
+        "name": "vector",
+        "type": "vector",
+        "desc": "vector"
+      }
+    ],
+    "example": "(vector-length #(a b c))  => 3\n(vector-length #())  => 0"
+  },
+  "list->string": {
+    "signature": "(list->string list)",
+    "description": "Returns a newly allocated string consisting of the characters in list. List must be a list of characters. list->string and string->list are inverses in the sense of equal?.",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "list of characters"
+      }
+    ],
+    "example": "(list->string '(#\\a #\\b #\\c))  => \"abc\""
+  },
+  "list->vector": {
+    "signature": "(list->vector list)",
+    "description": "Returns a newly created vector initialized to the elements of list.",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "list of any objects"
+      }
+    ],
+    "example": "(list->vector '(dah dah didah))  => #(dah dah didah)"
+  },
+  "string->list": {
+    "signature": "(string->list string)",
+    "description": "Returns a newly allocated list of the characters of the given string. string->list and list->string are inverses in the sense of equal?.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "string"
+      }
+    ],
+    "example": "(string->list \"abc\")  => (#\\a #\\b #\\c)"
+  },
+  "vector->list": {
+    "signature": "(vector->list vector)",
+    "description": "Returns a newly allocated list containing all elements of vector.",
+    "parameters": [
+      {
+        "name": "vector",
+        "type": "vector",
+        "desc": "vector"
+      }
+    ],
+    "example": "(vector->list #(dah dah didah))  => (dah dah didah)"
+  },
+  "char->integer": {
+    "signature": "(char->integer char)",
+    "description": "Returns the exact integer corresponding to char (its ordinal value / code point). char->integer and integer->char form an order-preserving isomorphism between the character ordering and a subset of the integers.",
+    "parameters": [
+      {
+        "name": "char",
+        "type": "char",
+        "desc": "character"
+      }
+    ],
+    "example": "(char->integer #\\A)  => 65\n(char->integer #\\0)  => 48"
+  },
+  "integer->char": {
+    "signature": "(integer->char n)",
+    "description": "Returns the character corresponding to the exact integer n. The value of n must be a valid return value of some call to char->integer. Together with char->integer, forms an order-preserving isomorphism between the character ordering and a subset of the integers.",
+    "parameters": [
+      {
+        "name": "n",
+        "type": "integer",
+        "desc": "exact integer (ordinal value of the character)"
+      }
+    ],
+    "example": "(integer->char 65)  => #\\A\n(integer->char 48)  => #\\0"
+  },
+  "abs": {
+    "signature": "(abs x)",
+    "description": "Returns the absolute value of x. x must be a real number.",
+    "parameters": [
+      {
+        "name": "x",
+        "type": "real",
+        "desc": "real number"
+      }
+    ],
+    "example": "(abs -7)  => 7\n(abs -3.5)  => 3.5\n(abs 0)  => 0"
+  },
+  "acos": {
+    "signature": "(acos z)",
+    "description": "Returns the arccosine of z. The result is in radians. For real arguments, z must be in the range [-1, 1], and the result is in the range [0, pi].",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "number"
+      }
+    ],
+    "example": "(acos 1.0)  => 0.0\n(acos 0.0)  => 1.5707963267949\n(acos -1.0)  => 3.14159265358979"
+  },
+  "angle": {
+    "signature": "(angle z)",
+    "description": "Returns the angle (argument) of the complex number z in radians. The result is in the range (-pi, pi]. If z = x + yi = r*e^(i*theta), returns theta. Equivalent to (atan y x).",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "complex",
+        "desc": "complex number"
+      }
+    ],
+    "example": "(angle 1)  => 0.0\n(angle +i)  => 1.5707963267949\n(angle -1)  => 3.14159265358979\n(angle (make-rectangular 1 1))  => 0.785398163397448"
+  },
+  "asin": {
+    "signature": "(asin z)",
+    "description": "Returns the arcsine of z. The result is in radians. For real arguments, z must be in the range [-1, 1], and the result is in the range [-pi/2, pi/2].",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "number"
+      }
+    ],
+    "example": "(asin 0.0)  => 0.0\n(asin 1.0)  => 1.5707963267949\n(asin -1.0)  => -1.5707963267949"
+  },
+  "atan": {
+    "signature": "(atan y)\n(atan y x)",
+    "description": "Returns the arctangent of the arguments, in radians. The one-argument form (atan y) returns the arctangent of y, with a result in the range (-pi/2, pi/2). The two-argument form (atan y x) returns the angle from the positive x-axis to the point (x, y), with a result in the range (-pi, pi], and is equivalent to (angle (make-rectangular x y)).",
+    "parameters": [
+      {
+        "name": "y",
+        "type": "real",
+        "desc": "ordinate or number"
+      },
+      {
+        "name": "x",
+        "type": "real",
+        "desc": "abscissa (two-argument form only)"
+      }
+    ],
+    "example": "(atan 1.0)  => 0.785398163397448\n(atan -1.0 0.0)  => -1.5707963267949\n(atan 1.0 1.0)  => 0.785398163397448\n(atan -1.0 -1.0)  => -2.35619449019234"
+  },
+  "ceiling": {
+    "signature": "(ceiling x)",
+    "description": "Returns the smallest integer not less than x (rounds toward positive infinity). If the argument is inexact, the result is also inexact.",
+    "parameters": [
+      {
+        "name": "x",
+        "type": "real",
+        "desc": "real number"
+      }
+    ],
+    "example": "(ceiling -4.3)  => -4.0\n(ceiling 3.5)  => 4.0\n(ceiling 7)  => 7"
+  },
+  "cos": {
+    "signature": "(cos z)",
+    "description": "Returns the cosine of z, where z is in radians.",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "number (radians)"
+      }
+    ],
+    "example": "(cos 0)  => 1.0\n(cos 3.14159265358979)  => -1.0"
+  },
+  "exact->inexact": {
+    "signature": "(exact->inexact z)",
+    "description": "Returns an inexact representation of z. The return value is the inexact number numerically closest to the argument. If no reasonably close inexact equivalent exists for the exact argument, an implementation restriction may be reported.",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "exact number"
+      }
+    ],
+    "example": "(exact->inexact 7)  => 7.0\n(exact->inexact 22/7)  => 3.14285714285714"
+  },
+  "exp": {
+    "signature": "(exp z)",
+    "description": "Returns e raised to the power z (exponential function).",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "number"
+      }
+    ],
+    "example": "(exp 0)  => 1.0\n(exp 1)  => 2.71828182845905"
+  },
+  "expt": {
+    "signature": "(expt z1 z2)",
+    "description": "Returns z1 raised to the power z2. For z1 not equal to 0, this is equivalent to e^(z2*log(z1)). 0^0 is 1, and 0^z for z not equal to 0 is 0. When both arguments are exact integers, the result is an exact integer whenever possible.",
+    "parameters": [
+      {
+        "name": "z1",
+        "type": "number",
+        "desc": "base"
+      },
+      {
+        "name": "z2",
+        "type": "number",
+        "desc": "exponent"
+      }
+    ],
+    "example": "(expt 2 10)  => 1024\n(expt 4 0.5)  => 2.0\n(expt 2 -3)  => 1/8"
+  },
+  "floor": {
+    "signature": "(floor x)",
+    "description": "Returns the largest integer not greater than x (rounds toward negative infinity). If the argument is inexact, the result is also inexact.",
+    "parameters": [
+      {
+        "name": "x",
+        "type": "real",
+        "desc": "real number"
+      }
+    ],
+    "example": "(floor -4.3)  => -5.0\n(floor 3.5)  => 3.0\n(floor 7)  => 7"
+  },
+  "gcd": {
+    "signature": "(gcd n1 ...)",
+    "description": "Returns the greatest common divisor of the arguments. The result is always non-negative. With no arguments, returns 0. When all arguments are exact integers, the result is an exact non-negative integer.",
+    "parameters": [
+      {
+        "name": "n1",
+        "type": "integer",
+        "desc": "integer (rest argument)"
+      }
+    ],
+    "example": "(gcd 32 -36)  => 4\n(gcd)  => 0\n(gcd 12 18 24)  => 6"
+  },
+  "imag-part": {
+    "signature": "(imag-part z)",
+    "description": "Returns the imaginary part of the complex number z. If z = x + yi, returns y.",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "complex",
+        "desc": "complex number"
+      }
+    ],
+    "example": "(imag-part 3+4i)  => 4\n(imag-part 5)  => 0\n(imag-part -2.5+0.0i)  => 0.0"
+  },
+  "lcm": {
+    "signature": "(lcm n1 ...)",
+    "description": "Returns the least common multiple of the arguments. The result is always non-negative. With no arguments, returns 1. When any argument is inexact, the result is also inexact.",
+    "parameters": [
+      {
+        "name": "n1",
+        "type": "integer",
+        "desc": "integer (rest argument)"
+      }
+    ],
+    "example": "(lcm 32 -36)  => 288\n(lcm)  => 1\n(lcm 32.0 -36)  => 288.0"
+  },
+  "log": {
+    "signature": "(log z)",
+    "description": "Returns the natural logarithm of z (base e), not the common logarithm (base 10). The imaginary part of the result is in the range (-pi, pi]. (log 0) is undefined.",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "number"
+      }
+    ],
+    "example": "(log 1)  => 0.0\n(log (exp 1))  => 1.0"
+  },
+  "magnitude": {
+    "signature": "(magnitude z)",
+    "description": "Returns the magnitude (absolute value) of the complex number z. If z = x + yi, returns sqrt(x^2 + y^2). For real arguments, magnitude is equivalent to abs.",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "complex",
+        "desc": "complex number"
+      }
+    ],
+    "example": "(magnitude 3+4i)  => 5\n(magnitude 5)  => 5\n(magnitude -3+4i)  => 5"
+  },
+  "make-rectangular": {
+    "signature": "(make-rectangular x y)",
+    "description": "Constructs a complex number from rectangular coordinates. Returns x + yi.",
+    "parameters": [
+      {
+        "name": "x",
+        "type": "real",
+        "desc": "real part"
+      },
+      {
+        "name": "y",
+        "type": "real",
+        "desc": "imaginary part"
+      }
+    ],
+    "example": "(make-rectangular 3 4)  => 3+4i\n(make-rectangular 1 0)  => 1\n(make-rectangular 0 1)  => +i"
+  },
+  "max": {
+    "signature": "(max x1 x2 ...)",
+    "description": "Returns the largest of all arguments. If any argument is inexact, the result is also inexact.",
+    "parameters": [
+      {
+        "name": "x1",
+        "type": "real",
+        "desc": "real number (rest argument, at least one)"
+      }
+    ],
+    "example": "(max 3 4)  => 4\n(max 3.9 4)  => 4.0"
+  },
+  "min": {
+    "signature": "(min x1 x2 ...)",
+    "description": "Returns the smallest of all arguments. If any argument is inexact, the result is also inexact.",
+    "parameters": [
+      {
+        "name": "x1",
+        "type": "real",
+        "desc": "real number (rest argument, at least one)"
+      }
+    ],
+    "example": "(min 3 4)  => 3\n(min 3.9 4)  => 3.9"
+  },
+  "modulo": {
+    "signature": "(modulo n1 n2)",
+    "description": "Returns the modulo operation result of n1 divided by n2. n2 must not be zero. The result is an integer satisfying: n1 = n2*q + m, where q is the quotient truncated toward negative infinity, |m| < |n2|, and m has the same sign as n2. The difference from remainder is: the result of remainder has the same sign as the dividend n1, while the result of modulo has the same sign as the divisor n2.",
+    "parameters": [
+      {
+        "name": "n1",
+        "type": "integer",
+        "desc": "dividend"
+      },
+      {
+        "name": "n2",
+        "type": "integer",
+        "desc": "divisor (non-zero)"
+      }
+    ],
+    "example": "(modulo 13 4)  => 1\n(modulo -13 4)  => 3\n(modulo 13 -4)  => -3\n(modulo -13 -4)  => -1"
+  },
+  "number->string": {
+    "signature": "(number->string num)\n(number->string num radix)",
+    "description": "Converts the number num to its string representation. radix must be an exact integer 2, 8, 10, or 16, defaulting to 10. For inexact numbers with radix 10, the result contains a decimal point and uses the minimum number of digits. The result string does not contain an explicit radix prefix.",
+    "parameters": [
+      {
+        "name": "num",
+        "type": "number",
+        "desc": "number"
+      },
+      {
+        "name": "radix",
+        "type": "integer",
+        "desc": "radix: 2, 8, 10, or 16; defaults to 10"
+      }
+    ],
+    "example": "(number->string 100)  => \"100\"\n(number->string 256 16)  => \"100\"\n(number->string 3.14)  => \"3.14\""
+  },
+  "quotient": {
+    "signature": "(quotient n1 n2)",
+    "description": "Returns the integer quotient of n1 divided by n2 (truncated toward zero). n2 must not be zero. Together with modulo and remainder, implements the number-theoretic division: n1 = n2*q + r, where q = (quotient n1 n2) truncated toward zero, and r = (remainder n1 n2) has the same sign as n1.",
+    "parameters": [
+      {
+        "name": "n1",
+        "type": "integer",
+        "desc": "dividend"
+      },
+      {
+        "name": "n2",
+        "type": "integer",
+        "desc": "divisor (non-zero)"
+      }
+    ],
+    "example": "(quotient 13 4)  => 3\n(quotient -13 4)  => -3\n(quotient 13 -4)  => -3\n(quotient -13 -4)  => 3"
+  },
+  "real-part": {
+    "signature": "(real-part z)",
+    "description": "Returns the real part of the complex number z. If z = x + yi, returns x.",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "complex",
+        "desc": "complex number"
+      }
+    ],
+    "example": "(real-part 3+4i)  => 3\n(real-part 5)  => 5\n(real-part -2.5+0.0i)  => -2.5"
+  },
+  "remainder": {
+    "signature": "(remainder n1 n2)",
+    "description": "Returns the remainder of n1 divided by n2. n2 must not be zero. The result is an integer satisfying: n1 = n2*q + r, where q = (quotient n1 n2) truncated toward zero, |r| < |n2|, and r has the same sign as n1. The difference from modulo is: the result of remainder has the same sign as the dividend n1, while the result of modulo has the same sign as the divisor n2.",
+    "parameters": [
+      {
+        "name": "n1",
+        "type": "integer",
+        "desc": "dividend"
+      },
+      {
+        "name": "n2",
+        "type": "integer",
+        "desc": "divisor (non-zero)"
+      }
+    ],
+    "example": "(remainder 13 4)  => 1\n(remainder -13 4)  => -1\n(remainder 13 -4)  => 1\n(remainder -13 -4)  => -1"
+  },
+  "round": {
+    "signature": "(round x)",
+    "description": "Returns the integer closest to x (rounding to nearest). When x is exactly halfway between two integers, rounds to the even integer (consistent with the IEEE 754 floating-point default rounding mode). If the argument is inexact, the result is also inexact.",
+    "parameters": [
+      {
+        "name": "x",
+        "type": "real",
+        "desc": "real number"
+      }
+    ],
+    "example": "(round -4.3)  => -4.0\n(round 3.5)  => 4.0\n(round 7/2)  => 4\n(round 7)  => 7"
+  },
+  "sin": {
+    "signature": "(sin z)",
+    "description": "Returns the sine of z, where z is in radians.",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "number (radians)"
+      }
+    ],
+    "example": "(sin 0)  => 0.0\n(sin 1.5707963267949)  => 1.0"
+  },
+  "sqrt": {
+    "signature": "(sqrt z)",
+    "description": "Returns the principal square root of z. The result has a non-negative real part, or a zero real part and a non-negative imaginary part.",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "number"
+      }
+    ],
+    "example": "(sqrt 4)  => 2\n(sqrt 2)  => 1.4142135623731\n(sqrt -1)  => +i"
+  },
+  "tan": {
+    "signature": "(tan z)",
+    "description": "Returns the tangent of z, where z is in radians.",
+    "parameters": [
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "number (radians)"
+      }
+    ],
+    "example": "(tan 0)  => 0.0\n(tan 0.785398163397448)  => 1.0"
+  },
+  "truncate": {
+    "signature": "(truncate x)",
+    "description": "Returns the integer obtained by truncating x toward zero. That is, the fractional part is discarded and the integer part is retained. If the argument is inexact, the result is also inexact.",
+    "parameters": [
+      {
+        "name": "x",
+        "type": "real",
+        "desc": "real number"
+      }
+    ],
+    "example": "(truncate -4.3)  => -4.0\n(truncate 3.5)  => 3.0\n(truncate 7)  => 7"
+  },
+  "string->number": {
+    "signature": "(string->number string)",
+    "description": "Returns the number of maximum precision represented by the given string. The optional argument radix must be an exact integer 2, 8, 10, or 16, serving as the default radix, which may be overridden by an explicit radix prefix in the string (such as \"#o177\"). If the string is not a valid representation of a number, returns #f.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "string representation of a number"
+      },
+      {
+        "name": "radix",
+        "type": "exact integer",
+        "desc": "optional radix (2, 8, 10, or 16)"
+      }
+    ],
+    "example": "(string->number \"100\")  => 100\n(string->number \"100\" 16)  => 256\n(string->number \"1e2\")  => 100.0\n(string->number \"hello\")  => #f"
+  },
+  "symbol->string": {
+    "signature": "(symbol->string symbol)",
+    "description": "Returns the name of symbol as a string. If symbol came from a literal or from the read procedure, returns a string in the implementation's preferred case. It is an error to apply mutation procedures such as string-set! to the returned string.",
+    "parameters": [
+      {
+        "name": "symbol",
+        "type": "symbol",
+        "desc": "symbol"
+      }
+    ],
+    "example": "(symbol->string 'hello)  => \"hello\""
+  },
+  "make-string": {
+    "signature": "(make-string k)",
+    "description": "Returns a newly allocated string of length k. If char is supplied, all characters in the string are initialized to char; otherwise the content of the string is unspecified.",
+    "parameters": [
+      {
+        "name": "k",
+        "type": "exact non-negative integer",
+        "desc": "string length"
+      },
+      {
+        "name": "char",
+        "type": "char",
+        "desc": "optional initialization character"
+      }
+    ],
+    "example": "(make-string 3 #\\a)  => \"aaa\""
+  },
+  "string": {
+    "signature": "(string char ...)",
+    "description": "Returns a newly allocated string composed of the given character arguments. This is the constructor for strings.",
+    "parameters": [
+      {
+        "name": "char",
+        "type": "char",
+        "desc": "one or more characters"
+      }
+    ],
+    "example": "(string #\\H #\\e #\\l #\\l #\\o)  => \"Hello\""
+  },
+  "string-ci=?": {
+    "signature": "(string-ci=? string1 string2)",
+    "description": "Returns #t if the two strings are the same length and contain the same characters in corresponding positions (ignoring case), otherwise returns #f.",
+    "parameters": [
+      {
+        "name": "string1",
+        "type": "string",
+        "desc": "first string"
+      },
+      {
+        "name": "string2",
+        "type": "string",
+        "desc": "second string"
+      }
+    ],
+    "example": "(string-ci=? \"Hello\" \"hello\")  => #t\n(string-ci=? \"abc\" \"abd\")  => #f"
+  },
+  "string-copy": {
+    "signature": "(string-copy string)",
+    "description": "Returns a newly allocated copy of the given string.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "string"
+      }
+    ],
+    "example": "(string-copy \"abc\")  => \"abc\""
+  },
+  "string-fill!": {
+    "signature": "(string-fill! string char)",
+    "description": "Stores char in every element of the given string. The return value is unspecified. This operation mutates the original string.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "string"
+      },
+      {
+        "name": "char",
+        "type": "char",
+        "desc": "fill character"
+      }
+    ],
+    "example": "(let ((s (make-string 3 #\\x))) (string-fill! s #\\a) s)  => \"aaa\""
+  },
+  "string-ref": {
+    "signature": "(string-ref string k)",
+    "description": "k must be a valid index of string (0 to the length of string minus 1). Uses zero-based indexing to return the kth character of string.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "string"
+      },
+      {
+        "name": "k",
+        "type": "exact non-negative integer",
+        "desc": "character index (zero-based)"
+      }
+    ],
+    "example": "(string-ref \"abc\" 0)  => #\\a\n(string-ref \"abc\" 2)  => #\\c"
+  },
+  "string-set!": {
+    "signature": "(string-set! string k char)",
+    "description": "k must be a valid index of string. Stores char in the kth element of string. The return value is unspecified. This operation mutates the original string.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "string"
+      },
+      {
+        "name": "k",
+        "type": "exact non-negative integer",
+        "desc": "character index (zero-based)"
+      },
+      {
+        "name": "char",
+        "type": "char",
+        "desc": "character to store"
+      }
+    ],
+    "example": "(let ((s (string #\\a #\\b #\\c))) (string-set! s 0 #\\z) s)  => \"zbc\""
+  },
+  "string=?": {
+    "signature": "(string=? string1 string2)",
+    "description": "Returns #t if the two strings are the same length and contain the same characters in corresponding positions, otherwise returns #f. Case-sensitive.",
+    "parameters": [
+      {
+        "name": "string1",
+        "type": "string",
+        "desc": "first string"
+      },
+      {
+        "name": "string2",
+        "type": "string",
+        "desc": "second string"
+      }
+    ],
+    "example": "(string=? \"abc\" \"abc\")  => #t\n(string=? \"abc\" \"ABC\")  => #f\n(string=? \"abc\" \"ab\")  => #f"
+  },
+  "string>=?": {
+    "signature": "(string>=? string1 string2)",
+    "description": "Compares two strings lexicographically based on character ordering. Returns #t if string1 is lexicographically greater than or equal to string2, otherwise returns #f. If the strings differ in length and the shorter string is a prefix of the longer, the longer string is lexicographically greater.",
+    "parameters": [
+      {
+        "name": "string1",
+        "type": "string",
+        "desc": "first string"
+      },
+      {
+        "name": "string2",
+        "type": "string",
+        "desc": "second string"
+      }
+    ],
+    "example": "(string>=? \"abc\" \"abc\")  => #t\n(string>=? \"abd\" \"abc\")  => #t\n(string>=? \"abc\" \"abd\")  => #f"
+  },
+  "string>?": {
+    "signature": "(string>? string1 string2)",
+    "description": "Compares two strings lexicographically based on character ordering. Returns #t if string1 is lexicographically strictly greater than string2, otherwise returns #f.",
+    "parameters": [
+      {
+        "name": "string1",
+        "type": "string",
+        "desc": "first string"
+      },
+      {
+        "name": "string2",
+        "type": "string",
+        "desc": "second string"
+      }
+    ],
+    "example": "(string>? \"abd\" \"abc\")  => #t\n(string>? \"abc\" \"abd\")  => #f\n(string>? \"abc\" \"abc\")  => #f"
+  },
+  "string<=?": {
+    "signature": "(string<=? string1 string2)",
+    "description": "Compares two strings lexicographically based on character ordering. Returns #t if string1 is lexicographically less than or equal to string2, otherwise returns #f.",
+    "parameters": [
+      {
+        "name": "string1",
+        "type": "string",
+        "desc": "first string"
+      },
+      {
+        "name": "string2",
+        "type": "string",
+        "desc": "second string"
+      }
+    ],
+    "example": "(string<=? \"abc\" \"abc\")  => #t\n(string<=? \"abc\" \"abd\")  => #t\n(string<=? \"abd\" \"abc\")  => #f"
+  },
+  "string<?": {
+    "signature": "(string<? string1 string2)",
+    "description": "Compares two strings lexicographically based on character ordering. Returns #t if string1 is lexicographically strictly less than string2, otherwise returns #f. The lexicographic ordering is induced by char<?.",
+    "parameters": [
+      {
+        "name": "string1",
+        "type": "string",
+        "desc": "first string"
+      },
+      {
+        "name": "string2",
+        "type": "string",
+        "desc": "second string"
+      }
+    ],
+    "example": "(string<? \"abc\" \"abd\")  => #t\n(string<? \"abd\" \"abc\")  => #f\n(string<? \"abc\" \"abc\")  => #f"
+  },
+  "string-ci>=?": {
+    "signature": "(string-ci>=? string1 string2)",
+    "description": "Case-insensitive lexicographic comparison of two strings. Returns #t if string1 is lexicographically greater than or equal to string2 when case is ignored, otherwise returns #f.",
+    "parameters": [
+      {
+        "name": "string1",
+        "type": "string",
+        "desc": "first string"
+      },
+      {
+        "name": "string2",
+        "type": "string",
+        "desc": "second string"
+      }
+    ],
+    "example": "(string-ci>=? \"ABC\" \"abc\")  => #t\n(string-ci>=? \"abc\" \"abd\")  => #f"
+  },
+  "string-ci>?": {
+    "signature": "(string-ci>? string1 string2)",
+    "description": "Case-insensitive lexicographic comparison of two strings. Returns #t if string1 is lexicographically strictly greater than string2 when case is ignored, otherwise returns #f.",
+    "parameters": [
+      {
+        "name": "string1",
+        "type": "string",
+        "desc": "first string"
+      },
+      {
+        "name": "string2",
+        "type": "string",
+        "desc": "second string"
+      }
+    ],
+    "example": "(string-ci>? \"abd\" \"ABC\")  => #t\n(string-ci>? \"abc\" \"ABD\")  => #f"
+  },
+  "string-ci<=?": {
+    "signature": "(string-ci<=? string1 string2)",
+    "description": "Case-insensitive lexicographic comparison of two strings. Returns #t if string1 is lexicographically less than or equal to string2 when case is ignored, otherwise returns #f.",
+    "parameters": [
+      {
+        "name": "string1",
+        "type": "string",
+        "desc": "first string"
+      },
+      {
+        "name": "string2",
+        "type": "string",
+        "desc": "second string"
+      }
+    ],
+    "example": "(string-ci<=? \"abc\" \"ABD\")  => #t\n(string-ci<=? \"abd\" \"ABC\")  => #f"
+  },
+  "string-ci<?": {
+    "signature": "(string-ci<? string1 string2)",
+    "description": "Case-insensitive lexicographic comparison of two strings. Returns #t if string1 is lexicographically strictly less than string2 when case is ignored, otherwise returns #f.",
+    "parameters": [
+      {
+        "name": "string1",
+        "type": "string",
+        "desc": "first string"
+      },
+      {
+        "name": "string2",
+        "type": "string",
+        "desc": "second string"
+      }
+    ],
+    "example": "(string-ci<? \"abc\" \"ABD\")  => #t\n(string-ci<? \"abd\" \"ABC\")  => #f"
+  },
+  "char-alphabetic?": {
+    "signature": "(char-alphabetic? char)",
+    "description": "Tests whether char is an alphabetic character, returning #t or #f. Alphabetic characters include the 52 uppercase and lowercase English letters.",
+    "parameters": [
+      {
+        "name": "char",
+        "type": "char",
+        "desc": "character"
+      }
+    ],
+    "example": "(char-alphabetic? #\\a)  => #t\n(char-alphabetic? #\\0)  => #f"
+  },
+  "char-ci=?": {
+    "signature": "(char-ci=? char1 char2)",
+    "description": "Tests whether two characters are equal, ignoring case. Equivalent to (char=? (char-upcase char1) (char-upcase char2)).",
+    "parameters": [
+      {
+        "name": "char1",
+        "type": "char",
+        "desc": "first character"
+      },
+      {
+        "name": "char2",
+        "type": "char",
+        "desc": "second character"
+      }
+    ],
+    "example": "(char-ci=? #\\A #\\a)  => #t\n(char-ci=? #\\a #\\b)  => #f"
+  },
+  "char-downcase": {
+    "signature": "(char-downcase char)",
+    "description": "Returns the lowercase equivalent of char. If char is an alphabetic character, returns its lowercase form; otherwise returns char itself. The result is guaranteed to satisfy (char-ci=? char result).",
+    "parameters": [
+      {
+        "name": "char",
+        "type": "char",
+        "desc": "character"
+      }
+    ],
+    "example": "(char-downcase #\\A)  => #\\a\n(char-downcase #\\0)  => #\\0"
+  },
+  "char-lower-case?": {
+    "signature": "(char-lower-case? char)",
+    "description": "Tests whether char is a lowercase letter, returning #t or #f.",
+    "parameters": [
+      {
+        "name": "char",
+        "type": "char",
+        "desc": "character"
+      }
+    ],
+    "example": "(char-lower-case? #\\a)  => #t\n(char-lower-case? #\\A)  => #f"
+  },
+  "char-numeric?": {
+    "signature": "(char-numeric? char)",
+    "description": "Tests whether char is a numeric character (decimal digit 0-9), returning #t or #f.",
+    "parameters": [
+      {
+        "name": "char",
+        "type": "char",
+        "desc": "character"
+      }
+    ],
+    "example": "(char-numeric? #\\5)  => #t\n(char-numeric? #\\a)  => #f"
+  },
+  "char-ready?": {
+    "signature": "(char-ready?)",
+    "description": "Tests whether a character is available on the current-input-port. If it returns #t, the next read-char operation is guaranteed not to block. Also returns #t if the port has reached end-of-file. The port argument may be omitted, defaulting to current-input-port.",
+    "parameters": [],
+    "example": "(char-ready?)  => #t"
+  },
+  "char-upcase": {
+    "signature": "(char-upcase char)",
+    "description": "Returns the uppercase equivalent of char. If char is an alphabetic character, returns its uppercase form; otherwise returns char itself. The result is guaranteed to satisfy (char-ci=? char result).",
+    "parameters": [
+      {
+        "name": "char",
+        "type": "char",
+        "desc": "character"
+      }
+    ],
+    "example": "(char-upcase #\\a)  => #\\A\n(char-upcase #\\0)  => #\\0"
+  },
+  "char-upper-case?": {
+    "signature": "(char-upper-case? char)",
+    "description": "Tests whether char is an uppercase letter, returning #t or #f.",
+    "parameters": [
+      {
+        "name": "char",
+        "type": "char",
+        "desc": "character"
+      }
+    ],
+    "example": "(char-upper-case? #\\A)  => #t\n(char-upper-case? #\\a)  => #f"
+  },
+  "char-whitespace?": {
+    "signature": "(char-whitespace? char)",
+    "description": "Tests whether char is a whitespace character, returning #t or #f. Whitespace characters include space, tab, newline, form feed, and carriage return.",
+    "parameters": [
+      {
+        "name": "char",
+        "type": "char",
+        "desc": "character"
+      }
+    ],
+    "example": "(char-whitespace? #\\space)  => #t\n(char-whitespace? #\\a)     => #f"
+  },
+  "char=?": {
+    "signature": "(char=? char1 char2)",
+    "description": "Tests whether two characters are the same. Together with char<?, defines a total ordering on the character set.",
+    "parameters": [
+      {
+        "name": "char1",
+        "type": "char",
+        "desc": "first character"
+      },
+      {
+        "name": "char2",
+        "type": "char",
+        "desc": "second character"
+      }
+    ],
+    "example": "(char=? #\\a #\\a)  => #t\n(char=? #\\a #\\b)  => #f"
+  },
+  "char>=?": {
+    "signature": "(char>=? char1 char2)",
+    "description": "Tests whether char1 is greater than or equal to char2 in character order. Together with char<?, defines a total ordering on the character set.",
+    "parameters": [
+      {
+        "name": "char1",
+        "type": "char",
+        "desc": "first character"
+      },
+      {
+        "name": "char2",
+        "type": "char",
+        "desc": "second character"
+      }
+    ],
+    "example": "(char>=? #\\z #\\a)  => #t\n(char>=? #\\a #\\a)  => #t"
+  },
+  "char>?": {
+    "signature": "(char>? char1 char2)",
+    "description": "Tests whether char1 is greater than char2 in character order. Together with char<?, defines a total ordering on the character set.",
+    "parameters": [
+      {
+        "name": "char1",
+        "type": "char",
+        "desc": "first character"
+      },
+      {
+        "name": "char2",
+        "type": "char",
+        "desc": "second character"
+      }
+    ],
+    "example": "(char>? #\\z #\\a)  => #t\n(char>? #\\a #\\z)  => #f"
+  },
+  "char<=?": {
+    "signature": "(char<=? char1 char2)",
+    "description": "Tests whether char1 is less than or equal to char2 in character order. Together with char<?, defines a total ordering on the character set.",
+    "parameters": [
+      {
+        "name": "char1",
+        "type": "char",
+        "desc": "first character"
+      },
+      {
+        "name": "char2",
+        "type": "char",
+        "desc": "second character"
+      }
+    ],
+    "example": "(char<=? #\\a #\\z)  => #t\n(char<=? #\\a #\\a)  => #t"
+  },
+  "char<?": {
+    "signature": "(char<? char1 char2)",
+    "description": "Tests whether char1 is less than char2 in character order. Uppercase letters, lowercase letters, and digits are each guaranteed to be in order. The relative ordering between digits and letters is implementation-dependent.",
+    "parameters": [
+      {
+        "name": "char1",
+        "type": "char",
+        "desc": "first character"
+      },
+      {
+        "name": "char2",
+        "type": "char",
+        "desc": "second character"
+      }
+    ],
+    "example": "(char<? #\\a #\\b)  => #t\n(char<? #\\0 #\\9)  => #t\n(char<? #\\A #\\B)  => #t"
+  },
+  "char-ci>=?": {
+    "signature": "(char-ci>=? char1 char2)",
+    "description": "Tests whether char1 is greater than or equal to char2 in character order, ignoring case.",
+    "parameters": [
+      {
+        "name": "char1",
+        "type": "char",
+        "desc": "first character"
+      },
+      {
+        "name": "char2",
+        "type": "char",
+        "desc": "second character"
+      }
+    ],
+    "example": "(char-ci>=? #\\Z #\\a)  => #t\n(char-ci>=? #\\a #\\A)  => #t"
+  },
+  "char-ci>?": {
+    "signature": "(char-ci>? char1 char2)",
+    "description": "Tests whether char1 is greater than char2 in character order, ignoring case.",
+    "parameters": [
+      {
+        "name": "char1",
+        "type": "char",
+        "desc": "first character"
+      },
+      {
+        "name": "char2",
+        "type": "char",
+        "desc": "second character"
+      }
+    ],
+    "example": "(char-ci>? #\\z #\\A)  => #t\n(char-ci>? #\\a #\\Z)  => #f"
+  },
+  "char-ci<=?": {
+    "signature": "(char-ci<=? char1 char2)",
+    "description": "Tests whether char1 is less than or equal to char2 in character order, ignoring case.",
+    "parameters": [
+      {
+        "name": "char1",
+        "type": "char",
+        "desc": "first character"
+      },
+      {
+        "name": "char2",
+        "type": "char",
+        "desc": "second character"
+      }
+    ],
+    "example": "(char-ci<=? #\\a #\\Z)  => #t\n(char-ci<=? #\\A #\\a)  => #t"
+  },
+  "char-ci<?": {
+    "signature": "(char-ci<? char1 char2)",
+    "description": "Tests whether char1 is less than char2 in character order, ignoring case. Equivalent to performing char<? after converting both characters to a uniform case.",
+    "parameters": [
+      {
+        "name": "char1",
+        "type": "char",
+        "desc": "first character"
+      },
+      {
+        "name": "char2",
+        "type": "char",
+        "desc": "second character"
+      }
+    ],
+    "example": "(char-ci<? #\\a #\\B)  => #t\n(char-ci<? #\\A #\\b)  => #t"
+  },
+  "peek-char": {
+    "signature": "(peek-char)\n(peek-char port)",
+    "description": "Procedure. Returns the next character on the input port without updating the port position (i.e., without consuming the character). If no more characters are available, returns the EOF object. The port argument may be omitted, defaulting to current-input-port. The next read-char or peek-char will return the same character.",
+    "parameters": [
+      {
+        "name": "port",
+        "type": "input-port",
+        "desc": "optional input port, defaults to current-input-port"
+      }
+    ],
+    "example": "(peek-char)  => returns the next character without consuming it\n(let ((c (peek-char)))\n  (list c (read-char)))  => e.g. (#\\a #\\a)"
+  },
+  "read-char": {
+    "signature": "(read-char)\n(read-char port)",
+    "description": "Procedure. Returns the next character on the input port and updates the port position. If no more characters are available, returns the EOF object. The port argument may be omitted, defaulting to current-input-port.",
+    "parameters": [
+      {
+        "name": "port",
+        "type": "input-port",
+        "desc": "optional input port, defaults to current-input-port"
+      }
+    ],
+    "example": "(read-char)  => returns the next character"
+  },
+  "write-char": {
+    "signature": "(write-char char)\n(write-char char port)",
+    "description": "Procedure. Writes the character char itself (not its external representation) to the given port. The return value is unspecified. The port argument may be omitted, defaulting to current-output-port.",
+    "parameters": [
+      {
+        "name": "char",
+        "type": "char",
+        "desc": "character to write"
+      },
+      {
+        "name": "port",
+        "type": "output-port",
+        "desc": "optional output port, defaults to current-output-port"
+      }
+    ],
+    "example": "(write-char #\\A)  => prints A\n(write-char #\\space)  => prints a space"
+  },
+  "make-vector": {
+    "signature": "(make-vector k)",
+    "description": "Returns a newly allocated vector of k elements. If fill is supplied, each element is initialized to fill; otherwise the initial content of each element is unspecified.",
+    "parameters": [
+      {
+        "name": "k",
+        "type": "exact non-negative integer",
+        "desc": "vector length"
+      },
+      {
+        "name": "fill",
+        "type": "any",
+        "desc": "optional initialization value"
+      }
+    ],
+    "example": "(make-vector 3 0)  => #(0 0 0)"
+  },
+  "vector": {
+    "signature": "(vector obj ...)",
+    "description": "Returns a newly allocated vector whose elements are the given arguments. Similar to list, but returns a vector instead of a list.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "one or more objects"
+      }
+    ],
+    "example": "(vector 'a 'b 'c)  => #(a b c)"
+  },
+  "vector-fill!": {
+    "signature": "(vector-fill! vector fill)",
+    "description": "Stores fill in every element of the vector. The return value is unspecified. This operation mutates the original vector.",
+    "parameters": [
+      {
+        "name": "vector",
+        "type": "vector",
+        "desc": "vector"
+      },
+      {
+        "name": "fill",
+        "type": "any",
+        "desc": "fill value"
+      }
+    ],
+    "example": "(let ((v (make-vector 3 0))) (vector-fill! v 1) v)  => #(1 1 1)"
+  },
+  "vector-ref": {
+    "signature": "(vector-ref vector k)",
+    "description": "k must be a valid index of vector (0 to the length of vector minus 1). Returns the contents of the kth element of the vector.",
+    "parameters": [
+      {
+        "name": "vector",
+        "type": "vector",
+        "desc": "vector"
+      },
+      {
+        "name": "k",
+        "type": "exact non-negative integer",
+        "desc": "element index (zero-based)"
+      }
+    ],
+    "example": "(vector-ref #(1 1 2 3 5 8 13 21) 5)  => 8"
+  },
+  "vector-set!": {
+    "signature": "(vector-set! vector k obj)",
+    "description": "k must be a valid index of vector. Stores obj in the kth element of the vector. The return value is unspecified. This operation mutates the original vector. Note: vector-set! must not be used on constant vectors.",
+    "parameters": [
+      {
+        "name": "vector",
+        "type": "vector",
+        "desc": "vector"
+      },
+      {
+        "name": "k",
+        "type": "exact non-negative integer",
+        "desc": "element index (zero-based)"
+      },
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "value to store"
+      }
+    ],
+    "example": "(let ((v (vector 0 1 2))) (vector-set! v 1 \"foo\") v)  => #(0 \"foo\" 2)"
+  },
+  "call-with-input-file": {
+    "signature": "(call-with-input-file string proc)",
+    "description": "Library procedure. string should be a filename string, and proc should be a procedure that accepts one argument. Opens the named file to obtain an input port, and calls proc with that port as its argument. The port is closed after proc returns, and the result value of proc is returned. An error is signaled if the file cannot be opened.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "filename"
+      },
+      {
+        "name": "proc",
+        "type": "procedure",
+        "desc": "procedure that accepts one port argument"
+      }
+    ],
+    "example": "(call-with-input-file \"data.txt\"\n  (lambda (port)\n    (read port)))"
+  },
+  "call-with-output-file": {
+    "signature": "(call-with-output-file string proc)",
+    "description": "Library procedure. string should be a filename string, and proc should be a procedure that accepts one argument. Opens the named file to obtain an output port, and calls proc with that port as its argument. The port is closed after proc returns, and the result value of proc is returned. If the file already exists, the effect is unspecified. An error is signaled if the file cannot be opened.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "filename"
+      },
+      {
+        "name": "proc",
+        "type": "procedure",
+        "desc": "procedure that accepts one port argument"
+      }
+    ],
+    "example": "(call-with-output-file \"out.txt\"\n  (lambda (port)\n    (write \"hello\" port)))"
+  },
+  "close-input-port": {
+    "signature": "(close-input-port port)",
+    "description": "Procedure. Closes the file associated with port, rendering the port incapable of delivering characters. Has no effect if the file is already closed. The return value is unspecified.",
+    "parameters": [
+      {
+        "name": "port",
+        "type": "input-port",
+        "desc": "input port to close"
+      }
+    ],
+    "example": "(define p (open-input-file \"data.txt\"))\n(close-input-port p)"
+  },
+  "close-output-port": {
+    "signature": "(close-output-port port)",
+    "description": "Procedure. Closes the file associated with port, rendering the port incapable of accepting characters. Has no effect if the file is already closed. The return value is unspecified.",
+    "parameters": [
+      {
+        "name": "port",
+        "type": "output-port",
+        "desc": "output port to close"
+      }
+    ],
+    "example": "(define p (open-output-file \"out.txt\"))\n(write \"hello\" p)\n(close-output-port p)"
+  },
+  "current-input-port": {
+    "signature": "(current-input-port)",
+    "description": "Procedure. Returns the current default input port.",
+    "parameters": [],
+    "example": "(current-input-port)  => #<input-port>"
+  },
+  "current-output-port": {
+    "signature": "(current-output-port)",
+    "description": "Procedure. Returns the current default output port.",
+    "parameters": [],
+    "example": "(current-output-port)  => #<output-port>"
+  },
+  "display": {
+    "signature": "(display obj)\n(display obj port)",
+    "description": "Library procedure. Writes a human-readable representation of obj to the given port. Strings are written without enclosing double quotes, and characters within strings are not escaped. Character objects are output as if by write-char (without the #\\ prefix). The return value is unspecified. The port argument may be omitted, defaulting to current-output-port. Unlike write, display is intended for output to be read by people.",
+    "parameters": [
+      {
+        "name": "obj",
+        "type": "any",
+        "desc": "object to display"
+      },
+      {
+        "name": "port",
+        "type": "output-port",
+        "desc": "optional output port, defaults to current-output-port"
+      }
+    ],
+    "example": "(display \"hello\")  => prints hello (no quotes)\n(display #\\A)  => prints A (no #\\ prefix)"
+  },
+  "load": {
+    "signature": "(load filename)",
+    "description": "Procedure. Reads and evaluates the expressions and definitions from the file specified by filename. filename is a string. load is an extension procedure provided by many Scheme implementations and is not part of the R5RS standard, but is widely used in the SDE environment.",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "filename to load"
+      }
+    ],
+    "example": "(load \"my-functions.scm\")"
+  },
+  "newline": {
+    "signature": "(newline)\n(newline port)",
+    "description": "Library procedure. Writes a newline character to the given port. The specific implementation varies by operating system. The return value is unspecified. The port argument may be omitted, defaulting to current-output-port.",
+    "parameters": [
+      {
+        "name": "port",
+        "type": "output-port",
+        "desc": "optional output port, defaults to current-output-port"
+      }
+    ],
+    "example": "(display \"hello\")\n(newline)  => prints hello followed by a newline"
+  },
+  "open-input-file": {
+    "signature": "(open-input-file filename)",
+    "description": "Procedure. Takes a string argument that names an existing file, and returns an input port capable of delivering characters from the file. An error is signaled if the file cannot be opened.",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "name of an existing file"
+      }
+    ],
+    "example": "(define p (open-input-file \"data.txt\"))\n(read p)"
+  },
+  "open-output-file": {
+    "signature": "(open-output-file filename)",
+    "description": "Procedure. Takes a string argument that names an output file, and returns an output port capable of writing characters to the file. An error is signaled if the file cannot be opened. If a file with the same name already exists, the effect is unspecified.",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "output filename"
+      }
+    ],
+    "example": "(define p (open-output-file \"out.txt\"))\n(write \"hello\" p)\n(close-output-port p)"
+  },
+  "read": {
+    "signature": "(read)\n(read port)",
+    "description": "Library procedure. Reads the external representation of a Scheme object from the given input port and converts it to the object itself. Returns the next parseable object, updating the port position. If end of file is encountered before any characters constituting an object are found, returns the EOF object. If end of file is encountered in the middle of an object's external representation, an error is signaled. Reading from a closed port is an error. The port argument may be omitted, defaulting to current-input-port.",
+    "parameters": [
+      {
+        "name": "port",
+        "type": "input-port",
+        "desc": "optional input port, defaults to current-input-port"
+      }
+    ],
+    "example": "(read)  => waits for user input and returns the parsed object\n(read (open-input-file \"data.scm\"))  => reads the first object from the file"
+  },
+  "read-line": {
+    "signature": "(read-line)\n(read-line port)",
+    "description": "Procedure. Reads a line of text from the input port (up to a newline or EOF) and returns it as a string. The newline character is not included in the returned string. If EOF is reached without reading any characters, returns the EOF object. An extension procedure provided by many Scheme implementations, not part of the R5RS standard.",
+    "parameters": [
+      {
+        "name": "port",
+        "type": "input-port",
+        "desc": "optional input port, defaults to current-input-port"
+      }
+    ],
+    "example": "(read-line)  => waits for user to input a line and returns it as a string"
+  },
+  "with-input-from-file": {
+    "signature": "(with-input-from-file string thunk)",
+    "description": "Optional library procedure. string should be the name of an existing file, and thunk should be a procedure of no arguments. Opens the file to obtain an input port, sets it as the default for current-input-port, and calls thunk. After thunk returns, the port is closed and the previous default port is restored. Returns the result value of thunk. The behavior when exiting via an escape procedure is implementation-dependent.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "name of an existing file"
       },
       {
         "name": "thunk",
         "type": "procedure",
-        "desc": "无参数过程"
+        "desc": "procedure of no arguments"
       }
     ],
     "example": "(with-input-from-file \"data.txt\"\n  (lambda ()\n    (let loop ((line (read-line))\n               (result '()))\n      (if (eof-object? line)\n          (reverse result)\n          (loop (read-line) (cons line result))))))"
   },
   "with-output-to-file": {
     "signature": "(with-output-to-file string thunk)",
-    "description": "可选库过程。string 应为文件名字符串，thunk 应为无参数过程。打开文件获取输出端口，将其设为 current-output-port 的默认值，调用 thunk。thunk 返回后关闭端口并恢复之前的默认端口。返回 thunk 的结果值。如果文件已存在则效果未指定。使用转义过程退出时行为依赖于实现。",
+    "description": "Optional library procedure. string should be a filename string, and thunk should be a procedure of no arguments. Opens the file to obtain an output port, sets it as the default for current-output-port, and calls thunk. After thunk returns, the port is closed and the previous default port is restored. Returns the result value of thunk. If the file already exists, the effect is unspecified. The behavior when exiting via an escape procedure is implementation-dependent.",
     "parameters": [
       {
         "name": "string",
         "type": "string",
-        "desc": "文件名"
+        "desc": "filename"
       },
       {
         "name": "thunk",
         "type": "procedure",
-        "desc": "无参数过程"
+        "desc": "procedure of no arguments"
       }
     ],
     "example": "(with-output-to-file \"log.txt\"\n  (lambda ()\n    (display \"error occurred\")\n    (newline)))"
   },
   "write": {
     "signature": "(write obj)\n(write obj port)",
-    "description": "库过程。将 obj 的机器可读表示写入给定端口。字符串用双引号包裹，其中的反斜杠和双引号用反斜杠转义。字符对象使用 #\\ 记法。返回值未指定。port 可省略，默认为 current-output-port。write 适合生成可被 read 读回的输出。",
+    "description": "Library procedure. Writes a machine-readable representation of obj to the given port. Strings are enclosed in double quotes, and backslashes and double quotes within strings are escaped with backslashes. Character objects use the #\\ notation. The return value is unspecified. The port argument may be omitted, defaulting to current-output-port. write is intended for output that can be read back by read.",
     "parameters": [
       {
         "name": "obj",
         "type": "any",
-        "desc": "要写入的对象"
+        "desc": "object to write"
       },
       {
         "name": "port",
         "type": "output-port",
-        "desc": "可选，输出端口，默认为当前输出端口"
+        "desc": "optional output port, defaults to current-output-port"
       }
     ],
-    "example": "(write \"hello\")  => 打印 \"hello\"（带引号）\n(write #\\A)  => 打印 #\\A"
-  },
-  "write-char": {
-    "signature": "(write-char char)\n(write-char char port)",
-    "description": "过程。将字符 char 本身（而非外部表示）写入给定端口。返回值未指定。port 可省略，默认为 current-output-port。",
-    "parameters": [
-      {
-        "name": "char",
-        "type": "char",
-        "desc": "要写入的字符"
-      },
-      {
-        "name": "port",
-        "type": "output-port",
-        "desc": "可选，输出端口，默认为当前输出端口"
-      }
-    ],
-    "example": "(write-char #\\A)  => 打印 A\n(write-char #\\space)  => 打印空格"
+    "example": "(write \"hello\")  => prints \"hello\" (with quotes)\n(write #\\A)  => prints #\\A"
   }
 }
