@@ -23,7 +23,7 @@
     ],
     "example": "(boolean? #f)  => #t\n(boolean? 0)   => #f"
   },
-  "char-&gt;integer": {
+  "char->integer": {
     "signature": "(char->integer char)",
     "description": "返回字符 char 对应的精确整数（字符的序数值/码点）。char->integer 和 integer->char 在字符序与整数序之间构成保序同构。",
     "parameters": [
@@ -222,7 +222,7 @@
     ],
     "example": "(eqv? 2 2)  => #t\n(eqv? 'a 'b)  => #f\n(eqv? (cons 1 2) (cons 1 2))  => #f"
   },
-  "integer-&gt;char": {
+  "integer->char": {
     "signature": "(integer->char n)",
     "description": "返回精确整数 n 对应的字符。n 必须是 char->integer 某次调用返回的有效值。与 char->integer 一起在字符序与整数子集之间构成保序同构。",
     "parameters": [
@@ -246,7 +246,7 @@
     ],
     "example": "(not #f)        => #t\n(not #t)        => #f\n(not 3)         => #f\n(not '())       => #f"
   },
-  "symbol-&gt;string": {
+  "symbol->string": {
     "signature": "(symbol->string symbol)",
     "description": "返回符号 symbol 的名称字符串。如果符号来自字面量或 read 过程，返回实现首选大小写的字符串。对返回的字符串使用 string-set! 等变更操作是错误的。",
     "parameters": [
@@ -270,7 +270,7 @@
     ],
     "example": "(symbol? 'foo)       => #t\n(symbol? (car '(a b))) => #t\n(symbol? \"bar\")       => #f"
   },
-  "char&gt;=?": {
+  "char>=?": {
     "signature": "(char>=? char1 char2)",
     "description": "判断 char1 的字符序是否大于或等于 char2。与 char<? 等过程一起对字符集定义全序关系。",
     "parameters": [
@@ -287,7 +287,7 @@
     ],
     "example": "(char>=? #\\z #\\a)  => #t\n(char>=? #\\a #\\a)  => #t"
   },
-  "char&gt;?": {
+  "char>?": {
     "signature": "(char>? char1 char2)",
     "description": "判断 char1 的字符序是否大于 char2。与 char<? 等过程一起对字符集定义全序关系。",
     "parameters": [
@@ -304,7 +304,7 @@
     ],
     "example": "(char>? #\\z #\\a)  => #t\n(char>? #\\a #\\z)  => #f"
   },
-  "char&lt;=?": {
+  "char<=?": {
     "signature": "(char<=? char1 char2)",
     "description": "判断 char1 的字符序是否小于或等于 char2。与 char<? 等过程一起对字符集定义全序关系。",
     "parameters": [
@@ -321,7 +321,7 @@
     ],
     "example": "(char<=? #\\a #\\z)  => #t\n(char<=? #\\a #\\a)  => #t"
   },
-  "char&lt;?": {
+  "char<?": {
     "signature": "(char<? char1 char2)",
     "description": "判断 char1 的字符序是否小于 char2。保证大写字母、小写字母和数字各自按序排列。数字与字母之间的相对顺序取决于实现。",
     "parameters": [
@@ -338,7 +338,7 @@
     ],
     "example": "(char<? #\\a #\\b)  => #t\n(char<? #\\0 #\\9)  => #t\n(char<? #\\A #\\B)  => #t"
   },
-  "char-ci&gt;=?": {
+  "char-ci>=?": {
     "signature": "(char-ci>=? char1 char2)",
     "description": "忽略大小写，判断 char1 的字符序是否大于或等于 char2。",
     "parameters": [
@@ -355,7 +355,7 @@
     ],
     "example": "(char-ci>=? #\\Z #\\a)  => #t\n(char-ci>=? #\\a #\\A)  => #t"
   },
-  "char-ci&gt;?": {
+  "char-ci>?": {
     "signature": "(char-ci>? char1 char2)",
     "description": "忽略大小写，判断 char1 的字符序是否大于 char2。",
     "parameters": [
@@ -372,7 +372,7 @@
     ],
     "example": "(char-ci>? #\\z #\\A)  => #t\n(char-ci>? #\\a #\\Z)  => #f"
   },
-  "char-ci&lt;=?": {
+  "char-ci<=?": {
     "signature": "(char-ci<=? char1 char2)",
     "description": "忽略大小写，判断 char1 的字符序是否小于或等于 char2。",
     "parameters": [
@@ -389,7 +389,7 @@
     ],
     "example": "(char-ci<=? #\\a #\\Z)  => #t\n(char-ci<=? #\\A #\\a)  => #t"
   },
-  "char-ci&lt;?": {
+  "char-ci<?": {
     "signature": "(char-ci<? char1 char2)",
     "description": "忽略大小写，判断 char1 的字符序是否小于 char2。等价于对两个字符统一转换大小写后进行 char<? 比较。",
     "parameters": [
@@ -1002,7 +1002,7 @@
     ],
     "example": "(even? 4)  => #t\n(even? 7)  => #f\n(even? -2)  => #t"
   },
-  "exact-&gt;inexact": {
+  "exact->inexact": {
     "signature": "(exact->inexact z)",
     "description": "返回 z 的不精确表示。返回值是数值上最接近参数的不精确数。若精确参数没有合理接近的不精确等价值，则可能报告实现限制违规。",
     "parameters": [
@@ -1238,7 +1238,7 @@
     ],
     "example": "(negative? -5)  => #t\n(negative? 0)  => #f\n(negative? 3.2)  => #f"
   },
-  "number-&gt;string": {
+  "number->string": {
     "signature": "(number->string num)\n(number->string num radix)",
     "description": "将数值 num 转换为字符串表示。radix 必须是精确整数 2、8、10 或 16，默认为 10。对于不精确数且 radix 为 10 时，结果包含小数点并使用最少位数表示。结果字符串不包含显式基数前缀。",
     "parameters": [
@@ -1721,7 +1721,7 @@
     ],
     "example": "(vector? #(a b c))  => #t\n(vector? '(a b c))  => #f\n(vector? 123)  => #f"
   },
-  "list-&gt;string": {
+  "list->string": {
     "signature": "(list->string list)",
     "description": "返回由列表 list 中的字符组成的新分配字符串。list 必须是字符列表。list->string 和 string->list 互为逆操作（就 equal? 而言）。",
     "parameters": [
@@ -1733,7 +1733,7 @@
     ],
     "example": "(list->string '(#\\a #\\b #\\c))  => \"abc\""
   },
-  "list-&gt;vector": {
+  "list->vector": {
     "signature": "(list->vector list)",
     "description": "返回一个新创建的向量，其元素初始化为列表 list 中的元素。",
     "parameters": [
@@ -1745,7 +1745,7 @@
     ],
     "example": "(list->vector '(dah dah didah))  => #(dah dah didah)"
   },
-  "string-&gt;list": {
+  "string->list": {
     "signature": "(string->list string)",
     "description": "返回由给定字符串中的字符组成的新分配列表。string->list 和 list->string 互为逆操作（就 equal? 而言）。",
     "parameters": [
@@ -1757,7 +1757,7 @@
     ],
     "example": "(string->list \"abc\")  => (#\\a #\\b #\\c)"
   },
-  "string-&gt;number": {
+  "string->number": {
     "signature": "(string->number string)",
     "description": "返回由给定字符串表示的最大精度数值。可选参数 radix 必须是精确整数 2、8、10 或 16，作为默认进制，可被字符串中的显式进制前缀（如 \"#o177\"）覆盖。若字符串不是合法的数值表示，则返回 #f。",
     "parameters": [
@@ -1774,7 +1774,7 @@
     ],
     "example": "(string->number \"100\")  => 100\n(string->number \"100\" 16)  => 256\n(string->number \"1e2\")  => 100.0\n(string->number \"hello\")  => #f"
   },
-  "string-&gt;symbol": {
+  "string->symbol": {
     "description": "返回名称为 string 的符号。此过程可创建名称包含特殊字符或非标准大小写字母的符号，但通常不建议这样做，因为在某些 Scheme 实现中它们无法被读取。与 symbol->string 互为逆操作。",
     "example": "(string->symbol \"foo\")  => foo\n(string->symbol \"mISSISSIPpi\")  => the symbol with name \"mISSISSIPpi\"",
     "parameters": [
@@ -1786,7 +1786,7 @@
     ],
     "signature": "(string->symbol string)"
   },
-  "vector-&gt;list": {
+  "vector->list": {
     "signature": "(vector->list vector)",
     "description": "返回一个新分配的列表，包含向量中所有元素。",
     "parameters": [
@@ -1798,7 +1798,7 @@
     ],
     "example": "(vector->list #(dah dah didah))  => (dah dah didah)"
   },
-  "string&gt;=?": {
+  "string>=?": {
     "signature": "(string>=? string1 string2)",
     "description": "基于字符的字典序比较两个字符串。如果 string1 在字典序上大于或等于 string2，则返回 #t，否则返回 #f。如果两个字符串长度不同但短字符串是长字符串的前缀，则较长的字符串在字典序上更大。",
     "parameters": [
@@ -1815,7 +1815,7 @@
     ],
     "example": "(string>=? \"abc\" \"abc\")  => #t\n(string>=? \"abd\" \"abc\")  => #t\n(string>=? \"abc\" \"abd\")  => #f"
   },
-  "string&gt;?": {
+  "string>?": {
     "signature": "(string>? string1 string2)",
     "description": "基于字符的字典序比较两个字符串。如果 string1 在字典序上严格大于 string2，则返回 #t，否则返回 #f。",
     "parameters": [
@@ -1832,7 +1832,7 @@
     ],
     "example": "(string>? \"abd\" \"abc\")  => #t\n(string>? \"abc\" \"abd\")  => #f\n(string>? \"abc\" \"abc\")  => #f"
   },
-  "string&lt;=?": {
+  "string<=?": {
     "signature": "(string<=? string1 string2)",
     "description": "基于字符的字典序比较两个字符串。如果 string1 在字典序上小于或等于 string2，则返回 #t，否则返回 #f。",
     "parameters": [
@@ -1849,7 +1849,7 @@
     ],
     "example": "(string<=? \"abc\" \"abc\")  => #t\n(string<=? \"abc\" \"abd\")  => #t\n(string<=? \"abd\" \"abc\")  => #f"
   },
-  "string&lt;?": {
+  "string<?": {
     "signature": "(string<? string1 string2)",
     "description": "基于字符的字典序比较两个字符串。如果 string1 在字典序上严格小于 string2，则返回 #t，否则返回 #f。是由 char<? 诱导的字符串字典序。",
     "parameters": [
@@ -1866,7 +1866,7 @@
     ],
     "example": "(string<? \"abc\" \"abd\")  => #t\n(string<? \"abd\" \"abc\")  => #f\n(string<? \"abc\" \"abc\")  => #f"
   },
-  "string-ci&gt;=?": {
+  "string-ci>=?": {
     "signature": "(string-ci>=? string1 string2)",
     "description": "大小写不敏感的字符串字典序比较。如果 string1 在忽略大小写的字典序上大于或等于 string2，则返回 #t，否则返回 #f。",
     "parameters": [
@@ -1883,7 +1883,7 @@
     ],
     "example": "(string-ci>=? \"ABC\" \"abc\")  => #t\n(string-ci>=? \"abc\" \"abd\")  => #f"
   },
-  "string-ci&gt;?": {
+  "string-ci>?": {
     "signature": "(string-ci>? string1 string2)",
     "description": "大小写不敏感的字符串字典序比较。如果 string1 在忽略大小写的字典序上严格大于 string2，则返回 #t，否则返回 #f。",
     "parameters": [
@@ -1900,7 +1900,7 @@
     ],
     "example": "(string-ci>? \"abd\" \"ABC\")  => #t\n(string-ci>? \"abc\" \"ABD\")  => #f"
   },
-  "string-ci&lt;=?": {
+  "string-ci<=?": {
     "signature": "(string-ci<=? string1 string2)",
     "description": "大小写不敏感的字符串字典序比较。如果 string1 在忽略大小写的字典序上小于或等于 string2，则返回 #t，否则返回 #f。",
     "parameters": [
@@ -1917,7 +1917,7 @@
     ],
     "example": "(string-ci<=? \"abc\" \"ABD\")  => #t\n(string-ci<=? \"abd\" \"ABC\")  => #f"
   },
-  "string-ci&lt;?": {
+  "string-ci<?": {
     "signature": "(string-ci<? string1 string2)",
     "description": "大小写不敏感的字符串字典序比较。如果 string1 在忽略大小写的字典序上严格小于 string2，则返回 #t，否则返回 #f。",
     "parameters": [
