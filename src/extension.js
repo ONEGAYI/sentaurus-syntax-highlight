@@ -102,6 +102,15 @@ function activate(context) {
         // Function docs file is optional; silently skip if missing
     }
 
+    // 加载 Scheme 内置函数文档并合并
+    try {
+        const schemeDocsPath = path.join(__dirname, '..', 'syntaxes', 'scheme_function_docs.json');
+        const schemeDocs = JSON.parse(fs.readFileSync(schemeDocsPath, 'utf8'));
+        funcDocs = { ...funcDocs, ...schemeDocs };
+    } catch (_) {
+        // Scheme 文档文件是可选的，缺失时静默跳过
+    }
+
     const languages = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect'];
 
     for (const langId of languages) {
