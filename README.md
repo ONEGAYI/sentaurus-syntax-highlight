@@ -7,7 +7,8 @@
 | 功能 | 说明 |
 |------|------|
 | 语法高亮 | 关键字、函数、标签、常量、数值、变量等分色显示 |
-| 自动补全 | 输入时弹出关键词建议，按类别排序和标注图标 |
+| 自动补全 | 输入时弹出关键词建议，按类别排序和标注图标，**SDE API 函数附带参数说明** |
+| 悬停提示 | 鼠标悬停在 SDE API 函数上显示函数签名、参数说明和示例代码 |
 | 注释识别 | `#`、`//` 通用注释；SDE 文件额外支持 `;`（Scheme 注释） |
 | SWB 变量 | 高亮 `@Var@`、`@param:+2@` 等 Sentaurus Workbench 参数替换语法 |
 | 括号匹配 | `{}` `[]` `()` 自动配对 |
@@ -26,6 +27,10 @@
 
 ![效果展示](<assets/pics/vscode 插件效果演示 - 自动补全+语法高亮.png>)
 
+#### 函数悬停提示与补全文档
+
+覆盖全部 400 个 SDE KEYWORD1 API 函数（sdegeo、sde、sdedr、sdeicwb、sdepe、sdesnmesh、sdeio、sdeepi、sdesp），悬停时显示函数签名、参数说明和示例代码，补全列表附带详细文档。
+
 ## 安装
 
 ### VSIX 命令行安装（推荐离线环境）
@@ -34,7 +39,7 @@
 
 ```bash
 # 安装 / 升级
-code --install-extension sentaurus-tcad-syntax-0.2.0.vsix
+code --install-extension sentaurus-tcad-syntax-0.3.0.vsix
 
 # 卸载
 code --uninstall-extension onegayi.sentaurus-tcad-syntax
@@ -47,11 +52,11 @@ code --uninstall-extension onegayi.sentaurus-tcad-syntax
 将扩展文件夹**重命名**为 `publisher.extension-name-version` 格式后复制到 VSCode 扩展目录，然后重启 VSCode：
 
 ```
-sentaurus-syntax-highlight  →  onegayi.sentaurus-tcad-syntax-0.2.0
+sentaurus-syntax-highlight  →  onegayi.sentaurus-tcad-syntax-0.3.0
 ```
 
-- Linux/macOS: `~/.vscode/extensions/onegayi.sentaurus-tcad-syntax-0.2.0`
-- Windows: `%USERPROFILE%\.vscode\extensions\onegayi.sentaurus-tcad-syntax-0.2.0`
+- Linux/macOS: `~/.vscode/extensions/onegayi.sentaurus-tcad-syntax-0.3.0`
+- Windows: `%USERPROFILE%\.vscode\extensions\onegayi.sentaurus-tcad-syntax-0.3.0`
 
 > VSCode 依赖此命名约定来识别扩展，名称不正确将导致扩展无法加载。
 

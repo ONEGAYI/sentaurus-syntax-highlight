@@ -69,6 +69,23 @@
 4. `@Var@` SWB 参数替换模式（`variable.parameter`）——如 `@previous@`、`@param:+2@`
 5. 兜底标识符模式（`variable.other`）——必须放在最后（首匹配胜出规则）
 
+## 函数文档系统
+
+`src/extension.js` 的 Hover 和 Completion 提供器从 `syntaxes/sde_function_docs.json` 读取函数文档。
+当前已覆盖全部 400 个 SDE KEYWORD1 API 函数（详见 `docs/superpowers/specs/2026-04-10-sde-function-docs-plan.md`）。
+
+### 未来工作：内置函数文档
+
+`all_keywords.json` 中的 FUNCTION 类别是语言内置函数，当前**无文档描述**：
+
+- **Scheme 内置**（SDE, 204 个）：`define`、`lambda`、`if`、`map`、`cond` 等。
+  属于 R5RS/R7RS 标准，只需写一份，所有 `.scm`/`_dvs.cmd` 文件通用。
+  文档来源应引用 Scheme 语言标准，而非 Sentaurus 文档。
+
+- **Tcl 内置**（sprocess/inspect/sinterconnect/spptcl, 106-128 个）：`proc`、`while`、`glob`、`switch` 等。
+  sprocess ∩ sinterconnect = 128/128 完全相同，可写一份 Tcl 通用文档复用给 4 种语言。
+  注意：与 Scheme 同名的 10 个函数（`if`、`list`、`string` 等）语法完全不同，不可复用。
+
 ## 关键约束
 
 - 多种语言共用 `.cmd` 扩展名——文件关联完全依赖 `filenamePatterns`，而非 `extensions`
@@ -76,3 +93,28 @@
 - `*.Identifier` 文件已被 gitignore
 - TextMate 语法模式遵循首匹配胜出规则——兜底模式必须放在最后
 - `*` 不作为注释字符（已移除）——在 TCAD 脚本中它是乘法运算符
+
+## 语法简短说明
+
+### SDE scheme
+
+**坐标定义**
+```scheme
+(position x y z)
+```
+
+**向量定义**
+```scheme
+(gvector vx vy vz)
+```
+
+**材料名称**
+`"Silicon"`, `"Oxide"`, `"Nitride"`
+
+> 需要用双引号包裹
+
+**字符串定义**
+```scheme
+; 使用双引号包裹
+"Reg.Silicon"
+```

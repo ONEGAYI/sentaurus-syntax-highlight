@@ -35,10 +35,35 @@ const DETAIL_LABEL = {
 };
 
 /**
+ * Format a function doc entry into a VSCode MarkdownString.
+ */
+function formatDoc(doc) {
+    const lines = [];
+    lines.push(`**${doc.signature}**`);
+    lines.push('');
+    lines.push(doc.description);
+    if (doc.parameters && doc.parameters.length) {
+        lines.push('');
+        lines.push('**Parameters:**');
+        for (const p of doc.parameters) {
+            lines.push(`- \`${p.name}\` (\`${p.type}\`) — ${p.desc}`);
+        }
+    }
+    if (doc.example) {
+        lines.push('');
+        lines.push('**Example:**');
+        lines.push('```scheme');
+        lines.push(doc.example);
+        lines.push('```');
+    }
+    return new vscode.MarkdownString(lines.join('\n'));
+}
+
+/**
  * Build completion items for a single language module.
  * Items are created once at activation and reused on every trigger.
  */
-function buildItems(moduleKeywords) {
+function buildItems(moduleKeywords, funcDocs) {
     const items = [];
     for (const [category, keywords] of Object.entries(moduleKeywords)) {
         const kind = KIND_MAP[category] || vscode.CompletionItemKind.Text;
@@ -49,6 +74,9 @@ function buildItems(moduleKeywords) {
             const item = new vscode.CompletionItem(keyword, kind);
             item.detail = detail;
             item.sortText = prefix + keyword;
+            if (funcDocs[keyword]) {
+                item.documentation = formatDoc(funcDocs[keyword]);
+            }
             items.push(item);
         }
     }
@@ -57,7 +85,9 @@ function buildItems(moduleKeywords) {
 
 function activate(context) {
     const keywordsPath = path.join(__dirname, '..', 'syntaxes', 'all_keywords.json');
+    const funcDocsPath = path.join(__dirname, '..', 'syntaxes', 'sde_function_docs.json');
     let allKeywords;
+    let funcDocs = {};
 
     try {
         allKeywords = JSON.parse(fs.readFileSync(keywordsPath, 'utf8'));
@@ -66,15 +96,21 @@ function activate(context) {
         return;
     }
 
+    try {
+        funcDocs = JSON.parse(fs.readFileSync(funcDocsPath, 'utf8'));
+    } catch (_) {
+        // Function docs file is optional; silently skip if missing
+    }
+
     const languages = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect'];
 
     for (const langId of languages) {
         const moduleKeywords = allKeywords[langId];
         if (!moduleKeywords) continue;
 
-        const items = buildItems(moduleKeywords);
+        const items = buildItems(moduleKeywords, funcDocs);
 
-        const disposable = vscode.languages.registerCompletionItemProvider(
+        const completionDisposable = vscode.languages.registerCompletionItemProvider(
             { language: langId },
             {
                 provideCompletionItems() {
@@ -82,8 +118,23 @@ function activate(context) {
                 },
             }
         );
+        context.subscriptions.push(completionDisposable);
 
-        context.subscriptions.push(disposable);
+        // Register HoverProvider for function documentation
+        const hoverDisposable = vscode.languages.registerHoverProvider(
+            { language: langId },
+            {
+                provideHover(document, position) {
+                    const range = document.getWordRangeAtPosition(position, /[\w:.-]+/);
+                    if (!range) return null;
+                    const word = document.getText(range);
+                    const doc = funcDocs[word];
+                    if (!doc) return null;
+                    return new vscode.Hover(formatDoc(doc), range);
+                },
+            }
+        );
+        context.subscriptions.push(hoverDisposable);
     }
 }
 
