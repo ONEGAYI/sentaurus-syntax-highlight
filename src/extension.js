@@ -5,11 +5,11 @@ const fs = require('fs');
 /**
  * Map keyword categories to VSCode CompletionItemKind.
  * Aligns with TextMate scope mapping in extract_keywords.py:
- *   KEYWORD1 -> keyword.control, KEYWORD2 -> keyword.other,
+ *   KEYWORD1 -> support.function, KEYWORD2 -> keyword.other,
  *   KEYWORD3 -> entity.name.tag, KEYWORD4 -> support.class, etc.
  */
 const KIND_MAP = {
-    KEYWORD1: vscode.CompletionItemKind.Keyword,
+    KEYWORD1: vscode.CompletionItemKind.Function,
     KEYWORD2: vscode.CompletionItemKind.Keyword,
     KEYWORD3: vscode.CompletionItemKind.Struct,
     KEYWORD4: vscode.CompletionItemKind.Class,
@@ -28,7 +28,7 @@ const SORT_PREFIX = {
 
 /** Human-readable category label shown in completion detail. */
 const DETAIL_LABEL = {
-    KEYWORD1: 'Control Keyword', KEYWORD2: 'Keyword',
+    KEYWORD1: 'Function', KEYWORD2: 'Keyword',
     KEYWORD3: 'Tag', KEYWORD4: 'Class',
     LITERAL1: 'Constant', LITERAL2: 'Numeric Literal', LITERAL3: 'String Literal',
     FUNCTION: 'Function',
