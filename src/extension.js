@@ -2,6 +2,11 @@ const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
 
+/** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
+function decodeHtml(str) {
+    return str.replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+}
+
 /**
  * Map keyword categories to VSCode CompletionItemKind.
  * Aligns with TextMate scope mapping in extract_keywords.py:
@@ -70,7 +75,8 @@ function buildItems(moduleKeywords, funcDocs) {
         const prefix = SORT_PREFIX[category] || '3';
         const detail = DETAIL_LABEL[category] || category;
 
-        for (const keyword of keywords) {
+        for (const rawKeyword of keywords) {
+            const keyword = decodeHtml(rawKeyword);
             const item = new vscode.CompletionItem(keyword, kind);
             item.detail = detail;
             item.sortText = prefix + keyword;
@@ -134,10 +140,10 @@ function activate(context) {
             { language: langId },
             {
                 provideHover(document, position) {
-                    const range = document.getWordRangeAtPosition(position, /[\w:.-]+/);
+                    const range = document.getWordRangeAtPosition(position, /[\w:.\-<>?!+*/=]+/);
                     if (!range) return null;
                     const word = document.getText(range);
-                    const doc = funcDocs[word];
+                    const doc = funcDocs[word] || funcDocs[decodeHtml(word)];
                     if (!doc) return null;
                     return new vscode.Hover(formatDoc(doc), range);
                 },
