@@ -39,6 +39,12 @@ const DETAIL_LABEL = {
     FUNCTION: 'Function',
 };
 
+/** Labels used in formatted documentation (i18n). */
+const DOC_LABELS = {
+    parameters: '**Parameters:**',
+    example: '**Example:**',
+};
+
 /**
  * Format a function doc entry into a VSCode MarkdownString.
  */
@@ -49,19 +55,38 @@ function formatDoc(doc) {
     lines.push(doc.description);
     if (doc.parameters && doc.parameters.length) {
         lines.push('');
-        lines.push('**Parameters:**');
+        lines.push(DOC_LABELS.parameters);
         for (const p of doc.parameters) {
             lines.push(`- \`${p.name}\` (\`${p.type}\`) — ${p.desc}`);
         }
     }
     if (doc.example) {
         lines.push('');
-        lines.push('**Example:**');
+        lines.push(DOC_LABELS.example);
         lines.push('```scheme');
         lines.push(doc.example);
         lines.push('```');
     }
     return new vscode.MarkdownString(lines.join('\n'));
+}
+
+/**
+ * Load a JSON file from the syntaxes directory.
+ * When preferZh is true, tries the .zh-CN variant first, falls back to default.
+ * Returns null if neither file exists.
+ */
+function loadDocsJson(filename, preferZh) {
+    const syntaxesDir = path.join(__dirname, '..', 'syntaxes');
+    if (preferZh) {
+        const localeFile = filename.replace(/\.json$/, '.zh-CN.json');
+        try {
+            return JSON.parse(fs.readFileSync(path.join(syntaxesDir, localeFile), 'utf8'));
+        } catch (_) {}
+    }
+    try {
+        return JSON.parse(fs.readFileSync(path.join(syntaxesDir, filename), 'utf8'));
+    } catch (_) {}
+    return null;
 }
 
 /**
@@ -91,9 +116,7 @@ function buildItems(moduleKeywords, funcDocs) {
 
 function activate(context) {
     const keywordsPath = path.join(__dirname, '..', 'syntaxes', 'all_keywords.json');
-    const funcDocsPath = path.join(__dirname, '..', 'syntaxes', 'sde_function_docs.json');
     let allKeywords;
-    let funcDocs = {};
 
     try {
         allKeywords = JSON.parse(fs.readFileSync(keywordsPath, 'utf8'));
@@ -102,19 +125,20 @@ function activate(context) {
         return;
     }
 
-    try {
-        funcDocs = JSON.parse(fs.readFileSync(funcDocsPath, 'utf8'));
-    } catch (_) {
-        // Function docs file is optional; silently skip if missing
+    // Detect locale for i18n
+    const useZh = vscode.env.language.startsWith('zh');
+    if (useZh) {
+        DOC_LABELS.parameters = '**参数：**';
+        DOC_LABELS.example = '**示例：**';
     }
 
+    // Load SDE function docs (try zh-CN first, fallback to en)
+    const funcDocs = loadDocsJson('sde_function_docs.json', useZh) || {};
+
     // 加载 Scheme 内置函数文档并合并
-    try {
-        const schemeDocsPath = path.join(__dirname, '..', 'syntaxes', 'scheme_function_docs.json');
-        const schemeDocs = JSON.parse(fs.readFileSync(schemeDocsPath, 'utf8'));
-        funcDocs = { ...funcDocs, ...schemeDocs };
-    } catch (_) {
-        // Scheme 文档文件是可选的，缺失时静默跳过
+    const schemeDocs = loadDocsJson('scheme_function_docs.json', useZh);
+    if (schemeDocs) {
+        Object.assign(funcDocs, schemeDocs);
     }
 
     const languages = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect'];
