@@ -31,6 +31,8 @@
 
 覆盖全部 400 个 SDE KEYWORD1 API 函数（sdegeo、sde、sdedr、sdeicwb、sdepe、sdesnmesh、sdeio、sdeepi、sdesp），悬停时显示函数签名、参数说明和示例代码，补全列表附带详细文档。
 
+![效果演示-语法文档](<assets/pics/vscode 插件效果演示 - 语法文档+汉化适配.png>)
+
 ## 安装
 
 ### VSIX 命令行安装（推荐离线环境）
