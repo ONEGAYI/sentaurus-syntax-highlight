@@ -85,7 +85,7 @@ def create_textmate_grammar(mode_name, keywords):
     for key_type, scope in scope_mapping.items():
         if key_type in keywords and keywords[key_type]:
             pattern = {
-                "match": "\\b(" + "|".join(re.escape(k) for k in keywords[key_type]) + ")\\b",
+                "match": "\\b(" + "|".join(re.escape(k) for k in keywords[key_type]) + ")(?![A-Za-z0-9_:-])",
                 "name": scope + f".{mode_name.lower()}"
             }
             grammar["patterns"].append(pattern)
