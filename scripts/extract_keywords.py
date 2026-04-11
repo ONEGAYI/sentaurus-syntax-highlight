@@ -135,29 +135,204 @@ def create_textmate_grammar(mode_name, keywords):
 
     return grammar
 
+# ========== Incremental Grammar Update ==========
+
+# Scopes that are never keyword-list patterns
+_NON_KEYWORD_SCOPES = {
+    'comment.line.hash', 'comment.line.double-slash', 'comment.line.semicolon',
+    'string.quoted.double', 'variable.parameter', 'variable.other',
+}
+
+# Regex to parse keyword match patterns into (prefix, keywords_str, suffix)
+# Handles: \b(kws)\b, \b(kws)(?![A-Za-z0-9_:-]), (kws)
+_MATCH_PARSER = re.compile(r'^(\\b\(|\()(.*?)(\)(?:\\b|(?!\[A-Za-z0-9_:-\])?)$)')
+
+# Per-language scope → keyword type mapping
+# Only lists scopes that contain keyword-list patterns.
+# SDE uses custom scopes (support.function, support.type) that differ from other languages.
+_SCOPE_TYPE_MAP = {
+    'sde': {
+        'support.function': 'KEYWORD1',
+        'keyword.other': 'KEYWORD2',
+        'entity.name.tag': 'KEYWORD3',
+        'support.type': 'LITERAL3',
+        'entity.name.function': 'FUNCTION',
+    },
+    'sdevice': {
+        'keyword.control': 'KEYWORD1',
+        'keyword.other': 'KEYWORD2',
+        'entity.name.tag': 'KEYWORD3',
+        'support.class': 'KEYWORD4',
+    },
+    'sprocess': {
+        'keyword.control': 'KEYWORD1',
+        'keyword.other': 'KEYWORD2',
+        'entity.name.tag': 'KEYWORD3',
+        'support.class': 'KEYWORD4',
+        'string.quoted': 'LITERAL3',
+        'entity.name.function': 'FUNCTION',
+    },
+    'emw': {
+        'keyword.control': 'KEYWORD1',
+        'constant.numeric': 'LITERAL1',
+        'string.quoted': 'LITERAL3',
+    },
+    'inspect': {
+        'keyword.control': 'KEYWORD1',
+        'keyword.other': 'KEYWORD2',
+        'entity.name.tag': 'KEYWORD3',
+        'support.class': 'KEYWORD4',
+        'entity.name.function': 'FUNCTION',
+    },
+}
+
+# For languages where the same scope appears multiple times for keyword lists.
+# Maps (scope_name, occurrence_index) → keyword type.
+_DUPLICATE_SCOPE_MAP = {
+    'sdevice': {
+        ('constant.numeric', 0): 'LITERAL1',
+        ('constant.numeric', 1): 'LITERAL2',
+        ('constant.numeric', 2): 'LITERAL3',
+    },
+}
+
+
+def _parse_match_pattern(match):
+    """Parse a keyword match pattern into (prefix, keywords_str, suffix).
+
+    Returns None if the pattern is not a keyword-list pattern.
+    """
+    m = _MATCH_PARSER.match(match)
+    if m:
+        return m.group(1), m.group(2), m.group(3)
+    return None
+
+
+def _resolve_kw_type(base_scope, scope_occurrence, scope_map, mode_name):
+    """Resolve a scope name to a keyword type, handling duplicate scopes."""
+    # Check duplicate scope handling first (e.g. sdevice has 3 constant.numeric patterns)
+    if mode_name in _DUPLICATE_SCOPE_MAP:
+        idx = scope_occurrence.get(base_scope, 0)
+        key = (base_scope, idx)
+        if key in _DUPLICATE_SCOPE_MAP[mode_name]:
+            scope_occurrence[base_scope] = idx + 1
+            return _DUPLICATE_SCOPE_MAP[mode_name][key]
+
+    # Standard mapping
+    if base_scope in scope_map:
+        scope_occurrence[base_scope] = scope_occurrence.get(base_scope, 0) + 1
+        return scope_map[base_scope]
+
+    return None
+
+
+def update_grammar_incrementally(grammar_path, keywords, mode_name):
+    """Update keyword lists in an existing TextMate grammar, preserving structure.
+
+    Only replaces the keyword alternation in existing keyword-list patterns.
+    Does NOT:
+    - Add or remove patterns
+    - Change scope names
+    - Reorder patterns
+    - Modify non-keyword patterns (comments, strings, numeric regex, etc.)
+    - Change boundary assertions (preserves \\b or (?![A-Za-z0-9_:-]))
+    """
+    with open(grammar_path, 'r', encoding='utf-8') as f:
+        grammar = json.load(f)
+
+    scope_map = _SCOPE_TYPE_MAP.get(mode_name, {})
+    scope_occurrence = {}
+    updated = []
+
+    for pattern in grammar.get('patterns', []):
+        name = pattern.get('name', '')
+        match = pattern.get('match', '')
+
+        if not match or not name:
+            continue
+
+        # Get base scope (strip language suffix like .sde, .sdevice)
+        base_scope = name.rsplit('.', 1)[0] if '.' in name else name
+
+        # Skip known non-keyword scopes
+        if base_scope in _NON_KEYWORD_SCOPES:
+            continue
+
+        # Skip standalone numeric regex (contains [eE] character class)
+        if base_scope == 'constant.numeric' and '[eE]' in match:
+            continue
+
+        # Skip string delimiter patterns (begin/end, not keyword lists)
+        if base_scope == 'string.quoted.double':
+            continue
+
+        # Parse the match pattern structure
+        parsed = _parse_match_pattern(match)
+        if not parsed:
+            continue
+
+        prefix, old_keywords_str, suffix = parsed
+
+        # Resolve which keyword type this pattern represents
+        kw_type = _resolve_kw_type(base_scope, scope_occurrence, scope_map, mode_name)
+        if not kw_type:
+            continue
+
+        if kw_type not in keywords or not keywords[kw_type]:
+            continue
+
+        # Build new keyword alternation (sorted for deterministic output)
+        new_kw = sorted(keywords[kw_type])
+        new_kw_str = '|'.join(re.escape(k) for k in new_kw)
+        new_match = f'{prefix}{new_kw_str}{suffix}'
+
+        old_count = old_keywords_str.count('|') + 1
+        new_count = len(new_kw)
+
+        pattern['match'] = new_match
+        updated.append(f'{name}: {kw_type} ({old_count}→{new_count} keywords)')
+
+    with open(grammar_path, 'w', encoding='utf-8') as f:
+        json.dump(grammar, f, indent=2, ensure_ascii=False)
+
+    return updated
+
+
 def main():
     modes_dir = 'd:\\pydemo\\modes'
     output_dir = 'd:\\pydemo\\sentaurus-tcad-syntax\\syntaxes'
-    
+
     os.makedirs(output_dir, exist_ok=True)
-    
+
     # Extract keywords from all XML files
     all_keywords = process_all_mode_files(modes_dir)
-    
+
     # Save all keywords to a JSON file for reference
     save_results_as_json(all_keywords, os.path.join(output_dir, 'all_keywords.json'))
-    
-    # Create TextMate grammars for specific modes
+
+    # Incrementally update existing TextMate grammars
     target_modes = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect']
     for mode in target_modes:
         if mode in all_keywords:
-            grammar = create_textmate_grammar(mode, all_keywords[mode])
             grammar_path = os.path.join(output_dir, f'{mode}.tmLanguage.json')
-            with open(grammar_path, 'w', encoding='utf-8') as f:
-                json.dump(grammar, f, indent=2)
-            print(f"Created TextMate grammar for {mode}")
+
+            if os.path.exists(grammar_path):
+                # Incremental update: preserve structure, only update keyword lists
+                changes = update_grammar_incrementally(
+                    grammar_path, all_keywords[mode], mode
+                )
+                print(f"Updated {mode}: {len(changes)} patterns modified")
+                for change in changes:
+                    print(f"  - {change}")
+            else:
+                # First time: create from scratch
+                grammar = create_textmate_grammar(mode, all_keywords[mode])
+                with open(grammar_path, 'w', encoding='utf-8') as f:
+                    json.dump(grammar, f, indent=2, ensure_ascii=False)
+                print(f"Created {mode} (new file)")
         else:
             print(f"Warning: No keywords found for mode '{mode}'")
+
 
 if __name__ == "__main__":
     main()

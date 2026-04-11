@@ -10,6 +10,11 @@
 # display test files
 display_test/
 
+# cache files
+*.pyc
+*.pyd
+    
+
 references/*
 !references/
 
