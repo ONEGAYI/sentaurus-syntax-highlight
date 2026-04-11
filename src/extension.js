@@ -44,6 +44,8 @@ const DETAIL_LABEL = {
 const DOC_LABELS = {
     parameters: '**Parameters:**',
     example: '**Example:**',
+    section: 'Section:',
+    keywords: 'Keywords:',
 };
 
 /**
@@ -54,7 +56,7 @@ function formatDoc(doc) {
     lines.push(`**${doc.signature}**`);
     if (doc.section) {
         lines.push('');
-        lines.push(`*Section: ${doc.section}*`);
+        lines.push(`*${DOC_LABELS.section} ${doc.section}*`);
     }
     lines.push('');
     lines.push(doc.description);
@@ -76,7 +78,7 @@ function formatDoc(doc) {
     }
     if (doc.keywords && doc.keywords.length) {
         lines.push('');
-        lines.push(`*Keywords: ${doc.keywords.join(', ')}*`);
+        lines.push(`*${DOC_LABELS.keywords} ${doc.keywords.join(', ')}*`);
     }
     return new vscode.MarkdownString(lines.join('\n'));
 }
@@ -141,6 +143,8 @@ function activate(context) {
     if (useZh) {
         DOC_LABELS.parameters = '**参数：**';
         DOC_LABELS.example = '**示例：**';
+        DOC_LABELS.section = '节：';
+        DOC_LABELS.keywords = '关键词：';
     }
 
     // Load SDE function docs (try zh-CN first, fallback to en)
