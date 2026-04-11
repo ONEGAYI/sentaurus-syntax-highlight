@@ -2661,5 +2661,57 @@
       }
     ],
     "example": "(write \"hello\")  => prints \"hello\" (with quotes)\n(write #\\A)  => prints #\\A"
+  },
+  "substring": {
+    "signature": "(substring string start end)",
+    "description": "Returns a newly allocated string formed from the characters of string beginning with index start (inclusive) and ending with index end (exclusive). start and end must be exact integers satisfying 0 <= start <= end <= (string-length string).",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "the source string"
+      },
+      {
+        "name": "start",
+        "type": "exact integer",
+        "desc": "starting index (inclusive), zero-based"
+      },
+      {
+        "name": "end",
+        "type": "exact integer",
+        "desc": "ending index (exclusive), zero-based"
+      }
+    ],
+    "example": "(substring \"banana\" 1 4)  => \"ana\"\n(substring \"banana\" 3 6)  => \"ana\""
+  },
+  "open-input-string": {
+    "signature": "(open-input-string string)",
+    "description": "Returns a newly allocated input port capable of delivering characters from the given string. This is a library procedure (R5RS Section 6.10.5).",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "the string to read from"
+      }
+    ],
+    "example": "(let ((p (open-input-string \"hello\")))\n  (read-char p))  => #\\h"
+  },
+  "open-output-string": {
+    "signature": "(open-output-string)",
+    "description": "Returns a newly allocated output port that accumulates characters into a string. The accumulated string can be retrieved with get-output-string. This is a library procedure (R5RS Section 6.10.5).",
+    "parameters": [],
+    "example": "(let ((p (open-output-string)))\n  (display \"hello\" p)\n  (get-output-string p))  => \"hello\""
+  },
+  "get-output-string": {
+    "signature": "(get-output-string port)",
+    "description": "Returns a newly allocated string containing the characters that have been written to the given output port since it was created with open-output-string. This is a library procedure (R5RS Section 6.10.5).",
+    "parameters": [
+      {
+        "name": "port",
+        "type": "output port",
+        "desc": "an output port created by open-output-string"
+      }
+    ],
+    "example": "(let ((p (open-output-string)))\n  (write \"hello\" p)\n  (get-output-string p))  => \"\"hello\"\""
   }
 }

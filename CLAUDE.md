@@ -74,17 +74,28 @@
 `src/extension.js` 的 Hover 和 Completion 提供器从 `syntaxes/sde_function_docs.json` 读取函数文档。
 当前已覆盖全部 400 个 SDE KEYWORD1 API 函数（详见 `docs/superpowers/specs/2026-04-10-sde-function-docs-plan.md`）。
 
-### 未来工作：内置函数文档
+### 未来工作
 
-`all_keywords.json` 中的 FUNCTION 类别是语言内置函数，当前**无文档描述**：
+#### Tcl 内置函数文档
 
-- **Scheme 内置**（SDE, 204 个）：`define`、`lambda`、`if`、`map`、`cond` 等。
-  属于 R5RS/R7RS 标准，只需写一份，所有 `.scm`/`_dvs.cmd` 文件通用。
-  文档来源应引用 Scheme 语言标准，而非 Sentaurus 文档。
+`all_keywords.json` 中的 FUNCTION 类别是语言内置函数。Scheme 部分基本完成，Tcl 部分尚未覆盖：
+
+- ~~**Scheme R5RS 标准**（191/204 个）~~：已完成中英文双语文档，术语对齐 R5RS 标准。
+  文件：`syntaxes/scheme_function_docs.json`（英文默认）、`syntaxes/scheme_function_docs.zh-CN.json`（中文）。
+  剩余 13 个为 SDE Guile 方言扩展（`define-macro`、`fluid-let`、`gensym`、`catch` 等），
+  Sentaurus UG 未提供文档，暂不覆盖。另有 27 个因 `all_keywords.json` 中 HTML 实体编码（如
+  `char-ci&lt;=?`）与文档 key 不匹配，运行时 `decodeHtml()` 已处理，不影响功能。
 
 - **Tcl 内置**（sprocess/inspect/sinterconnect/spptcl, 106-128 个）：`proc`、`while`、`glob`、`switch` 等。
   sprocess ∩ sinterconnect = 128/128 完全相同，可写一份 Tcl 通用文档复用给 4 种语言。
   注意：与 Scheme 同名的 10 个函数（`if`、`list`、`string` 等）语法完全不同，不可复用。
+
+#### 完善自动补全
+
+自动识别用户变量并添加到补全，两个路径:
+
+- 只进行 `(define Var Val)` 等关键语法的正则匹配，实时扫描实时添加到补全列表。
+- 大改架构，引入语言服务器，采用 AST 获取变量及确定的语义，可跨文件 - 工作量巨大。
 
 ## 关键约束
 
