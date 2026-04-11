@@ -5539,5 +5539,543 @@
       "Strain",
       "Piezo"
     ]
+  },
+  "AcceptorConcentration": {
+    "section": "Physics",
+    "signature": "AcceptorConcentration",
+    "description": "Acceptor doping concentration (NA) at each vertex, specified through the doping profile in the device structure. Used in physics models for computing carrier statistics, mobility, and recombination rates.",
+    "keywords": [
+      "DonorConcentration",
+      "DopingConcentration",
+      "ActiveDopingConcentration"
+    ]
+  },
+  "Auger": {
+    "section": "Physics",
+    "signature": "Auger [ (WithGeneration) ]",
+    "description": "Enables Auger recombination model within Recombination(). Auger recombination is a three-carrier process dominant at high carrier concentrations. The optional (WithGeneration) qualifier also includes the Auger generation counterpart.",
+    "keywords": [
+      "Recombination",
+      "SRH",
+      "Radiative",
+      "Band2Band",
+      "Avalanche"
+    ]
+  },
+  "BE": {
+    "section": "Math",
+    "signature": "Transient = BE",
+    "description": "Backward Euler time integration method for transient simulations. A first-order implicit scheme that can be specified either in the Math section (changing the global default) or in the Transient statement options within the Solve section. The default transient method is TRBDF.",
+    "keywords": [
+      "Transient",
+      "TRBDF",
+      "Math"
+    ]
+  },
+  "Band2Band": {
+    "section": "Physics",
+    "signature": "Band2Band ( =None | =Full | =Simple | =UpsideDown )",
+    "description": "Band-to-band tunneling model, specified within Recombination() or eBarrierTunneling()/hBarrierTunneling(). Options control the parallel momentum integral treatment: None disables tunneling, Full uses the consistent integral, Simple uses a simplified form, and UpsideDown uses a nonphysical variant.",
+    "keywords": [
+      "Recombination",
+      "eBarrierTunneling",
+      "hBarrierTunneling",
+      "Tunneling",
+      "DensityCorrection"
+    ]
+  },
+  "BandGap": {
+    "section": "Physics",
+    "signature": "BandGap",
+    "description": "Intrinsic band gap energy (Eg) at each vertex, computed by the bandgap model. Available as a plot dataset (unit: eV). Configured through EffectiveIntrinsicDensity() which controls the bandgap and bandgap narrowing models such as Slotboom, OldSlotboom, and Bennett-Wilson.",
+    "keywords": [
+      "EffectiveIntrinsicDensity",
+      "BandgapNarrowing",
+      "Affinity"
+    ]
+  },
+  "Blocked": {
+    "section": "Solve",
+    "signature": "ACMethod = Blocked",
+    "description": "Uses the Blocked solver for small-signal AC analysis. The Blocked method employs block decomposition to solve the AC-coupled system, which can be more efficient for certain device configurations.",
+    "keywords": [
+      "ACCoupled",
+      "ACSubMethod",
+      "ACCompute"
+    ]
+  },
+  "Circuit": {
+    "section": "Solve",
+    "signature": "Circuit",
+    "description": "Circuit equation solved in mixed-mode simulations. When specified in Load, loads the circuit state from a previous simulation. In the equations table (Table 342), represents the compact circuit equations with a reference value of 0.0258 V and relative error tolerance of 1e-3.",
+    "keywords": [
+      "System",
+      "Coupled",
+      "Plugin",
+      "Quasistationary"
+    ]
+  },
+  "Constant": {
+    "section": "Physics",
+    "signature": "Constant",
+    "description": "Constant (temperature-independent) lattice heat capacity model within HeatCapacity(). When selected, the heat capacity is treated as a constant value rather than using the default temperature-dependent model.",
+    "keywords": [
+      "HeatCapacity",
+      "TempDep",
+      "Physics"
+    ]
+  },
+  "ConstantMobility": {
+    "section": "Physics",
+    "signature": "ConstantMobility",
+    "description": "Uses constant mobility values within Mobility() if neither PhuMob (Philips unified) nor DopingDependence is specified. Provides a simple constant mobility model as a fallback, typically used for initial debugging or when doping-dependent effects are negligible.",
+    "keywords": [
+      "Mobility",
+      "DopingDependence",
+      "PhuMob",
+      "HighFieldSaturation",
+      "eMobility",
+      "hMobility"
+    ]
+  },
+  "DisplacementCurrent": {
+    "section": "Physics",
+    "signature": "DisplacementCurrent",
+    "description": "Displacement current density (JD) at each vertex, available as a plot dataset (unit: A/cm^2). Represents the time-varying electric field contribution to total current, significant in transient and AC simulations. Related AC response datasets include ImDisplacementCurrentResponse and ReDisplacementCurrentResponse.",
+    "keywords": [
+      "DisplacementCurrentDensity",
+      "ConductionCurrentDensity",
+      "eCurrentDensity",
+      "hCurrentDensity"
+    ]
+  },
+  "DonorConcentration": {
+    "section": "Physics",
+    "signature": "DonorConcentration",
+    "description": "Donor doping concentration (ND) at each vertex, specified through the doping profile in the device structure. Used in physics models for computing carrier statistics, mobility, and recombination rates.",
+    "keywords": [
+      "AcceptorConcentration",
+      "DopingConcentration",
+      "ActiveDopingConcentration"
+    ]
+  },
+  "DopingDependence": {
+    "section": "Physics",
+    "signature": "DopingDependence [ ( <ident> [(Table 364)] ) | Arora ]",
+    "description": "Doping-dependent mobility model within Mobility(). The default Arora model computes mobility degradation due to ionized impurity scattering. Can also accept a PMI model identifier for custom doping-dependent mobility. Controls the low-field mobility as a function of doping concentration.",
+    "keywords": [
+      "Mobility",
+      "ConstantMobility",
+      "PhuMob",
+      "HighFieldSaturation",
+      "Arora"
+    ]
+  },
+  "Electron": {
+    "section": "Physics",
+    "signature": "Electron",
+    "description": "Electron continuity equation solved in Sentaurus Device. In the Solve section, specifies that the electron continuity equation is to be solved. In equation error control (Table 342), the reference value is 1e10 cm^-3 with relative error tolerance of 1e-5.",
+    "keywords": [
+      "Hole",
+      "Poisson",
+      "Coupled",
+      "Plugin",
+      "eQuasiFermi",
+      "eDensity"
+    ]
+  },
+  "FowlerNordheim": {
+    "section": "Physics",
+    "signature": "FowlerNordheim",
+    "description": "Fowler-Nordheim tunneling current density (jFN) at each vertex, available as a plot dataset (unit: A/cm^2). Represents the field-emission tunneling current through thin insulating barriers. The tunneling model is activated within GateCurrent() using the Fowler keyword.",
+    "keywords": [
+      "GateCurrent",
+      "DirectTunneling",
+      "eLucky",
+      "hLucky"
+    ]
+  },
+  "HighFieldSaturation": {
+    "section": "Physics",
+    "signature": "HighFieldSaturation ( <options> )",
+    "description": "High-field saturation mobility model within Mobility() or eMobility()/hMobility(). Models the velocity saturation effect at high electric fields using Caughey-Thomas or TransferredElectronEffect formulations. The hole variant is hHighFieldSaturation.",
+    "keywords": [
+      "Mobility",
+      "DopingDependence",
+      "ConstantMobility",
+      "eHighFieldSaturation",
+      "hHighFieldSaturation",
+      "CaugheyThomas"
+    ]
+  },
+  "Hole": {
+    "section": "Physics",
+    "signature": "Hole",
+    "description": "Hole continuity equation solved in Sentaurus Device. In the Solve section, specifies that the hole continuity equation is to be solved. In equation error control (Table 342), the reference value is 1e10 cm^-3 with relative error tolerance of 1e-5.",
+    "keywords": [
+      "Electron",
+      "Poisson",
+      "Coupled",
+      "Plugin",
+      "hQuasiFermi",
+      "hDensity"
+    ]
+  },
+  "Newton": {
+    "section": "Solve",
+    "signature": "Coupled ( <options> ) { ... }",
+    "description": "Newton solver method for coupled equation systems. Specified through Coupled() in the Solve section, which solves all selected equations simultaneously using Newton-Raphson iteration. Supports relaxed Newton via AcceptNewtonParameter and controls convergence through the Math section error criteria.",
+    "keywords": [
+      "Coupled",
+      "Plugin",
+      "Quasistationary",
+      "Transient",
+      "Error",
+      "ErrRef"
+    ]
+  },
+  "Poisson": {
+    "section": "Solve",
+    "signature": "Poisson",
+    "description": "Poisson equation for electrostatic potential, solved as part of the coupled system. In Solve{} section, specifies Poisson as the equation to solve. Default error reference is 0.0258 V (thermal voltage at 300 K).",
+    "keywords": [
+      "Potential",
+      "Electron",
+      "Hole",
+      "Coupled",
+      "Circuit"
+    ]
+  },
+  "Potential": {
+    "section": "Physics",
+    "signature": "Potential",
+    "description": "Electrostatic potential variable. In Aniso{}, enables anisotropic dielectric constant models. Also used as a reference in convergence criteria and error computation.",
+    "keywords": [
+      "Aniso",
+      "Poisson",
+      "BandGap"
+    ]
+  },
+  "Radiative": {
+    "section": "Physics",
+    "signature": "Radiative",
+    "description": "Radiative recombination model within Recombination(). Models band-to-band radiative recombination using the optical recombination rate. Coefficient can be doping-dependent or constant.",
+    "keywords": [
+      "Recombination",
+      "Auger",
+      "SRH",
+      "Band2Band"
+    ]
+  },
+  "SRH": {
+    "section": "Physics",
+    "signature": "SRH( <options> )",
+    "description": "Shockley-Read-Hall recombination model within Recombination(). Models trap-assisted recombination through defect energy levels in the bandgap. Supports doping dependence (dopant-dependent lifetimes), electric field dependence (Hurkx model), and temperature dependence.",
+    "keywords": [
+      "Recombination",
+      "Auger",
+      "Radiative",
+      "SurfaceSRH",
+      "TempDependence",
+      "DopingDependence"
+    ]
+  },
+  "SpaceCharge": {
+    "section": "Physics",
+    "signature": "SpaceCharge",
+    "description": "Space charge density (rho) at each vertex, available as a plot dataset. Computed as the difference between positive and negative charge carriers including ions and free carriers. Units: cm^-3.",
+    "keywords": [
+      "eDensity",
+      "hDensity",
+      "DonorConcentration",
+      "AcceptorConcentration"
+    ]
+  },
+  "Stress": {
+    "section": "Physics",
+    "signature": "Stress",
+    "description": "Mechanical stress model for strain-dependent simulations. Enables piezoresistive mobility effects and deformation potential effects on band structure. Used in Mechanics{} and Physics{} sections.",
+    "keywords": [
+      "Mechanics",
+      "Deformation",
+      "Strain",
+      "Piezo"
+    ]
+  },
+  "SurfaceSRH": {
+    "section": "Physics",
+    "signature": "SurfaceSRH",
+    "description": "Surface SRH recombination model within Recombination(). Models Shockley-Read-Hall recombination at material interfaces and surfaces with interface trap density and capture cross-section parameters.",
+    "keywords": [
+      "Recombination",
+      "SRH",
+      "Radiative"
+    ]
+  },
+  "TE": {
+    "section": "Physics",
+    "signature": "TE",
+    "description": "Polarization configuration option for LED optical simulations. Specifies transverse electric (TE) mode polarization in OpticalSolver{} or LED{} sections for far-field and near-field radiation pattern calculations.",
+    "keywords": [
+      "LED",
+      "OpticalSolver",
+      "TM",
+      "Optics"
+    ]
+  },
+  "TRBDF": {
+    "section": "Math",
+    "signature": "TRBDF",
+    "description": "Trapezoidal Rule / Backward Differentiation Formula (TR-BDF2) time integration method for transient simulations. Default transient method in Sentaurus Device. Combines the stability of BDF methods with the accuracy of trapezoidal integration.",
+    "keywords": [
+      "Transient",
+      "BE",
+      "Math",
+      "InitialStep",
+      "MaxStep"
+    ]
+  },
+  "TempDependence": {
+    "section": "Physics",
+    "signature": "TempDependence",
+    "description": "Temperature dependence option within SRH(). Enables temperature-dependent carrier lifetimes for the SRH recombination model, accounting for the variation of trap-assisted recombination rates with lattice temperature.",
+    "keywords": [
+      "SRH",
+      "Recombination",
+      "LatticeTemperature"
+    ]
+  },
+  "Thermodynamic": {
+    "section": "Physics",
+    "signature": "Thermodynamic",
+    "description": "Thermodynamic transport model that includes Peltier and Thomson effects in addition to Joule heating. Provides more accurate self-consistent electrothermal simulation by considering carrier energy flux and its coupling to the lattice thermal equation.",
+    "keywords": [
+      "Thermal",
+      "LatticeTemperature",
+      "eTemperature",
+      "hTemperature",
+      "HeatSource"
+    ]
+  },
+  "TotalCurrent": {
+    "section": "Physics",
+    "signature": "TotalCurrent",
+    "description": "Total current density at each vertex, available as a plot dataset. Computed as the sum of electron and hole current densities plus displacement current. Units: A/cm^2.",
+    "keywords": [
+      "eCurrentDensity",
+      "hCurrentDensity",
+      "DisplacementCurrent"
+    ]
+  },
+  "UCS": {
+    "section": "Math",
+    "signature": "UCS",
+    "description": "Unified Coordinate System for anisotropic model computations. Provides a consistent reference frame for evaluating tensor-valued material properties (mobility, permittivity) in anisotropic regions of the device.",
+    "keywords": [
+      "Aniso",
+      "CoordinateSystem",
+      "Stress"
+    ]
+  },
+  "eAvalanche": {
+    "section": "Physics",
+    "signature": "eAvalanche",
+    "description": "Electron impact ionization (avalanche) model within Avalanche() or Recombination(). Models carrier generation due to high-field impact ionization. Uses van Overstraeten-de Man, Chynoweth, or Selberherr models with user-definable coefficients.",
+    "keywords": [
+      "hAvalanche",
+      "Recombination",
+      "Avalanche"
+    ]
+  },
+  "eCurrent": {
+    "section": "Physics",
+    "signature": "eCurrent",
+    "description": "Electron current density at each vertex, available as a plot dataset. Represents the drift-diffusion current of electrons. Units: A/cm^2.",
+    "keywords": [
+      "hCurrent",
+      "TotalCurrent",
+      "eCurrentDensity"
+    ]
+  },
+  "eCurrentDensity": {
+    "section": "Physics",
+    "signature": "eCurrentDensity",
+    "description": "Electron current density at each vertex, available as a plot dataset in Plot{} and CurrentPlot{} sections. Represents the electron component of the total drift-diffusion current. Units: A/cm^2.",
+    "keywords": [
+      "hCurrentDensity",
+      "TotalCurrent",
+      "eCurrent"
+    ]
+  },
+  "eDensity": {
+    "section": "Physics",
+    "signature": "eDensity",
+    "description": "Electron concentration (density) at each vertex, available as a plot dataset. Represents the free electron carrier density computed from the solution of the electron continuity equation. Units: cm^-3.",
+    "keywords": [
+      "hDensity",
+      "SpaceCharge",
+      "Electron"
+    ]
+  },
+  "eHighFieldSaturation": {
+    "section": "Physics",
+    "signature": "eHighFieldSaturation",
+    "description": "Electron high-field saturation velocity model within Mobility() or eMobility(). Configures the saturation velocity and high-field dependence of electron mobility using Caughey-Thomas or TransferredElectronEffect models.",
+    "keywords": [
+      "HighFieldSaturation",
+      "eMobility",
+      "Mobility",
+      "hHighFieldSaturation"
+    ]
+  },
+  "eMobility": {
+    "section": "Physics",
+    "signature": "eMobility( <options> )",
+    "description": "Electron mobility model within Mobility(). Configures all mobility sub-models (doping dependence, high-field saturation, etc.) specifically for electrons. Overrides generic Mobility() settings for the electron carrier type.",
+    "keywords": [
+      "hMobility",
+      "Mobility",
+      "DopingDependence",
+      "HighFieldSaturation",
+      "ConstantMobility"
+    ]
+  },
+  "eQuasiFermi": {
+    "section": "Physics",
+    "signature": "eQuasiFermi",
+    "description": "Electron quasi-Fermi potential at each vertex, available as a plot dataset. Represents the electrochemical potential of electrons, used as a reference in DopingWell{} ramping and convergence monitoring. Units: eV.",
+    "keywords": [
+      "hQuasiFermi",
+      "Potential",
+      "Electron",
+      "Fermi"
+    ]
+  },
+  "eTemperature": {
+    "section": "Physics",
+    "signature": "eTemperature",
+    "description": "Electron temperature at each vertex, available as a plot dataset in hydrodynamic or thermodynamic transport simulations. Used as a convergence criterion parameter and in DiffusionNoise{} temperature options. Units: K.",
+    "keywords": [
+      "hTemperature",
+      "LatticeTemperature",
+      "Thermodynamic",
+      "EnergyRelaxationTime"
+    ]
+  },
+  "eVelocity": {
+    "section": "Physics",
+    "signature": "eVelocity",
+    "description": "Electron velocity vector at each vertex, available as a plot dataset. Represents the drift velocity of electrons under the applied electric field. Units: cm/s.",
+    "keywords": [
+      "hVelocity",
+      "eMobility",
+      "ElectricField"
+    ]
+  },
+  "hAvalanche": {
+    "section": "Physics",
+    "signature": "hAvalanche",
+    "description": "Hole impact ionization (avalanche) model within Avalanche() or Recombination(). Models hole-initiated carrier generation due to high-field impact ionization. Parallel to eAvalanche with separate coefficients.",
+    "keywords": [
+      "eAvalanche",
+      "Recombination",
+      "Avalanche"
+    ]
+  },
+  "hCurrent": {
+    "section": "Physics",
+    "signature": "hCurrent",
+    "description": "Hole current density at each vertex, available as a plot dataset. Represents the drift-diffusion current of holes. Units: A/cm^2.",
+    "keywords": [
+      "eCurrent",
+      "TotalCurrent",
+      "hCurrentDensity"
+    ]
+  },
+  "hCurrentDensity": {
+    "section": "Physics",
+    "signature": "hCurrentDensity",
+    "description": "Hole current density at each vertex, available as a plot dataset in Plot{} and CurrentPlot{} sections. Represents the hole component of the total drift-diffusion current. Units: A/cm^2.",
+    "keywords": [
+      "eCurrentDensity",
+      "TotalCurrent",
+      "hCurrent"
+    ]
+  },
+  "hDensity": {
+    "section": "Physics",
+    "signature": "hDensity",
+    "description": "Hole concentration (density) at each vertex, available as a plot dataset. Represents the free hole carrier density computed from the solution of the hole continuity equation. Units: cm^-3.",
+    "keywords": [
+      "eDensity",
+      "SpaceCharge",
+      "Hole"
+    ]
+  },
+  "hHighFieldSaturation": {
+    "section": "Physics",
+    "signature": "hHighFieldSaturation",
+    "description": "Hole high-field saturation velocity model within Mobility() or hMobility(). Configures the saturation velocity and high-field dependence of hole mobility using Caughey-Thomas or similar models.",
+    "keywords": [
+      "HighFieldSaturation",
+      "hMobility",
+      "Mobility",
+      "eHighFieldSaturation"
+    ]
+  },
+  "hMobility": {
+    "section": "Physics",
+    "signature": "hMobility( <options> )",
+    "description": "Hole mobility model within Mobility(). Configures all mobility sub-models (doping dependence, high-field saturation, etc.) specifically for holes. Overrides generic Mobility() settings for the hole carrier type.",
+    "keywords": [
+      "eMobility",
+      "Mobility",
+      "DopingDependence",
+      "HighFieldSaturation",
+      "ConstantMobility"
+    ]
+  },
+  "hQuasiFermi": {
+    "section": "Physics",
+    "signature": "hQuasiFermi",
+    "description": "Hole quasi-Fermi potential at each vertex, available as a plot dataset. Represents the electrochemical potential of holes, used as a reference in DopingWell{} ramping and convergence monitoring. Units: eV.",
+    "keywords": [
+      "eQuasiFermi",
+      "Potential",
+      "Hole",
+      "Fermi"
+    ]
+  },
+  "hTemperature": {
+    "section": "Physics",
+    "signature": "hTemperature",
+    "description": "Hole temperature at each vertex, available as a plot dataset in hydrodynamic or thermodynamic transport simulations. Used as a convergence criterion parameter and in DiffusionNoise{} temperature options. Units: K.",
+    "keywords": [
+      "eTemperature",
+      "LatticeTemperature",
+      "Thermodynamic",
+      "EnergyRelaxationTime"
+    ]
+  },
+  "hVelocity": {
+    "section": "Physics",
+    "signature": "hVelocity",
+    "description": "Hole velocity vector at each vertex, available as a plot dataset. Represents the drift velocity of holes under the applied electric field. Units: cm/s.",
+    "keywords": [
+      "eVelocity",
+      "hMobility",
+      "ElectricField"
+    ]
+  },
+  "Optical": {
+    "section": "Physics",
+    "signature": "Optical",
+    "description": "Optical physics model within Physics{}. Enables optical generation/recombination effects and couples the optical solver with the electrical simulation. Used in optoelectronic device simulations such as solar cells, LEDs, and photodetectors.",
+    "keywords": [
+      "Optics",
+      "OpticalSolver",
+      "OpticalGeneration",
+      "OpticsFromFile"
+    ]
   }
 }
