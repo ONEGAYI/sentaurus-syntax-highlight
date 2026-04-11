@@ -2661,5 +2661,57 @@
       }
     ],
     "example": "(write-char #\\A)  => 打印 A\n(write-char #\\space)  => 打印空格"
+  },
+  "substring": {
+    "signature": "(substring string start end)",
+    "description": "返回一个新分配的字符串，由 string 中从索引 start（含）到 end（不含）的字符组成。start 和 end 必须是精确整数，满足 0 <= start <= end <= (string-length string)。",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "源字符串"
+      },
+      {
+        "name": "start",
+        "type": "exact integer",
+        "desc": "起始索引（含），零基"
+      },
+      {
+        "name": "end",
+        "type": "exact integer",
+        "desc": "结束索引（不含），零基"
+      }
+    ],
+    "example": "(substring \"banana\" 1 4)  => \"ana\"\n(substring \"banana\" 3 6)  => \"ana\""
+  },
+  "open-input-string": {
+    "signature": "(open-input-string string)",
+    "description": "返回一个新分配的输入端口，能够从给定字符串交付字符。库过程（R5RS 第 6.10.5 节）。",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "要读取的字符串"
+      }
+    ],
+    "example": "(let ((p (open-input-string \"hello\")))\n  (read-char p))  => #\\h"
+  },
+  "open-output-string": {
+    "signature": "(open-output-string)",
+    "description": "返回一个新分配的输出端口，将字符累积到字符串中。可用 get-output-string 获取累积的字符串。库过程（R5RS 第 6.10.5 节）。",
+    "parameters": [],
+    "example": "(let ((p (open-output-string)))\n  (display \"hello\" p)\n  (get-output-string p))  => \"hello\""
+  },
+  "get-output-string": {
+    "signature": "(get-output-string port)",
+    "description": "返回一个新分配的字符串，包含自创建以来写入给定输出端口的所有字符。库过程（R5RS 第 6.10.5 节）。",
+    "parameters": [
+      {
+        "name": "port",
+        "type": "output port",
+        "desc": "由 open-output-string 创建的输出端口"
+      }
+    ],
+    "example": "(let ((p (open-output-string)))\n  (write \"hello\" p)\n  (get-output-string p))  => \"\"hello\"\""
   }
 }
