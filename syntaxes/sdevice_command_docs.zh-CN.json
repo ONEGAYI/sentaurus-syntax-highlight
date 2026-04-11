@@ -1,0 +1,6081 @@
+{
+  "Physics": {
+    "section": "Physics",
+    "signature": "Physics { [Location] <model> [<options>] }",
+    "description": "指定器件仿真的物理模型，包括迁移率、复合、量子修正、热力学模型等。可限制到特定位置（材料、区域、界面或电极）。",
+    "parameters": [
+      {
+        "name": "Mobility",
+        "type": "string",
+        "desc": "迁移率模型选择（表 278）。"
+      },
+      {
+        "name": "Recombination",
+        "type": "string",
+        "desc": "产生-复合模型（SRH、俄歇、雪崩等）。"
+      },
+      {
+        "name": "Fermi",
+        "type": "string",
+        "desc": "启用费米-狄拉克统计。"
+      },
+      {
+        "name": "Temperature",
+        "type": "float",
+        "desc": "器件（晶格）温度，单位 K（默认 300）。"
+      },
+      {
+        "name": "EffectiveIntrinsicDensity",
+        "type": "string",
+        "desc": "带隙和带隙窄化模型。"
+      },
+      {
+        "name": "Thermodynamic",
+        "type": "string",
+        "desc": "启用热力学输运模型。"
+      }
+    ],
+    "example": "Physics {\n  Mobility (DopingDependence HighFieldSaturation)\n  Recombination (SRH Auger)\n  Fermi\n  EffectiveIntrinsicDensity (BandGapNarrowing(OldSlotboom))\n}\nPhysics (Region=\"Channel\") {\n  eQuantumPotential\n  hQuantumPotential\n}",
+    "keywords": [
+      "Mobility",
+      "eMobility",
+      "hMobility",
+      "Recombination",
+      "Fermi",
+      "Temperature",
+      "EffectiveIntrinsicDensity",
+      "Thermodynamic",
+      "Hydrodynamic",
+      "eQuantumPotential",
+      "hQuantumPotential",
+      "eQuasiFermi",
+      "hQuasiFermi",
+      "Schroedinger",
+      "Schottky",
+      "Thermionic",
+      "eThermionic",
+      "hThermionic",
+      "eRecVelocity",
+      "hRecVelocity",
+      "BarrierLowering",
+      "HeteroInterface",
+      "CondInsulator",
+      "Discontinuity",
+      "Dipole",
+      "DistResist",
+      "Band2Band",
+      "Traps",
+      "MSConfigs",
+      "Optics",
+      "Radiation",
+      "HeavyIon",
+      "AlphaParticle",
+      "Noise",
+      "Piezo",
+      "Mechanics",
+      "MagneticField",
+      "PostTemperature",
+      "HeatCapacity",
+      "ThermalConductivity",
+      "LayerThickness",
+      "MetalWorkfunction",
+      "MetalResistivity",
+      "Affinity",
+      "EffectiveMass",
+      "eMultiValley",
+      "hMultiValley",
+      "MultiValley",
+      "eMLDA",
+      "hMLDA",
+      "eQCvanDort",
+      "hQCvanDort",
+      "eBandTailDOS",
+      "hBandTailDOS",
+      "GaussianDOS_full",
+      "SingletExciton",
+      "FEPolarization",
+      "Polarization",
+      "LED",
+      "ComplexRefractiveIndex",
+      "DefaultParametersFromFile",
+      "AreaFactor",
+      "HydrogenDiffusion",
+      "NBTI",
+      "eNMP",
+      "GateCurrent",
+      "eBarrierTunneling",
+      "hBarrierTunneling",
+      "IncompleteIonization",
+      "MoleFraction",
+      "RandomizedVariation",
+      "DeterministicVariation",
+      "RayTraceBC",
+      "RecGenHeat",
+      "HeatPreFactor",
+      "Schroedinger",
+      "ExternalBoltzmannSolver",
+      "ExternalSchroedinger",
+      "LatticeTemperatureLimit",
+      "AnalyticTEP",
+      "TEPower"
+    ]
+  },
+  "RayTraceBC": {
+    "section": "Physics",
+    "signature": "RayTraceBC { Name=<string> PMIModel=<string> }",
+    "description": "用于在特殊接触处定义光线追踪边界条件的节关键词。这些接触的绘制方式与电极和热极相同。支持菲涅耳反射、TMM 多层结构、自定义 PMI 模型以及可配置的反射率/透射率。",
+    "parameters": [
+      "Name",
+      "PMIModel",
+      "Fresnel",
+      "Reflectivity",
+      "Transmittivity",
+      "TMM"
+    ],
+    "keywords": [
+      "Optics",
+      "RayTracing",
+      "PMI",
+      "Fresnel",
+      "TMM"
+    ]
+  },
+  "ParameterVariation": {
+    "section": "Physics",
+    "signature": "ParameterVariation <name> ( <specifications> )",
+    "description": "指定用于灵敏度分析的确定性参数变化。每个变化修改一个物理模型参数，以计算其对器件特性的累积影响。",
+    "parameters": [],
+    "keywords": [
+      "DeterministicVariation",
+      "RandomizedVariation"
+    ]
+  },
+  "Doping": {
+    "section": "Physics",
+    "signature": "Doping( <specifications> )",
+    "description": "启用用于统计阻抗场方法(sIFM)噪声分析的随机掺杂涨落模型。指定掺杂变化的空间相关特性。",
+    "parameters": [],
+    "keywords": [
+      "RandomizedVariation",
+      "sIFM",
+      "DopingVariation"
+    ]
+  },
+  "Tunneling": {
+    "section": "Physics",
+    "signature": "Tunneling",
+    "description": "激活隧穿相关物理模型。作为顶层关键词使用，启用各种隧穿机制，包括福勒-诺德海姆隧穿、直接隧穿和带间隧穿。",
+    "parameters": [],
+    "keywords": [
+      "FowlerNordheim",
+      "DirectTunneling",
+      "BandToBand",
+      "NonlocalTunneling"
+    ]
+  },
+  "Broadening": {
+    "section": "Physics",
+    "signature": "Broadening( <broadening_model> )",
+    "description": "激活量子阱仿真中的增益展宽模型或非线性增益饱和。支持的模型包括洛伦兹展宽、Landsberg 展宽和双曲余弦展宽。",
+    "parameters": [],
+    "keywords": [
+      "QWLocal",
+      "Gain",
+      "Lorentzian",
+      "Landsberg",
+      "StimulatedEmission"
+    ]
+  },
+  "TimeDependence": {
+    "section": "Physics",
+    "signature": "TimeDependence( <specifications> )",
+    "description": "指定瞬态仿真中光生载流子产生的时间依赖类型。控制光激发在瞬态分析中随时间的变化方式。",
+    "parameters": [],
+    "keywords": [
+      "OpticalGeneration",
+      "Transient",
+      "OptGen"
+    ]
+  },
+  "Radiation": {
+    "section": "Physics",
+    "signature": "Radiation( <specifications> )",
+    "description": "启用辐射诱导的载流子产生模型，包括伽马辐射、α粒子和重离子。指定辐射源参数和几何形状。",
+    "parameters": [],
+    "keywords": [
+      "AlphaParticle",
+      "HeavyIon",
+      "Gamma",
+      "CarrierGeneration"
+    ]
+  },
+  "MultiValley": {
+    "section": "Physics",
+    "signature": "MultiValley",
+    "description": "激活多谷能带结构统计，用于精确建模具有多个导带/价带极小值的材料（如硅 δ谷）中的载流子输运。默认关闭。",
+    "parameters": [],
+    "keywords": [
+      "eMultivalley",
+      "hMultivalley",
+      "BandStructure",
+      "EffectiveMass",
+      "Stress"
+    ]
+  },
+  "hBandEdgeShift": {
+    "section": "Physics",
+    "signature": "hBandEdgeShift( <ident> [ <table> ] [ <int> ] )",
+    "description": "使用 PMI（物理模型接口）模型计算价带带边偏移，可带可选构造函数参数。用于表观带边偏移计算。",
+    "parameters": [],
+    "keywords": [
+      "eBandEdgeShift",
+      "BandEdgeShift",
+      "PMI",
+      "ApparentBandEdge"
+    ]
+  },
+  "IntensityDistribution": {
+    "section": "Physics",
+    "signature": "IntensityDistribution( Gaussian( Sigma=<float> Length=<float> PeakPosition=<float> PeakWidth=<float> Scaling=<float> ) | Rectangle( dx=<float> dy=<float> ) )",
+    "description": "指定光照窗口内的空间光强分布。支持高斯分布和矩形分布，用于光激发。",
+    "parameters": [],
+    "keywords": [
+      "Optics",
+      "OpticalGeneration",
+      "Window",
+      "Excitation",
+      "RayTracing"
+    ]
+  },
+  "RayDistribution": {
+    "section": "Physics",
+    "signature": "RayDistribution( [WindowName=<string>] <specifications> )",
+    "description": "创建光线分布节，与激发光照窗口配合用于光线追踪。定义激发参数如何转换为光线追踪上下文，包括起始光线位置和方向。",
+    "parameters": [],
+    "keywords": [
+      "Optics",
+      "RayTracing",
+      "Window",
+      "Excitation",
+      "LED"
+    ]
+  },
+  "Model": {
+    "section": "Physics",
+    "signature": "Model( <ident> <string> [ <table> ] )",
+    "description": "为给定物种或物理量指定 PMI（物理模型接口）模型。模型名称和目标物种作为参数提供。",
+    "parameters": [],
+    "keywords": [
+      "PMI",
+      "Affinity",
+      "Mobility",
+      "BandGap",
+      "EffectiveMass"
+    ]
+  },
+  "SourceRaysFromFile": {
+    "section": "Physics",
+    "signature": "SourceRaysFromFile( <string> )",
+    "description": "从文件导入一组起始光线方向向量，用于 LED 光线追踪仿真。每个顶点导入的光线数由 RaysPerVertex 指定。",
+    "parameters": [],
+    "keywords": [
+      "RaysPerVertex",
+      "LED",
+      "RayTracing",
+      "Optics",
+      "ClusterActive"
+    ]
+  },
+  "SourcePosition": {
+    "section": "Physics",
+    "signature": "SourcePosition( <specifications> )",
+    "description": "指定辐射源或光源在器件几何中的位置。用于定义入射光线或粒子的空间原点。",
+    "parameters": [],
+    "keywords": [
+      "Radiation",
+      "Optics",
+      "AlphaParticle",
+      "HeavyIon"
+    ]
+  },
+  "RecGenHeat": {
+    "section": "Physics",
+    "signature": "RecGenHeat",
+    "description": "在能量守恒方程中激活产生-复合热源。默认情况下这些项被排除；此关键词启用来自光生载流子产生、碰撞电离和复合的 H_n、H_p 和 H_L 贡献。",
+    "parameters": [],
+    "keywords": [
+      "Thermodynamic",
+      "Hydrodynamic",
+      "eRecGenHeat",
+      "hRecGenHeat",
+      "lRecGenHeat",
+      "OptGenOffset"
+    ]
+  },
+  "h": {
+    "section": "Physics",
+    "signature": "h",
+    "description": "光学/光线追踪仿真中的水平偏振标识符。用于指定入射光或光线的偏振状态。",
+    "parameters": [],
+    "keywords": [
+      "Polarization",
+      "Optics",
+      "RayTracing"
+    ]
+  },
+  "v": {
+    "section": "Physics",
+    "signature": "v",
+    "description": "光学/光线追踪仿真中的垂直偏振标识符。用于指定入射光或光线的偏振状态。",
+    "parameters": [],
+    "keywords": [
+      "Polarization",
+      "Optics",
+      "RayTracing"
+    ]
+  },
+  "VCSEL": {
+    "section": "Physics",
+    "signature": "VCSEL( <specifications> )",
+    "description": "启用垂直腔面发射激光器(VCSEL)仿真模型。配置光学谐振腔、镜面反射率和受激发射参数，用于 VCSEL 器件分析。",
+    "parameters": [],
+    "keywords": [
+      "Optics",
+      "StimulatedEmission",
+      "Mirror",
+      "Cavity",
+      "LED"
+    ]
+  },
+  "Circle": {
+    "section": "Physics",
+    "signature": "Circle( Radius=<float> )",
+    "description": "为光线追踪仿真中的光学光照窗口或传感器配置定义圆形几何。指定圆形区域的半径。",
+    "parameters": [],
+    "keywords": [
+      "Optics",
+      "Window",
+      "Sensor",
+      "RayTracing"
+    ]
+  },
+  "RaysRandomOffset": {
+    "section": "Physics",
+    "signature": "RaysRandomOffset [ ( RandomSeed=<int> ) ]",
+    "description": "随机化 LED 光线追踪仿真中起始光线的角偏移。不使用此关键词时，采用由活动顶点编号确定的固定角偏移。可选的随机种子确保可重复性。",
+    "parameters": [],
+    "keywords": [
+      "LED",
+      "RayTracing",
+      "Optics",
+      "ClusterActive"
+    ]
+  },
+  "ClusterActive": {
+    "section": "Physics",
+    "signature": "ClusterActive( <specifications> )",
+    "description": "激活 LED 光线追踪的聚类选项，将活动顶点分组为簇以减少发射光线的总数。改善具有多个发射中心的器件的光线追踪性能。",
+    "parameters": [],
+    "keywords": [
+      "LED",
+      "RayTracing",
+      "Optics",
+      "RaysPerVertex",
+      "SourceRaysFromFile"
+    ]
+  },
+  "Traps": {
+    "section": "Physics",
+    "signature": "Traps( <trap_specifications> )",
+    "description": "定义陷阱能级及其属性，用于复合、陷阱噪声、退化和陷阱辅助隧穿模型。指定陷阱浓度、能级、俘获截面和空间分布。",
+    "parameters": [],
+    "keywords": [
+      "SRH",
+      "Recombination",
+      "Degradation",
+      "TrapAssistedTunneling",
+      "Randomize"
+    ]
+  },
+  "TEPower": {
+    "section": "Physics",
+    "signature": "TEPower( Analytic | <pmi_model> )",
+    "description": "激活半导体区域的热电功率模型。支持解析公式或用户定义的 PMI 模型。与热力学模型配合用于自热仿真。",
+    "parameters": [],
+    "keywords": [
+      "Thermodynamic",
+      "Thermoelectric",
+      "AnalyticTEP",
+      "MetalTEPower",
+      "HeatFlux"
+    ]
+  },
+  "Mechanics": {
+    "section": "Physics",
+    "signature": "Mechanics( <specifications> )",
+    "description": "激活力学应力求解器，计算器件中的应力和应变分布。启用应力依赖的迁移率、压阻效应和形变势模型。",
+    "parameters": [],
+    "keywords": [
+      "Stress",
+      "Strain",
+      "Deformation",
+      "Piezoresistance",
+      "Mobility",
+      "Aniso"
+    ]
+  },
+  "Randomize": {
+    "section": "Physics",
+    "signature": "Randomize [ = <int> ]",
+    "description": "随机化陷阱位置和/或能量。应用于陷阱时，启用陷阱随机化以进行统计分析。可选的整数种子控制随机数生成器以确保可重复性。",
+    "parameters": [],
+    "keywords": [
+      "Traps",
+      "RandomizeEnergy",
+      "RandomizedVariation",
+      "sIFM"
+    ]
+  },
+  "Deformation": {
+    "section": "Physics",
+    "signature": "Deformation( <specifications> )",
+    "description": "激活形变势模型，用于应力诱导的能带结构变化。基于形变势理论计算应变依赖的导带和价带带边偏移。",
+    "parameters": [],
+    "keywords": [
+      "Mechanics",
+      "Stress",
+      "Strain",
+      "BandEdge",
+      "MultiValley",
+      "Mobility"
+    ]
+  },
+  "SensorSweep": {
+    "section": "Physics",
+    "signature": "SensorSweep( <specifications> )",
+    "description": "指定用于远场光线追踪分析的传感器扫描配置。可视化在传感器表面的纬度或经度环带上收集的光线功率变化。",
+    "parameters": [],
+    "keywords": [
+      "Optics",
+      "RayTracing",
+      "Sensor",
+      "FarField",
+      "LED"
+    ]
+  },
+  "QWLocal": {
+    "section": "Physics",
+    "signature": "QWLocal( <specifications> )",
+    "description": "激活半导体区域的局域量子阱量子化模型。使用局域近似计算量子阱结构中载流子密度的量子修正因子。",
+    "parameters": [],
+    "keywords": [
+      "QuantumWell",
+      "eDensityCorrection",
+      "hDensityCorrection",
+      "Gain",
+      "StimulatedEmission"
+    ]
+  },
+  "eBandEdgeShift": {
+    "section": "Physics",
+    "signature": "eBandEdgeShift( <ident> [ <table> ] [ <int> ] )",
+    "description": "使用 PMI（物理模型接口）模型计算导带带边偏移，可带可选构造函数参数。用于多态配置中的表观带边偏移计算。",
+    "parameters": [],
+    "keywords": [
+      "hBandEdgeShift",
+      "BandEdgeShift",
+      "PMI",
+      "ApparentBandEdge",
+      "MSConfig"
+    ]
+  },
+  "MetalWorkfunction": {
+    "section": "Physics",
+    "signature": "MetalWorkfunction( [ Randomize( AverageGrainSize=<float> GrainProbability=(<P1>,...) GrainWorkfunction=(<wf1>,...) RandomSeed=<int> ... ) ] )",
+    "description": "指定金属区域的功函数。支持功函数随机化，使用平均晶粒尺寸、晶粒概率分布和晶粒功函数值来建模晶粒结构引起的涨落。",
+    "parameters": [],
+    "keywords": [
+      "Workfunction",
+      "Randomize",
+      "Metal",
+      "Schottky",
+      "Contact"
+    ]
+  },
+  "PrintSourceVertices": {
+    "section": "Physics",
+    "signature": "PrintSourceVertices ( <string> )",
+    "description": "在 LED(Optics(RayTrace())) 中，将所有活动发射顶点的索引和坐标打印到指定文件。用于调试和验证 LED 光线追踪仿真中的光线源顶点放置。",
+    "parameters": [],
+    "keywords": [
+      "RayTrace",
+      "LEDSpectrum",
+      "LED",
+      "Optics"
+    ]
+  },
+  "LEDSpectrum": {
+    "section": "Physics",
+    "signature": "LEDSpectrum ( <float>*2 <int> )",
+    "description": "在 LED(Optics(RayTrace())) 中，指定起始和结束能量范围(eV)及划分数量，用于计算 LED 发射光谱。每个能量区间产生具有相应光子能量的光线，用于光谱分析。",
+    "parameters": [],
+    "keywords": [
+      "LED",
+      "RayTrace",
+      "Optics",
+      "Wavelength"
+    ]
+  },
+  "Bidirectional": {
+    "section": "Physics",
+    "signature": "Bidirectional ( [Iterations=<int>] [Error=<float>] )",
+    "description": "在 Optics(OpticalSolver(BPMScalar(Bidirectional()))) 中，激活双向光束传播法(BPM)。迭代执行正向和反向传播直到收敛。控制最大正向/反向迭代次数和相对误差终止准则。",
+    "parameters": [],
+    "keywords": [
+      "BPMScalar",
+      "OpticalSolver",
+      "Optics",
+      "BPM"
+    ]
+  },
+  "ComplexRefractiveIndex": {
+    "section": "Physics",
+    "signature": "ComplexRefractiveIndex ( [CarrierDep(real|imag)] [GainDep(real)] [TemperatureDep(real)] [WavelengthDep(real|imag)] [CRIModel(Name=<string>)] )",
+    "description": "激活光学仿真的复折射率(CRI)模型。控制折射率(n)和消光系数(k)的载流子、增益、温度和波长依赖关系。通过 CRIModel 支持用户定义的 PMI 模型。",
+    "parameters": [],
+    "keywords": [
+      "Optics",
+      "OpticalSolver",
+      "RayTracing",
+      "TMM",
+      "WavelengthDep"
+    ]
+  },
+  "OpticsFromFile": {
+    "section": "Physics",
+    "signature": "OpticsFromFile",
+    "description": "标志位，从文件读取光生载流子产生数据而非仿真中计算。在 OpticalGeneration{} 中使用，加载预计算的光学分布，避免重复的光线追踪或 BPM 计算。",
+    "parameters": [],
+    "keywords": [
+      "OpticalGeneration",
+      "Optics",
+      "RayTracing",
+      "BPMScalar"
+    ]
+  },
+  "eHCSDegradation": {
+    "section": "Physics",
+    "signature": "eHCSDegradation ( [SHE] [BondDispersion] [BDEnergyIntervals=<int>] )",
+    "description": "电子热载流子应力退化模型。在半导体/绝缘体界面处由于热载流子损伤产生界面陷阱。在 Physics{Traps()} 的 MaterialInterface 处使用。选项包括 SHE 分布、键弥散和能量区间离散化。",
+    "parameters": [],
+    "keywords": [
+      "hHCSDegradation",
+      "Traps",
+      "SHE",
+      "MaterialInterface",
+      "Reliability"
+    ]
+  },
+  "TMM": {
+    "section": "Physics",
+    "signature": "TMM ( [IntensityPattern(StandingWave|Envelope)] [NodesPerWavelength=<float>] [PropagationDirection=Perpendicular|Refractive] [RoughInterface] [LayerStackExtraction(...)] [Scattering(...)] )",
+    "description": "传输矩阵法(TMM)光学求解器。通过在 1D 中沿层叠结构求解波动方程，计算多层结构中的光场分布。选项控制强度分布类型、每波长节点密度、传播模式、粗糙界面散射和从器件几何中提取层叠结构。",
+    "parameters": [],
+    "keywords": [
+      "Optics",
+      "OpticalSolver",
+      "OpticalGeneration",
+      "ComplexRefractiveIndex",
+      "RayTraceBC"
+    ]
+  },
+  "Grading": {
+    "section": "Physics",
+    "signature": "Grading ( <material_name> <grading_params> )",
+    "description": "在 Physics{} 中用于热电或材料属性规格，定义在器件结构中空间变化的渐变材料组分或属性。用于热电材料和组分渐变合金。",
+    "parameters": [],
+    "keywords": [
+      "Thermoelectric",
+      "Material",
+      "Seebeck"
+    ]
+  },
+  "IALMob": {
+    "section": "Physics",
+    "signature": "IALMob ( [AutoOrientation] [ClusteringEverywhere] [FullPhuMob] [ParameterSetName=<string>] [PhononCombination=<int>] )",
+    "description": "反型和积累层迁移率(IAL)模型。计算由于表面粗糙度散射和库仑散射导致的半导体-绝缘体界面处迁移率退化。选项包括自动取向参数选择、聚类、完整 PhuMob 表达式和声子组合模式。",
+    "parameters": [],
+    "keywords": [
+      "Enormal",
+      "Lombardi",
+      "Mobility",
+      "ThinLayer",
+      "SurfaceMobility"
+    ]
+  },
+  "MetalTEPower": {
+    "section": "Physics",
+    "signature": "MetalTEPower ( <pmi_model> )",
+    "description": "金属的热电功率模型。使用 PMI 模型计算金属区域中的塞贝克系数和热电行为。指定方式为 Physics(Material=\"Copper\") { MetalTEPower(pmi_model) }。",
+    "parameters": [],
+    "keywords": [
+      "Thermoelectric",
+      "Seebeck",
+      "Metal",
+      "PMI"
+    ]
+  },
+  "BalMob": {
+    "section": "Physics",
+    "signature": "BalMob ( [Fermi] [Frensley] [KineticEnergy] [Lch=<float>] [TempDep] )",
+    "description": "弹道迁移率模型，用于载流子输运。考虑短沟道器件中的弹道输运效应。选项包括费米-狄拉克修正、Frensley 最终迁移率规则、动能公式、显式沟道长度和温度依赖。",
+    "parameters": [],
+    "keywords": [
+      "Mobility",
+      "DopingDependence",
+      "HighFieldSaturation",
+      "CNTMob"
+    ]
+  },
+  "Aniso": {
+    "section": "Physics",
+    "signature": "Aniso ( [Avalanche] [eMobility] [hMobility] [eQuantumPotential] [hQuantumPotential] [MetalResistivity] [Poisson] [Temperature] [direction=(<float>*3)] )",
+    "description": "激活各向异性物理模型。支持各向异性迁移率（电子/空穴）、雪崩产生、量子势（密度梯度）、金属电阻率、介电常数和热导率。各向异性方向可显式指定或由晶体/系统坐标系确定。",
+    "parameters": [],
+    "keywords": [
+      "eMobilityFactor",
+      "hMobilityFactor",
+      "direction",
+      "AnisoSG",
+      "Mobility"
+    ]
+  },
+  "eSubband": {
+    "section": "Physics",
+    "signature": "eSubband ( [Fermi] [Doping] [EffectiveMass] [Scattering(MLDA)] [BalMob] [Nonparabolicity] [Transport(<vector>)] [-AutoOrientation] [-RelChDir110] [NoStressInDDmob] [EqRefMob] )",
+    "description": "用于应力仿真的多谷电子子能带迁移率模型。使用子能带结构计算应力诱导的电子迁移率变化。选项控制分布函数、有效质量、散射模型以及应力对漂移扩散和弹道迁移率的影响。",
+    "parameters": [],
+    "keywords": [
+      "hSubband",
+      "Mobility",
+      "Stress",
+      "MLDA",
+      "eMultiValley",
+      "Piezo"
+    ]
+  },
+  "OpticalSolver": {
+    "section": "Physics",
+    "signature": "OpticalSolver ( RayTracing(...) | BPMScalar(...) | TMM(...) )",
+    "description": "在 Physics{Optics(OpticalSolver(...))} 中，选择光学求解方法。选项包括 RayTracing（几何光学）、BPMScalar（标量光束传播法）和 TMM（传输矩阵法）。每个求解器有各自的配置参数。",
+    "parameters": [],
+    "keywords": [
+      "Optics",
+      "RayTracing",
+      "BPMScalar",
+      "TMM",
+      "OpticalGeneration"
+    ]
+  },
+  "Angular": {
+    "section": "Physics",
+    "signature": "Angular ( <angular_params> )",
+    "description": "在 Optics 节中，指定光学求解器的角向离散化参数。例如，在 TMM(Scattering(Angular Discretization=<int>)) 中，设置散射求解器中使用的角度区间离散化。",
+    "parameters": [],
+    "keywords": [
+      "TMM",
+      "Scattering",
+      "Optics",
+      "OpticalSolver"
+    ]
+  },
+  "Gamma": {
+    "section": "Physics",
+    "signature": "Gamma ( EffectiveMass | name=<string> [Table 364] )",
+    "description": "在 eQuantumPotential() 和 hQuantumPotential() 中，指定密度梯度量子化模型的 gamma 因子。Gamma=EffectiveMass 将量子化质量设为态密度有效质量。可使用 PMI 模型实现空间变化的 gamma。",
+    "parameters": [],
+    "keywords": [
+      "eQuantumPotential",
+      "hQuantumPotential",
+      "DensityGradient",
+      "Quantum"
+    ]
+  },
+  "ThinLayer": {
+    "section": "Physics",
+    "signature": "ThinLayer ( [ChordWeight=<float>] [IALMob(...)] [Lombardi(...)] [MinAngle=(<float>*2)] [Thickness=<float>] )",
+    "description": "薄层迁移率模型。通过提取局部层厚度并应用表面散射模型，计算薄半导体层（如超薄体 SOI、鳍式场效应晶体管）中的迁移率退化。可与 IALMob 或 Lombardi 结合用于界面散射。",
+    "parameters": [],
+    "keywords": [
+      "Mobility",
+      "IALMob",
+      "Lombardi",
+      "Enormal",
+      "ThicknessExtraction"
+    ]
+  },
+  "eMultiValley": {
+    "section": "Physics",
+    "signature": "eMultiValley ( [MLDA] [kpDOS] [Nonparabolicity] [ThinLayer] )",
+    "description": "激活多谷电子输运模型。使用多个导带谷计算迁移率，具有谷依赖的占据率和有效质量。MLDA 选项结合修正局域密度近似进行量子修正。用于应力依赖的迁移率仿真。",
+    "parameters": [],
+    "keywords": [
+      "hMultiValley",
+      "MultiValley",
+      "eSubband",
+      "Mobility",
+      "Stress",
+      "MLDA"
+    ]
+  },
+  "DiffusionNoise": {
+    "section": "Physics",
+    "signature": "DiffusionNoise ( [eTemperature] [hTemperature] )",
+    "description": "Physics{Noise(DiffusionNoise(...))} 中的扩散噪声模型。计算由于载流子扩散过程引起的小信号噪声功率谱密度。eTemperature 和 hTemperature 选项在噪声计算中使用载流子温度代替晶格温度。",
+    "parameters": [],
+    "keywords": [
+      "Noise",
+      "ACCoupled",
+      "eTemperature",
+      "hTemperature"
+    ]
+  },
+  "RHSCoef": {
+    "section": "Physics",
+    "signature": "RHSCoef ( [Electron=<int>] [Hole=<int>] [HydrogenAtom=<int>] [HydrogenIon=<int>] [HydrogenMolecule=<int>] [HydrogenSpeciesA=<int>] [HydrogenSpeciesB=<int>] [HydrogenSpeciesC=<int>] )",
+    "description": "在 Physics{HydrogenReaction()} 中，定义右侧化学计量系数，指定氢输运反应中产生的粒子数。每个物种系数默认为 0。",
+    "parameters": [],
+    "keywords": [
+      "LHSCoef",
+      "HydrogenReaction",
+      "HydrogenDiffusion",
+      "ForwardReactionCoef"
+    ]
+  },
+  "MLDAbox": {
+    "section": "Physics",
+    "signature": "MLDAbox (MinX=<float> MaxX=<float> MinY=<float> MaxY=<float> MinZ=<float> MaxZ=<float>)",
+    "description": "为修正局域密度近似(MLDA)模型定义盒区域。指定应用 MLDA 量子修正的空间边界（微米），用于界面散射计算。",
+    "parameters": [],
+    "keywords": [
+      "MinX",
+      "MaxX",
+      "MinY",
+      "MaxY",
+      "MinZ",
+      "MaxZ",
+      "MVMLDAcontrols"
+    ]
+  },
+  "GateCurrent": {
+    "section": "Physics",
+    "signature": "GateCurrent (<model_options>)",
+    "description": "配置材料界面（如硅/氧化层）处的栅电流模型。支持福勒-诺德海姆隧穿、直接隧穿(Schenk)、幸运电子模型(eLucky/hLucky)、Fiegna 模型、SHE 分布模型和基于 PMI 的热载流子注入模型。",
+    "parameters": [],
+    "keywords": [
+      "Fowler",
+      "DirectTunneling",
+      "eLucky",
+      "hLucky",
+      "eFiegna",
+      "hFiegna",
+      "eSHEDistribution",
+      "hSHEDistribution",
+      "GateName",
+      "InjectionRegion",
+      "Interface",
+      "PMI_model"
+    ]
+  },
+  "RecBoxIntegr": {
+    "section": "Physics",
+    "signature": "RecBoxIntegr",
+    "description": "启用传输矩阵法(TMM)中光生载流子计算的矩形窗口光束分布积分。控制如何从光照窗口上的光束强度分布计算光生载流子分布。",
+    "parameters": [],
+    "keywords": [
+      "TMM",
+      "OpticalSolver",
+      "OpticalGeneration"
+    ]
+  },
+  "Fermi": {
+    "section": "Physics",
+    "signature": "Fermi",
+    "description": "激活费米-狄拉克统计代替默认的玻尔兹曼统计进行载流子浓度计算。作为 Mobility 模型（如 BalMob、eSubband、hSubband、hSixband）中的选项使用，以考虑高掺杂或高载流子浓度下载流子简并对迁移率的影响。",
+    "parameters": [],
+    "keywords": [
+      "Boltzmann",
+      "eQuasiFermiPotential",
+      "hQuasiFermiPotential",
+      "BalMob",
+      "eSubband",
+      "hSubband"
+    ]
+  },
+  "Laser": {
+    "section": "Physics",
+    "signature": "Laser (<options>)",
+    "description": "配置激光二极管仿真物理，包括光学谐振腔效应、受激发射和阈值以上的增益钳位。包含与 LED 仿真类似的电热和量子阱物理，但增加了阈值依赖的载流子行为和光学反馈。",
+    "parameters": [],
+    "keywords": [
+      "LED",
+      "Optics",
+      "Broadening",
+      "QWTransport",
+      "Strain",
+      "StimEmissionCoeff",
+      "SponEmissionCoeff"
+    ]
+  },
+  "Transition": {
+    "section": "Physics",
+    "signature": "Transition (Name=<string> From=<string> To=<string> [CEModel(<ident>)] [FieldFromInsulator] [Reservoirs(<string>(Particles=<int>)...)])",
+    "description": "定义多态配置(MSC)中两个状态之间的跃迁。指定相互作用状态(From)、参考状态(To)、可选的俘获/发射 PMI 模型(CEModel)、粒子守恒库和电场计算选项。",
+    "parameters": [],
+    "keywords": [
+      "Name",
+      "From",
+      "To",
+      "CEModel",
+      "FieldFromInsulator",
+      "Reservoirs",
+      "Particles",
+      "MSConfig"
+    ]
+  },
+  "TraceSource": {
+    "section": "Physics",
+    "signature": "TraceSource ()",
+    "description": "激活 LED 光线追踪仿真中的光线源追踪。通过在每个活动顶点累积光线强度到 LED_TraceSource 分布中，将输出光线关联到其起始活动顶点，识别最佳电流通道区域以提高光提取效率。",
+    "parameters": [],
+    "keywords": [
+      "LED",
+      "Optics",
+      "RayTrace",
+      "LEDRadiationPara",
+      "ObservationRadius"
+    ]
+  },
+  "HydrogenReaction": {
+    "section": "Physics",
+    "signature": "HydrogenReaction (ForwardReactionCoef=<float> ForwardReactionEnergy=<float> LHSCoef(...) RHSCoef(...) [ReverseReactionCoef=<float>] [Material=<string>] [Region=<string>])",
+    "description": "定义氢输运仿真中活动氢物种（原子、离子、分子、物种 A/B/C）与载流子（电子、空穴）之间的化学反应。指定正向/逆向反应系数、激活能、电场系数和粒子守恒。",
+    "parameters": [],
+    "keywords": [
+      "HydrogenDiffusion",
+      "ForwardReactionCoef",
+      "ForwardReactionEnergy",
+      "ForwardReactionFieldCoef",
+      "ReverseReactionCoef",
+      "ReverseReactionEnergy",
+      "LHSCoef",
+      "RHSCoef",
+      "Electron",
+      "Hole",
+      "HydrogenAtom",
+      "HydrogenIon",
+      "HydrogenMolecule"
+    ]
+  },
+  "eNMP": {
+    "section": "Physics",
+    "signature": "eNMP (Conc=<float> [SFactor=<ident>|<string>] [NumberOfSamples=<int>])",
+    "description": "扩展非辐射多声子(eNMP)模型，用于陷阱辅助隧穿和退化。指定前驱体浓度、通过 SFactor（PMI 模型或数据集）的空间分布以及用于统计分析的随机样本数。",
+    "parameters": [],
+    "keywords": [
+      "Conc",
+      "SFactor",
+      "NumberOfSamples",
+      "Degradation",
+      "Traps"
+    ]
+  },
+  "BPM": {
+    "section": "Physics",
+    "signature": "BPM (<options>)",
+    "description": "波导结构光学仿真的光束传播法。沿传播方向求解近轴波动方程以计算光场分布。支持双向传播、完美匹配层(PML)边界条件、高斯和平面波激发以及可配置的参考折射率。",
+    "parameters": [],
+    "keywords": [
+      "Bidirectional",
+      "Boundary",
+      "Excitation",
+      "GridNodes",
+      "ReferenceRefractiveIndex",
+      "PML",
+      "Gaussian",
+      "PlaneWave"
+    ]
+  },
+  "UserWindow": {
+    "section": "Physics",
+    "signature": "UserWindow (NumberOfRays=<int> [RaysFromFile=<string>] [PolarizationVector=Random|ReadFromExcitation|ReadFromFile])",
+    "description": "为光学光线追踪仿真定义用户自定义光线窗口。允许从文件导入自定义光线方向、设置光线数量和配置偏振矢量。在 Physics{Optics{OpticalSolver{Raytracing(...)}}} 或 Physics{Optics{OpticalSolver{FDTD{...}}}} 中使用。",
+    "parameters": [],
+    "keywords": [
+      "NumberOfRays",
+      "RaysFromFile",
+      "PolarizationVector",
+      "RayTracing",
+      "OpticalSolver"
+    ]
+  },
+  "HeatSource": {
+    "section": "Physics",
+    "signature": "HeatSource (pmi_model)",
+    "description": "在热力学仿真中指定 PMI（物理模型接口）模型用于自定义热源定义。PMI 模型计算局部热产生速率，添加到晶格热方程中。在命令文件的 Physics 节中使用。",
+    "parameters": [],
+    "keywords": [
+      "Thermodynamic",
+      "LatticeTemperature",
+      "HeatCapacity",
+      "ThermalConductivity",
+      "PMI"
+    ]
+  },
+  "hQuantumPotential": {
+    "section": "Physics",
+    "signature": "hQuantumPotential (<options>)",
+    "description": "空穴的密度梯度量子修正模型。使用密度梯度形式计算半导体-绝缘体界面附近空穴的量子限制势偏移。支持各向异性方向、边界条件、Gamma 因子指定(EffectiveMass 或 PMI)、局域模型耦合和命名参数集。",
+    "parameters": [],
+    "keywords": [
+      "eQuantumPotential",
+      "Gamma",
+      "EffectiveMass",
+      "BoundaryCondition",
+      "Formula",
+      "LocalModel",
+      "SchenkBN_hole",
+      "ParameterSetName",
+      "AutoOrientation",
+      "Resolve"
+    ]
+  },
+  "Strain": {
+    "section": "Physics",
+    "signature": "Strain (<options>)",
+    "description": "激活应变依赖的物理模型。在 LED 仿真中，启用量子阱的应变建模及给定参考晶格常数。在 Model 节中，启用形变势、压阻迁移率和多谷能带结构模型，用于应力/应变仿真。",
+    "parameters": [],
+    "keywords": [
+      "DeformationPotential",
+      "DOS",
+      "Mobility",
+      "eSubband",
+      "hSubband",
+      "eMultiValley",
+      "hMultiValley",
+      "RefLatticeConst",
+      "Model"
+    ]
+  },
+  "hMultiValley": {
+    "section": "Physics",
+    "signature": "hMultiValley ([DensityIntegral])",
+    "description": "仅激活空穴的多谷能带结构模型。在能带结构计算中考虑多个价带谷，影响态密度、载流子浓度和应变诱导的带边偏移。DensityIntegral 选项启用费米-狄拉克积分的数值高斯-拉盖尔积分。",
+    "parameters": [],
+    "keywords": [
+      "eMultiValley",
+      "MultiValley",
+      "DensityIntegral",
+      "Fermi",
+      "DeformationPotential",
+      "Model"
+    ]
+  },
+  "RayTracing": {
+    "section": "Physics",
+    "signature": "RayTracing (<options>)",
+    "description": "Physics{Optics{OpticalSolver}} 节中用于光生载流子计算的统一光线追踪接口。配置光线传播参数，包括深度限制、最小强度阈值、远场传感器、蒙特卡洛模式、外部材料复折射率、偏振、用户自定义光线窗口和界面通量绘制。",
+    "parameters": [],
+    "keywords": [
+      "Farfield",
+      "Sensor",
+      "DepthLimit",
+      "MinIntensity",
+      "MonteCarlo",
+      "ExternalMaterialCRIFile",
+      "Print",
+      "UserWindow",
+      "PolarizationVector",
+      "NonSemiconductorAbsorption",
+      "WeightedOpticalGeneration"
+    ]
+  },
+  "DensityIntegral": {
+    "section": "Physics",
+    "signature": "DensityIntegral",
+    "description": "激活多谷能带结构计算中费米-狄拉克积分 F_1/2 的数值高斯-拉盖尔积分。作为 (e|h)Multivalley 中的选项使用，用于与解析近似进行测试和比较。在 Physics 节中指定。",
+    "parameters": [],
+    "keywords": [
+      "MultiValley",
+      "eMultiValley",
+      "hMultiValley",
+      "Fermi"
+    ]
+  },
+  "Barrier": {
+    "section": "Physics",
+    "signature": "Barrier (<options>)",
+    "description": "配置界面处的势垒相关物理模型。在 eBarrierTunneling/hBarrierTunneling 中用于非局部隧穿，选项包括势垒降低、基于薛定谔方程的隧穿概率、双能带色散和透射系数。在 SingletExciton 中用于指定异质界面处的势垒类型(CondBand/ValBand)。",
+    "parameters": [],
+    "keywords": [
+      "BarrierLowering",
+      "Schroedinger",
+      "TwoBand",
+      "Transmission",
+      "Band2Band",
+      "BarrierType",
+      "CondBand",
+      "ValBand",
+      "SingletExciton"
+    ]
+  },
+  "Mobility": {
+    "section": "Physics",
+    "signature": "Mobility (<options>)",
+    "description": "配置载流子迁移率模型，包括掺杂依赖(Arora、Masetti、PhuMob)、高场饱和(CaugheyThomas、TransferredElectronEffect)、界面退化(Lombardi、IALMob、Enormal)和应变依赖模型(eSubband、hSixband、压阻因子/张量)。按载流子类型分别应用 eMobility/hMobility 变体。",
+    "parameters": [],
+    "keywords": [
+      "DopingDependence",
+      "HighFieldSaturation",
+      "Enormal",
+      "PhuMob",
+      "ConstantMobility",
+      "CarrierCarrierScattering",
+      "ThinLayer",
+      "BalMob",
+      "Diffusivity",
+      "eMobility",
+      "hMobility"
+    ]
+  },
+  "Boundary": {
+    "section": "Physics",
+    "signature": "Boundary (<options>)",
+    "description": "在各种物理上下文中配置边界条件。在 BPM 中，指定完美匹配层(PML)吸收边界条件及其网格节点、拉伸参数和阶数。在光学中，设置反射/透射特性。在光线追踪中，定义光线行为的特殊接触边界条件。",
+    "parameters": [],
+    "keywords": [
+      "PML",
+      "GridNodes",
+      "StretchingParameter",
+      "Type",
+      "Side",
+      "Fresnel",
+      "Reflectivity",
+      "Transmittivity",
+      "TMM"
+    ]
+  },
+  "eQuantumPotential": {
+    "section": "Physics",
+    "signature": "eQuantumPotential (<options>)",
+    "description": "电子的密度梯度量子修正模型。使用密度梯度形式计算半导体-绝缘体界面附近电子的量子限制势偏移。支持各向异性方向、边界条件、Gamma 因子指定(EffectiveMass 或 PMI)、局域模型耦合和命名参数集。",
+    "parameters": [],
+    "keywords": [
+      "hQuantumPotential",
+      "Gamma",
+      "EffectiveMass",
+      "BoundaryCondition",
+      "Formula",
+      "LocalModel",
+      "SchenkBN_elec",
+      "ParameterSetName",
+      "AutoOrientation",
+      "Resolve"
+    ]
+  },
+  "LED": {
+    "section": "Physics",
+    "signature": "LED (<options>)",
+    "description": "配置发光二极管(LED)仿真物理，包括量子阱能带结构(闪锌矿/纤锌矿)、辐射和受激发射系数(PMI 或内置)、增益展宽模型、自发辐射积分、量子阱输运和光线追踪光学。支持应变效应和自发辐射缩放。",
+    "parameters": [],
+    "keywords": [
+      "Bandstructure",
+      "Broadening",
+      "Optics",
+      "QWExtension",
+      "QWTransport",
+      "SplitOff",
+      "SponEmissionCoeff",
+      "SponIntegration",
+      "SponScaling",
+      "StimEmissionCoeff",
+      "StimScaling",
+      "Strain",
+      "RayTrace",
+      "LEDSpectrum"
+    ]
+  },
+  "DFB": {
+    "section": "Physics",
+    "signature": "DFB (<options>)",
+    "description": "配置分布反馈(DFB)激光器仿真物理。DFB 激光器使用内置光栅结构进行光学反馈，需要对光场进行耦合波分析。与激光器/LED 物理模型配合使用，用于仿真 DFB 激光二极管的光谱特性和阈值行为。",
+    "parameters": [],
+    "keywords": [
+      "Laser",
+      "LED",
+      "Optics",
+      "Broadening",
+      "StimEmissionCoeff",
+      "Grating",
+      "CouplingCoefficient"
+    ]
+  },
+  "Degradation": {
+    "section": "Physics",
+    "signature": "Degradation ([PowerLaw])",
+    "description": "基于 MOS 的器件的热载流子应力退化模型。包括陷阱退化动力学、反应增强因子、氧化层中的氢扩散和 NBTI/PBTI 的激活势垒双阱热电子发射模型。在 Traps 规格中调用，用于建模器件寿命期间的界面陷阱产生和阈值电压偏移。",
+    "parameters": [],
+    "keywords": [
+      "PowerLaw",
+      "Traps",
+      "ActEnergy",
+      "BondConc",
+      "DePasCoeff",
+      "PassivCoeff",
+      "eSHEDistribution",
+      "Conc",
+      "EnergyMid",
+      "HydrogenDiffusion",
+      "CEModel"
+    ]
+  },
+  "SingletExciton": {
+    "section": "Physics",
+    "signature": "SingletExciton (<options>)",
+    "description": "激活 OLED/有机半导体仿真的单线态激子方程。在 Solve 节的 Coupled 语句中配置，在 Physics 中按区域配置。支持双分子产生、辐射和陷阱辅助辐射衰减、非辐射淬灭(eQuenching/hQuenching)和界面解离。",
+    "parameters": [],
+    "keywords": [
+      "Recombination",
+      "Bimolecular",
+      "Radiative",
+      "TrappedRadiative",
+      "eQuenching",
+      "hQuenching",
+      "Dissociation",
+      "FluxBC",
+      "BarrierType",
+      "CondBand",
+      "ValBand"
+    ]
+  },
+  "LatticeTemperature": {
+    "section": "Physics",
+    "signature": "LatticeTemperature (<options>)",
+    "description": "配置非等温仿真的晶格温度物理。激活热力学方程，包括热容、热导率和焦耳热模型。在 BreakCriteria 中用于设置最大温度限制。也作为 PMI 数据字段(LatticeTemperature)用于后处理。",
+    "parameters": [],
+    "keywords": [
+      "Thermodynamic",
+      "HeatCapacity",
+      "ThermalConductivity",
+      "JouleHeat",
+      "LatticeTemperatureLimit",
+      "BreakCriteria"
+    ]
+  },
+  "Absorption": {
+    "section": "Physics",
+    "signature": "Absorption",
+    "description": "在 Physics{Optics{}} 中，激活非半导体区域或材料中的光吸收计算。在 RayTracing() 内指定时，启用绝缘体区域中光生载流子产生的吸收计算。",
+    "parameters": [],
+    "keywords": [
+      "Optics",
+      "RayTracing",
+      "NonSemiconductor"
+    ]
+  },
+  "Add2TotalDoping": {
+    "section": "Physics",
+    "signature": "Add2TotalDoping | Add2TotalDoping(ChargedTraps)",
+    "description": "在 Traps() 中，将陷阱浓度包含在用于计算迁移率、寿命等量的受主、施主和总掺杂浓度中。使用 ChargedTraps 选项时，仅包含带电陷阱浓度。",
+    "parameters": [
+      "ChargedTraps"
+    ],
+    "keywords": [
+      "Traps",
+      "Doping",
+      "Mobility"
+    ]
+  },
+  "Affinity": {
+    "section": "Physics",
+    "signature": "Affinity(<ident>)",
+    "description": "使用 PMI（物理模型接口）模型指定电子亲和能。允许用户定义或基于参数文件的电子亲和能规格。",
+    "parameters": [
+      "<ident>"
+    ],
+    "keywords": [
+      "PMI",
+      "BandEdge",
+      "Physics"
+    ]
+  },
+  "BandEdgeShift": {
+    "section": "Physics",
+    "signature": "BandEdgeShift",
+    "description": "计算由各种物理效应引起的带边偏移。电子变体 eBandEdgeShift 和空穴变体 hBandEdgeShift 使用 PMI 模型分别计算导带和价带带边偏移。",
+    "parameters": [],
+    "keywords": [
+      "eBandEdgeShift",
+      "hBandEdgeShift",
+      "PMI",
+      "BandEdge"
+    ]
+  },
+  "BandgapNarrowing": {
+    "section": "Physics",
+    "signature": "EffectiveIntrinsicDensity(BandGapNarrowing(<model>))",
+    "description": "选择 EffectiveIntrinsicDensity 中使用的带隙窄化(BGN)模型。支持的模型包括 Slotboom、OldSlotboom、BennettWilson(默认)、delAlamo、JainRoulston 和 TableBGN。使用 NoBandGapNarrowing 禁用。",
+    "parameters": [
+      "Slotboom",
+      "OldSlotboom",
+      "BennettWilson",
+      "delAlamo",
+      "JainRoulston",
+      "TableBGN",
+      "NoBandGapNarrowing"
+    ],
+    "keywords": [
+      "EffectiveIntrinsicDensity",
+      "BGN",
+      "Physics"
+    ]
+  },
+  "BarrierType": {
+    "section": "Physics",
+    "signature": "SingletExciton(BarrierType(<type>))",
+    "description": "在 SingletExciton() 中于异质界面处，选择单线态激子通量注入的势垒类型。选项：Bandgap（默认，使用带隙差）、CondBand（导带带边差）、ValBand（价带带边差）。",
+    "parameters": [
+      "Bandgap",
+      "CondBand",
+      "ValBand"
+    ],
+    "keywords": [
+      "SingletExciton",
+      "OLED",
+      "Interface"
+    ]
+  },
+  "Dipole": {
+    "section": "Physics",
+    "signature": "Dipole(Reference=<string>)",
+    "description": "在绝缘体-绝缘体界面处，激活偶极层模型，用于引起界面电势跳跃的不可动电荷。Reference 指定界面的参考侧（区域或材料名称）。参数包括 sigma_D 和 epsilon。",
+    "parameters": [
+      "Reference"
+    ],
+    "keywords": [
+      "Interface",
+      "Insulator",
+      "Potential"
+    ]
+  },
+  "DopingVariation": {
+    "section": "Physics",
+    "signature": "RandomizedVariation(DopingVariation(<table>))",
+    "description": "在 RandomizedVariation() 中，激活掺杂分布变化用于统计阻抗场方法(sIFM)仿真。生成掺杂浓度的随机空间变化。",
+    "parameters": [],
+    "keywords": [
+      "RandomizedVariation",
+      "sIFM",
+      "Statistical"
+    ]
+  },
+  "EffectiveIndex": {
+    "section": "Physics",
+    "signature": "EffectiveIndex",
+    "description": "在光学和波导仿真中，计算光学模式的有效折射率。用于 BPM（光束传播法）和 VCSEL 仿真中的模态分析。",
+    "parameters": [],
+    "keywords": [
+      "Optics",
+      "BPM",
+      "VCSEL",
+      "Waveguide"
+    ]
+  },
+  "EffectiveIntrinsicDensity": {
+    "section": "Physics",
+    "signature": "EffectiveIntrinsicDensity(<model>) | EffectiveIntrinsicDensity(BandGapNarrowing(<model>))",
+    "description": "选择有效本征载流子密度模型。控制带隙窄化如何影响本征载流子浓度 ni。选项包括 BandGapNarrowing(Slotboom)、BandGapNarrowing(BennettWilson)、NoBandGapNarrowing 或 PMI 模型名称。",
+    "parameters": [
+      "Slotboom",
+      "BennettWilson",
+      "NoBandGapNarrowing",
+      "BandGapNarrowing"
+    ],
+    "keywords": [
+      "BandgapNarrowing",
+      "BGN",
+      "IntrinsicCarrier"
+    ]
+  },
+  "EnormalInterface": {
+    "section": "Physics",
+    "signature": "EnormalInterface",
+    "description": "在 Physics{} 的界面处，激活用于物理模型评估的界面法向电场。用于需要法向电场分量的界面迁移率退化和其他界面依赖模型。",
+    "parameters": [],
+    "keywords": [
+      "Interface",
+      "Mobility",
+      "ElectricField"
+    ]
+  },
+  "eSHEDistribution": {
+    "section": "Physics",
+    "signature": "eSHEDistribution = (<float>*6)",
+    "description": "在 Traps() 中，指定陷阱退化模型的去钝化常数的电子能量依赖项的六个参数：delta_SHE、epsilon_th、epsilon_a、delta_perp、rho_perp 和 rho_SHE。用于 HCS 退化建模。",
+    "parameters": [
+      "delta_SHE",
+      "epsilon_th",
+      "epsilon_a",
+      "delta_perp",
+      "rho_perp",
+      "rho_SHE"
+    ],
+    "keywords": [
+      "Traps",
+      "Degradation",
+      "HCS",
+      "SHE"
+    ]
+  },
+  "Excitation": {
+    "section": "Physics",
+    "signature": "Excitation { Window(...) }",
+    "description": "在 Physics{Optics{}} 中，定义光激发配置，包括光照窗口（圆形、矩形、多边形、线形）及其空间光强分布。指定光线追踪和 TMM 求解器的光源几何。",
+    "parameters": [
+      "Window",
+      "Circle",
+      "Rectangle",
+      "Polygon",
+      "Line"
+    ],
+    "keywords": [
+      "Optics",
+      "Window",
+      "Illumination",
+      "RayTracing"
+    ]
+  },
+  "ExternalBoltzmannSolver": {
+    "section": "Physics",
+    "signature": "ExternalBoltzmannSolver(<options>)",
+    "description": "与 Sentaurus Device QTX 的外部子能带玻尔兹曼输运方程求解器的耦合接口。启用量子修正和从子能带玻尔兹曼输运方程求解器提取有效迁移率。配置切片、体积限制、阻尼长度和迁移率选项。",
+    "parameters": [
+      "Carriers",
+      "ContactName",
+      "DampingLength",
+      "Mobility",
+      "NumberOfSlices",
+      "SBTECommandFile",
+      "Volume"
+    ],
+    "keywords": [
+      "BTE",
+      "Quantum",
+      "Subband",
+      "QTX"
+    ]
+  },
+  "Gaussian": {
+    "section": "Physics",
+    "signature": "Gaussian",
+    "description": "在 HeavyIon() 中，使用高斯空间分布作为电荷产生径迹。在 Traps() 中，指定陷阱能级的高斯能量分布。在 SpatialShape 选项中，使用高斯形函数进行空间限制。",
+    "parameters": [],
+    "keywords": [
+      "HeavyIon",
+      "Traps",
+      "SpatialShape",
+      "Distribution"
+    ]
+  },
+  "hBarrierTunneling": {
+    "section": "Physics",
+    "signature": "hBarrierTunneling(NonLocal=<string>) | hBarrierTunneling(TwoBand)",
+    "description": "在 Traps() 中，激活空穴势垒隧穿（从价带的陷阱辅助隧穿）。NonLocal 选项启用从命名非局部网格的隧穿。TwoBand 选项使用双能带色散计算 WKB 隧穿概率。",
+    "parameters": [
+      "NonLocal",
+      "TwoBand"
+    ],
+    "keywords": [
+      "Traps",
+      "Tunneling",
+      "ValenceBand",
+      "NonLocal"
+    ]
+  },
+  "HydrogenMolecule": {
+    "section": "Physics",
+    "signature": "HydrogenMolecule",
+    "description": "氢分子物种(H2)，用于氢扩散仿真。在 Physics{HydrogenDiffusion()} 中使用以配置分子氢的输运。必须在 Solve 节中通过 Coupled{...HydrogenMolecule} 耦合。在 Plot 节中绘制为 HydrogenMolecule。",
+    "parameters": [],
+    "keywords": [
+      "HydrogenDiffusion",
+      "HydrogenAtom",
+      "HydrogenIon",
+      "NBTI"
+    ]
+  },
+  "ImportDomain": {
+    "section": "Physics",
+    "signature": "ImportDomain(<options>)",
+    "description": "在 OpticalGeneration{ReadFromFile()} 中，控制加载光生载流子分布时的插值。指定源和目标区域、域截断盒以及源网格和目标网格之间的网格映射。",
+    "parameters": [
+      "DestinationBoxCorner1",
+      "DestinationBoxCorner2",
+      "DestinationRegions",
+      "SourceBoxCorner1",
+      "SourceBoxCorner2",
+      "SourceRegions"
+    ],
+    "keywords": [
+      "OpticalGeneration",
+      "ReadFromFile",
+      "Interpolation"
+    ]
+  },
+  "Line": {
+    "section": "Physics",
+    "signature": "Line(X1=<float>, X2=<float>, Dx=<float>)",
+    "description": "在 Window()（Excitation 节）中，定义线形光照窗口用于光激发。在 Sensor()（远场）中，定义具有两个角点的线传感器。在 ComputeCarrierPath() 中，定义载流子路径追踪的终止条件。",
+    "parameters": [
+      "X1",
+      "X2",
+      "Dx",
+      "Corner1",
+      "Corner2",
+      "UseNormalFlux"
+    ],
+    "keywords": [
+      "Window",
+      "Excitation",
+      "Sensor",
+      "Optics"
+    ]
+  },
+  "Noise": {
+    "section": "Physics",
+    "signature": "Noise <string> (<noise_models>)",
+    "description": "使用阻抗场方法(IFM)激活噪声分析。指定局部噪声源(LNS)模型，如 DiffusionNoise、GenerationRecombination、TrapNoise 等。可选的字符串名称允许在一个仿真中指定多个噪声规格。",
+    "parameters": [
+      "DiffusionNoise",
+      "GenerationRecombination",
+      "TrapNoise",
+      "GRNoise"
+    ],
+    "keywords": [
+      "IFM",
+      "Spectrum",
+      "Fluctuation",
+      "DiffusionNoise"
+    ]
+  },
+  "PrintRayInfo": {
+    "section": "Physics",
+    "signature": "PrintRayInfo(<string>)",
+    "description": "在 LED(Optics(RayTrace())) 中，将所有起始光线的索引和位置打印到指定文件。用于通过记录每条光线的起点来调试 LED 光线追踪仿真。",
+    "parameters": [
+      "<string>"
+    ],
+    "keywords": [
+      "LED",
+      "RayTrace",
+      "Debug"
+    ]
+  },
+  "Schroedinger": {
+    "section": "Physics",
+    "signature": "Schroedinger(<options>)",
+    "description": "沿非局部线求解 1D 薛定谔方程，用于量子限制载流子。通过 Active(Type=QuantumWell) 激活。选项包括 Electron/Hole（载流子类型）、DensityTail、EnergyInterval、MaxSolutions、Smooth 和光学矩阵元的偏振设置。",
+    "parameters": [
+      "Electron",
+      "Hole",
+      "eDensityCorrection",
+      "hDensityCorrection",
+      "EnergyInterval",
+      "MaxSolutions",
+      "Smooth",
+      "DensityTail",
+      "Polarization"
+    ],
+    "keywords": [
+      "QuantumWell",
+      "Active",
+      "Quantum",
+      "NonLocal"
+    ]
+  },
+  "Stripe": {
+    "section": "Physics",
+    "signature": "Stripe",
+    "description": "在光学仿真中，定义条形激发几何或增益区域。通常用于边发射激光器和波导仿真，定义光学模式或泵浦区域的横向范围。",
+    "parameters": [],
+    "keywords": [
+      "Optics",
+      "Laser",
+      "Waveguide",
+      "Excitation"
+    ]
+  },
+  "StimEmissionCoeff": {
+    "section": "Physics",
+    "signature": "LED(StimEmissionCoeff(<ident>))",
+    "description": "在 LED() 中，指定用于受激发射系数的 PMI 模型。用于通过 PMI 导入增益和自发辐射数据，以实现精确的 LED 和激光器仿真。",
+    "parameters": [
+      "<ident>"
+    ],
+    "keywords": [
+      "LED",
+      "Gain",
+      "PMI",
+      "StimulatedEmission"
+    ]
+  },
+  "Volume": {
+    "section": "Physics",
+    "signature": "Volume = <string>",
+    "description": "为物理模型限制指定命名区域。用于 RandomizedVariation() 中的 BandEdge() 以限制带边变化，用于 Conductivity() 中的金属电导率变化，以及用于 ExternalBoltzmannSolver() 中将量子修正限制在特定域内。",
+    "parameters": [
+      "<string>"
+    ],
+    "keywords": [
+      "RandomizedVariation",
+      "BandEdge",
+      "ExternalBoltzmannSolver"
+    ]
+  },
+  "Piezo": {
+    "section": "Physics",
+    "signature": "Piezo (<options>)",
+    "description": "在 Physics 节中配置压阻和应力相关模型。指定应力或应变张量分量，选择迁移率张量模型（如 Tensor(\"pmi_model\")），并启用应力相关 PMI 模型。可直接指定恒定应力/应变张量，或通过 File 节从 TDR 文件读取。",
+    "parameters": [],
+    "keywords": [
+      "Model",
+      "Mobility",
+      "Tensor",
+      "Stress",
+      "DOS",
+      "eMass",
+      "hMass",
+      "OriKddX",
+      "OriKddY",
+      "LatticeParameters",
+      "PiezoParameters"
+    ]
+  },
+  "LayerThickness": {
+    "section": "Physics",
+    "signature": "LayerThickness (<options>)",
+    "description": "提取量子修正模型（如薄层迁移率和 MLDA）的量子化长度（层厚）。自动检测定义区域中的层边界。提取的厚度供 PMI 模型（如 ReadLayerThickness()）使用，并影响迁移率、热导率和其他与层相关的性质。",
+    "parameters": [],
+    "keywords": [
+      "Thickness",
+      "ScaleThickness",
+      "ThinLayer",
+      "Mirror",
+      "AllowLayerThickness",
+      "Everywhere",
+      "Insulator",
+      "Metal",
+      "Semiconductor"
+    ]
+  },
+  "MSConfig": {
+    "section": "Physics",
+    "signature": "MSConfig (Name=<string> [<state_definitions>] [<transition_definitions>] [<model_options>])",
+    "description": "在 Physics 的 MSConfigs 节中定义多态配置（MSC）。描述状态（至少两个）、状态之间的跃迁，以及可选的带边偏移模型。MSC 可对 NBTI 陷阱态等带有电荷和氢组分的物理现象进行建模。用于迁移率、复合和其他物理模型中的 MSC 相关 PMI 模型。",
+    "parameters": [],
+    "keywords": [
+      "Name",
+      "State",
+      "Transition",
+      "Conc",
+      "Charge",
+      "Hydrogen",
+      "To",
+      "From",
+      "CEModel",
+      "Reservoirs",
+      "FieldFromInsulator",
+      "eBandEdgeShift",
+      "hBandEdgeShift",
+      "BandEdgeShift",
+      "Elimination",
+      "Device"
+    ]
+  },
+  "Medium": {
+    "section": "Physics",
+    "signature": "Medium (Location=<top|bottom> Material=<string> | RefractiveIndex=<float> ExtinctionCoefficient=<float>)",
+    "description": "为 TMM 光学求解器 LayerStackExtraction 节中提取的层叠结构指定周围介质（顶部或底部）的性质。通过指定材料名称或直接指定折射率和消光系数值来覆盖默认的真空假设。",
+    "parameters": [],
+    "keywords": [
+      "Location",
+      "Material",
+      "RefractiveIndex",
+      "ExtinctionCoefficient",
+      "LayerStackExtraction",
+      "TMM"
+    ]
+  },
+  "Reservoirs": {
+    "section": "Physics",
+    "signature": "Reservoirs(\"CB\"(Particles=<int>) \"VB\"(Particles=<int>) \"HydrogenAtom\"(Particles=<int>) ...)",
+    "description": "为涉及电荷状态变化的 MSC 跃迁指定粒子库。导带（CB）作为电子库，价带（VB）作为空穴库。每个库指定跃迁过程中交换的粒子数。确保 MSC 状态跃迁过程中的总电荷守恒。",
+    "parameters": [],
+    "keywords": [
+      "CB",
+      "VB",
+      "HydrogenAtom",
+      "Particles",
+      "Transition",
+      "MSConfig"
+    ]
+  },
+  "DebugLEDRadiation": {
+    "section": "Physics",
+    "signature": "DebugLEDRadiation(<filename> <StartAngle> <EndAngle> <MinIntensity>)",
+    "description": "RayTrace 节中 LED 光线追踪的调试功能。将指定角度范围（单位：度）内且高于最小强度阈值的输出光线追踪回其源活跃顶点。结果写入指定文件。在 2D 中，角度使用常规极坐标；在 3D 中，角度从 z 轴测量（球坐标 theta）。",
+    "parameters": [],
+    "keywords": [
+      "RayTrace",
+      "LED",
+      "ObservationCenter",
+      "Wavelength",
+      "Print"
+    ]
+  },
+  "Piezolectric_Polarization": {
+    "section": "Physics",
+    "signature": "Piezolectric_Polarization (<pmi_model_name>)",
+    "description": "通过将压电极化矢量的散度作为附加电荷项添加到泊松方程来激活压电极化建模。极化矢量由 PMI 模型定义。适用于纤锌矿晶体（如氮化镓基器件），其中压电效应显著影响载流子分布。产生的极化矢量和电荷可分别绘制为 PE_Polarization/vector 和 PE_Charge。",
+    "parameters": [],
+    "keywords": [
+      "PE_Polarization",
+      "PE_Charge",
+      "PMI",
+      "Bandstructure",
+      "Wurtzite"
+    ]
+  },
+  "Split": {
+    "section": "Physics",
+    "signature": "Split (Doping=<string> Weights=(<float> ...))",
+    "description": "用于 IncompleteIonization 内部，将单一掺杂剂按指定占据概率（权重）分配到多个晶格位点。权重之和必须等于一。Sentaurus Device 自动生成必要的拆分掺杂剂（如 NitrogenConcentration_split1、_split2 等），无需在 datexcodes.txt 中添加条目。",
+    "parameters": [],
+    "keywords": [
+      "IncompleteIonization",
+      "Doping",
+      "Weights"
+    ]
+  },
+  "Bandstructure": {
+    "section": "Physics",
+    "signature": "Bandstructure (CrystalType=<string>)",
+    "description": "为 LED 仿真中的能带结构计算指定晶体结构类型。例如，CrystalType=Wurtzite 激活纤锌矿晶体的简化能带结构模型，计算重空穴、轻空穴和晶体场分裂空穴带的带边能量和有效质量。在 LED 节内使用。",
+    "parameters": [],
+    "keywords": [
+      "CrystalType",
+      "Wurtzite",
+      "LED",
+      "Strain",
+      "RefLatticeConst",
+      "hLadder",
+      "HeavyHole",
+      "LightHole",
+      "CrystalFieldSplitHole"
+    ]
+  },
+  "hHCSDegradation": {
+    "section": "Physics",
+    "signature": "hHCSDegradation ([SHE] [BondDispersion] [BDEnergyIntervals=<int>])",
+    "description": "基于 MOS 器件的热载流子应力退化（HCS）模型的空穴版本。包括单粒子、多粒子和场增强热退化机制，这些机制导致键断裂和界面陷阱形成。在材料界面的 Traps 定义中指定。对应的电子版本为 eHCSDegradation。",
+    "parameters": [],
+    "keywords": [
+      "SHE",
+      "BondDispersion",
+      "BDEnergyIntervals",
+      "Traps",
+      "MaterialInterface",
+      "eHCSDegradation",
+      "Acceptor",
+      "Donor",
+      "EnergyMid"
+    ]
+  },
+  "PMIModel": {
+    "section": "Physics",
+    "signature": "PMIModel (Name=<string> [Index=<int>] [String=<string>] [MSConfig=<string>])",
+    "description": "按名称指定 Plug-In Module (PMI) 模型，并传递可选的索引和字符串参数给该模型。用于各种 Physics 上下文，包括高场饱和（如 HighFieldSaturation、eHighFieldSaturation、hHighFieldSaturation）、掺杂依赖迁移率、热导率、热容、非局部带间隧穿和 MSC 相关模型。支持用户自定义或 MSC 相关的物理模型。",
+    "parameters": [],
+    "keywords": [
+      "Name",
+      "Index",
+      "String",
+      "MSConfig",
+      "HighFieldSaturation",
+      "DopingDependence",
+      "ThermalConductivity",
+      "HeatCapacity",
+      "NonlocalPath",
+      "EparallelToInterface",
+      "Eparallel",
+      "ElectricField"
+    ]
+  },
+  "ExcludeHorizontalSource": {
+    "section": "Physics",
+    "signature": "ExcludeHorizontalSource(<float>)",
+    "description": "在 RayTrace 节中，排除从水平面（量子阱平面）在指定角度范围（单位：度）内发射的源光线。排除光线的功率均匀分配给剩余光线，产生近似各向异性的发射方向图。用于缓解沿量子阱平面传播的光线导致的 LED 辐射方向图中不现实的尖峰。",
+    "parameters": [],
+    "keywords": [
+      "RayTrace",
+      "LED",
+      "EmissionType",
+      "Anisotropic"
+    ]
+  },
+  "OutputLightToolsRays": {
+    "section": "Physics",
+    "signature": "OutputLightToolsRays (WavelengthDiscretization=<int> RaysPerCluster=<int> IsotropyType=<type> SaveType=<format>)",
+    "description": "将活跃顶点的 LED 起始光线输出到 Synopsys LightTools 兼容的光线数据文件。在 RayTrace(Disable(...)) 内使用以跳过内部光线追踪。支持 ASCII 和二进制格式、光谱离散化和光线聚类。光线文件基名由绘图文件名派生，扩展名为 _lighttools.txt 或 _lighttools.ray。",
+    "parameters": [],
+    "keywords": [
+      "WavelengthDiscretization",
+      "RaysPerCluster",
+      "IsotropyType",
+      "InBuilt",
+      "Random",
+      "UserRays",
+      "SaveType",
+      "Ascii",
+      "Binary",
+      "ClusterActive",
+      "RaysPerVertex",
+      "SourceRaysFromFile",
+      "RayTrace",
+      "Disable"
+    ]
+  },
+  "OutputT2TPaths": {
+    "section": "Physics",
+    "signature": "OutputT2TPaths(\"<filename>\")",
+    "description": "为离散陷阱模型中的陷阱间（T2T）隧穿路径信息指定调试输出文件。在 DiscreteTrapT2T 陷阱条目内使用，以写入有关陷阱间跃迁路径的调试数据。只需在所有陷阱条目中定义一次。",
+    "parameters": [],
+    "keywords": [
+      "DiscreteTrapT2T",
+      "T2TconcScale",
+      "T2TfixedConc",
+      "T2TPDErrorScale",
+      "T2Tflux",
+      "Coupled",
+      "InelasticPhonon"
+    ]
+  },
+  "ElectricField": {
+    "section": "Physics",
+    "signature": "ElectricField",
+    "description": "作为 Recombination 节中 Avalanche 的选项，用于选择电场相关的碰撞电离模型。也可作为绘图数据集（ElectricField/Vector 用于矢量场可视化），以及作为 HighFieldSaturation 的选项用于 PMI 驱动力选择（EparallelToInterface 与 ElectricField）。",
+    "parameters": [],
+    "keywords": [
+      "Avalanche",
+      "Recombination",
+      "HighFieldSaturation",
+      "EparallelToInterface",
+      "Eparallel",
+      "IonIntegral",
+      "eAlphaAvalanche",
+      "hAlphaAvalanche"
+    ]
+  },
+  "FromFile": {
+    "section": "Physics",
+    "signature": "FromFile (<FromFile_options>)",
+    "description": "从文件加载吸收光子密度或光生载流子产生分布的光学求解器。比 OpticalGeneration(ReadFromFile) 更灵活，支持光照光谱和参数扫描。需要在 OpticalGeneration 节中使用 ComputeFromMonochromaticSource 或 ComputeFromSpectrum。支持 DatasetName 选择、光谱插值和用户自定义参数。可与 TMM、OptBeam 和 WeightedAPDintegration 功能配合使用。",
+    "parameters": [],
+    "keywords": [
+      "DatasetName",
+      "SpectralInterpolation",
+      "IdentifyingParameter",
+      "ProfileIndex",
+      "UserDefinedParameters",
+      "OpticalSolver",
+      "OpticalGeneration",
+      "ComputeFromMonochromaticSource",
+      "ComputeFromSpectrum",
+      "Window"
+    ]
+  },
+  "Exclude": {
+    "section": "Physics",
+    "signature": "Exclude=<float>",
+    "description": "用于 KMC（动力学蒙特卡罗）缺陷定义中指定排除的粒子类型列表。在 KMCDefects 节的 Particle 和 Filament 定义中使用，以防止某些粒子参与导电细丝形成或粒子相互作用。",
+    "parameters": [],
+    "keywords": [
+      "KMCDefects",
+      "Particle",
+      "Filament",
+      "Name",
+      "ShareCapacity",
+      "FilamentGrowth",
+      "FilamentRecession"
+    ]
+  },
+  "StepFunction": {
+    "section": "Physics",
+    "signature": "StepFunction (Bandgap | EffectiveBandgap | Wavelength=<float> | Energy=<float>)",
+    "description": "为量子产额或光吸收热模型中的带间光吸收定义阶跃函数截止。选项：Bandgap 使用 Eg-Ebgn 作为截止，EffectiveBandgap 使用 Eg-Ebgn+2*(3/2)kT，Wavelength/Energy 指定显式截止值。如果在 QuantumYield 中同时指定 StepFunction 和 EffectiveAbsorption，则 StepFunction 优先。",
+    "parameters": [],
+    "keywords": [
+      "Bandgap",
+      "EffectiveBandgap",
+      "Wavelength",
+      "Energy",
+      "QuantumYield",
+      "OpticalAbsorptionHeat",
+      "EffectiveAbsorption"
+    ]
+  },
+  "Sensor": {
+    "section": "Physics",
+    "signature": "Sensor (Name=<string> Rectangle(...) | Line(...) | Angular(...) [UseNormalFlux] [AxisAligned])",
+    "description": "在统一光线追踪接口的 Farfield 节中定义用于收集光线功率的传感器探测器。支持 Rectangle（3D）、Line（2D）和 Angular 传感器类型。UseNormalFlux 对入射光线的法向投影功率求和。AxisAligned（仅 3D）仅需两个对角顶点。可定义多个具有唯一名称的传感器。",
+    "parameters": [],
+    "keywords": [
+      "Name",
+      "Rectangle",
+      "Line",
+      "Angular",
+      "Corner1",
+      "Corner2",
+      "Corner3",
+      "UseNormalFlux",
+      "AxisAligned",
+      "Theta",
+      "Phi",
+      "Farfield",
+      "SensorSweep",
+      "Raytracing"
+    ]
+  },
+  "RefractiveIndex": {
+    "section": "Physics",
+    "signature": "RefractiveIndex=<float>",
+    "description": "为 TMM LayerStackExtraction 节中提取的层叠结构周围的介质指定折射率的实部。作为 Medium 节中指定 Material 名称的替代方案。也可同时指定相应的虚部（ExtinctionCoefficient）。",
+    "parameters": [],
+    "keywords": [
+      "ExtinctionCoefficient",
+      "Medium",
+      "Location",
+      "Material",
+      "LayerStackExtraction",
+      "TMM",
+      "ComplexRefractiveIndex"
+    ]
+  },
+  "RectangularWindow": {
+    "section": "Physics",
+    "signature": "RectangularWindow (RectangleV1=<vector> RectangleV2=<vector> [RectangleV3=<vector>] LengthDiscretization=<int> WidthDiscretization=<int> RayDirection=<vector>)",
+    "description": "为光线追踪定义矩形起始光线窗口。指定定义矩形的三个顶点（2D 需两个，3D 需三个）、每边的光线数以及光线方向矢量。UserWindow 的替代方案；每个光线追踪设置中只能使用一种。",
+    "parameters": [],
+    "keywords": [
+      "RectangleV1",
+      "RectangleV2",
+      "RectangleV3",
+      "LengthDiscretization",
+      "WidthDiscretization",
+      "RayDirection",
+      "UserWindow",
+      "RayDistribution",
+      "OpticalSolver",
+      "Raytracing"
+    ]
+  },
+  "Raytrace": {
+    "section": "Physics",
+    "signature": "Raytrace (<options>)",
+    "description": "RayTrace 的替代拼写。在 Optics 节中配置光线追踪光学求解器。控制光线发射、聚类、偏振、强度阈值、蒙特卡罗模式以及 LED 和光电器件仿真的输出选项。",
+    "parameters": [],
+    "keywords": [
+      "OpticalSolver",
+      "Optics",
+      "RayTrace",
+      "RayDistribution",
+      "RetraceCRIchange"
+    ]
+  },
+  "State": {
+    "section": "Physics",
+    "signature": "State (Name=<string> [Charge=<float>] [Hydrogen=<float>] [TtOM])",
+    "description": "在 Physics 节的 MSConfig（多态配置）中定义单个状态。每个 MSC 至少需要两个状态。指定状态名称、电荷、氢组分和可选的 TtOM（陷阱-振子模型）标志。状态参与由 Transition 关键词定义的跃迁。",
+    "parameters": [],
+    "keywords": [
+      "Name",
+      "Charge",
+      "Hydrogen",
+      "TtOM",
+      "MSConfig",
+      "Transition",
+      "MSConfigs"
+    ]
+  },
+  "CEModel": {
+    "section": "Physics",
+    "signature": "CEModel ( <string> [ <int> ] )",
+    "description": "指定用于计算多态配置跃迁速率的物理模型接口（PMI）模型。在 MSConfig 节的 Transition 语句中使用，用于退化仿真。",
+    "parameters": [],
+    "keywords": [
+      "PMI",
+      "multistate",
+      "configuration",
+      "degradation",
+      "transition"
+    ]
+  },
+  "EmissionType": {
+    "section": "Physics",
+    "signature": "EmissionType",
+    "description": "指定光电器件仿真中辐射复合计算所使用的发射模型类型。",
+    "parameters": [],
+    "keywords": [
+      "radiative",
+      "recombination",
+      "emission",
+      "optical"
+    ]
+  },
+  "TMM1D": {
+    "section": "Physics",
+    "signature": "TMM1D",
+    "description": "启用一维传输矩阵法（TMM）计算光生载流子产生率。用作光线追踪在界面处的边界条件选项。",
+    "parameters": [],
+    "keywords": [
+      "TMM",
+      "transfer matrix",
+      "optical",
+      "1D",
+      "boundary condition"
+    ]
+  },
+  "FarField": {
+    "section": "Physics",
+    "signature": "Farfield( Origin | Discretization | ObservationRadius | Sensor | SensorSweep )",
+    "description": "激活光线追踪光学仿真的远场和传感器功能。控制观测半球的离散化和角向传感器定义，用于光提取分析。",
+    "parameters": [],
+    "keywords": [
+      "raytracing",
+      "optical",
+      "far field",
+      "sensor",
+      "light extraction"
+    ]
+  },
+  "DOS": {
+    "section": "Physics",
+    "signature": "DOS",
+    "description": "态密度。用于量子限制迁移率模型（eSubband/hSubband）和球谐展开（SHE）方法，指定态密度的计算方式，影响散射率和输运性质。",
+    "parameters": [],
+    "keywords": [
+      "density of states",
+      "quantum",
+      "subband",
+      "mobility"
+    ]
+  },
+  "BarrierTunneling": {
+    "section": "Physics",
+    "signature": "BarrierTunneling [ <string> ] { mt = <float> ... }",
+    "description": "指定界面、接触和结处非局部隧穿的参数。定义隧穿有效质量（mt）和其他拟合参数。可按材料或命名的非局部网格应用。",
+    "parameters": [],
+    "keywords": [
+      "tunneling",
+      "nonlocal",
+      "interface",
+      "contact",
+      "effective mass",
+      "WKB"
+    ]
+  },
+  "Recombination": {
+    "section": "Physics",
+    "signature": "Recombination( <model_options> )",
+    "description": "选择载流子产生-复合过程的复合模型。支持 SRH、俄歇(Auger)、辐射、带间隧穿和单线态激子复合模型。",
+    "parameters": [],
+    "keywords": [
+      "SRH",
+      "Auger",
+      "radiative",
+      "band-to-band",
+      "singlet",
+      "exciton"
+    ]
+  },
+  "Scattering": {
+    "section": "Physics",
+    "signature": "Scattering( MLDA | MLDA2 )",
+    "description": "指定多谷迁移率计算（eSubband/hSubband）中使用的散射率模型。MLDA 使用修正的局域密度近似态密度；无参数时使用简化的体散射率。",
+    "parameters": [],
+    "keywords": [
+      "mobility",
+      "multivalley",
+      "subband",
+      "scattering rate",
+      "MLDA",
+      "stress"
+    ]
+  },
+  "SetConstant": {
+    "section": "Physics",
+    "signature": "SetConstant( Value = <float> )",
+    "description": "定义恒定光生载流子产生率值（单位：s^-1 cm^-3）。在 OpticalGeneration 内使用，指定空间均匀、与时间无关的产生分布。",
+    "parameters": [],
+    "keywords": [
+      "optical generation",
+      "constant",
+      "generation rate"
+    ]
+  },
+  "DeterministicVariation": {
+    "section": "Physics",
+    "signature": "DeterministicVariation( <variation_specifications> )",
+    "description": "为灵敏度分析指定确定性变化。包括掺杂变化、几何变化（表面位移）和参数变化，以计算对器件特性的累积影响。",
+    "parameters": [],
+    "keywords": [
+      "sensitivity",
+      "doping variation",
+      "geometric variation",
+      "parameter variation",
+      "IFM"
+    ]
+  },
+  "LayerStackExtraction": {
+    "section": "Physics",
+    "signature": "LayerStackExtraction( Mode | Position | WindowName | WindowPosition )",
+    "description": "控制一维光学求解器（TMM 或 OptBeam）的层叠结构提取方式。可按 RegionWise 或 ElementWise 模式操作，并指定起始位置和光照窗口参考。",
+    "parameters": [],
+    "keywords": [
+      "TMM",
+      "OptBeam",
+      "optical",
+      "layer stack",
+      "extraction",
+      "illumination"
+    ]
+  },
+  "OpticalGeneration": {
+    "section": "Physics",
+    "signature": "OpticalGeneration { <computation_options> }",
+    "description": "指定光生载流子产生的计算类型，并控制加载光生载流子分布时的插值。支持单色光源、光谱、恒定值和基于文件的方式，并支持时间相关性。",
+    "parameters": [],
+    "keywords": [
+      "optical",
+      "generation",
+      "spectrum",
+      "quantum yield",
+      "TMM",
+      "raytracing"
+    ]
+  },
+  "TurningPoints": {
+    "section": "Physics",
+    "signature": "OpticalTurningPoints( <time_control_options> )",
+    "description": "为瞬态仿真中的光生载流子产生指定时间步长控制参数。定义与时间相关光信号的上升、平台和下降阶段的限制时间步长。",
+    "parameters": [],
+    "keywords": [
+      "optical",
+      "transient",
+      "time stepping",
+      "time dependence"
+    ]
+  },
+  "OptBeam": {
+    "section": "Physics",
+    "signature": "OptBeam( LayerStackExtraction | ... )",
+    "description": "使用光束吸收法计算光生载流子产生率。支持层叠结构提取，可按区域或按单元模式操作，并支持光照窗口定位。",
+    "parameters": [],
+    "keywords": [
+      "optical beam",
+      "absorption",
+      "generation",
+      "layer stack",
+      "illumination"
+    ]
+  },
+  "HydrogenIon": {
+    "section": "Physics",
+    "signature": "HydrogenIon( Alpha | Diffusivity )",
+    "description": "指定氢扩散模型中氢离子（H+）的输运性质。支持 PMI 模型用于热扩散前置因子（alpha）和阿伦尼乌斯(Arrhenius)扩散系数参数。",
+    "parameters": [],
+    "keywords": [
+      "hydrogen",
+      "diffusion",
+      "transport",
+      "PMI",
+      "degradation",
+      "NBTI"
+    ]
+  },
+  "eBarrierTunneling": {
+    "section": "Physics",
+    "signature": "eBarrierTunneling( <options> )",
+    "description": "激活界面和接触处的电子非局部隧穿。选项包括带间隧穿（Simple/Full/UpsideDown）、双能带色散、基于薛定谔(Schrodinger)方程的隧穿概率、珀尔帖(Peltier)热和界面透射系数。",
+    "parameters": [],
+    "keywords": [
+      "tunneling",
+      "electron",
+      "nonlocal",
+      "interface",
+      "Band2Band",
+      "TwoBand",
+      "WKB"
+    ]
+  },
+  "hSubband": {
+    "section": "Physics",
+    "signature": "hSubband( Fermi | Doping | EffectiveMass | Scattering | BalMob )",
+    "description": "激活具有子能带量子化效应的多谷空穴迁移率模型。选项包括费米统计、应力相关有效质量、MLDA 散射率和弹道迁移率修正。",
+    "parameters": [],
+    "keywords": [
+      "mobility",
+      "hole",
+      "multivalley",
+      "subband",
+      "quantum",
+      "stress",
+      "ballistic"
+    ]
+  },
+  "ConstantCarrierGeneration": {
+    "section": "Physics",
+    "signature": "ConstantCarrierGeneration { value = <float> }",
+    "description": "定义用于调试或测试目的的恒定载流子产生率。值单位为 cm^-3 s^-1。可作为准稳态扫描中的 Goal 模型参数使用。",
+    "parameters": [],
+    "keywords": [
+      "generation",
+      "constant",
+      "debugging",
+      "testing"
+    ]
+  },
+  "GeometricVariation": {
+    "section": "Physics",
+    "signature": "GeometricVariation( <string> <specifications> )",
+    "description": "为灵敏度分析指定确定性几何（表面位置）变化。定义表面位移的振幅和方向，以及介电常数和量子势项的插值选项。",
+    "parameters": [],
+    "keywords": [
+      "deterministic",
+      "geometric",
+      "surface",
+      "displacement",
+      "sensitivity",
+      "variation"
+    ]
+  },
+  "WidthExtraction": {
+    "section": "Physics",
+    "signature": "WidthExtraction( ChordWeight | MinAngle | SideMaterial | SideRegion )",
+    "description": "控制用于增益计算和 LED 仿真的量子阱宽度提取参数。指定弦权重、最小角度以及量子阱邻接的材料或区域。",
+    "parameters": [],
+    "keywords": [
+      "quantum well",
+      "width",
+      "extraction",
+      "gain",
+      "LED",
+      "QW"
+    ]
+  },
+  "LEDRadiationPara": {
+    "section": "Physics",
+    "signature": "LEDRadiationPara( <options> )",
+    "description": "指定 LED 仿真的辐射参数，控制光学发射特性，包括 LED 物理模型中的自发和受激发射性质。",
+    "parameters": [],
+    "keywords": [
+      "LED",
+      "radiation",
+      "emission",
+      "optical",
+      "spontaneous",
+      "stimulated"
+    ]
+  },
+  "TrapConcentration": {
+    "section": "Physics",
+    "signature": "TrapConcentration",
+    "description": "绘图量，显示在每个陷阱能级处各陷阱条目中定义的分离完整体陷阱浓度。仅在 CurrentPlot 语句中可用。TrapConcentrationPerEntry 显示每个条目的积分陷阱浓度。",
+    "parameters": [],
+    "keywords": [
+      "trap",
+      "concentration",
+      "CurrentPlot",
+      "defect",
+      "energy level"
+    ]
+  },
+  "LayerStructure": {
+    "section": "Physics",
+    "signature": "LayerStructure { <thickness> <material> ... }",
+    "description": "为传输矩阵法（TMM）光学计算定义多层结构。每行指定层厚度（单位：um）和材料名称。在 RayTraceBC 中用于光学边界条件。",
+    "parameters": [],
+    "keywords": [
+      "TMM",
+      "multilayer",
+      "optical",
+      "boundary condition",
+      "raytracing"
+    ]
+  },
+  "Surface": {
+    "section": "Physics",
+    "signature": "Surface = <string>",
+    "description": "为确定性灵敏度分析中的几何变化指定表面名称。命名表面按照 GeometricVariation 节中定义的振幅参数进行位移。",
+    "parameters": [],
+    "keywords": [
+      "geometric variation",
+      "surface",
+      "displacement",
+      "sensitivity",
+      "deterministic"
+    ]
+  },
+  "Optics": {
+    "section": "Physics",
+    "signature": "Optics( <optical_solver> )",
+    "description": "指定光学求解器及相关的光学物理模型。支持 TMM（传输矩阵法）、BPMScalar（光束传播法）和 LED 专用光线追踪，用于光生载流子产生率计算。",
+    "parameters": [],
+    "keywords": [
+      "optical",
+      "TMM",
+      "BPM",
+      "raytracing",
+      "generation",
+      "solver"
+    ]
+  },
+  "OutputLightToolsFarfieldRays": {
+    "section": "Physics",
+    "signature": "OutputLightToolsFarfieldRays( Filename | SaveType | WavelengthDiscretization )",
+    "description": "输出远场光线数据，用于与 LightTools 光学设计软件对接。控制输出文件格式（ASCII 或二进制）和导出光线数据的波长离散化。",
+    "parameters": [],
+    "keywords": [
+      "LED",
+      "LightTools",
+      "far field",
+      "ray data",
+      "export",
+      "optical"
+    ]
+  },
+  "FDTD": {
+    "section": "Physics",
+    "signature": "FDTD( GenerateMesh | ... )",
+    "description": "指定时域有限差分（FDTD）光学求解器。控制由 Sentaurus Mesh 生成的张量网格，包括一次性生成网格或在每次波长变化时生成网格的选项。",
+    "parameters": [],
+    "keywords": [
+      "FDTD",
+      "optical solver",
+      "mesh generation",
+      "tensor mesh",
+      "wavelength"
+    ]
+  },
+  "LHSCoef": {
+    "section": "Physics",
+    "signature": "LHSCoef( Electron | Hole | HydrogenAtom | HydrogenIon | ... )",
+    "description": "定义氢反应方程中需要移除的粒子数（等式左边系数）。指定每个反应中消耗的电子、空穴和氢物种的数量。",
+    "parameters": [],
+    "keywords": [
+      "hydrogen",
+      "reaction",
+      "particle balance",
+      "HydrogenReaction",
+      "degradation"
+    ]
+  },
+  "MoleFraction": {
+    "section": "Physics",
+    "signature": "MoleFraction( xFraction | yFraction | GrDistance | RegionName )",
+    "description": "为化合物半导体区域指定摩尔分数值（xMoleFraction、yMoleFraction）。支持从边界开始的线性渐变，并可配置渐变距离。",
+    "parameters": [],
+    "keywords": [
+      "mole fraction",
+      "alloy",
+      "grading",
+      "compound semiconductor",
+      "composition"
+    ]
+  },
+  "Weights": {
+    "section": "Physics",
+    "signature": "Weights = (<float>...)",
+    "description": "在使用 IncompleteIonization 的 Split 选项时，指定多个晶格位点的占据概率（权重）。每个权重对应掺杂剂在可用晶格位点上的重新分配比例。",
+    "parameters": [],
+    "keywords": [
+      "incomplete ionization",
+      "dopant",
+      "lattice site",
+      "split",
+      "occupation probability"
+    ]
+  },
+  "ThermalConductivity": {
+    "section": "Physics",
+    "signature": "ThermalConductivity( <model_name> | PMIModel | ThinLayerKappa )",
+    "description": "指定晶格热方程的热导率模型。支持内置模型（ThinLayerKappa）、温度相关模型和用户自定义 PMI 模型，包括各向异性热导率。",
+    "parameters": [],
+    "keywords": [
+      "thermal",
+      "heat",
+      "conductivity",
+      "PMI",
+      "anisotropic",
+      "lattice temperature"
+    ]
+  },
+  "Piezoelectric_Polarization": {
+    "section": "Physics",
+    "signature": "Piezoelectric_Polarization",
+    "description": "为 III 族氮化物和其他极性半导体材料（氮化镓(GaN)、氮化铝(AlN)、氮化铟(InN)）启用压电极化建模。",
+    "parameters": [],
+    "keywords": [
+      "Strain",
+      "Piezo"
+    ]
+  },
+  "AcceptorConcentration": {
+    "section": "Physics",
+    "signature": "AcceptorConcentration",
+    "description": "每个顶点处的受主掺杂浓度（NA），通过器件结构中的掺杂分布指定。用于物理模型中计算载流子统计、迁移率和复合速率。",
+    "keywords": [
+      "DonorConcentration",
+      "DopingConcentration",
+      "ActiveDopingConcentration"
+    ]
+  },
+  "Auger": {
+    "section": "Physics",
+    "signature": "Auger [ (WithGeneration) ]",
+    "description": "在 Recombination() 中启用俄歇(Auger)复合模型。俄歇复合是在高载流子浓度下占主导的三载流子过程。可选的 (WithGeneration) 限定符还包含俄歇产生对应项。",
+    "keywords": [
+      "Recombination",
+      "SRH",
+      "Radiative",
+      "Band2Band",
+      "Avalanche"
+    ]
+  },
+  "Band2Band": {
+    "section": "Physics",
+    "signature": "Band2Band ( =None | =Full | =Simple | =UpsideDown )",
+    "description": "带间隧穿模型，在 Recombination() 或 eBarrierTunneling()/hBarrierTunneling() 中指定。选项控制平行动量积分的处理方式：None 禁用隧穿，Full 使用一致性积分，Simple 使用简化形式，UpsideDown 使用非物理变体。",
+    "keywords": [
+      "Recombination",
+      "eBarrierTunneling",
+      "hBarrierTunneling",
+      "Tunneling",
+      "DensityCorrection"
+    ]
+  },
+  "BandGap": {
+    "section": "Physics",
+    "signature": "BandGap",
+    "description": "每个顶点处的本征带隙能量（Eg），由带隙模型计算。可作为绘图数据集使用（单位：eV）。通过 EffectiveIntrinsicDensity() 配置，控制带隙和带隙窄化模型，如 Slotboom、OldSlotboom 和 Bennett-Wilson。",
+    "keywords": [
+      "EffectiveIntrinsicDensity",
+      "BandgapNarrowing",
+      "Affinity"
+    ]
+  },
+  "Constant": {
+    "section": "Physics",
+    "signature": "Constant",
+    "description": "HeatCapacity() 中的恒定（与温度无关）晶格热容模型。选择后，热容作为恒定值处理，而非使用默认的温度相关模型。",
+    "keywords": [
+      "HeatCapacity",
+      "TempDep",
+      "Physics"
+    ]
+  },
+  "ConstantMobility": {
+    "section": "Physics",
+    "signature": "ConstantMobility",
+    "description": "如果在 Mobility() 中既未指定 PhuMob（Philips 统一模型）也未指定 DopingDependence，则使用恒定迁移率值。提供简单的恒定迁移率模型作为后备，通常用于初始调试或掺杂依赖效应可忽略的情况。",
+    "keywords": [
+      "Mobility",
+      "DopingDependence",
+      "PhuMob",
+      "HighFieldSaturation",
+      "eMobility",
+      "hMobility"
+    ]
+  },
+  "DisplacementCurrent": {
+    "section": "Physics",
+    "signature": "DisplacementCurrent",
+    "description": "每个顶点处的位移电流密度（JD），可作为绘图数据集使用（单位：A/cm^2）。代表时变电场对总电流的贡献，在瞬态和交流仿真中显著。相关交流响应数据集包括 ImDisplacementCurrentResponse 和 ReDisplacementCurrentResponse。",
+    "keywords": [
+      "DisplacementCurrentDensity",
+      "ConductionCurrentDensity",
+      "eCurrentDensity",
+      "hCurrentDensity"
+    ]
+  },
+  "DonorConcentration": {
+    "section": "Physics",
+    "signature": "DonorConcentration",
+    "description": "每个顶点处的施主掺杂浓度（ND），通过器件结构中的掺杂分布指定。用于物理模型中计算载流子统计、迁移率和复合速率。",
+    "keywords": [
+      "AcceptorConcentration",
+      "DopingConcentration",
+      "ActiveDopingConcentration"
+    ]
+  },
+  "DopingDependence": {
+    "section": "Physics",
+    "signature": "DopingDependence [ ( <ident> [(Table 364)] ) | Arora ]",
+    "description": "Mobility() 中的掺杂依赖迁移率模型。默认的 Arora 模型计算由电离杂质散射引起的迁移率退化。也可接受 PMI 模型标识符用于自定义掺杂依赖迁移率。控制低场迁移率随掺杂浓度的变化。",
+    "keywords": [
+      "Mobility",
+      "ConstantMobility",
+      "PhuMob",
+      "HighFieldSaturation",
+      "Arora"
+    ]
+  },
+  "Electron": {
+    "section": "Physics",
+    "signature": "Electron",
+    "description": "在 Sentaurus Device 中求解的电子连续性方程。在 Solve 节中，指定求解电子连续性方程。在方程误差控制（Table 342）中，参考值为 1e10 cm^-3，相对误差容差为 1e-5。",
+    "keywords": [
+      "Hole",
+      "Poisson",
+      "Coupled",
+      "Plugin",
+      "eQuasiFermi",
+      "eDensity"
+    ]
+  },
+  "FowlerNordheim": {
+    "section": "Physics",
+    "signature": "FowlerNordheim",
+    "description": "每个顶点处的福勒-诺德海姆(Fowler-Nordheim)隧穿电流密度（jFN），可作为绘图数据集使用（单位：A/cm^2）。代表通过薄绝缘势垒的场发射隧穿电流。隧穿模型在 GateCurrent() 中使用 Fowler 关键词激活。",
+    "keywords": [
+      "GateCurrent",
+      "DirectTunneling",
+      "eLucky",
+      "hLucky"
+    ]
+  },
+  "HighFieldSaturation": {
+    "section": "Physics",
+    "signature": "HighFieldSaturation ( <options> )",
+    "description": "Mobility() 或 eMobility()/hMobility() 中的高场饱和迁移率模型。使用 Caughey-Thomas 或 TransferredElectronEffect 公式建模高电场下的速度饱和效应。空穴变体为 hHighFieldSaturation。",
+    "keywords": [
+      "Mobility",
+      "DopingDependence",
+      "ConstantMobility",
+      "eHighFieldSaturation",
+      "hHighFieldSaturation",
+      "CaugheyThomas"
+    ]
+  },
+  "Hole": {
+    "section": "Physics",
+    "signature": "Hole",
+    "description": "在 Sentaurus Device 中求解的空穴连续性方程。在 Solve 节中，指定求解空穴连续性方程。在方程误差控制（Table 342）中，参考值为 1e10 cm^-3，相对误差容差为 1e-5。",
+    "keywords": [
+      "Electron",
+      "Poisson",
+      "Coupled",
+      "Plugin",
+      "hQuasiFermi",
+      "hDensity"
+    ]
+  },
+  "Potential": {
+    "section": "Physics",
+    "signature": "Potential",
+    "description": "静电势变量。在 Aniso{} 中启用各向异性介电常数模型。也用作收敛准则和误差计算中的参考。",
+    "keywords": [
+      "Aniso",
+      "Poisson",
+      "BandGap"
+    ]
+  },
+  "Radiative": {
+    "section": "Physics",
+    "signature": "Radiative",
+    "description": "Recombination() 中的辐射复合模型。使用光学复合率建模带间辐射复合。系数可为掺杂依赖或恒定值。",
+    "keywords": [
+      "Recombination",
+      "Auger",
+      "SRH",
+      "Band2Band"
+    ]
+  },
+  "SRH": {
+    "section": "Physics",
+    "signature": "SRH( <options> )",
+    "description": "Recombination() 中的肖克利-瑞德-霍尔(Shockley-Read-Hall) 复合模型。通过带隙中的缺陷能级建模陷阱辅助复合。支持掺杂依赖（掺杂剂相关载流子寿命）、电场依赖（Hurkx 模型）和温度依赖。",
+    "keywords": [
+      "Recombination",
+      "Auger",
+      "Radiative",
+      "SurfaceSRH",
+      "TempDependence",
+      "DopingDependence"
+    ]
+  },
+  "SpaceCharge": {
+    "section": "Physics",
+    "signature": "SpaceCharge",
+    "description": "每个顶点处的空间电荷密度（rho），可作为绘图数据集使用。计算为正负电荷载体（包括离子和自由载流子）之差。单位：cm^-3。",
+    "keywords": [
+      "eDensity",
+      "hDensity",
+      "DonorConcentration",
+      "AcceptorConcentration"
+    ]
+  },
+  "Stress": {
+    "section": "Physics",
+    "signature": "Stress",
+    "description": "用于应变相关仿真的机械应力模型。启用压阻迁移率效应和形变势对能带结构的影响。在 Mechanics{} 和 Physics{} 节中使用。",
+    "keywords": [
+      "Mechanics",
+      "Deformation",
+      "Strain",
+      "Piezo"
+    ]
+  },
+  "SurfaceSRH": {
+    "section": "Physics",
+    "signature": "SurfaceSRH",
+    "description": "Recombination() 中的表面 SRH 复合模型。在材料界面和表面处使用界面陷阱密度和俘获截面参数建模肖克利-瑞德-霍尔(Shockley-Read-Hall) 复合。",
+    "keywords": [
+      "Recombination",
+      "SRH",
+      "Radiative"
+    ]
+  },
+  "TE": {
+    "section": "Physics",
+    "signature": "TE",
+    "description": "LED 光学仿真的偏振配置选项。在 OpticalSolver{} 或 LED{} 节中指定横电(TE)模偏振，用于远场和近场辐射方向图计算。",
+    "keywords": [
+      "LED",
+      "OpticalSolver",
+      "TM",
+      "Optics"
+    ]
+  },
+  "TempDependence": {
+    "section": "Physics",
+    "signature": "TempDependence",
+    "description": "SRH() 中的温度依赖选项。启用 SRH 复合模型的温度依赖载流子寿命，考虑陷阱辅助复合速率随晶格温度的变化。",
+    "keywords": [
+      "SRH",
+      "Recombination",
+      "LatticeTemperature"
+    ]
+  },
+  "Thermodynamic": {
+    "section": "Physics",
+    "signature": "Thermodynamic",
+    "description": "热力学输运模型，在焦耳热之外还包括珀尔帖(Peltier)和汤姆孙(Thomson)效应。通过考虑载流子能量通量及其与晶格热方程的耦合，提供更精确的自洽电热仿真。",
+    "keywords": [
+      "Thermal",
+      "LatticeTemperature",
+      "eTemperature",
+      "hTemperature",
+      "HeatSource"
+    ]
+  },
+  "TotalCurrent": {
+    "section": "Physics",
+    "signature": "TotalCurrent",
+    "description": "每个顶点处的总电流密度，可作为绘图数据集使用。计算为电子和空穴电流密度之和加上位移电流。单位：A/cm^2。",
+    "keywords": [
+      "eCurrentDensity",
+      "hCurrentDensity",
+      "DisplacementCurrent"
+    ]
+  },
+  "eAvalanche": {
+    "section": "Physics",
+    "signature": "eAvalanche",
+    "description": "Avalanche() 或 Recombination() 中的电子碰撞电离（雪崩）模型。建模由高场碰撞电离引起的载流子产生。使用 van Overstraeten-de Man、Chynoweth 或 Selberherr 模型，系数可由用户定义。",
+    "keywords": [
+      "hAvalanche",
+      "Recombination",
+      "Avalanche"
+    ]
+  },
+  "eCurrent": {
+    "section": "Physics",
+    "signature": "eCurrent",
+    "description": "每个顶点处的电子电流密度，可作为绘图数据集使用。代表电子的漂移-扩散电流。单位：A/cm^2。",
+    "keywords": [
+      "hCurrent",
+      "TotalCurrent",
+      "eCurrentDensity"
+    ]
+  },
+  "eCurrentDensity": {
+    "section": "Physics",
+    "signature": "eCurrentDensity",
+    "description": "每个顶点处的电子电流密度，可在 Plot{} 和 CurrentPlot{} 节中作为绘图数据集使用。代表总漂移-扩散电流的电子分量。单位：A/cm^2。",
+    "keywords": [
+      "hCurrentDensity",
+      "TotalCurrent",
+      "eCurrent"
+    ]
+  },
+  "eDensity": {
+    "section": "Physics",
+    "signature": "eDensity",
+    "description": "每个顶点处的电子浓度（密度），可作为绘图数据集使用。代表从电子连续性方程求解得到的自由电子载流子密度。单位：cm^-3。",
+    "keywords": [
+      "hDensity",
+      "SpaceCharge",
+      "Electron"
+    ]
+  },
+  "eHighFieldSaturation": {
+    "section": "Physics",
+    "signature": "eHighFieldSaturation",
+    "description": "Mobility() 或 eMobility() 中的电子高场饱和速度模型。使用 Caughey-Thomas 或 TransferredElectronEffect 模型配置电子迁移率的饱和速度和高场依赖性。",
+    "keywords": [
+      "HighFieldSaturation",
+      "eMobility",
+      "Mobility",
+      "hHighFieldSaturation"
+    ]
+  },
+  "eMobility": {
+    "section": "Physics",
+    "signature": "eMobility( <options> )",
+    "description": "Mobility() 中的电子迁移率模型。专门为电子配置所有迁移率子模型（掺杂依赖、高场饱和等）。覆盖电子载流子类型的通用 Mobility() 设置。",
+    "keywords": [
+      "hMobility",
+      "Mobility",
+      "DopingDependence",
+      "HighFieldSaturation",
+      "ConstantMobility"
+    ]
+  },
+  "eQuasiFermi": {
+    "section": "Physics",
+    "signature": "eQuasiFermi",
+    "description": "每个顶点处的电子准费米势，可作为绘图数据集使用。代表电子的电化学势，用作 DopingWell{} 扫描和收敛监测的参考。单位：eV。",
+    "keywords": [
+      "hQuasiFermi",
+      "Potential",
+      "Electron",
+      "Fermi"
+    ]
+  },
+  "eTemperature": {
+    "section": "Physics",
+    "signature": "eTemperature",
+    "description": "每个顶点处的电子温度，可在流体动力学或热力学输运仿真中作为绘图数据集使用。用作收敛准则参数和 DiffusionNoise{} 温度选项。单位：K。",
+    "keywords": [
+      "hTemperature",
+      "LatticeTemperature",
+      "Thermodynamic",
+      "EnergyRelaxationTime"
+    ]
+  },
+  "eVelocity": {
+    "section": "Physics",
+    "signature": "eVelocity",
+    "description": "每个顶点处的电子速度矢量，可作为绘图数据集使用。代表电子在外加电场下的漂移速度。单位：cm/s。",
+    "keywords": [
+      "hVelocity",
+      "eMobility",
+      "ElectricField"
+    ]
+  },
+  "hAvalanche": {
+    "section": "Physics",
+    "signature": "hAvalanche",
+    "description": "Avalanche() 或 Recombination() 中的空穴碰撞电离（雪崩）模型。建模由高场碰撞电离引起的空穴起始载流子产生。与 eAvalanche 并行，使用独立的系数。",
+    "keywords": [
+      "eAvalanche",
+      "Recombination",
+      "Avalanche"
+    ]
+  },
+  "hCurrent": {
+    "section": "Physics",
+    "signature": "hCurrent",
+    "description": "每个顶点处的空穴电流密度，可作为绘图数据集使用。代表空穴的漂移-扩散电流。单位：A/cm^2。",
+    "keywords": [
+      "eCurrent",
+      "TotalCurrent",
+      "hCurrentDensity"
+    ]
+  },
+  "hCurrentDensity": {
+    "section": "Physics",
+    "signature": "hCurrentDensity",
+    "description": "每个顶点处的空穴电流密度，可在 Plot{} 和 CurrentPlot{} 节中作为绘图数据集使用。代表总漂移-扩散电流的空穴分量。单位：A/cm^2。",
+    "keywords": [
+      "eCurrentDensity",
+      "TotalCurrent",
+      "hCurrent"
+    ]
+  },
+  "hDensity": {
+    "section": "Physics",
+    "signature": "hDensity",
+    "description": "每个顶点处的空穴浓度（密度），可作为绘图数据集使用。代表从空穴连续性方程求解得到的自由空穴载流子密度。单位：cm^-3。",
+    "keywords": [
+      "eDensity",
+      "SpaceCharge",
+      "Hole"
+    ]
+  },
+  "hHighFieldSaturation": {
+    "section": "Physics",
+    "signature": "hHighFieldSaturation",
+    "description": "Mobility() 或 hMobility() 中的空穴高场饱和速度模型。使用 Caughey-Thomas 或类似模型配置空穴迁移率的饱和速度和高场依赖性。",
+    "keywords": [
+      "HighFieldSaturation",
+      "hMobility",
+      "Mobility",
+      "eHighFieldSaturation"
+    ]
+  },
+  "hMobility": {
+    "section": "Physics",
+    "signature": "hMobility( <options> )",
+    "description": "Mobility() 中的空穴迁移率模型。专门为空穴配置所有迁移率子模型（掺杂依赖、高场饱和等）。覆盖空穴载流子类型的通用 Mobility() 设置。",
+    "keywords": [
+      "eMobility",
+      "Mobility",
+      "DopingDependence",
+      "HighFieldSaturation",
+      "ConstantMobility"
+    ]
+  },
+  "hQuasiFermi": {
+    "section": "Physics",
+    "signature": "hQuasiFermi",
+    "description": "每个顶点处的空穴准费米势，可作为绘图数据集使用。代表空穴的电化学势，用作 DopingWell{} 扫描和收敛监测的参考。单位：eV。",
+    "keywords": [
+      "eQuasiFermi",
+      "Potential",
+      "Hole",
+      "Fermi"
+    ]
+  },
+  "hTemperature": {
+    "section": "Physics",
+    "signature": "hTemperature",
+    "description": "每个顶点处的空穴温度，可在流体动力学或热力学输运仿真中作为绘图数据集使用。用作收敛准则参数和 DiffusionNoise{} 温度选项。单位：K。",
+    "keywords": [
+      "eTemperature",
+      "LatticeTemperature",
+      "Thermodynamic",
+      "EnergyRelaxationTime"
+    ]
+  },
+  "hVelocity": {
+    "section": "Physics",
+    "signature": "hVelocity",
+    "description": "每个顶点处的空穴速度矢量，可作为绘图数据集使用。代表空穴在外加电场下的漂移速度。单位：cm/s。",
+    "keywords": [
+      "eVelocity",
+      "hMobility",
+      "ElectricField"
+    ]
+  },
+  "Optical": {
+    "section": "Physics",
+    "signature": "Optical",
+    "description": "Physics{} 中的光学物理模型。启用光生载流子产生/复合效应，并将光学求解器与电学仿真耦合。用于太阳能电池、LED 和光电探测器等光电器件仿真。",
+    "keywords": [
+      "Optics",
+      "OpticalSolver",
+      "OpticalGeneration",
+      "OpticsFromFile"
+    ]
+  },
+  "Math": {
+    "section": "Math",
+    "signature": "Math { [Location] <keyword> ... }",
+    "description": "指定数值方法与求解器设置，包括方程离散化、线性求解器选择、收敛准则和误差控制。可限定到特定区域。",
+    "parameters": [
+      {
+        "name": "Extrapolate",
+        "type": "string",
+        "desc": "使用外推加速收敛。"
+      },
+      {
+        "name": "Method",
+        "type": "string",
+        "desc": "线性求解器方法（如 Blocked、ILS、Pardiso、Super）。"
+      },
+      {
+        "name": "Digits",
+        "type": "float",
+        "desc": "牛顿(Newton)求解器的相对误差目标。"
+      },
+      {
+        "name": "Iterations",
+        "type": "int",
+        "desc": "最大牛顿迭代次数。"
+      },
+      {
+        "name": "Error",
+        "type": "float",
+        "desc": "全局误差控制容差。"
+      },
+      {
+        "name": "ErrRef",
+        "type": "float",
+        "desc": "收敛检查的参考误差值。"
+      }
+    ],
+    "example": "Math {\n  Extrapolate\n  Method=Blocked\n  Digits=5\n  Iterations=20\n}",
+    "keywords": [
+      "Extrapolate",
+      "Method",
+      "SubMethod",
+      "Digits",
+      "Iterations",
+      "Error",
+      "ErrRef",
+      "ACMethod",
+      "ACSubMethod",
+      "NotDamped",
+      "LineSearchDamping",
+      "RhsMin",
+      "RhsMinFactor",
+      "UpdateMax",
+      "UpdateIncrease",
+      "BreakCriteria",
+      "CurrentWeighting",
+      "CheckRhsAfterUpdate",
+      "CNormPrint",
+      "RecomputeNonsymmetric",
+      "AutomaticCircuitContact",
+      "DirectCurrent",
+      "EquilibriumSolution",
+      "RecBoxMethod",
+      "BoxIntegration",
+      "DensityIntegral",
+      "DensLowLimit",
+      "ElementEdgeCurrent",
+      "ElementVolumeAvalanche",
+      "AnisoSG",
+      "AnisoSG_DerivativeMinDen",
+      "AnisoSG_MinDen",
+      "AvalDensGradQF",
+      "AvalDerivatives",
+      "AvalFlatElementExclusion",
+      "AvalPostProcessing",
+      "AutoNPMinStepFactor",
+      "AutoCNPMinStepFactor",
+      "TransientError",
+      "TransientDigits",
+      "TransientErrRef",
+      "TrStepRejectionFactor",
+      "CheckTransientError",
+      "NoCheckTransientError",
+      "Derivatives",
+      "CoordinateSystem",
+      "AverageBoxMethod",
+      "BehavSrcNumericDeriv",
+      "BM_ExtendedPrecision",
+      "BreakAtIonIntegral",
+      "BroadeningIntegration",
+      "CarrierDensityInAltermatt",
+      "CheckUndefinedModels",
+      "CompatibleFEPolarization",
+      "ComputeDopingConcentration",
+      "ConstRefPot",
+      "CurrentWeighting",
+      "DeltaVolumeLimit",
+      "DirectQuantumCorrection",
+      "Discretization",
+      "EnergyResolution",
+      "Length",
+      "MaxAngle",
+      "Outside",
+      "Permeation",
+      "Lambda",
+      "MultipleRHS",
+      "Parallel",
+      "RecomputeNonsymmetric",
+      "Supernodal",
+      "MaxX",
+      "MaxY",
+      "MaxZ",
+      "MinX",
+      "MinY",
+      "MinZ"
+    ]
+  },
+  "HB": {
+    "section": "Math",
+    "signature": "HB { <options> }",
+    "description": "在 Math 节中指定全局谐波平衡(HB)分析选项。HB 是一种频域方法，用于求解周期性或准周期性时变问题。控制分析模式（MDFT 或 SDFT）、收敛参数、对数变量变换和求解谱截断。MDFT 模式支持多音分析，需要兼容 CMI 的紧凑模型。",
+    "parameters": [
+      {
+        "name": "MDFT",
+        "type": "bool",
+        "desc": "启用多维傅里叶变换模式用于多音分析"
+      },
+      {
+        "name": "LogDensity",
+        "type": "bool",
+        "desc": "在 HB 牛顿算法中使用对数密度变量"
+      },
+      {
+        "name": "LogTemperature",
+        "type": "bool",
+        "desc": "在 HB 牛顿算法中使用对数温度变量"
+      },
+      {
+        "name": "CNormPrint",
+        "type": "bool",
+        "desc": "输出每个牛顿步的残差、更新误差和修正计数"
+      },
+      {
+        "name": "SolveSpectrum",
+        "type": "string",
+        "desc": "定义命名求解谱用于截断：SolveSpectrum(Name=\"<name>\") { (<h1> <h2>)... }"
+      }
+    ],
+    "example": "Math {\n  HB {\n    MDFT\n    LogDensity\n    -sdft_update_norm_R\n    SolveSpectrum (Name=\"sp1\") {\n      (0 0) (1 0) (0 1) (2 1) (2 -1)\n    }\n  }\n}",
+    "keywords": [
+      "MDFT",
+      "SDFT",
+      "LogDensity",
+      "LogTemperature",
+      "CNormPrint",
+      "Derivative",
+      "SolveSpectrum",
+      "sdft_update_norm_R"
+    ]
+  },
+  "Window": {
+    "section": "Math",
+    "signature": "Window",
+    "description": "在 Math 节中，定义用于局部数值操作（如网格细化、绘制或求解器约束）的空间窗口或区域。",
+    "parameters": [],
+    "keywords": [
+      "Refinement",
+      "Plot",
+      "Region"
+    ]
+  },
+  "CoordinateSystem": {
+    "section": "Math",
+    "signature": "Math { CoordinateSystem { <option> } }",
+    "description": "指定 Sentaurus Device 命令文件中显式坐标所使用的坐标系。影响电流绘制语句、晶格参数和使用显式坐标的其他功能。若器件坐标系不兼容，Sentaurus Device 自动将器件变换为所需坐标系。",
+    "parameters": [
+      {
+        "name": "AsIs",
+        "type": "bool",
+        "desc": "（默认）无变换；器件坐标与显式坐标兼容"
+      },
+      {
+        "name": "DFISE",
+        "type": "bool",
+        "desc": "2D 中：x 沿表面方向，y 深入器件。3D 中：x、y 跨越表面，z 向上"
+      },
+      {
+        "name": "UCS",
+        "type": "bool",
+        "desc": "统一坐标系：x 深入器件，y 沿表面方向（2D），z 右手系（3D）"
+      }
+    ],
+    "example": "Math {\n  CoordinateSystem { DFISE }\n}",
+    "keywords": [
+      "AsIs",
+      "DFISE",
+      "UCS"
+    ]
+  },
+  "Error": {
+    "section": "Math",
+    "signature": "Error [ ( <carrier> ) ] = <float>",
+    "description": "设置非线性求解器收敛的精度目标（误差容差）。可选载流子参数（Electron/Hole）允许针对特定载流子的误差控制。默认值为 1e-5 eV。",
+    "parameters": [],
+    "keywords": [
+      "Digits",
+      "ErrRef",
+      "RelErrControl",
+      "TransientError"
+    ]
+  },
+  "MeshDomain": {
+    "section": "Math",
+    "signature": "MeshDomain( <specifications> )",
+    "description": "定义网格域用于局部网格细化或限制计算区域。用于将某些数值操作限定到器件的特定子区域。",
+    "parameters": [],
+    "keywords": [
+      "Grid",
+      "Refinement",
+      "Region"
+    ]
+  },
+  "GridAdaptation": {
+    "section": "Math",
+    "signature": "GridAdaptation( <specifications> )",
+    "description": "控制仿真过程中的网格自适应/细化。根据解梯度或误差指示器指定自动网格细化准则。",
+    "parameters": [],
+    "keywords": [
+      "Grid",
+      "Refinement",
+      "Mesh",
+      "Adapt"
+    ]
+  },
+  "MATH": {
+    "section": "Math",
+    "signature": "MATH( <specifications> )",
+    "description": "指定数学与数值参数的节关键字。控制求解器设置、收敛准则、离散化选项和其他数值方法配置。",
+    "parameters": [],
+    "keywords": [
+      "Math",
+      "Solver",
+      "Digits",
+      "Error",
+      "Extrapolate",
+      "Transient"
+    ]
+  },
+  "FromElementGrid": {
+    "section": "Math",
+    "signature": "FromElementGrid( <specifications> )",
+    "description": "指定数据应从单元网格而非顶点网格读取或插值。用于需要单元中心量的某些数值操作。",
+    "parameters": [],
+    "keywords": [
+      "Grid",
+      "Element",
+      "Vertex",
+      "Interpolation"
+    ]
+  },
+  "ParDiSo": {
+    "section": "Math",
+    "signature": "ParDiSo( [IterativeRefinement] [MultipleRHS] [NonsymmetricPermutation] [RecomputeNonsymmetricPermutation] )",
+    "description": "选择并行超节点直接求解器(Parallel Direct Solver)。为中小规模问题提供高精度和并行性能。支持迭代精化和非对称置换。",
+    "parameters": [],
+    "keywords": [
+      "ILS",
+      "Super",
+      "Solver",
+      "ACMethod",
+      "ACSubMethod"
+    ]
+  },
+  "Skip": {
+    "section": "Math",
+    "signature": "Skip",
+    "description": "在仿真过程中跳过某些计算或检查。在 KMC-MIM 上下文中，SkipKMC 完全跳过动力学蒙特卡洛仿真。在光线追踪中，Print(Skip) 减少打印的光线路径数量。",
+    "parameters": [],
+    "keywords": [
+      "SkipKMC",
+      "SkipKMCCurrentCheck",
+      "Print",
+      "RayTracing"
+    ]
+  },
+  "Delaunizer3d": {
+    "section": "Math",
+    "signature": "Delaunizer3d",
+    "description": "选择三维德劳内(Delaunay)三角剖分算法用于网格处理。用于在计算网格上强制德劳内约束，改善盒方法系数和数值精度。",
+    "parameters": [],
+    "keywords": [
+      "Grid",
+      "Mesh",
+      "NonDelaunay",
+      "BoxMethod"
+    ]
+  },
+  "GMRES": {
+    "section": "Math",
+    "signature": "GMRES ( [MaxIterations=<int>] [Restart=<int>] [Tolerance=<float>] )",
+    "description": "广义最小残量法(GMRES)线性求解器。要求 Coupled/HBCoupled 中 Method=ILS。使用迭代 Krylov 子空间方法求解牛顿迭代中的线性方程组。参数控制最大迭代次数、子空间重启大小和收敛容差。",
+    "parameters": [],
+    "keywords": [
+      "Coupled",
+      "HBCoupled",
+      "ILS",
+      "Method"
+    ]
+  },
+  "Meshing": {
+    "section": "Math",
+    "signature": "Meshing",
+    "description": "Sentaurus Device 中网格细化与自适应控制的节关键字。指定仿真过程中自适应网格策略的参数，包括细化准则和最大单元尺寸。",
+    "parameters": [],
+    "keywords": [
+      "Refinement",
+      "MaxElSize",
+      "MinElSize"
+    ]
+  },
+  "ParallelLicence": {
+    "section": "Math",
+    "signature": "ParallelLicence",
+    "description": "在 Math 节中，决定并行（线程）许可证不足时的行为。控制仿真是否回退到较少线程或在超出许可证限制时中止。",
+    "parameters": [],
+    "keywords": [
+      "Threads",
+      "Parallelization",
+      "nThreads"
+    ]
+  },
+  "Charge": {
+    "section": "Math",
+    "signature": "Charge",
+    "description": "在 Math 节中，指基于电荷的误差控制或电荷计算选项。用作 ErrRef(Charge) 等量的限定符，为牛顿迭代中电荷相关收敛准则设置参考值。",
+    "parameters": [],
+    "keywords": [
+      "ErrRef",
+      "Error",
+      "Newton"
+    ]
+  },
+  "AvaHomotopy": {
+    "section": "Math",
+    "signature": "AvaHomotopy",
+    "description": "在 Math 节中，激活雪崩同伦(homotopy)延续方法以改善击穿仿真中的牛顿收敛性。逐步引入雪崩产生项，帮助求解器在击穿条件附近的高偏置下收敛。",
+    "parameters": [],
+    "keywords": [
+      "Avalanche",
+      "Breakdown",
+      "Newton",
+      "Homotopy"
+    ]
+  },
+  "FEScalar": {
+    "section": "Math",
+    "signature": "FEScalar",
+    "description": "Math 节中的有限元标量选项。控制特定方程类型或解变量的标量有限元离散化设置。",
+    "parameters": [],
+    "keywords": [
+      "Discretization",
+      "FEM"
+    ]
+  },
+  "NewtonPlot": {
+    "section": "Math",
+    "signature": "NewtonPlot",
+    "description": "激活牛顿迭代的收敛监控。输出方程残差和阻尼因子与迭代次数的关系图。当 MinStep 降至 AutoNPMinStepFactor 控制的阈值以下时自动激活。",
+    "parameters": [],
+    "keywords": [
+      "CNormPrint",
+      "AutoNPMinStepFactor",
+      "Convergence",
+      "Newton"
+    ]
+  },
+  "NonLocal": {
+    "section": "Math",
+    "signature": "NonLocal ( <mesh_name> )",
+    "description": "在 Math 节中声明命名的非局部网格。非局部网格用于隧穿和非局部复合模型，需要标准有限元网格之外的连通性信息，如带间隧穿和陷阱辅助隧穿。",
+    "parameters": [],
+    "keywords": [
+      "NonLocalLengthLimit",
+      "NonLocalPath",
+      "Tunneling",
+      "Recombination"
+    ]
+  },
+  "Minimum": {
+    "section": "Math",
+    "signature": "Minimum",
+    "description": "在 Math 节中，指定各种数值参数的最小值，如网格单元尺寸（最粗网格的最小尺寸）或收敛阈值。",
+    "parameters": [],
+    "keywords": [
+      "Grid",
+      "Refinement",
+      "Convergence"
+    ]
+  },
+  "ErrRef": {
+    "section": "Math",
+    "signature": "ErrRef ( <quantity> ) = <float>",
+    "description": "牛顿迭代中收敛控制的参考误差值。设置特定量（如 ErrRef(Electron)、ErrRef(Hole)、ErrRef(Charge)）相对误差计算的缩放因子。当误差降至该参考值以下时求解器收敛。",
+    "parameters": [],
+    "keywords": [
+      "Error",
+      "Digits",
+      "Newton",
+      "Convergence",
+      "TransientErrRef"
+    ]
+  },
+  "PeriodicBC": {
+    "section": "Math",
+    "signature": "PeriodicBC ( [Direction=<int>] )",
+    "description": "为器件仿真激活周期性边界条件(PBC)。Direction 参数指定周期性轴：0 为 x 轴，1 为 y 轴，2 为 z 轴。用于仿真周期性器件结构，如鳍式场效应晶体管阵列。",
+    "parameters": [],
+    "keywords": [
+      "Boundary",
+      "Periodic",
+      "RayTraceBC"
+    ]
+  },
+  "p": {
+    "section": "Math",
+    "signature": "p",
+    "description": "Math 节中的单字母限定符，通常用于指定误差控制和收敛准则中与空穴相关的量（如 ErrRef(p) 表示空穴误差参考值）。",
+    "parameters": [],
+    "keywords": [
+      "ErrRef",
+      "Hole",
+      "Convergence"
+    ]
+  },
+  "Set": {
+    "section": "Math",
+    "signature": "Set",
+    "description": "在 Math 节中，用于为数学或数值参数赋值。也用作 Plot 节中的绘制数据集限定符来设置可视化选项。",
+    "parameters": [],
+    "keywords": [
+      "Plot",
+      "Math",
+      "Parameters"
+    ]
+  },
+  "t": {
+    "section": "Math",
+    "signature": "t",
+    "description": "Math 节中的单字母限定符，通常用于指定瞬态仿真误差控制和收敛准则中与时间相关的量。",
+    "parameters": [],
+    "keywords": [
+      "Transient",
+      "ErrRef",
+      "Time"
+    ]
+  },
+  "Thermal": {
+    "section": "Math",
+    "signature": "Thermal",
+    "description": "在 Math 节中，激活或配置热仿真选项。控制热方程耦合、热电效应和自热数值设置。",
+    "parameters": [],
+    "keywords": [
+      "Heat",
+      "Thermoelectric",
+      "LatticeTemperature",
+      "ThermalConductivity"
+    ]
+  },
+  "Tone": {
+    "section": "Math",
+    "signature": "Tone ( Frequency=<freqspec> NumberOfHarmonics=<int> )",
+    "description": "在 Solve{HBCoupled(Tone(...))} 和 Math{HB{}} 中，定义谐波平衡分析的音调。指定多音(MDFT)仿真的基频和谐波数。多条 Tone 语句定义多音激励。",
+    "parameters": [],
+    "keywords": [
+      "HBCoupled",
+      "Coupled",
+      "Frequency",
+      "Harmonics",
+      "SolveSpectrum"
+    ]
+  },
+  "MVMLDAcontrols": {
+    "section": "Math",
+    "signature": "MVMLDAcontrols ( [MinDist=<float>] )",
+    "description": "修正局域密度近似(MLDA)模型的控制参数。指定 MLDA 量子修正关闭的最小接触距离等参数。默认最小距离为 75e-8 um。",
+    "parameters": [],
+    "keywords": [
+      "MLDA",
+      "Quantum",
+      "eMultiValley",
+      "Subband"
+    ]
+  },
+  "GaussianQuadrature": {
+    "section": "Math",
+    "signature": "GaussianQuadrature ( Order=<int> )",
+    "description": "在 Math{BroadeningIntegration(GaussianQuadrature(Order))} 中，使用高斯(Gaussian)求积来积分 LED 仿真中的展宽光谱。指定增益/自发辐射谱数值积分的求积阶数。",
+    "parameters": [],
+    "keywords": [
+      "LED",
+      "Broadening",
+      "Integration",
+      "Gain"
+    ]
+  },
+  "Rectangle": {
+    "section": "Math",
+    "signature": "Rectangle",
+    "description": "在 Math 节中，定义矩形几何区域用于局部操作，如空间约束、网格细化区域或域限制。",
+    "parameters": [],
+    "keywords": [
+      "Region",
+      "Meshing",
+      "Refinement"
+    ]
+  },
+  "SponEmissionIntegration": {
+    "section": "Math",
+    "signature": "SponEmissionIntegration (GaussianQuadrature (Order=<int>))",
+    "description": "指定 LED 和增益仿真中自发辐射计算的数值积分方法。与 GaussianQuadrature 配合使用时，以指定阶数的高斯求积替代默认积分，加速增益计算。",
+    "parameters": [],
+    "keywords": [
+      "GaussianQuadrature",
+      "Order",
+      "BroadeningIntegration"
+    ]
+  },
+  "TransientError": {
+    "section": "Math",
+    "signature": "TransientError (Charge) = <float>",
+    "description": "指定基于局部截断误差(LTE)的时间步长控制的瞬态误差容差。由 Math 或 Transient 中的 CheckTransientError 激活。通过监控连续步之间的电荷更新误差来控制时间步长自适应。",
+    "parameters": [],
+    "keywords": [
+      "CheckTransientError",
+      "NoCheckTransientError",
+      "TransientDigits",
+      "Charge",
+      "RelErrControl",
+      "ErrRef"
+    ]
+  },
+  "Criterion": {
+    "section": "Math",
+    "signature": "Criterion",
+    "description": "Math 节中用于控制牛顿迭代收敛的收敛准则关键字。当右端项范数和解变量的相对误差均降至指定容差(Digits)以下时，牛顿迭代停止。",
+    "parameters": [],
+    "keywords": [
+      "Digits",
+      "ErrRef",
+      "RhsFactor",
+      "UpdateFactor"
+    ]
+  },
+  "Polygon": {
+    "section": "Math",
+    "signature": "Polygon ((<x1>,<y1>), (<x2>,<y2>), ...)",
+    "description": "在三维光学仿真中定义多边形光照窗口。以窗口局部二维坐标系中的一系列顶点指定。在 Physics{Optics{Excitation}} 节的 Window() 内使用，定义入射光激励的空间范围。",
+    "parameters": [],
+    "keywords": [
+      "Window",
+      "Origin",
+      "XDirection",
+      "YDirection",
+      "Excitation",
+      "Line",
+      "Rectangle",
+      "Circle"
+    ]
+  },
+  "freq": {
+    "section": "Math",
+    "signature": "freq = <float>",
+    "description": "指定谐波平衡(HB)和交流分析的频率参数。定义周期性或准周期性仿真的基频激励频率，用于 HBCoupled 语句和电路源定义（如 sine = (vo va freq ...)）。",
+    "parameters": [],
+    "keywords": [
+      "HB",
+      "HBCoupled",
+      "mag",
+      "phase",
+      "freq2",
+      "mag2",
+      "phase2"
+    ]
+  },
+  "Extrapolate": {
+    "section": "Math",
+    "signature": "Extrapolate (Algorithm=<int> Order=<int> [Exclude(<equations>)] [MinStep=<float>] [LowDensityLimit=<float>] [NumberOfFailures=<int>])",
+    "description": "控制解外推以加速准稳态和瞬态仿真。使用前一步解作为下一步的初始猜测。可配置外推阶数、算法选择、最小步长和密度低于此值时跳过外推的限制。",
+    "parameters": [],
+    "keywords": [
+      "Algorithm",
+      "Order",
+      "Exclude",
+      "MinStep",
+      "LowDensityLimit",
+      "NumberOfFailures",
+      "Quasistationary",
+      "Transient"
+    ]
+  },
+  "Time": {
+    "section": "Math",
+    "signature": "Time = <float>",
+    "description": "指定瞬态分析或辐射产生定时的的时间参数。在瞬态仿真中，设置仿真时间点。在辐射模型（AlphaParticle、HeavyIon）中，定义电荷产生峰值的时间。",
+    "parameters": [],
+    "keywords": [
+      "Transient",
+      "InitialTime",
+      "FinalTime",
+      "InitialStep",
+      "MaxStep",
+      "MinStep",
+      "AlphaParticle",
+      "HeavyIon"
+    ]
+  },
+  "AxisAligned2d": {
+    "section": "Math",
+    "signature": "AxisAligned2d",
+    "description": "指定二维网格操作的轴对齐几何约束。用于网格生成和几何处理中使网格单元与坐标轴对齐，简化平面器件几何的网格结构。",
+    "parameters": [],
+    "keywords": [
+      "AxisAligned",
+      "AxisAligned3d",
+      "Mesh"
+    ]
+  },
+  "AxisAligned3d": {
+    "section": "Math",
+    "signature": "AxisAligned3d",
+    "description": "指定三维网格操作的轴对齐几何约束。用于网格生成和几何处理中使网格单元与坐标轴对齐，简化矩形器件几何的网格结构。",
+    "parameters": [],
+    "keywords": [
+      "AxisAligned",
+      "AxisAligned2d",
+      "Mesh"
+    ]
+  },
+  "NonLocalPath": {
+    "section": "Math",
+    "signature": "NonLocalPath (Derivative=<int> [Direction=<vector>] [MaxStep=<float>] [MinStep=<float>] [N=<int>] [Postprocessing] [Strategy=<int>])",
+    "description": "控制 Math 节中非局部路径导数的处理，适用于 Quasistationary 和 Transient 语句。配置导数计算、冻结隧穿方向、步长控制边界、雅可比矩阵(Jacobian)收集的牛顿迭代次数和后处理模式。",
+    "parameters": [],
+    "keywords": [
+      "Derivative",
+      "Direction",
+      "MaxStep",
+      "MinStep",
+      "N",
+      "Postprocessing",
+      "Strategy",
+      "Band2Band"
+    ]
+  },
+  "SimStats": {
+    "section": "Math",
+    "signature": "SimStats",
+    "description": "激活在每次成功求解后将仿真统计信息写入当前绘制文件(.plt)。输出包含迭代计数、收敛残差、时间步长信息和其他求解器诊断数据的 SimStats 数据集组，用于可视化。",
+    "parameters": [],
+    "keywords": [
+      "CurrentPlot",
+      "Newton",
+      "Iterations",
+      "Convergence"
+    ]
+  },
+  "DeterministicProblem": {
+    "section": "Math",
+    "signature": "DeterministicProblem",
+    "description": "在阻抗场方法(IFM)节中指定确定性（非统计）变化问题。用于系统性参数扫描，如确定性掺杂变化、几何变化或参数变化，与随机统计变化相对。",
+    "parameters": [],
+    "keywords": [
+      "DeterministicVariation",
+      "DopingVariation",
+      "GeometricVariation",
+      "ParameterVariation",
+      "IFM",
+      "RandomizedVariation"
+    ]
+  },
+  "IncompleteNewton": {
+    "section": "Math",
+    "signature": "IncompleteNewton ([RhsFactor=<float>] [UpdateFactor=<float>])",
+    "description": "启用不完全牛顿方法，在迭代间复用雅可比矩阵(Jacobian)而非每次重新计算。当 RhsFactor 和 UpdateFactor 条件均满足时复用雅可比矩阵。可在 Math 中全局指定，也可在 Coupled 语句中作为局部选项。",
+    "parameters": [],
+    "keywords": [
+      "RhsFactor",
+      "UpdateFactor",
+      "Coupled",
+      "Newton",
+      "Jacobian"
+    ]
+  },
+  "Average": {
+    "section": "Math",
+    "signature": "Average",
+    "description": "在 Math 节中，激活各向异性模型计算的平均算法。相关选项包括 AverageAniso（平均-各向异性近似）和 AverageBoxMethod（面向单元的盒方法积分）。",
+    "parameters": [],
+    "keywords": [
+      "Aniso",
+      "Math",
+      "Numerics"
+    ]
+  },
+  "BroadeningIntegration": {
+    "section": "Math",
+    "signature": "BroadeningIntegration(GaussianQuadrature(Order=<int>))",
+    "description": "在 Math 节中，指定 LED/激光器仿真中增益展宽计算的数值积分方法。使用高斯(Gaussian)求积加速包含展宽效应的增益表计算。",
+    "parameters": [
+      "GaussianQuadrature"
+    ],
+    "keywords": [
+      "LED",
+      "Gain",
+      "GaussianQuadrature",
+      "Math"
+    ]
+  },
+  "DualGridInterpolation": {
+    "section": "Math",
+    "signature": "DualGridInterpolation(Method=Simple)",
+    "description": "在 Math 节中，控制双网格（如光学网格与器件网格）之间的插值。Method=Simple 使用简单插值算法在不同网格系统之间映射数据。",
+    "parameters": [
+      "Method"
+    ],
+    "keywords": [
+      "Optics",
+      "Grid",
+      "Interpolation",
+      "Math"
+    ]
+  },
+  "FEVectorial": {
+    "section": "Math",
+    "signature": "FEVectorial",
+    "description": "在 Math 节中，选择矢量有限元公式求解电磁波方程。用于需要分辨电磁场完整矢量特性的光学仿真（BPM、FDTD）。",
+    "parameters": [],
+    "keywords": [
+      "FEM",
+      "Optics",
+      "Vectorial",
+      "Math"
+    ]
+  },
+  "PostProcess": {
+    "section": "Math",
+    "signature": "PostProcess(Transient = <string>)",
+    "description": "在 Math 节中，指定每个瞬态时间步后调用的 PMI 后处理例程。字符串标识 PMI 后处理模型名称。",
+    "parameters": [
+      "Transient"
+    ],
+    "keywords": [
+      "PMI",
+      "Transient",
+      "Math",
+      "PostProcessing"
+    ]
+  },
+  "TransientErrRef": {
+    "section": "Math",
+    "signature": "TransientErrRef(Charge) = <float>",
+    "description": "在 Math 节中，设置瞬态时间步长自适应中绝对误差控制的参考值。与 Charge 配合使用时，参考值为基本电荷（1.602e-19 C）。控制瞬态步接受的局部截断误差。",
+    "parameters": [
+      "Charge"
+    ],
+    "keywords": [
+      "Transient",
+      "Error",
+      "TimeStep",
+      "Math"
+    ]
+  },
+  "EnergyRelaxationTime": {
+    "section": "Math",
+    "signature": "EnergyRelaxationTime { <parameter_block> }",
+    "description": "参数文件节，指定依赖于能量的能量弛豫时间（电子 tau_w_ele，空穴 tau_w_hol），单位为皮秒。支持常数值、分段多项式近似(Formula=2)和样条插值(Formula=3)。用于热力学输运模型中定义载流子能量弛豫动力学。",
+    "parameters": [],
+    "keywords": [
+      "tau_w_ele",
+      "tau_w_hol",
+      "Formula",
+      "Spline",
+      "Wmax",
+      "Numerator",
+      "Denominator",
+      "EnergyFlux",
+      "HeatFlux"
+    ]
+  },
+  "ElementLimit": {
+    "section": "Math",
+    "signature": "ElementLimit (<int>)",
+    "description": "设置 sdevice 仿真中网格生成或细化操作的有限元最大数量。在 Math 节中用于控制网格密度和仿真资源限制。",
+    "parameters": [],
+    "keywords": [
+      "Math",
+      "Mesh",
+      "Refinement"
+    ]
+  },
+  "Delaunizer2d": {
+    "section": "Math",
+    "signature": "Delaunizer2d",
+    "description": "选择二维德劳内(Delaunay)三角剖分算法用于 sdevice 中的网格生成或细化。作为数学选项用于控制应用于二维器件结构的网格方法。",
+    "parameters": [],
+    "keywords": [
+      "Math",
+      "Mesh"
+    ]
+  },
+  "ILS": {
+    "section": "Math",
+    "signature": "Method = ILS | ILSrc = \"set(<int>){ ... }\"",
+    "description": "迭代线性求解器(ILS)，用于求解器件仿真中的线性方程组。三维结构的默认求解器（使用 set(1)），而 SUPER 为一维/二维默认求解器。支持通过 Math 节中的 ILSrc 配置预处理、排序和迭代选项。支持 AC 分析的 MultipleRHS。MPBC 仿真可能需要扩展精度或专用预处理器。",
+    "parameters": [],
+    "keywords": [
+      "ILSrc",
+      "set",
+      "SUPER",
+      "PARDISO",
+      "MultipleRHS",
+      "Coupled",
+      "Method",
+      "UseSchurSolver",
+      "SHEMethod",
+      "PrintLinearSolver"
+    ]
+  },
+  "RandomField": {
+    "section": "Math",
+    "signature": "RandomField (CorrelationFunction=<type> <options>)",
+    "description": "在 Math 节的 RandomizedVariation 中声明空间相关统计变化的随机场。指定相关函数类型（Grain、Exponential、Gaussian）、相关长度（Lambda 或 AverageGrainSize）、振幅和可选的体积限制。声明后，同一 RandomizedVariation 节中的所有变化变为空间相关。",
+    "parameters": [],
+    "keywords": [
+      "CorrelationFunction",
+      "Grain",
+      "Exponential",
+      "Gaussian",
+      "Lambda",
+      "AverageGrainSize",
+      "Amplitude",
+      "Volume",
+      "RandomizedVariation",
+      "NumberOfSamples",
+      "Randomize",
+      "ExtrudeTo3D",
+      "ChiComponent",
+      "EgComponent"
+    ]
+  },
+  "Maximum": {
+    "section": "Math",
+    "signature": "Maximum",
+    "description": "指定 Math 节中数值参数的最大值限制，如最大电场、最大载流子浓度或最大迭代次数。用于约束牛顿迭代中的解变量以改善收敛性。",
+    "parameters": [],
+    "keywords": [
+      "Math",
+      "Digits",
+      "Iterations",
+      "BreakCriteria"
+    ]
+  },
+  "Box": {
+    "section": "Math",
+    "signature": "Box { MinX MaxX MinY MaxY MinZ MaxZ }",
+    "description": "定义用于各种数学和物理设置中空间限制的矩形盒区域，如将量子势修正或密度梯度模型限制到特定区域。",
+    "parameters": [],
+    "keywords": [
+      "region",
+      "spatial",
+      "restriction",
+      "bounding box"
+    ]
+  },
+  "RandomizedVariation": {
+    "section": "Math",
+    "signature": "RandomizedVariation( <options> )",
+    "description": "指定统计阻抗场方法(sIFM)的参数。控制具有空间相关性的随机场生成、样本数和蒙特卡洛(Monte Carlo)式可变性分析的随机种子。",
+    "parameters": [],
+    "keywords": [
+      "sIFM",
+      "statistical",
+      "random field",
+      "correlation",
+      "Monte Carlo",
+      "IFM"
+    ]
+  },
+  "ElementSize": {
+    "section": "Math",
+    "signature": "ElementSize",
+    "description": "控制网格单元尺寸细化参数。用于自适应网格和非局部网格构建中指定数值精度的离散化准则。",
+    "parameters": [],
+    "keywords": [
+      "mesh",
+      "element",
+      "refinement",
+      "discretization",
+      "adaptive"
+    ]
+  },
+  "BE": {
+    "section": "Math",
+    "signature": "Transient = BE",
+    "description": "瞬态仿真的后向欧拉(Backward Euler)时间积分方法。一种一阶隐式方案，可在 Math 节中指定（更改全局默认值）或在 Solve 节的 Transient 语句选项中指定。默认瞬态方法为 TRBDF。",
+    "keywords": [
+      "Transient",
+      "TRBDF",
+      "Math"
+    ]
+  },
+  "TRBDF": {
+    "section": "Math",
+    "signature": "TRBDF",
+    "description": "瞬态仿真的梯形法则/后向差分公式(TR-BDF2)时间积分方法。Sentaurus Device 中的默认瞬态方法。结合 BDF 方法的稳定性与梯形积分的精度。",
+    "keywords": [
+      "Transient",
+      "BE",
+      "Math",
+      "InitialStep",
+      "MaxStep"
+    ]
+  },
+  "UCS": {
+    "section": "Math",
+    "signature": "UCS",
+    "description": "各向异性模型计算的统一坐标系。为评估器件各向异性区域中的张量材料属性（迁移率、介电常数）提供一致的参考框架。",
+    "keywords": [
+      "Aniso",
+      "CoordinateSystem",
+      "Stress"
+    ]
+  },
+  "Solve": {
+    "section": "Solve",
+    "signature": "Solve { [Coupled|Plugin|Quasistationary|Transient|ACCoupled|HBCoupled|Continuation] { <equations> } }",
+    "description": "定义仿真序列和求解方程。支持耦合牛顿(Newton)、古默尔(Gummel, Plugin)、准稳态扫描、瞬态分析、小信号交流、谐波平衡和延续(continuation)方法。",
+    "parameters": [
+      {
+        "name": "Coupled",
+        "type": "string",
+        "desc": "通过牛顿迭代一致求解耦合方程。"
+      },
+      {
+        "name": "Quasistationary",
+        "type": "string",
+        "desc": "带步长控制和目标值指定的准稳态扫描。"
+      },
+      {
+        "name": "Transient",
+        "type": "string",
+        "desc": "带时间步长控制的瞬态仿真。"
+      },
+      {
+        "name": "ACCoupled",
+        "type": "string",
+        "desc": "带频率扫描的小信号交流分析。"
+      },
+      {
+        "name": "Plugin",
+        "type": "string",
+        "desc": "通过古默尔(Gummel)迭代一致求解方程。"
+      },
+      {
+        "name": "Continuation",
+        "type": "string",
+        "desc": "用于追踪击穿后 I-V 曲线的延续方法。"
+      }
+    ],
+    "example": "Solve {\n  -Coupled { Poisson Electron Hole }\n  Coupled { Poisson Electron Hole }\n  Quasistationary (\n    InitialStep=1e-5 MaxStep=0.05\n    Goal { Name=\"drain\" Voltage=1.0 }\n  ) { Coupled { Poisson Electron Hole } }\n}",
+    "keywords": [
+      "Coupled",
+      "Plugin",
+      "Quasistationary",
+      "Transient",
+      "ACCoupled",
+      "HBCoupled",
+      "Continuation",
+      "Plot",
+      "Save",
+      "Load",
+      "CurrentPlot",
+      "SpectralPlot",
+      "NewCurrentPrefix",
+      "Set",
+      "Unset",
+      "System",
+      "Poisson",
+      "Electron",
+      "Hole",
+      "Circuit",
+      "Temperature",
+      "eTemperature",
+      "hTemperature",
+      "eQuantumPotential",
+      "hQuantumPotential",
+      "eSHEDistribution",
+      "hSHEDistribution",
+      "Charge",
+      "Contact",
+      "CondInsulator",
+      "Traps",
+      "HydrogenAtom",
+      "HydrogenIon",
+      "HydrogenMolecule",
+      "HydrogenSpeciesA",
+      "HydrogenSpeciesB",
+      "HydrogenSpeciesC",
+      "TCircuit",
+      "TContact",
+      "LLG",
+      "Mechanics",
+      "FEPolarization",
+      "SingletExciton",
+      "Optics",
+      "Wavelength"
+    ]
+  },
+  "PlotFarField": {
+    "section": "Solve",
+    "signature": "PlotFarField (<parameters>) [{<device>...}]",
+    "description": "在准稳态或瞬态仿真期间绘制 LED 器件的光学远场辐射方向图。输出与角度相关的强度数据到绘图文件。参数语法与 Plot 命令相同（表 345）。需要在 Physics 段中启用 LED 辐射物理模型。",
+    "parameters": [
+      {
+        "name": "FilePrefix",
+        "type": "string",
+        "desc": "输出文件名前缀"
+      },
+      {
+        "name": "Overwrite",
+        "type": "bool",
+        "desc": "每次循环覆写同名文件（默认：开启）"
+      },
+      {
+        "name": "noOverwrite",
+        "type": "bool",
+        "desc": "通过编号为每次绘图生成新文件名"
+      },
+      {
+        "name": "Time",
+        "type": "string",
+        "desc": "瞬态仿真中的绘图时间点（范围、间隔、十倍频程）"
+      },
+      {
+        "name": "When",
+        "type": "string",
+        "desc": "当目标电压或电流被跨越时生成输出"
+      }
+    ],
+    "example": "Solve {\n  Quasistationary (\n    InitialStep=1e-3 MaxStep=0.05\n    Goal { Name=\"anode\" Voltage=3 }\n  ) {\n    Coupled { Poisson Electron Hole }\n    PlotFarField (FilePrefix=\"led_farfield\")\n  }\n}",
+    "keywords": [
+      "FilePrefix",
+      "Overwrite",
+      "noOverwrite",
+      "Time",
+      "When",
+      "Current",
+      "Voltage",
+      "Intervals",
+      "Loadable",
+      "Explicit"
+    ]
+  },
+  "BreakCriteria": {
+    "section": "Solve",
+    "signature": "BreakCriteria { <criterion> [<criterion>...] }",
+    "description": "指定当监测值超过给定限值时提前终止仿真的条件。适用于在电流超过阈值时停止击穿仿真，或在非等温仿真中晶格温度接近熔点时终止。可在 Math 段中全局指定，也可作为 Quasistationary、Transient 或 Continuation 内的扫描特定选项。",
+    "parameters": [
+      {
+        "name": "Voltage",
+        "type": "string",
+        "desc": "接触电压终止条件：Voltage(Contact=\"<name>\" AbsVal=<float>)"
+      },
+      {
+        "name": "Current",
+        "type": "string",
+        "desc": "接触电流终止条件：Current(Contact=\"<name>\" MinVal=<float> MaxVal=<float>)"
+      },
+      {
+        "name": "LatticeTemperature",
+        "type": "string",
+        "desc": "晶格温度条件：LatticeTemperature(maxval=<float>)"
+      },
+      {
+        "name": "CurrentDensity",
+        "type": "string",
+        "desc": "电流密度条件：CurrentDensity(maxval=<float>)"
+      },
+      {
+        "name": "ElectricField",
+        "type": "string",
+        "desc": "电场条件：ElectricField(maxval=<float>)"
+      },
+      {
+        "name": "DevicePower",
+        "type": "string",
+        "desc": "器件功耗条件：DevicePower(AbsVal=<float>)"
+      }
+    ],
+    "example": "Math {\n  BreakCriteria {\n    Voltage (Contact=\"drain\" AbsVal=10)\n    Current (Contact=\"source\" MinVal=-0.001 MaxVal=0.002)\n  }\n}\n\nSolve {\n  Quasistationary (\n    BreakCriteria {\n      Current(Contact=\"drain\" AbsVal=1e-8)\n      DevicePower(AbsVal=1e-5)\n    }\n    Goal { Name=\"drain\" Voltage=5 }\n  ) { Coupled { Poisson Electron Hole } }\n}",
+    "keywords": [
+      "Voltage",
+      "Current",
+      "LatticeTemperature",
+      "CurrentDensity",
+      "ElectricField",
+      "DevicePower",
+      "OuterDevicePower",
+      "InnerDevicePower",
+      "Contact",
+      "Node",
+      "DevName",
+      "AbsVal",
+      "MinVal",
+      "MaxVal",
+      "minval",
+      "maxval",
+      "Absval"
+    ]
+  },
+  "PlotLEDRadiation": {
+    "section": "Solve",
+    "signature": "PlotLEDRadiation (<parameters>) [{<device>...}]",
+    "description": "在准稳态或瞬态仿真期间绘制 LED 器件的光学远场辐射方向图。这是 LED 仿真的专用绘图命令，输出与角度相关的远场强度。参数语法与 Plot 命令相同（表 345）。需要在 Physics 段中启用 LED 辐射光线追踪。",
+    "parameters": [
+      {
+        "name": "FilePrefix",
+        "type": "string",
+        "desc": "输出文件名前缀"
+      },
+      {
+        "name": "Overwrite",
+        "type": "bool",
+        "desc": "每次循环覆写同名文件（默认：开启）"
+      },
+      {
+        "name": "noOverwrite",
+        "type": "bool",
+        "desc": "通过编号为每次绘图生成新文件名"
+      },
+      {
+        "name": "Time",
+        "type": "string",
+        "desc": "瞬态仿真中的绘图时间点"
+      },
+      {
+        "name": "When",
+        "type": "string",
+        "desc": "当目标电压或电流被跨越时生成输出"
+      }
+    ],
+    "example": "Solve {\n  Coupled { Poisson Electron Hole }\n  Quasistationary (\n    InitialStep=1e-3 MaxStep=0.05\n    Goal { Name=\"anode\" Voltage=3 }\n  ) {\n    Coupled { Poisson Electron Hole }\n    PlotLEDRadiation (FilePrefix=\"led_radiation\")\n  }\n}",
+    "keywords": [
+      "FilePrefix",
+      "Overwrite",
+      "noOverwrite",
+      "Time",
+      "When",
+      "Current",
+      "Voltage",
+      "Intervals",
+      "Loadable",
+      "Explicit"
+    ]
+  },
+  "PlotBandstructure": {
+    "section": "Solve",
+    "signature": "PlotBandstructure (<parameters>) [{<device>...}]",
+    "description": "在准稳态或瞬态运行期间绘制 LED 仿真的能带结构数据。输出指定顶点处的局部能带结构信息，包括本征值和本征函数。需要求解 k.p 模型或薛定谔方程。输出文件基名由 File 段中的 Bandstructure 设置。参数语法与 Plot 命令相同（表 345）。",
+    "parameters": [
+      {
+        "name": "FilePrefix",
+        "type": "string",
+        "desc": "输出文件名前缀"
+      },
+      {
+        "name": "Overwrite",
+        "type": "bool",
+        "desc": "每次循环覆写同名文件（默认：开启）"
+      },
+      {
+        "name": "noOverwrite",
+        "type": "bool",
+        "desc": "通过编号为每次绘图生成新文件名"
+      },
+      {
+        "name": "Time",
+        "type": "string",
+        "desc": "瞬态仿真中的绘图时间点"
+      },
+      {
+        "name": "When",
+        "type": "string",
+        "desc": "当目标电压或电流被跨越时生成输出"
+      }
+    ],
+    "example": "Solve {\n  Coupled { Poisson Electron Hole }\n  Quasistationary (\n    InitialStep=1e-3 MaxStep=0.05\n    Goal { Name=\"anode\" Voltage=3 }\n  ) {\n    Coupled { Poisson Electron Hole }\n    PlotBandstructure (FilePrefix=\"bandstruc\")\n  }\n}",
+    "keywords": [
+      "FilePrefix",
+      "Overwrite",
+      "noOverwrite",
+      "Time",
+      "When",
+      "Current",
+      "Voltage",
+      "Intervals",
+      "Loadable",
+      "Explicit"
+    ]
+  },
+  "SpectralPlot": {
+    "section": "Solve",
+    "signature": "SpectralPlot (<parameters>) [{<device>...}]",
+    "description": "对光照光谱的每个条目绘制光谱仿真结果。将空间分布的结果输出到 TDR 文件，将光谱曲线输出到 PLT 文件。默认情况下连续绘图收集到同一文件中。与 Physics 段中的 IlluminationSpectrum 选项配合使用，用于波长依赖的光学仿真。参数语法与 Plot 命令相同（表 345）。",
+    "parameters": [
+      {
+        "name": "FilePrefix",
+        "type": "string",
+        "desc": "输出文件名前缀"
+      },
+      {
+        "name": "Time",
+        "type": "string",
+        "desc": "瞬态仿真中的绘图时间点"
+      },
+      {
+        "name": "When",
+        "type": "string",
+        "desc": "当目标电压或电流被跨越时生成输出"
+      },
+      {
+        "name": "Overwrite",
+        "type": "bool",
+        "desc": "每次循环覆写同名文件"
+      },
+      {
+        "name": "noOverwrite",
+        "type": "bool",
+        "desc": "写入独立的编号文件"
+      }
+    ],
+    "example": "Solve {\n  Coupled { Poisson Electron Hole }\n  Quasistationary (\n    InitialStep=1e-3 MaxStep=0.05\n    Goal { Name=\"cathode\" Voltage=-2 }\n  ) {\n    Coupled { Poisson Electron Hole }\n    SpectralPlot (FilePrefix=\"spectral\")\n  }\n}",
+    "keywords": [
+      "FilePrefix",
+      "Time",
+      "When",
+      "Current",
+      "Voltage",
+      "Intervals",
+      "Overwrite",
+      "noOverwrite",
+      "collected"
+    ]
+  },
+  "PlotGain": {
+    "section": "Solve",
+    "signature": "PlotGain (<parameters>) [{<device>...}]",
+    "description": "在准稳态或瞬态运行期间绘制 LED 或激光器仿真中的受激发射和自发辐射光谱数据。输出模增益和自发辐射数据。输出文件基名由 File 段中的 Gain 设置。参数语法与 Plot 命令相同（表 345）。",
+    "parameters": [
+      {
+        "name": "FilePrefix",
+        "type": "string",
+        "desc": "输出文件名前缀"
+      },
+      {
+        "name": "Overwrite",
+        "type": "bool",
+        "desc": "每次循环覆写同名文件（默认：开启）"
+      },
+      {
+        "name": "noOverwrite",
+        "type": "bool",
+        "desc": "通过编号为每次绘图生成新文件名"
+      },
+      {
+        "name": "Time",
+        "type": "string",
+        "desc": "瞬态仿真中的绘图时间点"
+      },
+      {
+        "name": "When",
+        "type": "string",
+        "desc": "当目标电压或电流被跨越时生成输出"
+      }
+    ],
+    "example": "Solve {\n  Coupled { Poisson Electron Hole }\n  Quasistationary (\n    InitialStep=1e-3 MaxStep=0.05\n    Goal { Name=\"anode\" Voltage=4 }\n  ) {\n    Coupled { Poisson Electron Hole }\n    PlotGain (FilePrefix=\"gain_data\")\n  }\n}",
+    "keywords": [
+      "FilePrefix",
+      "Overwrite",
+      "noOverwrite",
+      "Time",
+      "When",
+      "Current",
+      "Voltage",
+      "Intervals",
+      "Loadable",
+      "Explicit"
+    ]
+  },
+  "Continuation": {
+    "section": "Solve",
+    "signature": "Continuation (<control_parameters>) { <solve_command> }",
+    "description": "使用动态负载线技术自动追踪任意形状的 I-V 曲线。特别适用于追踪与击穿、snapback（电压回跳）或闩锁(latchup)现象相关的多值 I-V 曲线。该方法通过调节连接到延续电极的可变负载电阻沿 I-V 曲线调整边界条件，确保负载线始终与 I-V 曲线的局部切线正交。",
+    "parameters": [
+      {
+        "name": "Name",
+        "type": "string",
+        "desc": "延续电极名称（混合模式下加 <device>. 前缀）"
+      },
+      {
+        "name": "InitialVstep",
+        "type": "float",
+        "desc": "初始电压控制步长 [V]"
+      },
+      {
+        "name": "MinVoltage",
+        "type": "float",
+        "desc": "延续窗口的最小电压限 [V]"
+      },
+      {
+        "name": "MaxVoltage",
+        "type": "float",
+        "desc": "延续窗口的最大电压限 [V]"
+      },
+      {
+        "name": "MinCurrent",
+        "type": "float",
+        "desc": "延续窗口的最小电流限 [A]"
+      },
+      {
+        "name": "MaxCurrent",
+        "type": "float",
+        "desc": "延续窗口的最大电流限 [A]"
+      }
+    ],
+    "example": "Solve {\n  Coupled { Poisson Electron Hole }\n  Continuation (\n    NewArc\n    Name=\"collector\"\n    InitialVstep=0.1\n    MinVoltage=0 MaxVoltage=10\n    MinCurrent=0 MaxCurrent=1e-3\n  ) {\n    Coupled { Poisson Electron Hole }\n  }\n}",
+    "keywords": [
+      "Name",
+      "InitialVstep",
+      "MinVoltage",
+      "MaxVoltage",
+      "MinCurrent",
+      "MaxCurrent",
+      "NewArc",
+      "Increment",
+      "Decrement",
+      "MaxVstep",
+      "MaxIstep",
+      "MaxIfactor",
+      "MinRload",
+      "MaxRload",
+      "Vadapt",
+      "Iadapt",
+      "Rfixed",
+      "LogCurrent"
+    ]
+  },
+  "Extraction": {
+    "section": "Solve",
+    "signature": "Quasistationary ( ... Extraction { <curve_list> } ) { <solve-command> }",
+    "description": "指定在准稳态扫描期间生成的电压相关提取曲线。可列出多条曲线。如果 Quasistationary 语句中缺少 Extraction 选项，则不会产生提取输出。对于交流(AC)和噪声仿真，频率相关曲线在 ACCoupled 语句中指定。",
+    "parameters": [
+      {
+        "name": "IdVg",
+        "type": "string",
+        "desc": "漏电流 vs. 栅电压提取曲线"
+      },
+      {
+        "name": "IsVg",
+        "type": "string",
+        "desc": "源电流 vs. 栅电压提取曲线"
+      },
+      {
+        "name": "IgVg",
+        "type": "string",
+        "desc": "栅电流 vs. 栅电压提取曲线"
+      },
+      {
+        "name": "IdVd",
+        "type": "string",
+        "desc": "漏电流 vs. 漏电压提取曲线"
+      },
+      {
+        "name": "IbVd",
+        "type": "string",
+        "desc": "衬底电流 vs. 漏电压提取曲线"
+      },
+      {
+        "name": "Ads_Vg",
+        "type": "string",
+        "desc": "AC 电导 Ads vs. 栅电压（AC 分析）"
+      }
+    ],
+    "example": "Solve {\n  Quasistationary (\n    Goal { Name=\"contact_gate\" Voltage=1.5 }\n    Extraction { IdVg IsVg IgVg }\n  ) {\n    Coupled { Poisson Electron }\n  }\n}",
+    "keywords": [
+      "IdVg",
+      "IsVg",
+      "IgVg",
+      "IdVd",
+      "IbVd",
+      "IsubVd",
+      "gmVg",
+      "gdsVd",
+      "Ads_Vg",
+      "Agg_Vg",
+      "Cgd_Vg",
+      "noise_Id_Vg",
+      "noise_Ig_Vg",
+      "Add_F",
+      "Cgd_F",
+      "noise_Vd_F"
+    ]
+  },
+  "ACCoupled": {
+    "section": "Solve",
+    "signature": "ACCoupled ( <ac-parameters> ) { <equation_list> }",
+    "description": "执行小信号交流分析。通过频率扫描参数扩展 Coupled 段，用于计算电路节点间的频率相关导纳矩阵。通常用于混合模式仿真。导纳矩阵 Y = A + i*2*pi*f*C 分解为电导矩阵(A)和电容矩阵(C)。",
+    "parameters": [
+      {
+        "name": "StartFrequency",
+        "type": "float",
+        "desc": "交流分析扫描起始频率 [Hz]"
+      },
+      {
+        "name": "EndFrequency",
+        "type": "float",
+        "desc": "交流分析扫描终止频率 [Hz]"
+      },
+      {
+        "name": "NumberOfPoints",
+        "type": "int",
+        "desc": "扫描中的频率点数"
+      },
+      {
+        "name": "Decade",
+        "type": "bool",
+        "desc": "使用十倍频程（对数）频率间隔"
+      },
+      {
+        "name": "Node",
+        "type": "list",
+        "desc": "导纳矩阵计算的交流电路节点列表"
+      },
+      {
+        "name": "Exclude",
+        "type": "list",
+        "desc": "从交流分析中排除的电路实例列表"
+      }
+    ],
+    "example": "Solve {\n  ACCoupled (\n    StartFrequency=1e3 EndFrequency=1e6\n    NumberOfPoints=4 Decade\n    Node(\"left\" \"right\")\n    Exclude(drive toGround)\n    ACExtract=\"AC1\"\n  ) { Poisson Electron Hole Contact Circuit }\n}",
+    "keywords": [
+      "StartFrequency",
+      "EndFrequency",
+      "NumberOfPoints",
+      "Decade",
+      "Linear",
+      "Frequency",
+      "Node",
+      "Exclude",
+      "ACExtract",
+      "ACPlot",
+      "ACMethod",
+      "ACSubMethod",
+      "Optical",
+      "ACCompute"
+    ]
+  },
+  "SolveSpectrum": {
+    "section": "Solve",
+    "signature": "SolveSpectrum = \"<name>\"",
+    "description": "引用预定义的求解光谱，用于 HBCoupled（谐波平衡）语句中。该光谱在 Math 段的 HB 部分定义，允许将完整谐波平衡光谱截断为仅包含特定（多重）索引，降低计算成本。每个多重索引对应一个互调频率组合。",
+    "parameters": [
+      {
+        "name": "Name",
+        "type": "string",
+        "desc": "求解光谱名称，定义于 Math { HB { SolveSpectrum (Name=...) {...} } }"
+      }
+    ],
+    "example": "Math {\n  HB {\n    SolveSpectrum (Name = \"sp1\") {\n      (0 0) (1 0) (0 1) (2 1) (2 -1)\n    }\n  }\n}\nSolve {\n  HBCoupled (\n    Tone (Frequency = 1e9 NumberOfHarmonics = 5)\n    SolveSpectrum = \"sp1\"\n  ) { Poisson Electron Hole }\n}",
+    "keywords": [
+      "SolveSpectrum",
+      "Name"
+    ]
+  },
+  "Goal": {
+    "section": "Solve",
+    "signature": "Goal { [Name=<string>] [Voltage=<float>] [Current=<float>] [Node=<string>] [Parameter=<string>] Value=<float> }",
+    "description": "定义准稳态命令中的扫描目标值。目标可指定接触电压、电流、电荷、掺杂阱中的准费米势、电路节点电压或物理模型参数。可使用多个 Goal 语句同时扫描多个物理量。",
+    "parameters": [
+      {
+        "name": "Name",
+        "type": "string",
+        "desc": "扫描的接触名称（或匹配多个接触的正则表达式模式）"
+      },
+      {
+        "name": "Voltage",
+        "type": "float",
+        "desc": "接触的目标电压值 [V]"
+      },
+      {
+        "name": "Current",
+        "type": "float",
+        "desc": "接触的目标电流值 [A]"
+      },
+      {
+        "name": "Node",
+        "type": "string",
+        "desc": "扫描的电路节点名称（混合模式）"
+      },
+      {
+        "name": "Parameter",
+        "type": "string",
+        "desc": "扫描的电路模型参数，如 r1.\"resistance\""
+      },
+      {
+        "name": "Value",
+        "type": "float",
+        "desc": "参数或节点扫描的目标值"
+      }
+    ],
+    "example": "Solve {\n  Quasistationary (\n    Goal { Name=\"gate\" Voltage=3 }\n    Goal { Name=\"drain\" Voltage=5 }\n  ) { Coupled { Poisson Electron Hole } }\n}",
+    "keywords": [
+      "Name",
+      "Voltage",
+      "Current",
+      "Charge",
+      "Node",
+      "Parameter",
+      "Value",
+      "Device",
+      "Material",
+      "Region",
+      "Model",
+      "DopingWell",
+      "DopingWells",
+      "WellContactName",
+      "eQuasiFermi",
+      "hQuasiFermi",
+      "Regexp"
+    ]
+  },
+  "Transient": {
+    "section": "Solve",
+    "signature": "Transient ( <parameter-list> ) { <solve-command> }",
+    "description": "执行瞬态时域仿真。器件必须已有初始解。仿真时间从 InitialTime 推进到 FinalTime，在每个时间步重新求解器件方程。支持 TRBDF2（默认）和后向欧拉(BE)积分方法。也可用于类似准稳态的模式，通过 Goal 语句扫描边界条件。",
+    "parameters": [
+      {
+        "name": "InitialTime",
+        "type": "float",
+        "desc": "瞬态仿真起始时间 [s]"
+      },
+      {
+        "name": "FinalTime",
+        "type": "float",
+        "desc": "瞬态仿真终止时间 [s]"
+      },
+      {
+        "name": "InitialStep",
+        "type": "float",
+        "desc": "初始时间步长 [s]"
+      },
+      {
+        "name": "MaxStep",
+        "type": "float",
+        "desc": "最大允许时间步长 [s]"
+      },
+      {
+        "name": "MinStep",
+        "type": "float",
+        "desc": "最小允许时间步长 [s]"
+      },
+      {
+        "name": "Increment",
+        "type": "float",
+        "desc": "上一步收敛时的步长放大因子（默认：2）"
+      }
+    ],
+    "example": "Solve {\n  Transient (\n    InitialTime = 0.0\n    FinalTime = 1.0e-5\n    InitialStep = 1e-9\n    MaxStep = 1e-7\n    MinStep = 1e-14\n  ) {\n    Coupled { Poisson Electron Hole }\n  }\n}",
+    "keywords": [
+      "InitialTime",
+      "FinalTime",
+      "InitialStep",
+      "MaxStep",
+      "MinStep",
+      "Increment",
+      "Decrement",
+      "Goal",
+      "Bias",
+      "Plot",
+      "TurningPoints",
+      "Cyclic",
+      "Transient",
+      "BE",
+      "TRBDF",
+      "CheckTransientError",
+      "TransientDigits",
+      "TransientError",
+      "TransientErrRef",
+      "Extrapolate",
+      "NonlocalPath"
+    ]
+  },
+  "DopingWell": {
+    "section": "Solve",
+    "signature": "DopingWell ( <x> <y> [<z>] )",
+    "description": "通过掺杂阱内部一点的坐标指定掺杂阱。用于准稳态命令的 Goal 和 Set 语句中，以扫描指定阱中的电子或空穴准费米势。比 WellContactName 更通用，因为它适用于没有接触的埋层阱。混合模式仿真中必须加器件实例名前缀。",
+    "parameters": [
+      {
+        "name": "x",
+        "type": "float",
+        "desc": "掺杂阱内部一点的 X 坐标 [cm]"
+      },
+      {
+        "name": "y",
+        "type": "float",
+        "desc": "掺杂阱内部一点的 Y 坐标 [cm]"
+      },
+      {
+        "name": "z",
+        "type": "float",
+        "desc": "掺杂阱内部一点的 Z 坐标 [cm]（仅 3D）"
+      }
+    ],
+    "example": "Solve {\n  Set(DopingWell(0.5 0.5) eQuasiFermi=5.0)\n  Quasistationary (\n    InitialStep=0.01 MaxStep=0.1\n    Goal { DopingWell(0.5 0.5) eQuasiFermi=10.0 }\n  ) { Coupled { Poisson Hole } }\n}",
+    "keywords": [
+      "DopingWell",
+      "DopingWells",
+      "WellContactName",
+      "eQuasiFermi",
+      "hQuasiFermi",
+      "Region",
+      "Material",
+      "Semiconductor"
+    ]
+  },
+  "HBCoupled": {
+    "section": "Solve",
+    "signature": "HBCoupled ( <hb-parameters> ) { <equation_list> }",
+    "description": "执行谐波平衡(HB)分析，这是一种频域方法，用于求解周期性或准周期性时变问题。支持单音(SDFT 模式)和多音(MDFT 模式)分析。Tone 选项为必选项。对于具有差异很大的时间常数的问题，计算效率高于瞬态分析。",
+    "parameters": [
+      {
+        "name": "Tone",
+        "type": "list",
+        "desc": "基频和谐波数，如 Tone(Frequency=1e9 NumberOfHarmonics=5)"
+      },
+      {
+        "name": "Initialize",
+        "type": "string",
+        "desc": "初始化方法：DCMode（使用直流解作为初始猜测）"
+      },
+      {
+        "name": "Method",
+        "type": "string",
+        "desc": "线性求解器：ILS 或 Direct"
+      },
+      {
+        "name": "GMRES",
+        "type": "string",
+        "desc": "GMRES 迭代求解器选项：Tolerance、MaxIterations、Restart"
+      },
+      {
+        "name": "SolveSpectrum",
+        "type": "string",
+        "desc": "引用预定义的求解光谱用于光谱截断（MDFT 模式）"
+      },
+      {
+        "name": "Derivative",
+        "type": "bool",
+        "desc": "覆盖 Math 段的 Derivative 标志用于 HB 牛顿过程"
+      }
+    ],
+    "example": "Solve {\n  HBCoupled (\n    Tone (Frequency = 1e9 NumberOfHarmonics = 5)\n    Initialize = DCMode\n    Method = ILS\n    GMRES (Tolerance = 1.e-2 MaxIterations = 30 Restart = 30)\n  ) { Poisson Electron Hole }\n}",
+    "keywords": [
+      "Tone",
+      "Frequency",
+      "NumberOfHarmonics",
+      "Initialize",
+      "DCMode",
+      "Method",
+      "ILS",
+      "Direct",
+      "GMRES",
+      "Tolerance",
+      "MaxIterations",
+      "Restart",
+      "SolveSpectrum",
+      "Derivative",
+      "RhsScale",
+      "UpdateScale",
+      "ValueMin",
+      "ValueVariation"
+    ]
+  },
+  "Plugin": {
+    "section": "Solve",
+    "signature": "Plugin ( <options> ) { <coupled-commands> }",
+    "description": "控制对两个或多个 Coupled 语句进行古默尔(Gummel)型迭代循环。当完全耦合的牛顿方法消耗过多资源或发散时使用。标准古默尔迭代依次求解每个半导体方程（泊松、电子、空穴）。Plugin 命令可嵌套以创建复杂的迭代求解模式。",
+    "parameters": [
+      {
+        "name": "Iterations",
+        "type": "int",
+        "desc": "外层 Plugin 迭代的最大次数"
+      },
+      {
+        "name": "Digits",
+        "type": "int",
+        "desc": "收敛检查的有效数字位数"
+      },
+      {
+        "name": "ErrRef",
+        "type": "list",
+        "desc": "每个方程的参考误差参数"
+      },
+      {
+        "name": "Error",
+        "type": "list",
+        "desc": "每个方程的绝对误差参数"
+      },
+      {
+        "name": "RelErrControl",
+        "type": "bool",
+        "desc": "使用相对误差控制（默认）"
+      },
+      {
+        "name": "Method",
+        "type": "string",
+        "desc": "线性求解器方法（如 Blocked、ILS）"
+      }
+    ],
+    "example": "Solve {\n  Plugin {\n    Coupled { Poisson }\n    Coupled { Electron }\n    Coupled { Hole }\n  }\n}",
+    "keywords": [
+      "Iterations",
+      "Digits",
+      "ErrRef",
+      "Error",
+      "RelErrControl",
+      "Method",
+      "SubMethod",
+      "RhsFactor",
+      "RhsMin",
+      "UpdateMax",
+      "LineSearchDamping",
+      "IncompleteNewton",
+      "Numerically"
+    ]
+  },
+  "SaveOptField": {
+    "section": "Solve",
+    "signature": "Quasistationary ( ... SaveOptField { <plot-options> } ) { <solve-command> }",
+    "description": "在准稳态或瞬态扫描期间的 LED 仿真中保存光场数据。使用与 Plot 命令相同的语法（Range、Intervals、MinSpacing）控制光场数据的写入点。输出文件名由 File 段中的 SaveOptField 指定。",
+    "parameters": [
+      {
+        "name": "Range",
+        "type": "list",
+        "desc": "保存光场数据的扫描变量范围 (t)"
+      },
+      {
+        "name": "Intervals",
+        "type": "int",
+        "desc": "范围内保存数据的间隔数"
+      },
+      {
+        "name": "MinSpacing",
+        "type": "float",
+        "desc": "连续保存点之间的最小间距"
+      }
+    ],
+    "example": "Solve {\n  Quasistationary (\n    Goal { Name=\"anode\" Voltage=3 }\n    SaveOptField { Range=(0 1) Intervals=10 }\n  ) { Coupled { Poisson Electron Hole } }\n}",
+    "keywords": [
+      "Range",
+      "Intervals",
+      "MinSpacing"
+    ]
+  },
+  "Coupled": {
+    "section": "Solve",
+    "signature": "Coupled ( <options> ) { <equation_list> }",
+    "description": "激活类牛顿求解器，求解泊松、电子、空穴、电路、接触和热方程等方程组。这是 Sentaurus Device 的主要求解命令。参数控制牛顿迭代次数、收敛精度和线性求解器选择。Coupled 语句也可以作为独立的方程关键字出现，无需花括号。",
+    "parameters": [
+      {
+        "name": "Iterations",
+        "type": "int",
+        "desc": "最大牛顿迭代次数"
+      },
+      {
+        "name": "Method",
+        "type": "string",
+        "desc": "线性求解器方法：Blocked、ILS、ParDiSo、Direct、Super"
+      },
+      {
+        "name": "SubMethod",
+        "type": "string",
+        "desc": "块分解求解器的内层方法"
+      },
+      {
+        "name": "Digits",
+        "type": "int",
+        "desc": "相对误差控制的有效数字位数"
+      },
+      {
+        "name": "RelErrControl",
+        "type": "bool",
+        "desc": "使用相对误差控制（默认）"
+      },
+      {
+        "name": "IncompleteNewton",
+        "type": "bool",
+        "desc": "启用不完全牛顿(Newton-Richardson)算法"
+      }
+    ],
+    "example": "Solve {\n  Coupled { Poisson Electron Hole }\n}",
+    "keywords": [
+      "Iterations",
+      "Method",
+      "SubMethod",
+      "Digits",
+      "ErrRef",
+      "Error",
+      "RelErrControl",
+      "RhsFactor",
+      "RhsMin",
+      "RhsMax",
+      "RhsMaxQ",
+      "UpdateMax",
+      "UpdateIncrease",
+      "LineSearchDamping",
+      "NotDamped",
+      "Numerically",
+      "IncompleteNewton",
+      "Poisson",
+      "Electron",
+      "Hole",
+      "Circuit",
+      "Contact",
+      "Temperature",
+      "eTemperature",
+      "hTemperature"
+    ]
+  },
+  "QuasiStationary": {
+    "section": "Solve",
+    "signature": "Quasistationary ( <parameter-list> ) { <solve-command> }",
+    "description": "通过修改边界条件（接触电压、电流、电荷）、掺杂阱中的准费米势或物理模型参数，将器件从一个解扫描到另一个解。内部将变量 t 从 0.0 扫描到 1.0，通过 MaxStep、MinStep、InitialStep、Increment 和 Decrement 控制步长。每步执行内部求解命令。",
+    "parameters": [
+      {
+        "name": "InitialStep",
+        "type": "float",
+        "desc": "第一个扫描步长的大小（默认：0.1）"
+      },
+      {
+        "name": "MaxStep",
+        "type": "float",
+        "desc": "最大扫描步长（默认：1）"
+      },
+      {
+        "name": "MinStep",
+        "type": "float",
+        "desc": "最小扫描步长；步长低于此值时仿真退出（默认：0.001）"
+      },
+      {
+        "name": "Increment",
+        "type": "float",
+        "desc": "上一步收敛时的步长放大因子（默认：2）"
+      },
+      {
+        "name": "Decrement",
+        "type": "float",
+        "desc": "上一步失败时的步长缩小因子（默认：2）"
+      },
+      {
+        "name": "Goal",
+        "type": "list",
+        "desc": "边界条件扫描的目标值，如 Goal {Name=\"drain\" Voltage=5}"
+      }
+    ],
+    "example": "Solve {\n  Quasistationary (\n    Goal { Name=\"gate\" Voltage=3 }\n    Goal { Name=\"drain\" Voltage=5 }\n    InitialStep=0.01\n    MaxStep=0.1\n    MinStep=1e-5\n    Increment=1.5\n    Decrement=2\n  ) { Coupled { Poisson Electron Hole } }\n}",
+    "keywords": [
+      "InitialStep",
+      "MaxStep",
+      "MinStep",
+      "Increment",
+      "Decrement",
+      "Goal",
+      "DoZero",
+      "Extraction",
+      "Plot",
+      "Extrapolate",
+      "BreakCriteria",
+      "AcceptNewtonParameter",
+      "NewtonPlotStep",
+      "ReadExtrapolation",
+      "StoreExtrapolation",
+      "NonlocalPath",
+      "SaveOptField",
+      "PlotBandstructure",
+      "PlotGain",
+      "PlotLEDRadiation",
+      "SpectralPlot"
+    ]
+  },
+  "DevicePower": {
+    "section": "Solve",
+    "signature": "DevicePower( AbsVal=<float> )",
+    "description": "定义基于器件总功耗的终止条件。当器件功耗的绝对值超过指定阈值时仿真停止。为 OuterDevicePower 的同义词。",
+    "parameters": [],
+    "keywords": [
+      "BreakCriteria",
+      "InnerDevicePower",
+      "OuterDevicePower",
+      "Quasistationary"
+    ]
+  },
+  "Current": {
+    "section": "Solve",
+    "signature": "Current = <float>",
+    "description": "为混合模式或准稳态仿真中的接触边界条件指定目标电流值。接触电压将被调整以达到指定电流。",
+    "parameters": [],
+    "keywords": [
+      "Quasistationary",
+      "Contact",
+      "Voltage",
+      "Goal"
+    ]
+  },
+  "ObservationNode": {
+    "section": "Solve",
+    "signature": "ObservationNode( <ident> ... )",
+    "description": "指定交流耦合仿真中计算噪声功率谱密度或偏差分析的电路节点。必须是 ACCoupled 语句 Node 参数中所列节点的子集。",
+    "parameters": [],
+    "keywords": [
+      "ACCoupled",
+      "Noise",
+      "NoisePlot",
+      "ACExtract",
+      "sIFM"
+    ]
+  },
+  "Sweep": {
+    "section": "Solve",
+    "signature": "Sweep( <specifications> )",
+    "description": "定义准稳态或瞬态仿真的参数扫描。可指定扫描特定的终止条件以控制各个扫描步骤的终止。",
+    "parameters": [],
+    "keywords": [
+      "Quasistationary",
+      "Transient",
+      "BreakCriteria",
+      "Goal"
+    ]
+  },
+  "MSConfigs": {
+    "section": "Solve",
+    "signature": "MSConfigs (Frozen | MSConfig(Device=<string> Name=<string> State(Name=<string> Value=<float>)...))",
+    "description": "在仿真期间操作多态配置(MSC)，用于 Solve 段的 Set() 中。允许冻结 MSC 或通过器件名和状态名设置特定 MSC 状态的占据数。",
+    "parameters": [],
+    "keywords": [
+      "Frozen",
+      "MSConfig",
+      "Device",
+      "Name",
+      "State",
+      "Value"
+    ]
+  },
+  "Integrate": {
+    "section": "Solve",
+    "signature": "Integrate (<domain>)",
+    "description": "在 CurrentPlot 段中计算指定物理量在某个域上的空间积分。域可以是区域、材料、半导体或全局。将积分值输出到当前绘图文件。也用于 Math 段中跟踪额外数据。",
+    "parameters": [],
+    "keywords": [
+      "Average",
+      "Maximum",
+      "Minimum",
+      "Region",
+      "Material",
+      "Semiconductor",
+      "Everywhere",
+      "CurrentPlot"
+    ]
+  },
+  "Condition": {
+    "section": "Solve",
+    "signature": "Condition = <string>",
+    "description": "在 BreakCriteria{} 中，定义一个布尔 Tcl 表达式作为终止仿真的终止条件。在 Select() 中用于光谱文件时，定义一个布尔表达式以选择多维光谱的子集。",
+    "parameters": [
+      "<string>"
+    ],
+    "keywords": [
+      "BreakCriteria",
+      "Select",
+      "Spectrum"
+    ]
+  },
+  "CurrentDensity": {
+    "section": "Solve",
+    "signature": "CurrentDensity(DevName=<ident>, maxval=<float>)",
+    "description": "在 BreakCriteria{} 中，定义基于电流密度 (A/cm^2) 的终止条件。当电流密度超过指定最大值时仿真停止。DevName 在混合模式仿真中标识器件。",
+    "parameters": [
+      "DevName",
+      "maxval"
+    ],
+    "keywords": [
+      "BreakCriteria",
+      "Solve",
+      "MixedMode"
+    ]
+  },
+  "i": {
+    "section": "Solve",
+    "signature": "i",
+    "description": "单字母限定符，表示交流或谐波平衡分析中复数量的虚部。用于 System{} 和 Plot{} 段中引用电压、电流或其他复变量的虚部分量。",
+    "parameters": [],
+    "keywords": [
+      "AC",
+      "HarmonicBalance",
+      "Complex"
+    ]
+  },
+  "InnerDevicePower": {
+    "section": "Solve",
+    "signature": "InnerDevicePower(Absval=<float>) | InnerDevicePower(maxval=<float>, minval=<float>)",
+    "description": "在 BreakCriteria{} 中，定义基于内部器件功耗 (W/um^d) 的终止条件。当内部器件功耗超过指定限值时仿真停止。语法与 DevicePower 镜像，但仅计算内部功耗。",
+    "parameters": [
+      "Absval",
+      "maxval",
+      "minval",
+      "DevName"
+    ],
+    "keywords": [
+      "BreakCriteria",
+      "Power",
+      "Solve"
+    ]
+  },
+  "Node": {
+    "section": "Solve",
+    "signature": "Node = <ident>",
+    "description": "在混合模式电路仿真中，按名称引用电路节点。用于 BreakCriteria{Current(Node=<ident>)} 定义特定电路节点上的终止条件，以及在 System{} 中进行节点电压/电流指定。",
+    "parameters": [
+      "<ident>"
+    ],
+    "keywords": [
+      "MixedMode",
+      "Circuit",
+      "BreakCriteria"
+    ]
+  },
+  "Unset": {
+    "section": "Solve",
+    "signature": "Unset(<ident>...) | Unset(TrapFilling)",
+    "description": "在 Solve{} 中，取消设置电路节点，将其从器件电极断开。使用 TrapFilling 选项时，恢复为标准陷阱方程（禁用显式陷阱占据）。用于混合模式仿真中的动态电路拓扑变更。",
+    "parameters": [
+      "TrapFilling"
+    ],
+    "keywords": [
+      "MixedMode",
+      "Circuit",
+      "Node",
+      "Traps"
+    ]
+  },
+  "Voltage": {
+    "section": "Solve",
+    "signature": "Voltage(absval=<float>, maxval=<float>, minval=<float>, contact=<string>, Node=<ident>, DevName=<ident>)",
+    "description": "在 BreakCriteria{} 中，定义电压终止条件。当接触或电路节点上的电压超过指定限值时仿真停止。使用与 Current 相同的语法来指定接触、节点和器件标识符。",
+    "parameters": [
+      "absval",
+      "maxval",
+      "minval",
+      "contact",
+      "Node",
+      "DevName"
+    ],
+    "keywords": [
+      "BreakCriteria",
+      "Solve",
+      "MixedMode"
+    ]
+  },
+  "When": {
+    "section": "Solve",
+    "signature": "When { <statements> }",
+    "description": "在 Solve{} 中，定义求解命令的条件执行。包含的语句仅在关联条件（通常在 BreakCriteria 中定义）满足时执行。用于自适应仿真策略和模式切换。",
+    "parameters": [],
+    "keywords": [
+      "Solve",
+      "Condition",
+      "Adaptive"
+    ]
+  },
+  "DopingWells": {
+    "section": "Solve",
+    "signature": "DopingWells([Region=<string> | Material=<string> | Semiconductor] [(x1 y1 z1) (x2 y2 z2)])",
+    "description": "Solve 段中的多阱扫描功能。允许同时扫描指定区域、材料或所有半导体阱中所有掺杂阱的准费米势。在 Set() 和 Goal() 中使用，用于在准稳态仿真期间设置或扫描多个量子阱中的电子/空穴准费米能级。",
+    "parameters": [],
+    "keywords": [
+      "Region",
+      "Material",
+      "Semiconductor",
+      "eQuasiFermi",
+      "hQuasiFermi",
+      "Set",
+      "Goal",
+      "Quasistationary",
+      "DopingWell"
+    ]
+  },
+  "HydrogenAtom": {
+    "section": "Solve",
+    "signature": "HydrogenAtom",
+    "description": "Solve 段 Coupled 语句中的氢原子输运物种关键字。激活氢原子的漂移扩散方程。参数（扩散系数、激活能等）在参数文件的 HydrogenDiffusion 段中设置。氢原子密度可以绘制，浓度可通过 Set() 设置。支持 PMI 接口用于扩散系数和 alpha 参数。",
+    "parameters": [],
+    "keywords": [
+      "HydrogenDiffusion",
+      "HydrogenMolecule",
+      "HydrogenIon",
+      "HydrogenSpeciesA",
+      "HydrogenSpeciesB",
+      "HydrogenSpeciesC",
+      "Coupled",
+      "Transient",
+      "d0",
+      "Ed",
+      "n0",
+      "krec",
+      "Charge",
+      "Hydrogen"
+    ]
+  },
+  "EquilibriumSolution": {
+    "section": "Solve",
+    "signature": "EquilibriumSolution( <options> )",
+    "description": "控制施加偏置前的初始平衡态解计算。指定牛顿迭代参数、误差控制和线搜索阻尼。",
+    "parameters": [],
+    "keywords": [
+      "Newton",
+      "convergence",
+      "initial solution",
+      "equilibrium",
+      "error control"
+    ]
+  },
+  "OuterDevicePower": {
+    "section": "Solve",
+    "signature": "OuterDevicePower( Absval = <float> )",
+    "description": "定义基于外部（耗散）器件功耗的终止条件。当外部功耗的绝对值超过指定阈值时仿真停止。为 DevicePower 的同义词。",
+    "parameters": [],
+    "keywords": [
+      "break criterion",
+      "power",
+      "convergence",
+      "dissipation"
+    ]
+  },
+  "ACCompute": {
+    "section": "Solve",
+    "signature": "ACCompute( Time = (<float>; ...) )",
+    "description": "控制准稳态或瞬态扫描中交流或噪声分析的执行。指定在哪些偏置点执行交流分析，通过避免不必要的交流计算来降低计算成本。",
+    "parameters": [],
+    "keywords": [
+      "AC analysis",
+      "noise",
+      "small-signal",
+      "quasistationary",
+      "transient"
+    ]
+  },
+  "Blocked": {
+    "section": "Solve",
+    "signature": "ACMethod = Blocked",
+    "description": "使用 Blocked 求解器进行小信号交流分析。Blocked 方法采用块分解来求解交流耦合系统，对某些器件配置可能更高效。",
+    "keywords": [
+      "ACCoupled",
+      "ACSubMethod",
+      "ACCompute"
+    ]
+  },
+  "Circuit": {
+    "section": "Solve",
+    "signature": "Circuit",
+    "description": "混合模式仿真中求解的电路方程。在 Load 中指定时，从先前仿真加载电路状态。在方程表（表 342）中，代表紧凑电路方程，参考值为 0.0258 V，相对误差容差为 1e-3。",
+    "keywords": [
+      "System",
+      "Coupled",
+      "Plugin",
+      "Quasistationary"
+    ]
+  },
+  "Newton": {
+    "section": "Solve",
+    "signature": "Coupled ( <options> ) { ... }",
+    "description": "耦合方程系统的牛顿(Newton)求解方法。通过 Solve 段中的 Coupled() 指定，使用牛顿-拉夫森(Newton-Raphson)迭代同时求解所有选定方程。通过 AcceptNewtonParameter 支持松弛牛顿，通过 Math 段的误差准则控制收敛。",
+    "keywords": [
+      "Coupled",
+      "Plugin",
+      "Quasistationary",
+      "Transient",
+      "Error",
+      "ErrRef"
+    ]
+  },
+  "Poisson": {
+    "section": "Solve",
+    "signature": "Poisson",
+    "description": "静电势的泊松方程，作为耦合系统的一部分求解。在 Solve{} 段中，将泊松方程指定为待求解方程。默认误差参考值为 0.0258 V（300 K 时的热电压）。",
+    "keywords": [
+      "Potential",
+      "Electron",
+      "Hole",
+      "Coupled",
+      "Circuit"
+    ]
+  },
+  "eSHEDistributionPlot": {
+    "section": "Plot",
+    "signature": "eSHEDistributionPlot { <vector>... }",
+    "description": "绘制球谐展开(SHE)方法在指定空间位置处的电子能量分布。用于可视化热载流子分布。",
+    "parameters": [
+      {
+        "name": "<vector>",
+        "type": "float",
+        "desc": "评估电子分布函数的空间坐标 (x y z)。"
+      }
+    ],
+    "example": "eSHEDistributionPlot {\n  (0.1 0.0 0.0)\n  (0.2 0.0 0.0)\n}",
+    "keywords": []
+  },
+  "CurrentPlot": {
+    "section": "Plot",
+    "signature": "CurrentPlot { <plot_variables> }",
+    "description": "指定将哪些电流相关量写入电流绘图(.plt)文件。控制仿真过程中端电流、接触电流和积分量的输出。",
+    "parameters": [],
+    "keywords": [
+      "Current",
+      "File",
+      "Plot"
+    ]
+  },
+  "hSHEDistributionPlot": {
+    "section": "Plot",
+    "signature": "hSHEDistributionPlot { <vector>... }",
+    "description": "绘制球谐展开(SHE)方法在指定空间位置处的空穴能量分布。用于可视化空穴的热载流子分布。",
+    "parameters": [
+      {
+        "name": "<vector>",
+        "type": "float",
+        "desc": "评估空穴分布函数的空间坐标 (x y z)。"
+      }
+    ],
+    "example": "hSHEDistributionPlot {\n  (0.1 0.0 0.0)\n}",
+    "keywords": []
+  },
+  "FarFieldPlot": {
+    "section": "Plot",
+    "signature": "FarFieldPlot { }",
+    "description": "为光学仿真生成远场辐射方向图，通常用于 LED 或 VCSEL 器件仿真以可视化角向发射特性。",
+    "parameters": [],
+    "example": "FarFieldPlot {\n}",
+    "keywords": []
+  },
+  "Plot": {
+    "section": "Plot",
+    "signature": "Plot { <dataset_list> }",
+    "description": "指定输出 TDR 绘图文件中包含的数据集。支持求解变量（如 ElectricField、eDensity、Potential）、光学量、陷阱分布、氢物种和导出量。输出文件名由 File 节的 Plot 关键词指定。",
+    "parameters": [],
+    "keywords": [
+      "ElectricField",
+      "eDensity",
+      "hDensity",
+      "Potential",
+      "SpaceCharge",
+      "eQuasiFermi",
+      "hQuasiFermi",
+      "eCurrentDensity",
+      "hCurrentDensity",
+      "OpticalGeneration",
+      "Doping",
+      "Bandgap",
+      "RayTrees",
+      "File"
+    ]
+  },
+  "BandstructurePlot": {
+    "section": "Plot",
+    "signature": "BandstructurePlot { }",
+    "description": "在 LED 仿真中绘制局部能带结构数据。输出文件使用 File { Bandstructure=... } 中指定的基本文件名，并附加顶点坐标和文件扩展名。",
+    "parameters": [],
+    "example": "BandstructurePlot {\n}",
+    "keywords": []
+  },
+  "VCSELNearFieldPlot": {
+    "section": "Plot",
+    "signature": "VCSELNearFieldPlot { }",
+    "description": "为 VCSEL（垂直腔面发射激光器）器件仿真生成近场光强图。",
+    "parameters": [],
+    "example": "VCSELNearFieldPlot {\n}",
+    "keywords": []
+  },
+  "NonLocalPlot": {
+    "section": "Plot",
+    "signature": "NonLocalPlot (<vector>...) { EigenEnergy | WaveFunction | OverlapIntegral }",
+    "description": "绘制定义在非局部线网格上的数据，包括来自一维薛定谔方程求解的本征能级、波函数和重叠积分。",
+    "parameters": [
+      {
+        "name": "<vector>",
+        "type": "float",
+        "desc": "定义非局部评估路径的空间坐标。"
+      },
+      {
+        "name": "EigenEnergy",
+        "type": "string",
+        "desc": "绘制薛定谔求解器的本征能级。"
+      },
+      {
+        "name": "WaveFunction",
+        "type": "string",
+        "desc": "绘制波函数（可选 Electron/Hole 和 Number 限制）。"
+      },
+      {
+        "name": "OverlapIntegral",
+        "type": "string",
+        "desc": "绘制薛定谔求解器的重叠积分。"
+      }
+    ],
+    "example": "NonLocalPlot (0.0 0.0 0.0) (0.1 0.0 0.0) {\n  EigenEnergy (Electron)\n  WaveFunction (Electron Number=3)\n}",
+    "keywords": [
+      "EigenEnergy",
+      "WaveFunction",
+      "OverlapIntegral",
+      "Electron",
+      "Hole",
+      "Number"
+    ]
+  },
+  "TensorPlot": {
+    "section": "Plot",
+    "signature": "TensorPlot { ComplexRefractiveIndex | OpticalField | OpticalIntensity Name=<string> }",
+    "description": "在光束传播法(BPM)的固有张量网格上绘制张量数据。用于可视化复折射率、光场和光强分布。",
+    "parameters": [
+      {
+        "name": "Name",
+        "type": "string",
+        "desc": "张量绘图名称，附加到 File 节的基本文件名之后。"
+      },
+      {
+        "name": "Xmin/Xmax",
+        "type": "float",
+        "desc": "x 坐标范围（最小/最大值），单位 um。"
+      },
+      {
+        "name": "Ymin/Ymax",
+        "type": "float",
+        "desc": "y 坐标范围（最小/最大值），单位 um。"
+      },
+      {
+        "name": "Zmin/Zmax",
+        "type": "float",
+        "desc": "z 坐标范围（最小/最大值），单位 um。"
+      },
+      {
+        "name": "OutputLevel",
+        "type": "string",
+        "desc": "设置为 'maximum' 可在双向 BPM 的每次迭代后生成绘图。"
+      }
+    ],
+    "example": "TensorPlot {\n  OpticalIntensity\n  Name=\"field_intensity\"\n  Xmin=0.0 Xmax=5.0\n  Ymin=-2.0 Ymax=2.0\n}",
+    "keywords": [
+      "ComplexRefractiveIndex",
+      "OpticalField",
+      "OpticalIntensity",
+      "Name",
+      "OutputLevel",
+      "Xmin",
+      "Xmax",
+      "Ymin",
+      "Ymax",
+      "Zmin",
+      "Zmax",
+      "Xconst",
+      "Yconst",
+      "Zconst"
+    ]
+  },
+  "GainPlot": {
+    "section": "Plot",
+    "signature": "GainPlot { Intervals=<int> Range=(<float>*2) }",
+    "description": "配置 LED 仿真中增益光谱图的参数，包括能量范围和每条增益曲线的数据点数。",
+    "parameters": [
+      {
+        "name": "Intervals",
+        "type": "int",
+        "desc": "每条增益曲线的绘制点数。"
+      },
+      {
+        "name": "Range",
+        "type": "float",
+        "desc": "能量范围，单位 eV，格式为 (Emin, Emax)，或 'Auto' 自动检测范围。"
+      }
+    ],
+    "example": "GainPlot {\n  Intervals=200\n  Range=(0.5 2.0)\n}",
+    "keywords": [
+      "Intervals",
+      "Range",
+      "Auto"
+    ]
+  },
+  "TrappedCarDistrPlot": {
+    "section": "Plot",
+    "signature": "TrappedCarDistrPlot { <vector> | Location { ... } }",
+    "description": "在指定位置或指定区域（材料、区域等）绘制陷阱载流子电荷分布。用于可视化陷阱占据率和电荷密度。",
+    "parameters": [
+      {
+        "name": "<vector>",
+        "type": "float",
+        "desc": "评估陷阱载流子电荷的空间坐标 (x y z)。"
+      },
+      {
+        "name": "Location",
+        "type": "string",
+        "desc": "将绘图限制在指定位置（表 362）：Material、Region、MaterialInterface、RegionInterface、Everywhere、Semiconductor、Insulator、Window。"
+      }
+    ],
+    "example": "TrappedCarDistrPlot {\n  (0.05 0.0 0.0)\n}\nTrappedCarDistrPlot {\n  Material=\"Oxide\"\n}",
+    "keywords": [
+      "Material",
+      "Region",
+      "MaterialInterface",
+      "RegionInterface",
+      "Everywhere",
+      "Semiconductor",
+      "Insulator",
+      "Window",
+      "Coordinates",
+      "DopingWell",
+      "Name"
+    ]
+  },
+  "NoisePlot": {
+    "section": "Plot",
+    "signature": "NoisePlot { <dataset> | AllLNS | AllLNVSD | GreenFunctions }",
+    "description": "指定要绘制的噪声输出数据，包括标量/矢量数据集、局部噪声源、局部噪声电压谱密度和格林函数。",
+    "parameters": [
+      {
+        "name": "AllLNS",
+        "type": "string",
+        "desc": "绘制所有使用的局部噪声源。"
+      },
+      {
+        "name": "AllLNVSD",
+        "type": "string",
+        "desc": "绘制所有使用的局部噪声电压谱密度。"
+      },
+      {
+        "name": "AllLNVXVSD",
+        "type": "string",
+        "desc": "绘制所有使用的局部噪声电压互相关谱密度。"
+      },
+      {
+        "name": "GreenFunctions",
+        "type": "string",
+        "desc": "绘制所有使用的格林函数及其梯度。"
+      }
+    ],
+    "example": "NoisePlot {\n  AllLNS\n  GreenFunctions\n}",
+    "keywords": [
+      "AllLNS",
+      "AllLNVSD",
+      "AllLNVXVSD",
+      "GreenFunctions"
+    ]
+  },
+  "PlotGainPara": {
+    "section": "Plot",
+    "signature": "PlotGainPara { }",
+    "description": "在 LED 或激光器仿真中绘制增益参数，提供模增益和材料增益数据用于分析。",
+    "parameters": [],
+    "example": "PlotGainPara {\n}",
+    "keywords": []
+  },
+  "PrintORArays": {
+    "section": "Plot",
+    "signature": "PrintORArays",
+    "description": "输出光线数据用于可视化和分析。将光学仿真（光线追踪）中的光线信息打印到输出文件，用于后处理或调试。",
+    "parameters": [],
+    "keywords": [
+      "RayTracing",
+      "Optics",
+      "Print"
+    ]
+  },
+  "HBPlot": {
+    "section": "Plot",
+    "signature": "HBPlot (<int>|order=<int> dataname [<list>])",
+    "description": "指定从谐波平衡(HB)仿真中绘制的量。控制频域(HB_F)和时域(HB_T)中电路电流和电压的输出。支持按谐波阶数和数据集名称过滤。用于 Plot 节和 System 节中的电路量。",
+    "parameters": [],
+    "keywords": [
+      "HB",
+      "HBCoupled",
+      "dataname",
+      "order",
+      "HBPlotFilePerNewton",
+      "HB_F",
+      "HB_T"
+    ]
+  },
+  "time": {
+    "section": "Plot",
+    "signature": "time <dataset_name>",
+    "description": "在 Plot 节中，将时间变量指定为绘图数据集。时间数据集在瞬态仿真中自动可用，可在 Sentaurus Visual 中与其他量一起绘制。",
+    "parameters": [
+      "<dataset_name>"
+    ],
+    "keywords": [
+      "Plot",
+      "Transient",
+      "Dataset"
+    ]
+  },
+  "ActiveVertex": {
+    "section": "Plot",
+    "signature": "Print(ActiveVertex(<int>))",
+    "description": "在 RayTrace 节的 Print() 内部使用，将光线路径输出限制为仅来自指定活动顶点的光线。整数参数指定活动顶点的全局索引。",
+    "parameters": [],
+    "keywords": [
+      "Print",
+      "RayTrace",
+      "LED",
+      "Skip"
+    ]
+  },
+  "hSHEDistribution": {
+    "section": "Plot",
+    "signature": "hSHEDistributionPlot { <vector>... }",
+    "description": "指定绘制球谐展开(SHE)方法空穴能量分布的顶点位置。分布数据输出到 .plt 文件。",
+    "parameters": [],
+    "keywords": [
+      "SHE",
+      "hot-carrier",
+      "energy distribution"
+    ]
+  },
+  "Print": {
+    "section": "Plot",
+    "signature": "Print",
+    "description": "控制将仿真信息打印到日志文件或当前绘图。用于多种场景，包括光线追踪（在输出 .tdr 文件中创建光线树）和一般诊断。",
+    "parameters": [],
+    "keywords": [
+      "log",
+      "output",
+      "diagnostics"
+    ]
+  },
+  "NonlocalPlot": {
+    "section": "Plot",
+    "signature": "NonlocalPlot",
+    "description": "控制非局部隧穿路径和带间隧穿数据的输出，用于可视化和分析。",
+    "parameters": [],
+    "keywords": [
+      "NonLocal",
+      "NonLocalPath",
+      "BarrierTunneling"
+    ]
+  },
+  "System": {
+    "section": "System",
+    "signature": "System { <circuit_specifications> }",
+    "description": "定义命令文件的电路（混合模式）节。实例化器件模型、将电极连接到电路节点、指定网表并控制电路量的绘制。",
+    "parameters": [],
+    "keywords": [
+      "mixed mode",
+      "circuit",
+      "device instance",
+      "netlist",
+      "SPICE",
+      "electrical"
+    ]
+  },
+  "Isource_pset": {
+    "section": "System",
+    "signature": "Isource_pset <instance_name> (<node0> <node1>) { <parameters> }",
+    "description": "在 System 节中声明 SPICE 电流源实例，用于混合模式仿真。电流从 node0 注入到 node1。支持直流、交流、脉冲、分段线性和正弦波形规范。默认参数集 Isource_pset 提供标准 SPICE 电流源参数。",
+    "parameters": [
+      {
+        "name": "dc",
+        "type": "float",
+        "desc": "直流电流值 (A)"
+      },
+      {
+        "name": "ac",
+        "type": "float",
+        "desc": "小信号分析的交流电流幅值"
+      },
+      {
+        "name": "pulse",
+        "type": "string",
+        "desc": "脉冲波形：pulse=(i1 i2 td tr tf pw period)"
+      },
+      {
+        "name": "pwl",
+        "type": "string",
+        "desc": "分段线性波形：pwl=(t1 i1 t2 i2 ...)"
+      },
+      {
+        "name": "sine",
+        "type": "string",
+        "desc": "正弦波形：sine=(vo va freq td theta phi)"
+      }
+    ],
+    "example": "System {\n  Isource_pset i1 (node_a 0) { dc = 1e-3 }\n  Isource_pset i2 (n1 n2) { sine = (0 5e-3 1e6 0 0 0) }\n}",
+    "keywords": [
+      "dc",
+      "ac",
+      "pulse",
+      "pwl",
+      "sine",
+      "sffm",
+      "exp"
+    ]
+  },
+  "VCVS_pset": {
+    "section": "System",
+    "signature": "VCVS_pset <instance_name> (<out+> <out-> <in+> <in->) { <parameters> }",
+    "description": "在 System 节中声明压控电压源(VCVS)实例，用于混合模式仿真。out+ 与 out- 之间的输出电压等于增益乘以 in+ 与 in- 之间的电压差。默认参数集 VCVS_pset 提供标准 SPICE VCVS 参数。",
+    "parameters": [
+      {
+        "name": "gain",
+        "type": "float",
+        "desc": "电压增益（默认：1）"
+      },
+      {
+        "name": "dc",
+        "type": "float",
+        "desc": "直流传递增益值"
+      },
+      {
+        "name": "ac",
+        "type": "float",
+        "desc": "小信号分析的交流传递增益"
+      }
+    ],
+    "example": "System {\n  VCVS_pset e1 (out 0 in 0) { gain = 10 }\n  VCVS_pset buf (n3 0 n1 0) { gain = 1 }\n}",
+    "keywords": [
+      "gain",
+      "dc",
+      "ac"
+    ]
+  },
+  "Resistor_pset": {
+    "section": "System",
+    "signature": "Resistor_pset <instance_name> (<node0> <node1>) { <parameters> }",
+    "description": "在 System 节中声明 SPICE 电阻实例，用于混合模式仿真。连接两个电路节点并具有指定电阻值。默认参数集 Resistor_pset 提供标准 SPICE 电阻参数。广泛用作接触电阻、负载电阻和热电阻。",
+    "parameters": [
+      {
+        "name": "resistance",
+        "type": "float",
+        "desc": "电阻值，单位欧姆（默认：1）"
+      },
+      {
+        "name": "tc1",
+        "type": "float",
+        "desc": "一阶温度系数"
+      },
+      {
+        "name": "tc2",
+        "type": "float",
+        "desc": "二阶温度系数"
+      },
+      {
+        "name": "temp",
+        "type": "float",
+        "desc": "实例工作温度"
+      }
+    ],
+    "example": "System {\n  Resistor_pset r_load (drain 0) { resistance = 1000 }\n  Resistor_pset r1 (a 0) { resistance = 1 }\n  Resistor_pset ra (ta t300) { resistance = 1 }\n}",
+    "keywords": [
+      "resistance",
+      "tc1",
+      "tc2",
+      "temp",
+      "ac",
+      "noisy"
+    ]
+  },
+  "VCCS_pset": {
+    "section": "System",
+    "signature": "VCCS_pset <instance_name> (<out+> <out-> <in+> <in->) { <parameters> }",
+    "description": "在 System 节中声明压控电流源(VCCS)实例，用于混合模式仿真。从 out+ 到 out- 的输出电流等于跨导乘以 in+ 与 in- 之间的电压差。默认参数集 VCCS_pset 提供标准 SPICE VCCS 参数。",
+    "parameters": [
+      {
+        "name": "gain",
+        "type": "float",
+        "desc": "跨导增益，单位西门子（默认：1）"
+      },
+      {
+        "name": "dc",
+        "type": "float",
+        "desc": "直流传递值"
+      },
+      {
+        "name": "ac",
+        "type": "float",
+        "desc": "小信号分析的交流传递值"
+      }
+    ],
+    "example": "System {\n  VCCS_pset g1 (out 0 in 0) { gain = 0.01 }\n}",
+    "keywords": [
+      "gain",
+      "dc",
+      "ac"
+    ]
+  },
+  "Capacitor_pset": {
+    "section": "System",
+    "signature": "Capacitor_pset <instance_name> (<node0> <node1>) { <parameters> }",
+    "description": "在 System 节中声明 SPICE 电容实例，用于混合模式仿真。连接两个电路节点并具有指定电容值。默认参数集 Capacitor_pset 提供标准 SPICE 电容参数。用于耦合电容、旁路电容和电荷存储元件。",
+    "parameters": [
+      {
+        "name": "capacitance",
+        "type": "float",
+        "desc": "电容值，单位法拉（默认：1）"
+      },
+      {
+        "name": "ic",
+        "type": "float",
+        "desc": "电容两端初始电压"
+      },
+      {
+        "name": "tc1",
+        "type": "float",
+        "desc": "一阶温度系数"
+      },
+      {
+        "name": "tc2",
+        "type": "float",
+        "desc": "二阶温度系数"
+      }
+    ],
+    "example": "System {\n  Capacitor_pset c1 (node_a node_b) { capacitance = 1e-12 }\n  Capacitor_pset c2 (out 0) { capacitance = 100e-15 ic = 0.5 }\n}",
+    "keywords": [
+      "capacitance",
+      "ic",
+      "tc1",
+      "tc2",
+      "temp",
+      "noisy"
+    ]
+  },
+  "CCVS_pset": {
+    "section": "System",
+    "signature": "CCVS_pset <instance_name> ( <node+> <node-> ) { <parameters> }",
+    "description": "在 System 节中定义流控电压源(CCVS)紧凑模型实例。输出电压与流经指定检测元件的电流成正比。CCVS 遵循关系 V = gain * I_sense。",
+    "parameters": [
+      {
+        "name": "gain",
+        "type": "float",
+        "desc": "跨阻增益 [Ohm]，每单位检测电流对应的电压"
+      },
+      {
+        "name": "tc1",
+        "type": "float",
+        "desc": "增益的一阶温度系数"
+      },
+      {
+        "name": "tc2",
+        "type": "float",
+        "desc": "增益的二阶温度系数"
+      },
+      {
+        "name": "ic",
+        "type": "float",
+        "desc": "瞬态分析的初始条件（电压）"
+      },
+      {
+        "name": "temp",
+        "type": "float",
+        "desc": "实例工作温度 [C]"
+      }
+    ],
+    "example": "System {\n  Resistor_pset rsense (a b) { resistance = 1 }\n  CCVS_pset ccvs1 (out 0) { gain = 100 }\n}",
+    "keywords": [
+      "gain",
+      "tc1",
+      "tc2",
+      "ic",
+      "temp"
+    ]
+  },
+  "Diode_pset": {
+    "section": "System",
+    "signature": "Diode_pset <instance_name> ( <anode_node> <cathode_node> ) { <parameters> }",
+    "description": "在 System 节中定义二极管紧凑模型实例，用于混合模式电路仿真。二极管遵循 SPICE 二极管模型，参数包括饱和电流、串联电阻、结电容、渡越时间和击穿特性。",
+    "parameters": [
+      {
+        "name": "is",
+        "type": "float",
+        "desc": "饱和电流 [A]"
+      },
+      {
+        "name": "rs",
+        "type": "float",
+        "desc": "欧姆串联电阻 [Ohm]"
+      },
+      {
+        "name": "n",
+        "type": "float",
+        "desc": "发射系数（理想因子）"
+      },
+      {
+        "name": "cjo",
+        "type": "float",
+        "desc": "零偏结电容 [F]"
+      },
+      {
+        "name": "tt",
+        "type": "float",
+        "desc": "渡越时间 [s]"
+      },
+      {
+        "name": "bv",
+        "type": "float",
+        "desc": "反向击穿电压 [V]"
+      }
+    ],
+    "example": "System {\n  Diode_pset d1 (anode cathode) {\n    is = 1e-14\n    rs = 10\n    n = 1.0\n    cjo = 0.5p\n    tt = 10n\n    bv = 100\n  }\n}",
+    "keywords": [
+      "is",
+      "rs",
+      "n",
+      "cjo",
+      "tt",
+      "bv",
+      "ibv",
+      "vj",
+      "m",
+      "eg",
+      "xti",
+      "fc",
+      "temp"
+    ]
+  },
+  "Vsource_pset": {
+    "section": "System",
+    "signature": "Vsource_pset <instance_name> ( <node+> <node-> ) { <parameters> }",
+    "description": "在 System 节中定义电压源紧凑模型实例，用于混合模式电路仿真。支持直流、分段线性(PWL)、脉冲、正弦和指数波形。电压源连接在正节点与负节点（接地）之间。",
+    "parameters": [
+      {
+        "name": "dc",
+        "type": "float",
+        "desc": "直流电压值 [V]"
+      },
+      {
+        "name": "sine",
+        "type": "list",
+        "desc": "正弦波形参数：(V_offset V_amplitude freq t_delay phase)"
+      },
+      {
+        "name": "pulse",
+        "type": "list",
+        "desc": "脉冲波形参数：(V1 V2 t_delay t_rise t_fall t_on t_period)"
+      },
+      {
+        "name": "pwl",
+        "type": "list",
+        "desc": "分段线性波形：(t1 V1 t2 V2 ...)"
+      },
+      {
+        "name": "ac",
+        "type": "float",
+        "desc": "小信号交流分析的交流幅值 [V]"
+      },
+      {
+        "name": "temp",
+        "type": "float",
+        "desc": "实例工作温度 [C]"
+      }
+    ],
+    "example": "System {\n  Vsource_pset vdd (vdd 0) { dc = 3.3 }\n  Vsource_pset vin (in 0) { sine = (0 0.5 1e9 0 0) }\n}",
+    "keywords": [
+      "dc",
+      "ac",
+      "sine",
+      "pulse",
+      "pwl",
+      "exp",
+      "temp",
+      "ic"
+    ]
+  },
+  "ACPlot": {
+    "section": "System",
+    "signature": "ACPlot(<plot_command_list>)",
+    "description": "指定在 System 节的 AC 分析绘图文件中绘制哪些量。如果指定，给定量（求解变量、电流密度）将随每个 AC 节点电压激励和频率的 AC 响应数据一起绘制。未指定此语句时，仅绘制节点电压。",
+    "parameters": [],
+    "keywords": [
+      "System",
+      "ACCoupled",
+      "CurrentPlot",
+      "HBPlot"
+    ]
+  },
+  "OpticalDevice": {
+    "section": "global",
+    "signature": "OpticalDevice <string> { ... }",
+    "description": "为混合模式仿真和复合方法定义光学器件规格。使用与 Device 相同的子节（表 205）。",
+    "parameters": [
+      {
+        "name": "<string>",
+        "type": "string",
+        "desc": "光学器件名称。"
+      },
+      {
+        "name": "File",
+        "type": "string",
+        "desc": "输入和输出文件规格。"
+      },
+      {
+        "name": "Electrode",
+        "type": "string",
+        "desc": "电极边界条件。"
+      },
+      {
+        "name": "Physics",
+        "type": "string",
+        "desc": "物理模型。"
+      },
+      {
+        "name": "Plot",
+        "type": "string",
+        "desc": "绘图数据规格。"
+      }
+    ],
+    "example": "OpticalDevice \"OptDev1\" {\n  File {\n    Grid=\"opt_grid.tdr\"\n    Plot=\"opt_result\"\n  }\n}",
+    "keywords": [
+      "File",
+      "Electrode",
+      "Physics",
+      "Math",
+      "Plot",
+      "CurrentPlot",
+      "GainPlot",
+      "Thermode",
+      "eSHEDistributionPlot",
+      "hSHEDistributionPlot",
+      "Extraction",
+      "HydrogenBoundary",
+      "IFM",
+      "MonteCarlo",
+      "NoisePlot",
+      "NonLocalPlot",
+      "RayTraceBC",
+      "TensorPlot",
+      "TrappedCarDistrPlot"
+    ]
+  },
+  "HydrogenBoundary": {
+    "section": "global",
+    "signature": "HydrogenBoundary { Name=<string> <species>=<float>|reflective }",
+    "description": "指定退化模型中氢物种输运的边界条件。每个物种可具有固定边界浓度或反射（齐次诺伊曼）条件。",
+    "parameters": [
+      {
+        "name": "Name",
+        "type": "string",
+        "desc": "氢接触名称。"
+      },
+      {
+        "name": "HydrogenAtom",
+        "type": "float",
+        "desc": "边界浓度，单位 cm^-3，或 'reflective' 表示诺伊曼边界条件。"
+      },
+      {
+        "name": "HydrogenIon",
+        "type": "float",
+        "desc": "边界浓度，单位 cm^-3，或 'reflective' 表示诺伊曼边界条件。"
+      },
+      {
+        "name": "HydrogenMolecule",
+        "type": "float",
+        "desc": "边界浓度，单位 cm^-3，或 'reflective' 表示诺伊曼边界条件。"
+      },
+      {
+        "name": "HydrogenSpeciesA",
+        "type": "float",
+        "desc": "边界浓度，单位 cm^-3，或 'reflective' 表示诺伊曼边界条件。"
+      },
+      {
+        "name": "HydrogenSpeciesB",
+        "type": "float",
+        "desc": "边界浓度，单位 cm^-3，或 'reflective' 表示诺伊曼边界条件。"
+      }
+    ],
+    "example": "HydrogenBoundary {\n  Name=\"gate_oxide\"\n  HydrogenAtom=1e10\n  HydrogenMolecule=reflective\n}",
+    "keywords": [
+      "Name",
+      "HydrogenAtom",
+      "HydrogenIon",
+      "HydrogenMolecule",
+      "HydrogenSpeciesA",
+      "HydrogenSpeciesB",
+      "HydrogenSpeciesC"
+    ]
+  },
+  "Thermode": {
+    "section": "global",
+    "signature": "Thermode { Name=<string> Temperature=<float> }",
+    "description": "指定接触处的晶格温度热边界条件。支持固定温度、热通量和热接触电阻/热导模型。",
+    "parameters": [
+      {
+        "name": "Name",
+        "type": "string",
+        "desc": "热电极名称，或 Regexp(<pattern>) 用于正则表达式匹配。"
+      },
+      {
+        "name": "Temperature",
+        "type": "float",
+        "desc": "接触温度，单位 K。"
+      },
+      {
+        "name": "Power",
+        "type": "float",
+        "desc": "热通量边界条件，单位 W/cm^2。"
+      },
+      {
+        "name": "SurfaceConductance",
+        "type": "float",
+        "desc": "接触热导，单位 W/(cm^2*K)。"
+      },
+      {
+        "name": "SurfaceResistance",
+        "type": "float",
+        "desc": "接触热阻率，单位 (cm^2*K)/W。"
+      },
+      {
+        "name": "AreaFactor",
+        "type": "float",
+        "desc": "热通量乘数（默认 1）。"
+      }
+    ],
+    "example": "Thermode {\n  Name=\"substrate\"\n  Temperature=300\n}",
+    "keywords": [
+      "Name",
+      "Temperature",
+      "Power",
+      "SurfaceConductance",
+      "SurfaceResistance",
+      "AreaFactor"
+    ]
+  },
+  "MonteCarlo": {
+    "section": "global",
+    "signature": "MonteCarlo { <options> }",
+    "description": "配置蒙特卡洛粒子输运仿真。详细选项请参阅 Sentaurus Device Monte Carlo User Guide。",
+    "parameters": [
+      {
+        "name": "<options>",
+        "type": "string",
+        "desc": "蒙特卡洛仿真选项，详见 MC User Guide。"
+      }
+    ],
+    "example": "MonteCarlo {\n  * See Sentaurus Device Monte Carlo User Guide\n}",
+    "keywords": []
+  },
+  "Device": {
+    "section": "global",
+    "signature": "Device <string> { Electrode{...} File{...} Physics{...} ... }",
+    "description": "定义单器件或混合模式仿真中的器件。包含所有器件特定节，包括电极、物理模型、绘图、数值设置和文件输入/输出。",
+    "parameters": [
+      {
+        "name": "<string>",
+        "type": "string",
+        "desc": "器件名称，在混合模式 System 节中使用。"
+      },
+      {
+        "name": "File",
+        "type": "string",
+        "desc": "输入和输出文件规格（表 207）。"
+      },
+      {
+        "name": "Electrode",
+        "type": "string",
+        "desc": "电学边界条件（表 206）。"
+      },
+      {
+        "name": "Physics",
+        "type": "string",
+        "desc": "物理模型和材料参数（表 236）。"
+      },
+      {
+        "name": "Plot",
+        "type": "string",
+        "desc": "输出绘图数据集（表 334）。"
+      },
+      {
+        "name": "Math",
+        "type": "string",
+        "desc": "数值求解器设置（表 211）。"
+      }
+    ],
+    "example": "Device \"NMOS\" {\n  File {\n    Grid=\"nmos.tdr\"\n    Parameter=\"nmos.par\"\n  }\n  Electrode {\n    Name=\"source\" Voltage=0.0\n    Name=\"drain\" Voltage=0.0\n    Name=\"gate\" Voltage=0.0\n  }\n  Physics {\n    Mobility (DopingDependence)\n  }\n}",
+    "keywords": [
+      "File",
+      "Electrode",
+      "Physics",
+      "Math",
+      "Plot",
+      "CurrentPlot",
+      "Thermode",
+      "GainPlot",
+      "eSHEDistributionPlot",
+      "hSHEDistributionPlot",
+      "Extraction",
+      "HydrogenBoundary",
+      "IFM",
+      "MonteCarlo",
+      "NoisePlot",
+      "NonLocalPlot",
+      "RayTraceBC",
+      "TensorPlot",
+      "TrappedCarDistrPlot"
+    ]
+  },
+  "Regexp": {
+    "section": "global",
+    "signature": "Regexp( <string> )",
+    "description": "用于电极和热电极名称的正则表达式模式匹配。在 Electrode、Thermode 及其他边界条件节中使用，通过单一规格匹配多个结构接触。",
+    "parameters": [],
+    "keywords": [
+      "regular expression",
+      "electrode",
+      "thermode",
+      "contact",
+      "matching"
+    ]
+  },
+  "Electrode": {
+    "section": "Electrode",
+    "signature": "Electrode { Name=<string> Voltage=<float> }",
+    "description": "指定器件接触的电学边界条件，包括电压、电流或电荷边界条件，以及肖特基和电阻性接触模型。",
+    "parameters": [
+      {
+        "name": "Name",
+        "type": "string",
+        "desc": "电极名称，或 Regexp(<pattern>) 用于正则表达式匹配。"
+      },
+      {
+        "name": "Voltage",
+        "type": "float",
+        "desc": "接触电压，单位 V。也可使用 (val1 At val2, ...) 表示瞬态分段线性电压。"
+      },
+      {
+        "name": "Current",
+        "type": "float",
+        "desc": "电流边界条件，单位 A/um/d。电压仅用作初始猜测值。"
+      },
+      {
+        "name": "Charge",
+        "type": "float",
+        "desc": "浮体电极电荷，单位 C。不得同时指定 Voltage。"
+      },
+      {
+        "name": "Barrier",
+        "type": "float",
+        "desc": "势垒电压，单位 V。"
+      },
+      {
+        "name": "Material",
+        "type": "string",
+        "desc": "绝缘体上接触的电极材料。可包含掺杂规格（N=<val> 或 P=<val>）。"
+      }
+    ],
+    "example": "Electrode {\n  Name=\"gate\"\n  Voltage=0.0\n  Material=\"Aluminum\"\n}",
+    "keywords": [
+      "Name",
+      "Voltage",
+      "Current",
+      "Charge",
+      "Barrier",
+      "Material",
+      "AreaFactor",
+      "Schottky",
+      "Resist",
+      "DistResist",
+      "Workfunction",
+      "Poisson",
+      "EqOhmic",
+      "eRecVelocity",
+      "hRecVelocity",
+      "SRDoping",
+      "CyclicNorm",
+      "Extraction",
+      "FGcap",
+      "Power"
+    ]
+  },
+  "File": {
+    "section": "File",
+    "signature": "File { Grid=<string> Plot=<string> Current=<string> Output=<string> }",
+    "description": "指定输入和输出文件名。全局 File 节使用 (g) 关键词；器件级 File 节使用 (d) 关键词。支持网格文件、参数文件、绘图文件和多种专用输出类型。",
+    "parameters": [
+      {
+        "name": "Grid",
+        "type": "string",
+        "desc": "(d) 器件几何和网格文件（输入 .tdr，或 @tdr@）。"
+      },
+      {
+        "name": "Plot",
+        "type": "string",
+        "desc": "空间分布的仿真结果（输出 .tdr，@tdrdat@）。"
+      },
+      {
+        "name": "Current",
+        "type": "string",
+        "desc": "器件电流、电压、电荷、温度（输出 .plt，@plot@）。"
+      },
+      {
+        "name": "Output",
+        "type": "string",
+        "desc": "(g) 运行时日志文件（输出 .log，@log@）。默认为 'output'。"
+      },
+      {
+        "name": "Parameters",
+        "type": "string",
+        "desc": "(d) 器件参数文件（输入 .par，@parameter@）。"
+      },
+      {
+        "name": "Save",
+        "type": "string",
+        "desc": "仿真结果，用于通过 Load 恢复（输出 .sav）。"
+      }
+    ],
+    "example": "File {\n  Grid=\"nmos.tdr\"\n  Parameter=\"nmos.par\"\n  Plot=\"nmos_des\"\n  Current=\"nmos_plt\"\n  Output=\"nmos_log\"\n}",
+    "keywords": [
+      "Grid",
+      "Plot",
+      "Plot (collected)",
+      "Current",
+      "Output",
+      "Parameters",
+      "Save",
+      "Load",
+      "ParameterPath",
+      "PMIPath",
+      "SPICEPath",
+      "CMIPath",
+      "DevicePath",
+      "NewtonPlot",
+      "Extraction",
+      "ACExtract",
+      "Gain",
+      "EmissionTable",
+      "Bandstructure",
+      "OpticalGenerationInput",
+      "OpticalGenerationOutput",
+      "OpticalGenerationOutput (collected)",
+      "OpticalSolverInput",
+      "OpticsOutput",
+      "SpectralPlot",
+      "SpectralPlot(-collected)",
+      "TensorPlot",
+      "NonLocalPlot",
+      "eSHEDistribution",
+      "hSHEDistribution",
+      "TrappedCarPlotFile",
+      "DevFields",
+      "LifeTime",
+      "MobilityDoping",
+      "Piezo",
+      "PMIUserFields",
+      "CarrierPath",
+      "IonIntegral",
+      "MIMBand",
+      "MIMCurrent",
+      "MIMSensitivity",
+      "DephasingRates",
+      "IlluminationSpectrum",
+      "OpticalGenerationFile",
+      "MesherInput",
+      "SaveOptField",
+      "MIMBand"
+    ]
+  }
+}
