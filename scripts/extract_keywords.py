@@ -321,6 +321,14 @@ _SDEVICE_LITERAL_PROMOTIONS = frozenset({
     'Poisson', 'Electron', 'Hole',
     # Math solver algorithms (8)
     'Newton', 'TRBDF', 'BE', 'TE', 'Circuit', 'UCS', 'Blocked', 'Constant',
+    # Tier 2: Physical quantity names (20)
+    'eDensity', 'hDensity', 'eCurrent', 'hCurrent',
+    'eCurrentDensity', 'hCurrentDensity',
+    'TotalCurrent', 'DisplacementCurrent', 'SpaceCharge', 'Potential',
+    'eQuasiFermi', 'hQuasiFermi',
+    'eMobility', 'hMobility',
+    'eVelocity', 'hVelocity',
+    'eTemperature', 'hTemperature', 'eAvalanche', 'hAvalanche',
 })
 
 
