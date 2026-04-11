@@ -2,6 +2,7 @@ import os
 import re
 import xml.etree.ElementTree as ET
 import json
+import argparse
 from collections import defaultdict
 
 def extract_keywords_from_xml(file_path):
@@ -143,9 +144,13 @@ _NON_KEYWORD_SCOPES = {
     'string.quoted.double', 'variable.parameter', 'variable.other',
 }
 
-# Regex to parse keyword match patterns into (prefix, keywords_str, suffix)
-# Handles: \b(kws)\b, \b(kws)(?![A-Za-z0-9_:-]), (kws)
-_MATCH_PARSER = re.compile(r'^(\\b\(|\()(.*?)(\)(?:\\b|(?!\[A-Za-z0-9_:-\])?)$)')
+# Regex to parse keyword match patterns into (prefix, keywords_str).
+# Only extracts prefix and keyword alternation — suffix is supplied separately.
+_MATCH_PARSER = re.compile(r'^(\\b\(|\()([^)]+)')
+
+# All keyword patterns use this suffix to prevent prefix matching of longer identifiers.
+# E.g., without this, \b(h|...) would match the 'h' in 'hHighFieldSaturation'.
+_KW_PATTERN_SUFFIX = '(?![A-Za-z0-9_:-])'
 
 # Per-language scope → keyword type mapping
 # Only lists scopes that contain keyword-list patterns.
@@ -198,13 +203,13 @@ _DUPLICATE_SCOPE_MAP = {
 
 
 def _parse_match_pattern(match):
-    """Parse a keyword match pattern into (prefix, keywords_str, suffix).
+    """Parse a keyword match pattern into (prefix, keywords_str).
 
     Returns None if the pattern is not a keyword-list pattern.
     """
     m = _MATCH_PARSER.match(match)
     if m:
-        return m.group(1), m.group(2), m.group(3)
+        return m.group(1), m.group(2)
     return None
 
 
@@ -271,7 +276,7 @@ def update_grammar_incrementally(grammar_path, keywords, mode_name):
         if not parsed:
             continue
 
-        prefix, old_keywords_str, suffix = parsed
+        prefix, old_keywords_str = parsed
 
         # Resolve which keyword type this pattern represents
         kw_type = _resolve_kw_type(base_scope, scope_occurrence, scope_map, mode_name)
@@ -284,7 +289,7 @@ def update_grammar_incrementally(grammar_path, keywords, mode_name):
         # Build new keyword alternation (sorted for deterministic output)
         new_kw = sorted(keywords[kw_type])
         new_kw_str = '|'.join(re.escape(k) for k in new_kw)
-        new_match = f'{prefix}{new_kw_str}{suffix}'
+        new_match = f'{prefix}{new_kw_str}){_KW_PATTERN_SUFFIX}'
 
         old_count = old_keywords_str.count('|') + 1
         new_count = len(new_kw)
@@ -298,14 +303,147 @@ def update_grammar_incrementally(grammar_path, keywords, mode_name):
     return updated
 
 
+# ========== SDevice LITERAL → KEYWORD3 Promotion ==========
+
+# Tier 1 keywords: LITERAL words that semantically act as section-level
+# model/option names (entity.name.tag) rather than numeric constants.
+_SDEVICE_LITERAL_PROMOTIONS = frozenset({
+    # Physics model options (4)
+    'Thermodynamic', 'BandGap', 'Optical', 'Stress',
+    # Physics - Recombination models (5)
+    'SRH', 'Auger', 'Radiative', 'Band2Band', 'SurfaceSRH',
+    # Physics - Mobility models (6)
+    'DopingDependence', 'HighFieldSaturation', 'ConstantMobility', 'TempDependence',
+    'eHighFieldSaturation', 'hHighFieldSaturation',
+    # Physics - Tunneling/Doping (3)
+    'FowlerNordheim', 'DonorConcentration', 'AcceptorConcentration',
+    # Solve equation names (3)
+    'Poisson', 'Electron', 'Hole',
+    # Math solver algorithms (8)
+    'Newton', 'TRBDF', 'BE', 'TE', 'Circuit', 'UCS', 'Blocked', 'Constant',
+})
+
+
+def promote_literals(keywords, mode_name, promotions=None):
+    """Promote specified LITERAL keywords to KEYWORD3 for the given mode.
+
+    Iterates through ALL LITERAL levels (1/2/3) for each keyword,
+    removing it from every level where it appears, then adds it to KEYWORD3.
+    This avoids the previous bug where `break` caused partial removal for
+    keywords present in multiple LITERAL levels.
+
+    Args:
+        keywords: dict mapping category names to keyword lists/sets for one mode
+        mode_name: the mode identifier (e.g. 'sdevice')
+        promotions: set of keywords to promote; defaults to _SDEVICE_LITERAL_PROMOTIONS
+
+    Returns:
+        dict with promotion statistics, or None if mode not applicable
+    """
+    if mode_name != 'sdevice':
+        return None
+
+    if promotions is None:
+        promotions = _SDEVICE_LITERAL_PROMOTIONS
+
+    stats = {'promoted': [], 'literal_removed': defaultdict(int)}
+
+    for kw in sorted(promotions):
+        removed_from = []
+        # Must check ALL literal levels — do NOT break early
+        for literal_cat in ['LITERAL1', 'LITERAL2', 'LITERAL3']:
+            kw_set = keywords.get(literal_cat)
+            if kw_set is None:
+                continue
+            # Handle both set and list
+            if isinstance(kw_set, set):
+                if kw in kw_set:
+                    kw_set.discard(kw)
+                    removed_from.append(literal_cat)
+            elif isinstance(kw_set, list):
+                if kw in kw_set:
+                    kw_set.remove(kw)
+                    removed_from.append(literal_cat)
+
+        if removed_from:
+            # Add to KEYWORD3
+            kw3 = keywords.setdefault('KEYWORD3', set() if isinstance(keywords.get('KEYWORD3', set()), set) else [])
+            if isinstance(kw3, set):
+                kw3.add(kw)
+            else:
+                if kw not in kw3:
+                    kw3.append(kw)
+            for cat in removed_from:
+                stats['literal_removed'][cat] += 1
+            stats['promoted'].append({
+                'keyword': kw,
+                'from': removed_from,
+            })
+
+    return stats
+
+
 def main():
+    parser = argparse.ArgumentParser(description='Extract Sentaurus keywords and generate TextMate grammars')
+    parser.add_argument('--promote', action='store_true',
+                        help='Only apply LITERAL→KEYWORD3 promotion from existing all_keywords.json '
+                             '(skip XML extraction)')
+    args = parser.parse_args()
+
     modes_dir = 'd:\\pydemo\\modes'
     output_dir = 'd:\\pydemo\\sentaurus-tcad-syntax\\syntaxes'
 
+    if args.promote:
+        # --promote mode: read existing JSON, apply promotion, update grammar only
+        json_path = os.path.join(output_dir, 'all_keywords.json')
+        if not os.path.exists(json_path):
+            print(f"Error: {json_path} not found. Run full extraction first.")
+            return
+
+        with open(json_path, 'r', encoding='utf-8') as f:
+            all_keywords = json.load(f)
+
+        # Convert lists back to sets for set operations
+        for mode in all_keywords:
+            for cat in all_keywords[mode]:
+                all_keywords[mode][cat] = set(all_keywords[mode][cat])
+
+        # Apply promotion for sdevice
+        if 'sdevice' in all_keywords:
+            stats = promote_literals(all_keywords['sdevice'], 'sdevice')
+            if stats and stats['promoted']:
+                print(f"Promoted {len(stats['promoted'])} keywords:")
+                for entry in stats['promoted']:
+                    print(f"  {entry['keyword']}: {', '.join(entry['from'])} -> KEYWORD3")
+                for cat, count in sorted(stats['literal_removed'].items()):
+                    print(f"  {cat}: removed {count}")
+
+            # Save updated keywords
+            save_results_as_json(all_keywords, json_path)
+            print(f"Updated {json_path}")
+
+            # Update grammar
+            grammar_path = os.path.join(output_dir, 'sdevice.tmLanguage.json')
+            if os.path.exists(grammar_path):
+                changes = update_grammar_incrementally(
+                    grammar_path, all_keywords['sdevice'], 'sdevice'
+                )
+                print(f"Updated sdevice grammar: {len(changes)} patterns modified")
+                for change in changes:
+                    print(f"  - {change}")
+        return
+
+    # Default mode: full extraction from XML
     os.makedirs(output_dir, exist_ok=True)
 
     # Extract keywords from all XML files
     all_keywords = process_all_mode_files(modes_dir)
+
+    # Apply LITERAL promotion for sdevice before saving
+    if 'sdevice' in all_keywords:
+        stats = promote_literals(all_keywords['sdevice'], 'sdevice')
+        if stats and stats['promoted']:
+            print(f"Promoted {len(stats['promoted'])} LITERAL -> KEYWORD3 for sdevice")
 
     # Save all keywords to a JSON file for reference
     save_results_as_json(all_keywords, os.path.join(output_dir, 'all_keywords.json'))
