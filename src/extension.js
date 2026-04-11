@@ -1,6 +1,7 @@
 const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
+const defs = require('./definitions');
 
 /** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
 function decodeHtml(str) {
@@ -152,8 +153,25 @@ function activate(context) {
         const completionDisposable = vscode.languages.registerCompletionItemProvider(
             { language: langId },
             {
-                provideCompletionItems() {
-                    return items;
+                provideCompletionItems(document) {
+                    const userDefs = defs.getDefinitions(document, langId);
+                    if (userDefs.length === 0) return items;
+
+                    // 去重：跳过与静态关键词同名的用户变量
+                    const staticNames = new Set(items.map(it => it.label));
+                    const userItems = userDefs
+                        .filter(d => !staticNames.has(d.name))
+                        // 同名变量可能在多处定义，去重
+                        .filter((d, i, arr) => arr.findIndex(x => x.name === d.name) === i)
+                        .map(d => {
+                            const item = new vscode.CompletionItem(d.name, vscode.CompletionItemKind.Variable);
+                            item.detail = 'User Variable';
+                            item.sortText = '4' + d.name;
+                            item.documentation = new vscode.MarkdownString('```scheme\n' + d.definitionText + '\n```');
+                            return item;
+                        });
+
+                    return [...items, ...userItems];
                 },
             }
         );
@@ -167,13 +185,50 @@ function activate(context) {
                     const range = document.getWordRangeAtPosition(position, /[\w:.\-<>?!+*/=]+/);
                     if (!range) return null;
                     const word = document.getText(range);
+
+                    // 1. 查函数文档（优先）
                     const doc = funcDocs[word] || funcDocs[decodeHtml(word)];
-                    if (!doc) return null;
-                    return new vscode.Hover(formatDoc(doc), range);
+                    if (doc) return new vscode.Hover(formatDoc(doc), range);
+
+                    // 2. 查用户变量定义
+                    const userDefs = defs.getDefinitions(document, langId);
+                    const def = userDefs.find(d => d.name === word);
+                    if (def) {
+                        const md = new vscode.MarkdownString();
+                        md.appendMarkdown(`**${def.name}** (用户变量, 第 ${def.line} 行)\n\n`);
+                        md.appendCodeblock(def.definitionText, langId === 'sde' ? 'scheme' : 'tcl');
+                        return new vscode.Hover(md, range);
+                    }
+
+                    return null;
                 },
             }
         );
         context.subscriptions.push(hoverDisposable);
+
+        // Register DefinitionProvider for user-defined variables
+        const definitionDisposable = vscode.languages.registerDefinitionProvider(
+            { language: langId },
+            {
+                provideDefinition(document, position) {
+                    const range = document.getWordRangeAtPosition(position, /[\w:.\-<>?!+*/=]+/);
+                    if (!range) return null;
+                    const word = document.getText(range);
+
+                    const userDefs = defs.getDefinitions(document, langId);
+                    const def = userDefs.find(d => d.name === word);
+                    if (!def) return null;
+
+                    const targetLine = def.line - 1; // 0-indexed
+                    const lineLength = document.lineAt(targetLine).text.length;
+                    return new vscode.Location(
+                        document.uri,
+                        new vscode.Range(targetLine, 0, targetLine, lineLength)
+                    );
+                },
+            }
+        );
+        context.subscriptions.push(definitionDisposable);
     }
 }
 

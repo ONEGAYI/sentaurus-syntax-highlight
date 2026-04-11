@@ -47,6 +47,15 @@
 
 零原生依赖——运行在 VSCode Server 自带的 Node.js 上，兼容 GLIBC 2.17（CentOS 7）。
 
+### 用户变量支持（src/definitions.js）
+
+独立模块，零 VSCode API 依赖。提供用户自定义变量的补全、悬停和跳转定义功能。
+
+- **语言覆盖**：Scheme (sde) 的 `define`/`let/let*/letrec` 绑定；Tcl (其他 4 种) 的 `set`/`proc`
+- **缓存**：`document.version` 惰性缓存，同版本不重复扫描
+- **跨行处理**：`findBalancedExpression` 括号匹配算法，跳过字符串和注释内的括号
+- **测试**：`tests/test-definitions.js`，纯 Node.js `assert`，零依赖
+
 ### 关键词提取流程
 
 1. `scripts/extract_keywords.py` 读取包含 `<KEYWORD1>`..`<KEYWORD4>`、`<LITERAL1>`..`<LITERAL3>`、`<FUNCTION>` 标签的 XML mode 文件
@@ -94,7 +103,7 @@
 
 自动识别用户变量并添加到补全，两个路径:
 
-- 只进行 `(define Var Val)` 等关键语法的正则匹配，实时扫描实时添加到补全列表。
+- 只进行 `(define Var Val)` 等关键语法的正则匹配，实时扫描实时添加到补全列表。（当前）
 - 大改架构，引入语言服务器，采用 AST 获取变量及确定的语义，可跨文件 - 工作量巨大。
 
 ## 关键约束
