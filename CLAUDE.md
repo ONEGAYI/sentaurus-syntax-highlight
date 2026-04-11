@@ -86,7 +86,7 @@
 - **SDE 函数文档**（中英文双语）：`syntaxes/sde_function_docs.json`（400 个 KEYWORD1 API）
 - **Scheme 内置函数文档**（中英文双语）：`syntaxes/scheme_function_docs.json`（191 个 R5RS 标准函数）
 - **sdevice 命令文档**（英文默认）：`syntaxes/sdevice_command_docs.json`
-  覆盖全部 290 个 KEYWORD1+KEYWORD2+KEYWORD3 关键词（25+31+241=297 去重后 290 唯一条目）。
+  覆盖全部 339 个 KEYWORD1+KEYWORD2+KEYWORD3 关键词（25+31+290=346 去重后 339 唯一条目，含 2 个额外条目共 341 条）。
   中文版待翻译。格式在 SDE 基础上增强，新增 `section`（所属模块）和 `keywords`（子关键词列表）字段。
 
 ### 未来工作
