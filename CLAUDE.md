@@ -80,8 +80,14 @@
 
 ## 函数文档系统
 
-`src/extension.js` 的 Hover 和 Completion 提供器从 `syntaxes/sde_function_docs.json` 读取函数文档。
-当前已覆盖全部 400 个 SDE KEYWORD1 API 函数（详见 `docs/superpowers/specs/2026-04-10-sde-function-docs-plan.md`）。
+`src/extension.js` 的 Hover 和 Completion 提供器从 JSON 文件读取函数文档，合并到统一的 `funcDocs` 对象中。
+当前已覆盖：
+
+- **SDE 函数文档**（中英文双语）：`syntaxes/sde_function_docs.json`（400 个 KEYWORD1 API）
+- **Scheme 内置函数文档**（中英文双语）：`syntaxes/scheme_function_docs.json`（191 个 R5RS 标准函数）
+- **sdevice 命令文档**（英文默认）：`syntaxes/sdevice_command_docs.json`
+  覆盖全部 290 个 KEYWORD1+KEYWORD2+KEYWORD3 关键词（25+31+241=297 去重后 290 唯一条目）。
+  中文版待翻译。格式在 SDE 基础上增强，新增 `section`（所属模块）和 `keywords`（子关键词列表）字段。
 
 ### 未来工作
 
@@ -112,7 +118,7 @@
 - 提取脚本中的路径是硬编码的，跨环境使用前必须修改
 - `*.Identifier` 文件已被 gitignore
 - TextMate 语法模式遵循首匹配胜出规则——兜底模式必须放在最后
-- `*` 不作为注释字符（已移除）——在 TCAD 脚本中它是乘法运算符
+- release 语言风格需要与以前统一
 
 ## 语法简短说明
 

@@ -52,6 +52,10 @@ const DOC_LABELS = {
 function formatDoc(doc) {
     const lines = [];
     lines.push(`**${doc.signature}**`);
+    if (doc.section) {
+        lines.push('');
+        lines.push(`*Section: ${doc.section}*`);
+    }
     lines.push('');
     lines.push(doc.description);
     if (doc.parameters && doc.parameters.length) {
@@ -64,9 +68,15 @@ function formatDoc(doc) {
     if (doc.example) {
         lines.push('');
         lines.push(DOC_LABELS.example);
-        lines.push('```scheme');
+        // sdevice 使用 Tcl 语法，其他语言沿用 scheme
+        const lang = doc.section ? 'tcl' : 'scheme';
+        lines.push('```' + lang);
         lines.push(doc.example);
         lines.push('```');
+    }
+    if (doc.keywords && doc.keywords.length) {
+        lines.push('');
+        lines.push(`*Keywords: ${doc.keywords.join(', ')}*`);
     }
     return new vscode.MarkdownString(lines.join('\n'));
 }
@@ -140,6 +150,12 @@ function activate(context) {
     const schemeDocs = loadDocsJson('scheme_function_docs.json', useZh);
     if (schemeDocs) {
         Object.assign(funcDocs, schemeDocs);
+    }
+
+    // 加载 sdevice 命令文档并合并
+    const sdeviceDocs = loadDocsJson('sdevice_command_docs.json', useZh);
+    if (sdeviceDocs) {
+        Object.assign(funcDocs, sdeviceDocs);
     }
 
     const languages = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect'];
