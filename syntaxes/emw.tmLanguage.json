@@ -3,7 +3,7 @@
   "name": "Sentaurus EMW",
   "patterns": [
     {
-      "match": "\\b(CodeVExcitation|PECMedia|Detector|RTA|Acceleware|Monitor|Plot|DFT|TruncatedPlaneWaveExcitation|Sensor|Farfield|Globals|PMCMedia|Save|GaussianBeamExcitation|Extractor|DispersiveMedia|PlaneWaveExcitation|ComplexRefractiveIndex|Boundary)\\b",
+      "match": "\\b(CodeVExcitation|PECMedia|Detector|RTA|Acceleware|Monitor|Plot|DFT|TruncatedPlaneWaveExcitation|Sensor|Farfield|Globals|PMCMedia|Save|GaussianBeamExcitation|Extractor|DispersiveMedia|PlaneWaveExcitation|ComplexRefractiveIndex|Boundary)(?![A-Za-z0-9_:-])",
       "name": "keyword.control.emw"
     },
     {
