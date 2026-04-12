@@ -7,9 +7,10 @@
 | 功能 | 说明 |
 |------|------|
 | 语法高亮 | 关键字、函数、标签、常量、数值、变量等分色显示 |
-| 自动补全 | 输入时弹出关键词建议，按类别排序和标注图标，**SDE API 函数附带参数说明**，**用户自定义变量实时补全** |
-| 悬停提示 | 鼠标悬停在 SDE API 函数上显示函数签名、参数说明和示例代码；**用户变量显示定义文本** |
+| 自动补全 | 输入时弹出关键词建议，按类别排序和标注图标，**函数/命令附带参数说明**，**用户自定义变量实时补全** |
+| 悬停提示 | 鼠标悬停在函数/命令上显示签名、参数说明和示例代码；**用户变量显示定义文本** |
 | 跳转定义 | **F12 / Ctrl+Click 跳转到用户自定义变量的定义行** |
+| 代码片段 | **QuickPick 可视化菜单**（`Ctrl+Shift+P` → `Sentaurus: Insert Snippet`）按工具分类浏览和插入代码模板；**传统前缀+Tab 代码片段**按语言隔离 |
 | 注释识别 | `#`、`//` 通用注释；SDE 文件额外支持 `;`（Scheme 注释） |
 | SWB 变量 | 高亮 `@Var@`、`@param:+2@` 等 Sentaurus Workbench 参数替换语法 |
 | 括号匹配 | `{}` `[]` `()` 自动配对 |
@@ -30,9 +31,54 @@
 
 #### 函数悬停提示与补全文档
 
-覆盖全部 400 个 SDE KEYWORD1 API 函数（sdegeo、sde、sdedr、sdeicwb、sdepe、sdesnmesh、sdeio、sdeepi、sdesp），悬停时显示函数签名、参数说明和示例代码，补全列表附带详细文档。
+提供中英文双语悬停文档，根据 VSCode 语言环境自动切换：
+
+| 语言 | 文档覆盖 | 数量 |
+|------|----------|------|
+| **SDE** | KEYWORD1 API 函数（sdegeo、sde、sdedr、sdeicwb、sdepe、sdesnmesh、sdeio、sdeepi、sdesp） | 405 个 |
+| **SDE** | Scheme R5RS 内置函数（`define`、`let`、`lambda`、`map` 等） | 191 个 |
+| **SDEVICE** | KEYWORD1+KEYWORD2+KEYWORD3 命令（Physics、Solve、Plot、Math、System 等） | 341 个 |
+| SPROCESS / INSPECT / EMW | 关键词自动补全（无悬停文档） | — |
+
+悬停时显示函数签名、参数说明和示例代码，补全列表附带详细文档。
 
 ![效果演示-语法文档](<assets/pics/vscode 插件效果演示 - 语法文档+汉化适配.png>)
+
+### 代码片段（Snippets）
+
+#### QuickPick 可视化菜单
+
+通过命令面板浏览和插入代码模板：
+
+1. `Ctrl+Shift+P`（macOS: `Cmd+Shift+P`）打开命令面板
+2. 输入 `Sentaurus: Insert Snippet` 并回车
+3. 选择工具分类（如 `Sentaurus-StructEditor`）
+4. 选择子分类（如 `Contact`、`Doping`、`Meshing`）
+5. 选择具体模板插入，支持 Tab 键跳转占位符
+
+各层均支持 `← Back` 返回上一级，按 `Esc` 退出。
+
+当前覆盖 5 种工具共 85 个模板：
+
+| 工具 | 分类 | 模板数 |
+|------|------|--------|
+| SDE (StructEditor) | Contact、Doping、Meshing | 11 |
+| SDEVICE | CurrentPlot、Electrode、File、Math、Physics、Plot、Solve、System | 43 |
+| SPROCESS | Deposit、Diffuse、Etch、Implant、ICWB、Init、Mask、Photo、MeshGoals、RefineBox、Struct | 25 |
+| INSPECT | Curve、Extract | 8 |
+| Mesh (EMW) | EMW | 2 |
+
+![QuickPick-代码片段选单](<assets/pics/vscode 插件效果演示 - QuickPick 代码片段选单.gif>)
+
+#### 传统前缀+Tab 代码片段
+
+插件注册了各语言的 snippet 文件，用户可通过以下方式自定义：
+
+1. `Ctrl+Shift+P` → `Preferences: Configure User Snippets`
+2. 选择对应语言（如 `sde`、`sdevice`、`sprocess`、`emw`、`inspect`）
+3. 在打开的 JSON 文件中添加自定义片段
+
+> 多种语言共用 `.cmd` 扩展名，但 VSCode 根据 `filenamePatterns` 将文件关联到不同的 language ID，snippets 自动按 language ID 隔离，不会冲突。
 
 ## 安装
 
@@ -42,7 +88,7 @@
 
 ```bash
 # 安装 / 升级
-code --install-extension sentaurus-tcad-syntax-0.4.0.vsix
+code --install-extension sentaurus-tcad-syntax-0.6.0.vsix
 
 # 卸载
 code --uninstall-extension onegayi.sentaurus-tcad-syntax
@@ -55,11 +101,11 @@ code --uninstall-extension onegayi.sentaurus-tcad-syntax
 将扩展文件夹**重命名**为 `publisher.extension-name-version` 格式后复制到 VSCode 扩展目录，然后重启 VSCode：
 
 ```
-sentaurus-syntax-highlight  →  onegayi.sentaurus-tcad-syntax-0.4.0
+sentaurus-syntax-highlight  →  onegayi.sentaurus-tcad-syntax-0.6.0
 ```
 
-- Linux/macOS: `~/.vscode/extensions/onegayi.sentaurus-tcad-syntax-0.4.0`
-- Windows: `%USERPROFILE%\.vscode\extensions\onegayi.sentaurus-tcad-syntax-0.4.0`
+- Linux/macOS: `~/.vscode/extensions/onegayi.sentaurus-tcad-syntax-0.6.0`
+- Windows: `%USERPROFILE%\.vscode\extensions\onegayi.sentaurus-tcad-syntax-0.6.0`
 
 > VSCode 依赖此命名约定来识别扩展，名称不正确将导致扩展无法加载。
 
