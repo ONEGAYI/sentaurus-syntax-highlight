@@ -260,11 +260,27 @@ function activate(context) {
         );
         context.subscriptions.push(completionDisposable);
 
+        // 辅助函数：判断光标是否在注释行中
+        function isInComment(document, position) {
+            const lineText = document.lineAt(position.line).text;
+            const col = position.character;
+            // SDE (Scheme): ; 注释；其他 (Tcl): # 和 * 注释
+            const commentChars = langId === 'sde' ? ';' : '#';
+            for (let i = 0; i < col; i++) {
+                const ch = lineText[i];
+                if (ch === '"') { i++; while (i < col && lineText[i] !== '"') { if (lineText[i] === '\\') i++; i++; } continue; }
+                if (ch === commentChars) return true;
+                if (langId !== 'sde' && ch === '*' && (i === 0 || lineText.slice(0, i).trim() === '')) return true;
+            }
+            return false;
+        }
+
         // Register HoverProvider for function documentation
         const hoverDisposable = vscode.languages.registerHoverProvider(
             { language: langId },
             {
                 provideHover(document, position) {
+                    if (isInComment(document, position)) return null;
                     const range = document.getWordRangeAtPosition(position, /[\w:.\-<>?!+*/=]+/);
                     if (!range) return null;
                     const word = document.getText(range);
@@ -294,6 +310,7 @@ function activate(context) {
             { language: langId },
             {
                 provideDefinition(document, position) {
+                    if (isInComment(document, position)) return null;
                     const range = document.getWordRangeAtPosition(position, /[\w:.\-<>?!+*/=]+/);
                     if (!range) return null;
                     const word = document.getText(range);
