@@ -2,8 +2,9 @@
   "name": "sentaurus-tcad-syntax",
   "displayName": "Sentaurus TCAD Syntax",
   "description": "Syntax highlighting for Sentaurus TCAD files",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "publisher": "onegayi",
+  "icon": "icon.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/ONEGAYI/sentaurus-syntax-highlight.git"
