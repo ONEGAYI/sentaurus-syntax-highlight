@@ -4,6 +4,20 @@
 
 ---
 
+## [0.6.5] - 2026-04-12
+
+### 新功能
+
+- **SDE snippet 前缀自定义**：新增 `sentaurus.snippetPrefixes` 配置项，允许用户自定义 SDE 代码片段中 `string-append` 拼接的命名前缀（如 `"RW."`、`"DC."`、`"RS."` 等），覆盖官方默认值或清空为无前缀风格
+- **优化 SDE snippets tab stop 设计**：变量名（`CONT`/`NAME`/`RNAME`/`MNAME`/`POINT`）设为首个 tab stop 并镜像同步到所有引用处，改名时自动传播；移除 `(position ...)` 坐标的 tab stop（坐标通常从别处复制）；紧凑重排后续编号减少无效 Tab 跳转
+
+### 其他改进
+
+- 将 SDE snippets 中 `define-constant-profile` 系列 NAME 参数的前缀恢复为官方定义 `"DC."`
+- 移除 CLAUDE.md 中已完成的 Tcl 内置函数文档未来工作条目
+
+---
+
 ## [0.6.4] - 2026-04-12
 
 ### Bug 修复
@@ -170,6 +184,9 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[0.6.5]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.4...v0.6.5
+[0.6.4]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.3...v0.6.4
+[0.6.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.2...v0.6.3
 [0.6.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.1...v0.6.2
 [0.6.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.5.1...v0.6.0
