@@ -127,6 +127,29 @@ function buildItems(moduleKeywords, funcDocs) {
     return items;
 }
 
+// === SDE Snippet Prefix Customization ===
+const DEFAULT_PREFIXES = {
+    RW: 'RW.', DC: 'DC.', CPP: 'CPP.', CPM: 'CPM.',
+    GAUSS: 'GAUSS.', IMP: 'IMP.', SM: 'SM.', PSM: 'PSM.',
+    RS: 'RS.', RP: 'RP.',
+};
+
+/**
+ * Replace official prefix literals in SDE snippet text with user-customized ones.
+ * Only called when inserting SDE (Sentaurus-StructEditor) snippets.
+ */
+function applySnippetPrefixes(snippetText) {
+    const config = vscode.workspace.getConfiguration('sentaurus.snippetPrefixes');
+    let result = snippetText;
+    for (const [key, defaultVal] of Object.entries(DEFAULT_PREFIXES)) {
+        const custom = config.get(key);
+        if (custom !== undefined && custom !== defaultVal) {
+            result = result.replaceAll(`"${defaultVal}"`, `"${custom}"`);
+        }
+    }
+    return result;
+}
+
 // === QuickPick Snippet Data ===
 const sdeSnippets = require('./snippets/sde');
 const sdeviceSnippets = require('./snippets/sdevice');
@@ -184,7 +207,11 @@ async function showToolSnippets(editor, snippetData, toolName) {
             });
             if (!sub || sub.label === BACK) continue categoryLoop;
 
-            await editor.insertSnippet(new vscode.SnippetString(sub.data.lines.join('\n') + '\n'));
+            let snippetText = sub.data.lines.join('\n') + '\n';
+            if (toolName === 'Sentaurus-StructEditor') {
+                snippetText = applySnippetPrefixes(snippetText);
+            }
+            await editor.insertSnippet(new vscode.SnippetString(snippetText));
             return;
         }
     }
