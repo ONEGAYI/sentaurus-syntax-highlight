@@ -1127,10 +1127,10 @@
       {
         "name": "contact-set-name",
         "type": "string",
-        "desc": "接触设置的名称"
+        "desc": "接触集的名称"
       }
     ],
-    "description": "返回所有具有指定接触设置名称的边，作为二维接触属性。"
+    "description": "返回所有具有指定接触集名称的边，作为二维接触属性。"
   },
   "sdegeo:get-contact-facelist": {
     "example": "(sdegeo:get-contact-facelist \"Gate\")",
@@ -1138,15 +1138,15 @@
       {
         "name": "contact-set-name",
         "type": "string",
-        "desc": "接触设置的名称"
+        "desc": "接触集的名称"
       }
     ],
-    "description": "返回所有具有指定接触设置名称的面，作为三维接触属性。"
+    "description": "返回所有具有指定接触集名称的面，作为三维接触属性。"
   },
   "sdegeo:get-current-contact-set": {
     "example": "(sdegeo:get-current-contact-set)",
     "parameters": [],
-    "description": "返回当前（活动）接触设置的名称。"
+    "description": "返回当前（活动）接触集的名称。"
   },
   "sdegeo:get-default-boolean": {
     "example": "(sdegeo:get-default-boolean)",
@@ -1202,7 +1202,7 @@
       {
         "name": "contact-name",
         "type": "string",
-        "desc": "要激活或创建的接触设置名称（可选）"
+        "desc": "要激活或创建的接触集名称（可选）"
       },
       {
         "name": "\"remove\"",
@@ -1221,7 +1221,7 @@
         "desc": "体或体列表"
       }
     ],
-    "description": "使用激活的接触设置，将指定区域的所有边界边定义为接触。"
+    "description": "使用激活的接触集，将指定区域的所有边界边定义为接触。"
   },
   "sdegeo:set-contact-boundary-faces": {
     "example": "(sdegeo:set-contact-boundary-faces mycube)",
@@ -1232,7 +1232,7 @@
         "desc": "体或体列表"
       }
     ],
-    "description": "使用激活的接触设置，将接触属性附着到指定体的每个面上。"
+    "description": "使用激活的接触集，将接触属性附着到指定体的每个面上。"
   },
   "sdegeo:set-contact-edges": {
     "example": "(sdegeo:set-contact-edges (sde:get-edge-list) \"Drain\")",
@@ -1245,10 +1245,10 @@
       {
         "name": "contact-set-name",
         "type": "string",
-        "desc": "要分配的预定义接触设置名称"
+        "desc": "要分配的预定义接触集名称"
       }
     ],
-    "description": "将列表中的所有边标记为属于指定接触设置的接触。"
+    "description": "将列表中的所有边标记为属于指定接触集的接触。"
   },
   "sdegeo:set-contact-faces": {
     "example": "(sdegeo:set-contact-faces (sde:get-face-list))",
@@ -1259,7 +1259,7 @@
         "desc": "面或面列表"
       }
     ],
-    "description": "使用激活的接触设置名称，将接触属性附着到指定的面上。"
+    "description": "使用激活的接触集名称，将接触属性附着到指定的面上。"
   },
   "sdegeo:set-contact-faces-by-polygon": {
     "example": "(sdegeo:set-contact-faces-by-polygon (list (list (position 8 7 10) (position 9 8 10))) (list (gvector 0 0 -1)) \"c1\")",
@@ -1277,7 +1277,7 @@
       {
         "name": "contact-set-name",
         "type": "string",
-        "desc": "要分配给压印面线段的接触设置名称"
+        "desc": "要分配给压印面线段的接触集名称"
       }
     ],
     "description": "在现有面上压印多边形，并将 3D 接触属性附着到压印的线段上。"
@@ -1288,10 +1288,10 @@
       {
         "name": "csName",
         "type": "string",
-        "desc": "要设置为激活状态的接触设置名称"
+        "desc": "要设置为激活状态的接触集名称"
       }
     ],
-    "description": "设置当前（激活）接触设置的名称。"
+    "description": "设置当前（激活）接触集的名称。"
   },
   "sdegeo:set-default-boolean": {
     "example": "(sdegeo:set-default-boolean \"ABA\")",
@@ -2428,7 +2428,7 @@
   "sde:scmwin-get-window-height": {
     "example": "(sde:scmwin-get-window-height)",
     "parameters": [],
-    "description": "返回命令行窗口的高度（以行数或行数计）。"
+    "description": "返回命令行窗口的高度（以文本行数（或窗口行数）计）。"
   },
   "sde:selected-entities": {
     "example": "(sde:selected-entities)",
@@ -2951,7 +2951,7 @@
         "desc": "指定渲染模式。选项：\"facet\"（面片显示）、\"wire\"（线框）、\"flat\"（平面着色）、\"gouraud\" 或 \"smooth\"（平滑着色）、\"hidden\"（隐藏线消除）。参数类型: STRING"
       }
     ],
-    "description": "设置 3D 渲染模式：面片(facet)、线框(wire)、平面(flat)、高洛德(gouraud，平滑)或隐藏线(hidden)。"
+    "description": "设置 3D 渲染模式：面片(facet)、线框(wire)、平面(flat)、Gouraud（平滑着色）或隐藏线(hidden)。"
   },
   "sde:set-selection-level": {
     "example": "(sde:set-selection-level \"edge\")",
@@ -3122,10 +3122,10 @@
       {
         "name": "mask-name | mask-name-list",
         "type": "string",
-        "desc": "mask-name (STRING) — 指定一个掩膜的名称\nmask-name-list (STRING LIST) — 指定一个掩膜名称的列表。掩膜是具有指定掩膜名称作为掩膜名称属性的平面线体。"
+        "desc": "mask-name (STRING) — 指定一个掩模的名称\nmask-name-list (STRING LIST) — 指定一个掩模名称的列表。掩模是具有指定掩模名称作为掩模名称属性的平面线体。"
       }
     ],
-    "description": "将指定的掩膜（平面线体）添加到视图窗口中。"
+    "description": "将指定的掩模（平面线体）添加到视图窗口中。"
   },
   "sde:show-material": {
     "example": "(sde:show-material \"Silicon\")",
@@ -3383,7 +3383,7 @@
       {
         "name": "region-name",
         "type": "string",
-        "desc": "string — 在细分边界输出中使用的区域名称。"
+        "desc": "string — 在镶嵌边界输出中使用的区域名称。"
       }
     ],
     "description": "将指定的材料和区域属性分配给一个体。"
@@ -3656,7 +3656,7 @@
         "desc": "STRING — 要加载的 ACIS .sat 文件的路径"
       }
     ],
-    "description": "将本机 ACIS .sat 文件加载到 Sentaurus Structure Editor 中，并根据当前活动的布尔设置进行正确的重叠处理。"
+    "description": "将原生 ACIS .sat 文件加载到 Sentaurus Structure Editor 中，并根据当前活动的布尔设置进行正确的重叠处理。"
   },
   "sde:material-type": {
     "example": "(sde:material-type \"Silicon\")",
@@ -4236,7 +4236,7 @@
         "desc": "NUMBER — 恒定掺杂浓度值"
       }
     ],
-    "description": "在网格命令文件中为恒定掺杂剖面创建一个定义。"
+    "description": "在网格命令文件中为均匀掺杂剖面创建一个定义。"
   },
   "sdedr:define-constant-profile-material": {
     "example": "(sdedr:define-constant-profile-material \"PlaceCD.BG\" \"Const.BG\" \"GaAs\")",
@@ -4643,7 +4643,7 @@
         "desc": "材料名称 (DATEXMAT 类型)"
       }
     ],
-    "description": "定义按材料细化的剖面放置信息。"
+    "description": "定义按材料细化的放置信息。"
   },
   "sdedr:define-refinement-placement": {
     "example": "(sdedr:define-refinement-placement \"ref_place1\" \"ref_def1\" \"rw1\")",
@@ -4685,7 +4685,7 @@
         "desc": "区域的名称"
       }
     ],
-    "description": "定义按区域细化的剖面放置信息。"
+    "description": "定义按区域细化的放置信息。"
   },
   "sdedr:define-refinement-size": {
     "example": "(sdedr:define-refinement-size \"ref1\" 2 2 2 1 1 1)",
@@ -4910,10 +4910,10 @@
       {
         "name": "profile-list",
         "type": "list",
-        "desc": "指定要隐藏的掺杂分布名称列表 (STRING LIST)"
+        "desc": "指定要隐藏的掺杂剖面名称列表 (STRING LIST)"
       }
     ],
-    "description": "隐藏指定的解析掺杂分布。"
+    "description": "隐藏指定的解析掺杂剖面。"
   },
   "sdedr:hide-refinement": {
     "example": "(sdedr:hide-refinement \"ref1\")",
@@ -4982,7 +4982,7 @@
         "desc": "最小角度参数（标记为 \"minAngle\"）"
       }
     ],
-    "description": "生成一个新的全局偏移参数块。"
+    "description": "生成一个新的全局偏移参数块。 [信源不充分：T-2022 附录未包含此函数；描述源自 N-2017 手册]"
   },
   "sdedr:offset-interface": {
     "example": "(sdedr:offset-interface \"region\" \"R1\" \"R2\" \"hlocal\" 0.01 \"factor\" 1.5 \"window\" 0 0 0 10 10 10)",
@@ -5174,10 +5174,10 @@
       {
         "name": "profile-list",
         "type": "list",
-        "desc": "指定要显示的掺杂分布名称列表 (STRING LIST)"
+        "desc": "指定要显示的掺杂剖面名称列表 (STRING LIST)"
       }
     ],
-    "description": "显示指定的解析掺杂分布。"
+    "description": "显示指定的解析掺杂剖面。"
   },
   "sdedr:show-refinement": {
     "example": "(sdedr:show-refinement \"ref1\")",
@@ -5354,7 +5354,7 @@
       {
         "name": "replace",
         "type": "boolean",
-        "desc": "可选；条件判断(if) #t，则移除 point 类型接触的原始区域（仅 point 类型）"
+        "desc": "可选；若 #t，则移除 point 类型接触的原始区域（仅 point 类型）"
       },
       {
         "name": "name",
@@ -5466,7 +5466,7 @@
       {
         "name": "use-bbox",
         "type": "boolean",
-        "desc": "可选；条件判断(if) #t（默认），使用多边形的边界框作为长方体体积；条件判断(if) #f，使用多边形形状本身创建 3D 棱柱（仅适用于 3D 结构中的 2D 多边形）；当为 #f 时，忽略 oversize"
+        "desc": "可选；若 #t（默认），使用多边形的边界框作为长方体体积；若 #f，使用多边形形状本身创建 3D 棱柱（仅适用于 3D 结构中的 2D 多边形）；当为 #f 时，忽略 oversize"
       }
     ],
     "description": "根据 ICWB 层创建具有横向范围的细化窗口，纵向范围由参数定义；同时生成 3D 细化尺寸设置。"
@@ -5533,7 +5533,7 @@
       {
         "name": "recenter",
         "type": "boolean",
-        "desc": "可选；条件判断(if) #t，居中加载的掩模（默认 #f）；当设置为 #f 时，关闭到 (0,0) 原点的平移"
+        "desc": "可选；若 #t，居中加载的掩模（默认 #f）；当设置为 #f 时，关闭到 (0,0) 原点的平移"
       },
       {
         "name": "stretches",
@@ -5543,7 +5543,7 @@
       {
         "name": "loadmacfile",
         "type": "boolean",
-        "desc": "可选；条件判断(if) #f，禁止自动加载转换后的 .mac 文件（默认 #t）"
+        "desc": "可选；若 #f，禁止自动加载转换后的 .mac 文件（默认 #t）"
       }
     ],
     "description": "将 GDS 版图文件转换为 .mac 文件，并可选择加载它以供 sdeicwb 命令进一步处理。"
@@ -5564,12 +5564,12 @@
       {
         "name": "with-overlaps",
         "type": "boolean",
-        "desc": "可选；条件判断(if) #t，通过合并重叠部分来解决重叠的掩模多边形（默认 #f）"
+        "desc": "可选；若 #t，通过合并重叠部分来解决重叠的掩模多边形（默认 #f）"
       },
       {
         "name": "do-entity-check",
         "type": "boolean",
-        "desc": "可选；条件判断(if) #t，执行实体检查和边界修复以解决实体检查器发现的问题（默认 #f）"
+        "desc": "可选；若 #t，执行实体检查和边界修复以解决实体检查器发现的问题（默认 #f）"
       }
     ],
     "description": "基于给定的 ICWB 层名称创建掩模，这些名称引用先前加载的宏文件和选定的域。"
@@ -5823,10 +5823,10 @@
       {
         "name": "lref",
         "type": "number",
-        "desc": "介于 0 和 1 之间的细化级别（REAL）。值越接近 0 表示细化越少，越接近 1 表示细化越多。合理的范围是 0.2-0.8。每个面的细化仅由局部(细化类型)面的几何形状（曲率和其他属性）决定"
+        "desc": "介于 0 和 1 之间的细化级别（REAL）。值越接近 0 表示细化越少，越接近 1 表示细化越多。合理的范围是 0.2-0.8。每个面的细化仅由局部面的几何形状（曲率和其他属性）决定"
       }
     ],
-    "description": "自动分配局部(细化类型)细化以优化曲面细分边界输出的质量。"
+    "description": "自动分配局部细化以优化曲面细分边界输出的质量。"
   },
   "sdeio:find-refinement-tolerances": {
     "example": "(define rtol (sdeio:find-refinement-tolerances))",
@@ -5984,7 +5984,7 @@
   "sdepe:clean": {
     "example": "(sdepe:clean)",
     "parameters": [],
-    "description": "在工艺仿真操作之前，通过正则化所有体和修复压印来清理模型。"
+    "description": "在工艺仿真操作之前，通过规则化所有体和修复压印来清理模型。"
   },
   "sdepe:define-pe-domain": {
     "example": "(sdepe:define-pe-domain (list 0 0 10 0 15 2.5 10 5 0 5))",
@@ -5997,7 +5997,7 @@
       {
         "name": "polygon",
         "type": "list",
-        "desc": "定义 xy 平面内仿真域的简单连通凸多边形顶点坐标的 REAL LIST 序对(pair)"
+        "desc": "定义 xy 平面内仿真域的简单连通凸多边形顶点坐标的 REAL LIST 坐标对"
       }
     ],
     "description": "在 xy 平面内将工艺仿真的基础域定义为一个矩形或凸多边形。"
@@ -6008,37 +6008,37 @@
       {
         "name": "material",
         "type": "string",
-        "desc": "淀积层的 DATEX 材料"
+        "desc": "沉积层的 DATEX 材料"
       },
       {
         "name": "thickness",
         "type": "number",
-        "desc": "淀积厚度 (REAL)"
+        "desc": "沉积厚度 (REAL)"
       },
       {
         "name": "region-name",
         "type": "string",
-        "desc": "淀积层的区域名 (STRING, 可选)"
+        "desc": "沉积层的区域名 (STRING, 可选)"
       },
       {
         "name": "depo-type",
         "type": "string",
-        "desc": "淀积类型：\"iso\" 表示各向同性，\"aniso\" 表示各向异性 (可选)"
+        "desc": "沉积类型：\"iso\" 表示各向同性，\"aniso\" 表示各向异性 (可选)"
       },
       {
         "name": "depo-alg",
         "type": "string",
-        "desc": "淀积算法：\"lopx\", \"lop-move\", \"sweep\", 或 \"PT\" (可选)。注意：\"lopx\" 不能用于各向异性淀积；\"PT\" 不能用于圆角"
+        "desc": "沉积算法：\"lopx\", \"lop-move\", \"sweep\", 或 \"PT\" (可选)。注意：\"lopx\" 不能用于各向异性沉积；\"PT\" 不能用于圆角"
       },
       {
         "name": "radius",
         "type": "number",
-        "desc": "淀积层的圆角半径 (REAL, 可选)"
+        "desc": "沉积层的圆角半径 (REAL, 可选)"
       },
       {
         "name": "taper-angle",
         "type": "number",
-        "desc": "定向淀积的锥角 (REAL, 可选)"
+        "desc": "定向沉积的锥角 (REAL, 可选)"
       },
       {
         "name": "taper-direction",
@@ -6048,7 +6048,7 @@
       {
         "name": "ray-vector",
         "type": "gvector",
-        "desc": "指定定向淀积光线的 GVECTOR (可选)"
+        "desc": "指定定向沉积光线的 GVECTOR (可选)"
       },
       {
         "name": "BC",
@@ -6058,10 +6058,10 @@
       {
         "name": "nsteps",
         "type": "number",
-        "desc": "淀积步骤数，必须 >= 1 (INTEGER, 可选)"
+        "desc": "沉积步骤数，必须 >= 1 (INTEGER, 可选)"
       }
     ],
-    "description": "执行具有可配置类型、算法、圆角、锥度和其他选项的淀积步骤。"
+    "description": "执行具有可配置类型、算法、圆角、锥度和其他选项的沉积步骤。"
   },
   "sdepe:doping-constant-placement": {
     "example": "(sdepe:doping-constant-placement \"myDoping\" \"Boron\" 1e16 \"region_1\")",
@@ -6194,7 +6194,7 @@
       {
         "name": "polygon-list",
         "type": "list",
-        "desc": "指定掩模顶点点的 POLYGON LIST。每个多边形是一个 xy 坐标列表；矩形多边形可以仅使用两个对角点。不允许相交边或零长度边（顶点间最小距离为 1.0e-06）"
+        "desc": "指定掩模顶点的 POLYGON LIST。每个多边形是一个 xy 坐标列表；矩形多边形可以仅使用两个对角点。不允许相交边或零长度边（顶点间最小距离为 1.0e-06）"
       }
     ],
     "description": "从多边形列表创建掩模，用于后续工艺操作。"
@@ -6488,12 +6488,12 @@
       {
         "name": "type",
         "type": "string",
-        "desc": "德劳内化(Delaunizer)算法类型；\"boxmethod\"、\"conforming\" 或 \"constrained\" 之一"
+        "desc": "Delaunizer 算法算法类型；\"boxmethod\"、\"conforming\" 或 \"constrained\" 之一"
       },
       {
         "name": "maxPoints",
         "type": "number",
-        "desc": "德劳内化(Delaunizer)算法的最大点数"
+        "desc": "Delaunizer 算法算法的最大点数"
       },
       {
         "name": "maxConnectivity",
@@ -6534,7 +6534,7 @@
       {
         "name": "tolerance",
         "type": "number",
-        "desc": "指定德劳内化(Delaunizer)容差的 REAL 值"
+        "desc": "指定Delaunizer 算法容差的 REAL 值"
       },
       {
         "name": "location-type",
@@ -6547,7 +6547,7 @@
         "desc": "空间限制的窗口定义：\"window\" x0 y0 z0 x1 y1 z1，指定轴对齐边界框的两个对角点"
       }
     ],
-    "description": "设置 Sentaurus Mesh 命令文件中德劳内化(Delaunizer)的容差参数。"
+    "description": "设置 Sentaurus Mesh 命令文件中Delaunizer 算法的容差参数。"
   },
   "sdesnmesh:interpolate": {
     "example": "",
@@ -6672,7 +6672,7 @@
   "sdesp:begin": {
     "example": "",
     "parameters": [],
-    "description": "Begins Sentaurus Process and Sentaurus Structure Editor boundary-merging mode (3D only)."
+    "description": "启动 Sentaurus Process 和 Sentaurus Structure Editor 的边界合并模式（仅 3D）。"
   },
   "sdesp:define-step": {
     "example": "",
