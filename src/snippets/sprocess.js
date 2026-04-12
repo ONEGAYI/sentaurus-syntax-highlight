@@ -3,20 +3,20 @@ module.exports = {
         Simple: {
             desc: 'Simple deposition',
             lines: [
-                'deposit ${1:material} thickness= ${2:n}${3:um} isotropic|anisotropic',
+                'deposit ${1:material} thickness= ${2:n}${3:um} ${4|"isotropic","anisotropic"}',
             ],
         },
         Rate: {
             desc: 'Deposition with specified rate',
             lines: [
-                'deposit material= ${1:material} type= isotropic|anisotropic \\',
+                'deposit material= ${1:material} type= ${6|"isotropic","anisotropic"} \\',
                 '  rate=${2:n}${3:um/min} time=${4:n}${5:min}',
             ],
         },
         Doping: {
             desc: 'Deposition with doping',
             lines: [
-                'deposit material= ${1:material} type= isotropic|anisotropic \\',
+                'deposit material= ${1:material} type= ${10|"isotropic","anisotropic"} \\',
                 '  rate= ${2:n}${3:um/min} time= ${4:n}${5:min} \\',
                 '  doping= {${6:dopant1} ${7:dopant2} ...} | fields.values= {${6:dopant1}= ${8:value1} ${7:dopant2}= ${9:value2} ...}',
             ],
@@ -64,7 +64,7 @@ module.exports = {
         Simple: {
             desc: 'Simple etching',
             lines: [
-                'etch ${1:material} thickness= ${2:n}${3:um} isotropic|anisotropic',
+                'etch ${1:material} thickness= ${2:n}${3:um} ${4|"isotropic","anisotropic"}',
             ],
         },
         Rate: {
@@ -72,7 +72,7 @@ module.exports = {
             lines: [
                 'etch material= {${1:material1} ${2:material2} ...} \\',
                 '  rate= {${3:rate1}${4:um/min} ${5:rate2}${6:um/min} ...} \\',
-                '  time= ${7:n}${8:min} type= isotropic|anisotropic',
+                '  time= ${7:n}${8:min} type= ${9|"isotropic","anisotropic"}',
             ],
         },
         Directional: {
@@ -196,7 +196,7 @@ module.exports = {
             lines: [
                 'icwb.contact.mask layer.name= ${1:string}|${2:string_list} [name= ${3:string}] \\',
                 '  ${4:other_options} [info= ${5:n}]',
-                '# - Examples:',
+                '# - Examples for <other_options>:',
                 '# (a) point aluminum replace x= -2.0',
                 '# (b) box polysilicon adjacent.material=oxide  xlo= -2.05 xhi=-1.95',
             ],
