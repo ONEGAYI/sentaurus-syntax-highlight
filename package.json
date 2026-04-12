@@ -2,7 +2,7 @@
   "name": "sentaurus-tcad-syntax",
   "displayName": "Sentaurus TCAD Syntax",
   "description": "Syntax highlighting for Sentaurus TCAD files",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "publisher": "onegayi",
   "repository": {
     "type": "git",
@@ -90,6 +90,34 @@
         "language": "inspect",
         "scopeName": "source.sentaurus.inspect",
         "path": "./syntaxes/inspect.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "sentaurus.insertSnippet",
+        "title": "Sentaurus: Insert Snippet"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "sde",
+        "path": "./snippets/sde.json"
+      },
+      {
+        "language": "sdevice",
+        "path": "./snippets/sdevice.json"
+      },
+      {
+        "language": "sprocess",
+        "path": "./snippets/sprocess.json"
+      },
+      {
+        "language": "emw",
+        "path": "./snippets/emw.json"
+      },
+      {
+        "language": "inspect",
+        "path": "./snippets/inspect.json"
       }
     ]
   }
