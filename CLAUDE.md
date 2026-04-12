@@ -39,7 +39,7 @@
 | `emw` | EM Wave | `*_eml.cmd`, `*_emw.cmd` |
 | `inspect` | Inspect | `*_ins.cmd` |
 
-所有语言共用 `language-configuration.json`（行注释 `#`，括号匹配 `{}` `[]` `()`）。
+语言配置按注释符号拆分为两个文件：`language-configurations/sde.json`（行注释 `;`）和 `language-configurations/tcl.json`（行注释 `#`）。括号匹配 `{}` `[]` `()` 两者一致。
 
 ### 自动补全（`src/extension.js`）
 
@@ -72,7 +72,7 @@
 ### 高亮模式（每个语法文件）
 
 每个生成的语法文件按顺序包含：
-1. 注释模式：`#`、`//`（所有语言）；`;`（仅 SDE，Scheme 惯例）
+1. 注释模式：`#`（所有语言）；`;`（仅 SDE，Scheme 惯例）；`*`（SDevice、EMW、SProcess、Inspect）
 2. 双引号字符串模式（含转义处理）
 3. 数值字面量模式（`constant.numeric`）——整数、浮点数、科学计数法
 4. `@Var@` SWB 参数替换模式（`variable.parameter`）——如 `@previous@`、`@param:+2@`

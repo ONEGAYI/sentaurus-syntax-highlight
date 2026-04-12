@@ -39,10 +39,6 @@
       "match": "\\*.*$"
     },
     {
-      "name": "comment.line.double-slash",
-      "match": "//.*$"
-    },
-    {
       "name": "string.quoted.double",
       "begin": "\"",
       "end": "\"",

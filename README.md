@@ -11,7 +11,7 @@
 | 悬停提示 | 鼠标悬停在函数/命令上显示签名、参数说明和示例代码；**用户变量显示定义文本** |
 | 跳转定义 | **F12 / Ctrl+Click 跳转到用户自定义变量的定义行** |
 | 代码片段 | **QuickPick 可视化菜单**（`Ctrl+Shift+P` → `Sentaurus: Insert Snippet`）按工具分类浏览和插入代码模板；**传统前缀+Tab 代码片段**按语言隔离 |
-| 注释识别 | `#`、`//` 通用注释；SDE 文件额外支持 `;`（Scheme 注释） |
+| 注释识别 | `#` 通用注释；SDE 额外支持 `;`（Scheme 注释）；SDevice/EMW/SProcess/Inspect 额外支持 `*` |
 | SWB 变量 | 高亮 `@Var@`、`@param:+2@` 等 Sentaurus Workbench 参数替换语法 |
 | 括号匹配 | `{}` `[]` `()` 自动配对 |
 

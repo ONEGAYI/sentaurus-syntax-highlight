@@ -98,8 +98,8 @@ def create_textmate_grammar(mode_name, keywords):
             "match": "#.*$"
         },
         {
-            "name": "comment.line.double-slash",
-            "match": "//.*$"
+            "name": "comment.line.asterisk",
+            "match": "\*.*$"
         }
     ])
     
@@ -140,7 +140,7 @@ def create_textmate_grammar(mode_name, keywords):
 
 # Scopes that are never keyword-list patterns
 _NON_KEYWORD_SCOPES = {
-    'comment.line.hash', 'comment.line.double-slash', 'comment.line.semicolon',
+    'comment.line.hash', 'comment.line.asterisk', 'comment.line.semicolon',
     'string.quoted.double', 'variable.parameter', 'variable.other',
 }
 
