@@ -13,7 +13,8 @@ display_test/
 # cache files
 *.pyc
 *.pyd
-    
+build/
+*_b*_enhanced.json
 
 references/*
 !references/
