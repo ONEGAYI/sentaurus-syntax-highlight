@@ -82,13 +82,17 @@
 
 ## 安装
 
-### VSIX 命令行安装（推荐离线环境）
+### VSCode 市场安装（推荐）
+
+在 VSCode 扩展面板中搜索 **Sentaurus TCAD Syntax** 直接安装，或访问 [Marketplace 页面](https://marketplace.visualstudio.com/items?itemName=onegayi.sentaurus-tcad-syntax)。
+
+### VSIX 命令行安装（离线环境）
 
 从 [Releases](https://github.com/ONEGAYI/sentaurus-syntax-highlight/releases) 下载 `.vsix` 文件后：
 
 ```bash
 # 安装 / 升级
-code --install-extension sentaurus-tcad-syntax-0.6.0.vsix
+code --install-extension sentaurus-tcad-syntax-0.6.8.vsix
 
 # 卸载
 code --uninstall-extension onegayi.sentaurus-tcad-syntax
