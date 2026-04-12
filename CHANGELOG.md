@@ -4,6 +4,19 @@
 
 ---
 
+## [0.6.8] - 2026-04-13
+
+### 新功能
+
+- **重翻译 SDE 函数文档**：使用改进的翻译脚本（智能术语注入）重新翻译 405 个 SDE 函数的中文文档，扩展术语表至 564 条术语，通过 6 组子代理 review 闭环修复 53 处术语不一致和信息错误
+
+### Bug 修复
+
+- **修复 44 个 example 字段不一致**：从英文原文覆盖中文文件中与原文不同的 example 字段
+- **修复翻译质量问题**：统一 接触设置→接触集、掩膜→掩模、淀积→沉积 等术语；修复 sdesp:begin 未翻译、sdeio:assign-local-refs 术语表注释误插入等问题
+
+---
+
 ## [0.6.7] - 2026-04-12
 
 ### 新功能
@@ -201,6 +214,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[0.6.8]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.7...v0.6.8
 [0.6.7]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.6...v0.6.7
 [0.6.6]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.5...v0.6.6
 [0.6.5]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.4...v0.6.5
