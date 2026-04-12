@@ -64,6 +64,8 @@ def parse_args():
                         help="需要翻译的字段路径，逗号分隔（默认 description,parameters.desc）")
     parser.add_argument("--dry-run", action="store_true", help="仅显示需要翻译的条目，不执行翻译")
     parser.add_argument("--prompt-file", default=None, help="自定义翻译提示词文件路径")
+    parser.add_argument("--glossary", default=None,
+                        help="术语表 JSON 文件路径，按 batch 动态注入匹配术语")
     parser.add_argument("--limit", type=int, default=0, help="限制翻译的函数数量（0=不限制，用于测试）")
     parser.add_argument("--batch-size", type=int, default=10,
                         help="每批翻译的函数数量（默认 10，减少 system prompt 重复消耗）")
@@ -129,18 +131,30 @@ def get_changed_entries(source_data, target_data, fields):
 
 DEFAULT_SYSTEM_PROMPT = """你是一个专业的技术文档翻译专家，专注于半导体 TCAD 工具链领域（Synopsys Sentaurus）。
 
-翻译规则：
+## 翻译规则
 1. 将英文技术文档翻译为自然流畅的中文
-2. 以下术语保留英文原文：POSITION、REAL、STRING、DATEX、BOOLEAN、INTEGER、LIST 等类型标注
+2. 类型标注保留英文：POSITION、REAL、STRING、DATEX、BOOLEAN、INTEGER、LIST
 3. 枚举值保留原文（如 Replace/NoReplace/LocalReplace）
 4. 代码语法保留原样（如 `(position x y z)`、`"Silicon"`）
 5. 函数名和参数名保留英文
 6. 变量名和代码标识符保留英文
-7. 翻译要求：信息量与英文原文完全一致，不增不减
-8. 保持专业术语的准确性（如"体"对应 body、"面"对应 face、"区域"对应 region、"网格"对应 mesh）
+7. 信息量与英文原文完全一致，不增不减
+8. 严格遵循下方的术语映射表
 
-输出格式：严格输出 JSON 数组，不要输出任何其他内容。
-每个元素对应一个函数的翻译结果，格式如下：
+## 翻译风格指南
+### description 字段
+- 简短概括，一句话说明函数用途
+- 使用动词开头，如"向...添加..."、"创建..."、"设置..."
+
+### parameters.desc 字段
+- 当描述中包含代码语法占位符时（如 "MaxLenInt" mat-reg value），保持以下结构：
+  [代码语法] — [中文解释]
+- 不要倒置语序为"用于[解释]的 [代码]"
+- 可以使用换行或列表提高可读性
+- 对于有多种模式的参数，每种模式用换行分隔
+
+## 输出格式
+严格输出 JSON 数组，不要输出任何其他内容。每个元素对应一个函数的翻译结果：
 [
   {
     "func_name": "函数名",
@@ -159,6 +173,55 @@ def load_custom_prompt(prompt_file):
         with open(prompt_file, "r", encoding="utf-8") as f:
             return f.read()
     return None
+
+
+def load_glossary(glossary_file):
+    """加载术语表 JSON，返回 {term: translation} 字典（排除 _ 前缀条目）。"""
+    if not glossary_file or not os.path.exists(glossary_file):
+        return None
+    with open(glossary_file, "r", encoding="utf-8") as f:
+        raw = json.load(f)
+    return {k: v for k, v in raw.items() if not k.startswith("_")}
+
+
+def find_matching_terms(text, glossary):
+    """在给定文本中查找术语表匹配项。返回匹配的 {term: translation} 子集。"""
+    if not glossary or not text:
+        return {}
+    text_lower = text.lower()
+    matched = {}
+    for term, translation in glossary.items():
+        if term.lower() in text_lower:
+            matched[term] = translation
+    return matched
+
+
+def build_glossary_section(batch_items, glossary, fields):
+    """从 batch 的英文文本中提取匹配术语，格式化为 prompt 片段。"""
+    if not glossary:
+        return ""
+
+    # 收集该 batch 所有英文文本
+    all_text = []
+    translate_fields = [f.strip() for f in fields.split(",")]
+    for _, source_entry in batch_items:
+        if "description" in translate_fields:
+            all_text.append(source_entry.get("description", ""))
+        if "parameters.desc" in translate_fields:
+            for p in source_entry.get("parameters", []):
+                all_text.append(p.get("desc", ""))
+
+    combined = " ".join(all_text)
+
+    # 匹配术语
+    matched = find_matching_terms(combined, glossary)
+    if not matched:
+        return ""
+
+    lines = ["## 术语映射表（必须严格遵守）"]
+    for term, translation in sorted(matched.items()):
+        lines.append(f"- {term} → {translation}")
+    return "\n".join(lines)
 
 
 def build_batch_message(batch_items, fields):
@@ -186,19 +249,26 @@ def build_batch_message(batch_items, fields):
 _log = logging.getLogger(__name__)
 
 
-def translate_batch(client, batch_items, fields, model, system_prompt):
+def translate_batch(client, batch_items, fields, model, system_prompt, glossary=None):
     """
     调用 API 翻译一批函数条目。
     返回: dict[func_name] -> translation_result
     """
     user_message = build_batch_message(batch_items, fields)
 
+    # 智能术语注入：仅注入当前 batch 匹配的术语
+    effective_prompt = system_prompt
+    if glossary:
+        glossary_section = build_glossary_section(batch_items, glossary, fields)
+        if glossary_section:
+            effective_prompt = system_prompt + "\n\n" + glossary_section
+
     try:
         response = client.chat.completions.create(
             model=model,
             max_tokens=8192,
             messages=[
-                {"role": "system", "content": system_prompt},
+                {"role": "system", "content": effective_prompt},
                 {"role": "user", "content": user_message},
             ],
             temperature=0.1,
@@ -304,6 +374,11 @@ def main():
     client = OpenAI(api_key=args.api_key, base_url=args.base_url)
     system_prompt = load_custom_prompt(args.prompt_file) or DEFAULT_SYSTEM_PROMPT
 
+    # 加载术语表
+    glossary = load_glossary(args.glossary)
+    if glossary:
+        log.info(f"已加载术语表: {args.glossary} ({len(glossary)} 条术语)")
+
     batch_size = max(1, args.batch_size)
     total_batches = math.ceil(len(remaining) / batch_size)
     log.info(f"批量模式: 每批 {batch_size} 个函数, 共 {total_batches} 批")
@@ -318,7 +393,7 @@ def main():
 
         log.info(f"[Batch {batch_num}/{total_batches}] 翻译 {len(batch_items)} 个函数: {', '.join(func_names[:5])}{'...' if len(func_names) > 5 else ''}")
 
-        results = translate_batch(client, batch_items, args.fields, args.model, system_prompt)
+        results = translate_batch(client, batch_items, args.fields, args.model, system_prompt, glossary=glossary)
 
         if results:
             batch_ok = 0
