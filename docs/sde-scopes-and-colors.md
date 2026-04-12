@@ -12,8 +12,7 @@
 | 3 | `support.type.sde` | LITERAL3 | 1974 | `"Silicon"` `"Oxide"` `"GaAs"` | `#4EC9B0` | 青绿色 |
 | 4 | `entity.name.function.sde` | FUNCTION | 204 | `define` `lambda` `if` `cond` | `#DCDCAA` | 黄色 |
 | 5 | `comment.line.hash` | 内置模式 | - | `# this is a comment` | `#6A9955` | 绿色 |
-| 6 | `comment.line.double-slash` | 内置模式 | - | `// this is a comment` | `#6A9955` | 绿色 |
-| 7 | `comment.line.semicolon` | 内置模式 | - | `; this is a comment` | `#6A9955` | 绿色 |
+| 6 | `comment.line.semicolon` | 内置模式 | - | `; this is a comment` | `#6A9955` | 绿色 |
 | 8 | `string.quoted.double` | 内置模式 | - | `"hello world"` | `#CE9178` | 橙色 |
 | 9 | `constant.numeric` | 内置模式 | - | `1e-6` `0.5` `3.14e10` | `#B5CEA8` | 浅绿色 |
 | 10 | `variable.parameter` | 内置模式 | - | `@node@` `@previous@` | `#9CDCFE` | 浅蓝色 |

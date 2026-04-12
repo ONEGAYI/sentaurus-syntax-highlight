@@ -27,10 +27,6 @@
       "match": "^\\s*#.*$"
     },
     {
-      "name": "comment.line.double-slash",
-      "match": "//.*$"
-    },
-    {
       "name": "comment.line.semicolon",
       "match": ";.*$"
     },

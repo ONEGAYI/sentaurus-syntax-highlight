@@ -31,8 +31,8 @@
       "match": "#.*$"
     },
     {
-      "name": "comment.line.double-slash",
-      "match": "//.*$"
+      "name": "comment.line.asterisk",
+      "match": "\\*.*$"
     },
     {
       "name": "string.quoted.double",

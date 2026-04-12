@@ -2,7 +2,7 @@
   "name": "sentaurus-tcad-syntax",
   "displayName": "Sentaurus TCAD Syntax",
   "description": "Syntax highlighting for Sentaurus TCAD files",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "publisher": "onegayi",
   "repository": {
     "type": "git",
@@ -30,7 +30,7 @@
         "extensions": [".cmd", ".scm"],
         "filenames": [],
         "filenamePatterns": ["*_dvs.cmd"],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configurations/sde.json"
       },
       {
         "id": "sdevice",
@@ -38,7 +38,7 @@
         "extensions": [".cmd"],
         "filenames": [],
         "filenamePatterns": ["*_des.cmd"],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configurations/tcl.json"
       },
       {
         "id": "sprocess",
@@ -46,7 +46,7 @@
         "extensions": [".cmd", ".fps"],
         "filenames": [],
         "filenamePatterns": ["*_fps.cmd"],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configurations/tcl.json"
       },
       {
         "id": "emw",
@@ -54,7 +54,7 @@
         "extensions": [".cmd"],
         "filenames": [],
         "filenamePatterns": ["*_eml.cmd", "*_emw.cmd"],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configurations/tcl.json"
       },
       {
         "id": "inspect",
@@ -62,7 +62,7 @@
         "extensions": [".cmd"],
         "filenames": [],
         "filenamePatterns": ["*_ins.cmd"],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configurations/tcl.json"
       }
     ],
     "grammars": [
