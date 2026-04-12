@@ -129,7 +129,24 @@
 - 提取脚本中的路径是硬编码的，跨环境使用前必须修改
 - `*.Identifier` 文件已被 gitignore
 - TextMate 语法模式遵循首匹配胜出规则——兜底模式必须放在最后
-- release 语言风格需要与以前统一
+
+## 发布流程
+
+### 步骤
+
+1. **更新 CHANGELOG**：回顾 `git log <上次release-tag>..HEAD --oneline`，将所有提交归纳为 CHANGELOG 条目。新增版本段落置于文件顶部，格式与已有条目保持一致（`### 新功能` / `### Bug 修复` / `### 其他改进`）。同时在底部 `<!-- 变更链接 -->` 添加新版本的 compare 链接
+2. **提交 CHANGELOG**
+3. **打包**：`npx vsce package`
+4. **推送**：`git push origin main`
+5. **双平台发布**：
+   - GitHub Release：`gh release create v<version> sentaurus-tcad-syntax-<version>.vsix --title "v<version>" --notes "..."`，notes 内容直接复用 CHANGELOG 该版本的正文
+   - VS Code Marketplace：`npx vsce publish`
+
+### 要求
+
+- **描述风格统一**：CHANGELOG 和 Release notes 的措辞、分类、详略程度需与历史版本保持一致
+- **双平台同步**：每次发布必须同时更新 GitHub Release 和 VS Code Marketplace
+- **完整回顾**：必须从上次 release tag 开始回顾所有提交，确保无遗漏
 
 ## 语法简短说明
 

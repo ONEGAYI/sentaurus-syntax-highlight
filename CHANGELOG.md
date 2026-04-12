@@ -4,6 +4,14 @@
 
 ---
 
+## [0.6.6] - 2026-04-12
+
+### Bug 修复
+
+- **修复 SDE snippets 中错误的函数调用**：将 Gauss 模板中 `sdedr:define-analytical-profile-placement` 的 `string.append` 修正为 `string-append`，与 Sentaurus SDE 实际 API 一致
+
+---
+
 ## [0.6.5] - 2026-04-12
 
 ### 新功能
@@ -184,6 +192,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[0.6.6]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.5...v0.6.6
 [0.6.5]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.4...v0.6.5
 [0.6.4]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.3...v0.6.4
 [0.6.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.2...v0.6.3
