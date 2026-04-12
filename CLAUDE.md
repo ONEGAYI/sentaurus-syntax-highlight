@@ -90,20 +90,6 @@
 
 ### 未来工作
 
-#### Tcl 内置函数文档
-
-`all_keywords.json` 中的 FUNCTION 类别是语言内置函数。Scheme 部分基本完成，Tcl 部分尚未覆盖：
-
-- ~~**Scheme R5RS 标准**（191/204 个）~~：已完成中英文双语文档，术语对齐 R5RS 标准。
-  文件：`syntaxes/scheme_function_docs.json`（英文默认）、`syntaxes/scheme_function_docs.zh-CN.json`（中文）。
-  剩余 13 个为 SDE Guile 方言扩展（`define-macro`、`fluid-let`、`gensym`、`catch` 等），
-  Sentaurus UG 未提供文档，暂不覆盖。另有 27 个因 `all_keywords.json` 中 HTML 实体编码（如
-  `char-ci&lt;=?`）与文档 key 不匹配，运行时 `decodeHtml()` 已处理，不影响功能。
-
-- **Tcl 内置**（sprocess/inspect/sinterconnect/spptcl, 106-128 个）：`proc`、`while`、`glob`、`switch` 等。
-  sprocess ∩ sinterconnect = 128/128 完全相同，可写一份 Tcl 通用文档复用给 4 种语言。
-  注意：与 Scheme 同名的 10 个函数（`if`、`list`、`string` 等）语法完全不同，不可复用。
-
 #### 完善自动补全
 
 自动识别用户变量并添加到补全，两个路径:
