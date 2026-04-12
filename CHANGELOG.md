@@ -4,6 +4,15 @@
 
 ---
 
+## [0.6.7] - 2026-04-12
+
+### 新功能
+
+- **增强 SDE 函数文档中文参数描述**：将 405 个 SDE 函数的 871 个参数描述全部翻译为中文，与英文增强版信息量完全一致，补充了枚举值含义、类型标注（REAL/POSITION/STRING 等）和可选性行为说明
+- **新增通用翻译脚本**：`scripts/translate_docs.py` 支持增量翻译、断点续传、批量翻译、日志双输出，使用 OpenAI 兼容 API（DeepSeek 等），可复用于未来文档 i18n 需求
+
+---
+
 ## [0.6.6] - 2026-04-12
 
 ### Bug 修复
@@ -192,6 +201,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[0.6.7]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.6...v0.6.7
 [0.6.6]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.5...v0.6.6
 [0.6.5]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.4...v0.6.5
 [0.6.4]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.3...v0.6.4
