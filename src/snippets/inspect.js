@@ -1,0 +1,103 @@
+module.exports = {
+    Curve: {
+        'Axis-Attributes': {
+            desc: 'Set X/Y/Y2 axis attributes for plotting',
+            lines: [
+                'gr_setAxisAttr X  ${1:xlabel}   16 {${2:xmin}}  {${3:xmax}}  black 1 14 0 5 0',
+                'gr_setAxisAttr Y  ${4:ylabel}   16 {${5:ymin}}  {${6:ymax}}  black 1 14 0 5 0',
+                '# gr_setAxisAttr Y2 ${7:y2label}  16 {${8:y2min}} {${9:y2max}} black 1 14 0 5 0',
+            ],
+        },
+        'CV-Curve': {
+            desc: 'Create CV curve from AC dataset',
+            lines: [
+                'set N @node@',
+                'proj_load  @acplot@ AC($N)',
+                'set C ${1:curve-name}',
+                'cv_createDS $C "AC($N) NO_NODE v(g)" "AC($N) NO_NODE c(g,g)" y',
+                'cv_setCurveAttr $C "${2:label}" red solid 2 circle 7 defcolor 1 defcolor',
+                'gr_setAxisAttr X {Voltage (V)}         16 {} {} black 1 14 0 5 0',
+                'gr_setAxisAttr Y {Capacitance  (F/um)} 16 {} {} black 1 14 0 5 0',
+            ],
+        },
+        'Curve-Attributes': {
+            desc: 'Set curve display attributes',
+            lines: [
+                'cv_setCurveAttr ${1:cname} "${2:clabel}" red solid 2 circle 3 defcolor 1 defcolor',
+            ],
+        },
+        'Curve-from-list': {
+            desc: 'Create curve from Tcl list of X/Y values',
+            lines: [
+                'set Xs [list ${1:...}]',
+                'set Ys [list ${2:...}]',
+                'set C ${3:curve-name}',
+                'cv_createFromScript $C $Xs $Ys',
+                'cv_display $C y',
+            ],
+        },
+        'IV-Curve': {
+            desc: 'Create IV curve from PLT dataset',
+            lines: [
+                'set N @node@',
+                'proj_load @plot@ PLT($N)',
+                'cv_createDS IV($N) "PLT($N) ${1:contact-name} OuterVoltage" "PLT($N) ${1:contact-name} TotalCurrent" y',
+                'cv_setCurveAttr IV($N) "IV($N)" red solid 2 circle 3 defcolor 1 defcolor',
+                'gr_setAxisAttr X  "Voltage (V)"     16 {} {} black 1 14 0 5 0',
+                'gr_setAxisAttr Y  "Current (A/um)"  16 {} {} black 1 14 0 5 0',
+            ],
+        },
+    },
+    Extract: {
+        'MOS-IdVg': {
+            desc: 'Extract Vt, gm, SS, and Ioff from Id-Vg curve',
+            lines: [
+                '#- Extraction',
+                'load_library EXTRACT',
+                'set CURVE ${1:curvename}',
+                '# - MOS threshold voltage (gm method)',
+                'set Vt   [ExtractVtgmb Vtgm $CURVE]',
+                '# - MOS threshold voltage (current level method)',
+                'set Io   1e-7 ',
+                'set Vti  [ExtractVti   Vti  $CURVE $Io]',
+                '# - MOS transconductance',
+                'set gm   [ExtractGmb   gm   $CURVE]',
+                '# - Subthreshold slope',
+                'set bias 0.01',
+                'set SS   [ExtractSS    SS   $CURVE $bias]',
+                '# - MOS Ioff',
+                'set bias 1e-4',
+                'set Ioff [ExtractIoff  Ioff $CURVE $bias]',
+            ],
+        },
+        'MOS-IdVd': {
+            desc: 'Extract Imax and Ron from Id-Vd curve',
+            lines: [
+                '#- Extraction',
+                'load_library EXTRACT',
+                'set CURVE ${1:curvename}',
+                '# - Curve maximum',
+                'set IMax [ExtractMax   IMax $CURVE]',
+                '# - MOS On-state resistance',
+                'set bias 1.0',
+                'set Ron  [ExtractRon   Ron  $CURVE $bias]',
+            ],
+        },
+        Misc: {
+            desc: 'Extract curve maximum, value at bias, and Early voltage',
+            lines: [
+                '#- Extraction',
+                'load_library EXTRACT',
+                'set CURVE ${1:curvename}',
+                '# - Curve maximum',
+                'set IMax [ExtractMax   IMax $CURVE]',
+                '# - Value At Bias',
+                'set bias 1.0',
+                'set Val  [ExtractValue Val  $CURVE $bias]',
+                '# - BJT Early Voltage',
+                'set bias 1.0',
+                'set Va   [ExtractEarlyV Va   $CURVE $bias]',
+            ],
+        },
+    },
+};
