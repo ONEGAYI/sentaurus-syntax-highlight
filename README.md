@@ -27,7 +27,7 @@
 
 ### 效果展示
 
-![效果展示](<assets/pics/vscode 插件效果演示 - 自动补全+语法高亮.png>)
+![效果展示](assets/pics/vscode%20插件效果演示%20-%20自动补全+语法高亮.png)
 
 #### 函数悬停提示与补全文档
 
@@ -42,7 +42,7 @@
 
 悬停时显示函数签名、参数说明和示例代码，补全列表附带详细文档。
 
-![效果演示-语法文档](<assets/pics/vscode 插件效果演示 - 语法文档+汉化适配.png>)
+![效果演示-语法文档](assets/pics/vscode%20插件效果演示%20-%20语法文档+汉化适配.png)
 
 ### 代码片段（Snippets）
 
@@ -68,7 +68,7 @@
 | INSPECT | Curve、Extract | 8 |
 | Mesh (EMW) | EMW | 2 |
 
-![QuickPick-代码片段选单](<assets/pics/vscode 插件效果演示 - QuickPick 代码片段选单.gif>)
+![QuickPick-代码片段选单](assets/pics/vscode%20插件效果演示%20-%20QuickPick%20代码片段选单.gif)
 
 #### 传统前缀+Tab 代码片段
 
