@@ -723,7 +723,7 @@
         "desc": "指定向上方向。选项：\"-x\" 表示 -x 向上方向（默认），或 \"+z\" 表示 +z 向上方向。当使用 Sentaurus Process-Sentaurus Structure Editor 接口时，生成的 Scheme 脚本将包含自动选择正确坐标系的指令。参数类型：STRING"
       }
     ],
-    "example": "(sde:set-process-up-direction 1)"
+    "example": "(sde:set-process-up-direction \"+z\")"
   },
   "sde:set-project-name": {
     "signature": "(sde:set-project-name project-name)",
@@ -1874,7 +1874,7 @@
         "desc": "指定要追加的文本文件的名称"
       }
     ],
-    "example": "(sdedr:append-cmd-file \"my_commands.txt\")"
+    "example": "(sdedr:append-cmd-file \"extra_commands.txt\")"
   },
   "sdedr:clear": {
     "signature": "(sdedr:clear)",
@@ -1934,7 +1934,7 @@
         "desc": "指定一个放置名称，以清除其所有变换操作"
       }
     ],
-    "example": "(sdedr:clear-submesh-placement-transform \"my_placement\")"
+    "example": "(sdedr:clear-submesh-placement-transform \"place1\")"
   },
   "sdedr:convert-mask-to-drs-body": {
     "signature": "(sdedr:convert-mask-to-drs-body maskname refwindowname)",
@@ -1951,7 +1951,7 @@
         "desc": "指定 Ref/Eval 窗口的名称"
       }
     ],
-    "example": "(sdedr:convert-mask-to-drs-body \"MyMask\" \"MyRefWindow\")"
+    "example": "(sdedr:convert-mask-to-drs-body \"mask1\" \"refwin1\")"
   },
   "sdedr:define-1d-external-profile": {
     "signature": "(sdedr:define-1d-external-profile name filename \"Scale\" scale \"DataScale\" data-scale [\"Range\" range-from range-to] [lateral-function])",
@@ -1993,7 +1993,7 @@
         "desc": "可选；指定横向函数。\"Erf\" {\"Factor\" lateral-factor | \"Length\" length}, \"Eval\" {eval-init eval-function}, 或 \"Gauss\" {\"Factor\" lateral-factor | \"Length\" length | \"StdDev\" standard-deviation}"
       }
     ],
-    "example": "(sdedr:define-1d-external-profile \"ext_profile\" \"profile.dat\" \"Scale\" 1.0 \"DataScale\" 1.0)"
+    "example": "(sdedr:define-1d-external-profile \"ext1\" \"profile.plx\" \"Scale\" 1.0 \"DataScale\" 1e18)"
   },
   "sdedr:define-analytical-profile": {
     "signature": "(sdedr:define-analytical-profile name species initialization function start-value analytical-type [lateral-function])",
@@ -2035,7 +2035,7 @@
         "desc": "可选；指定横向函数类型。\"Gauss\" | \"Erf\" 带有横向参数（\"factor\" | \"length\" | \"stddev\"）和横向值；或 \"Eval\" 带有 init-string 和 function-string"
       }
     ],
-    "example": "(sdedr:define-analytical-profile \"profile1\" \"Boron\" \"peak\" \"expr\" 1e18 \"General\")"
+    "example": "(sdedr:define-analytical-profile \"Prof.Mole\" \"xMoleFraction\" \"a=0.16/0.075\" \"0.1*a*x\" 0.1)"
   },
   "sdedr:define-analytical-profile-placement": {
     "signature": "(sdedr:define-analytical-profile-placement placement-name definition-name ref-eval-window symmetry replacement evaluation eval-window decay-length [\"Gauss\"] eval-window-type)",
@@ -2087,7 +2087,7 @@
         "desc": "指定 Ref/Eval 窗口的类型。\"region\" 表示 eval-window 名称引用区域名称；\"material\" 引用材料名称；\"evalwin\" 引用 Ref/Eval 窗口（默认）"
       }
     ],
-    "example": "(sdedr:define-analytical-profile-placement \"place1\" \"profile1\" \"RW.1\" \"Both\" \"Replace\" \"Eval\" \"EW.1\" 0.1 \"region\")"
+    "example": "(sdedr:define-analytical-profile-placement \"Impl.Halo\" \"Impl.Haloprof\" \"BaseLine.Halo\" \"Positive\" \"NoReplace\" \"Eval\")"
   },
   "sdedr:define-body-interface-refwin": {
     "signature": "(sdedr:define-body-interface-refwin body-list ref-eval-window)",
@@ -2104,7 +2104,7 @@
         "desc": "指定要创建的细化窗口的名称"
       }
     ],
-    "example": "(sdedr:define-body-interface-refwin (list body1 body2) \"interface_rw\")"
+    "example": "(sdedr:define-body-interface-refwin (list body1 body2) \"rw_interface\")"
   },
   "sdedr:define-constant-profile": {
     "signature": "(sdedr:define-constant-profile definition-name species concentration)",
@@ -2126,7 +2126,7 @@
         "desc": "恒定掺杂浓度值"
       }
     ],
-    "example": "(sdedr:define-constant-profile \"const1\" \"Boron\" 1e15)"
+    "example": "(sdedr:define-constant-profile \"Const.BG\" \"BoronActiveConcentration\" 1e7)"
   },
   "sdedr:define-constant-profile-material": {
     "signature": "(sdedr:define-constant-profile-material placement-name definition-name material [decay-length [\"Gauss\"]] [replace])",
@@ -2158,7 +2158,7 @@
         "desc": "可选；\"Replace\" 用此掺杂分布替换所有其他先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类"
       }
     ],
-    "example": "(sdedr:define-constant-profile-material \"place_mat1\" \"const1\" \"Silicon\" 0.05 \"Gauss\" \"Replace\")"
+    "example": "(sdedr:define-constant-profile-material \"PlaceCD.BG\" \"Const.BG\" \"GaAs\")"
   },
   "sdedr:define-constant-profile-placement": {
     "signature": "(sdedr:define-constant-profile-placement placement-name definition-name ref-win-name [decay-length [\"Gauss\"]] [replace])",
@@ -2190,7 +2190,7 @@
         "desc": "可选；\"Replace\" 用此掺杂分布替换所有其他先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类"
       }
     ],
-    "example": "(sdedr:define-constant-profile-placement \"place_rw1\" \"const1\" \"RW.1\" 0.05)"
+    "example": "(sdedr:define-constant-profile-placement \"Place1\" \"Const.BG\" \"rw1\" 2 \"Replace\")"
   },
   "sdedr:define-constant-profile-region": {
     "signature": "(sdedr:define-constant-profile-region placement-name definition-name region-name [decay-length [\"Gauss\"]] [replace])",
@@ -2222,7 +2222,7 @@
         "desc": "可选；\"Replace\" 用此掺杂分布替换所有其他先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类"
       }
     ],
-    "example": "(sdedr:define-constant-profile-region \"place_reg1\" \"const1\" \"Region.1\" 0.05)"
+    "example": "(sdedr:define-constant-profile-region \"PlaceCD.GaAsCap\" \"Const.GaAsCap\" \"R.GaAsCap\" 2 \"Replace\")"
   },
   "sdedr:define-erf-profile": {
     "signature": "(sdedr:define-erf-profile definition-name species \"SymPos\" symmetry-position \"MaxVal\" max-value | \"Dose\" dose \"Junction\" junction \"ValueAtDepth\" value-at-depth \"Depth\" depth \"Length\" length \"StdDev\" standard-deviation [lateral-function])",
@@ -2283,7 +2283,8 @@
         "type": "options",
         "desc": "可选；指定横向函数。\"Erf\" {\"Factor\" lateral-factor | \"Length\" length}, \"Eval\" {eval-init eval-function}, 或 \"Gauss\" {\"Factor\" lateral-factor | \"Length\" length | \"StdDev\" standard-deviation}"
       }
-    ]
+    ],
+    "example": "(sdedr:define-erf-profile \"Impl.Erf\" \"BoronActiveConcentration\" \"SymPos\" 0 \"MaxVal\" 1e18 \"Junction\" 0.1 \"ValueAtDepth\" 1e16 \"Depth\" 0.05 \"Length\" 0.02 \"StdDev\" 0.01)"
   },
   "sdedr:define-gaussian-profile": {
     "signature": "(sdedr:define-gaussian-profile definition-name species \"PeakPos\" peak-position {\"PeakVal\" peak-concentration | \"Dose\" dose} {\"ValueAtDepth\" concentration-at-depth \"Depth\" depth | \"Length\" diffusion-length | \"StdDev\" standard-deviation} [lateral-function])",
@@ -2339,7 +2340,8 @@
         "type": "options",
         "desc": "可选；指定横向函数。\"Erf\" {\"Factor\" lateral-factor | \"Length\" length}, \"Eval\" {eval-init eval-function}, 或 \"Gauss\" {\"Factor\" lateral-factor | \"Length\" length | \"StdDev\" standard-deviation}"
       }
-    ]
+    ],
+    "example": "(sdedr:define-gaussian-profile \"Impl.Haloprof\" \"BoronActiveConcentration\" \"PeakPos\" 0 \"PeakVal\" 1.5e18 \"ValueAtDepth\" 1.5e17 \"Depth\" 0.07 \"Gauss\" \"Factor\" 1.0)"
   },
   "sdedr:define-multibox-placement": {
     "signature": "(sdedr:define-multibox-placement placement-name definition-name refwindow-name)",
@@ -2418,7 +2420,7 @@
         "desc": "z 方向的细化比例（可选，用于 3D）"
       }
     ],
-    "example": "(sdedr:define-multibox-size \"mb\" 10 10 1 1 2 2)"
+    "example": "(sdedr:define-multibox-size \"multibox-2d\" 10 10 1 1 2 2)"
   },
   "sdedr:define-particle-profile": {
     "signature": "(sdedr:define-particle-profile name file [\"AutoScreeningFactor\" value] [\"BoundaryExtension\" value] [\"Divisions\" value] [\"DopingAssignment\" value] [\"Normalization\" value] [\"NumberOfThreads\" value] [\"ScreeningFactor\" value] [\"ScreeningScalingFactor\" value] [\"Species\" value])",
@@ -2440,7 +2442,7 @@
         "desc": "可选标记参数：\"AutoScreeningFactor\" (BOOLEAN) 用于自动筛选因子；\"BoundaryExtension\" (REAL) 用于边界扩展；\"Divisions\" (INTEGER) 用于划分数量；\"DopingAssignment\" (\"CIC\" | \"NGP\" | \"Sano\") 用于掺杂分配方法；\"Normalization\" (BOOLEAN)；\"NumberOfThreads\" (INTEGER)；\"ScreeningFactor\" (REAL)；\"ScreeningScalingFactor\" (BOOLEAN)；\"Species\" (STRING) 用于掺杂种类"
       }
     ],
-    "example": "(sdedr:define-particle-profile \"ion_implant\" \"ion_data.dat\" \"Species\" \"Boron\")"
+    "example": "(sdedr:define-particle-profile \"ion_implant\" \"implant.bpt\" \"Species\" \"BoronActiveConcentration\" \"DopingAssignment\" \"CIC\")"
   },
   "sdedr:define-particle-profile-placement": {
     "signature": "(sdedr:define-particle-profile-placement placement-name definition-name \"EvalWindow\" eval-window eval-window-type [\"Replace\" replace] [\"LocalReplace\" local-replace])",
@@ -2477,7 +2479,7 @@
         "desc": "可选；是否仅替换正在定义的掺杂种类（标记为 \"LocalReplace\"，与 Replace 互斥）"
       }
     ],
-    "example": "(sdedr:define-particle-profile-placement \"pp1\" \"ion_implant\" \"EvalWindow\" \"RW.1\" \"region\")"
+    "example": "(sdedr:define-particle-profile-placement \"Place1\" \"ion_implant\" \"EvalWindow\" \"R.Substrate\" \"region\" \"Replace\" #t)"
   },
   "sdedr:define-refeval-window": {
     "signature": "(sdedr:define-refeval-window rfwin-name shape-type data)",
@@ -2499,7 +2501,7 @@
         "desc": "根据形状类型，为 POSITION 或 POSITION LIST。对于多形状，使用 (list single-shape1 single-shape2 ...)"
       }
     ],
-    "example": "(sdedr:define-refeval-window \"rw1\" \"Rectangle\" (position 0 0 0) (position 1 1 0))"
+    "example": "(sdedr:define-refeval-window \"rfwin1\" \"Line\" (position 0 0 0) (position 1 0 0))"
   },
   "sdedr:define-refinement-function": {
     "signature": "(sdedr:define-refinement-function definition-name function-name function-args)",
@@ -2521,7 +2523,7 @@
         "desc": "函数特定的参数：用于界面处最大长度的 \"MaxLenInt\" mat-reg mat-reg value [factor] [\"DoubleSide\"] [\"UseRegionNames\"]；用于基于掺杂变量的最大间隔的 \"MaxInterval\" \"Variable\" dopant \"Cmin\" cmin \"Cmax\" cmax [\"Scaling\" scaling] [\"TargetLength\" targetLength] [\"Rolloff\"]；\"MaxGradient\" value；\"MaxTransDiff\" value。mat-reg 指定定义界面的材料名称或区域名称"
       }
     ],
-    "example": "(sdedr:define-refinement-function \"d1\" \"f1\" \"MaxLenInt\" \"Silicon\" \"Oxide\" 0.01)"
+    "example": "(sdedr:define-refinement-function \"ref1\" \"MaxLenInt\" \"Silicon\" \"Oxide\" 0.05 1.5)"
   },
   "sdedr:define-refinement-material": {
     "signature": "(sdedr:define-refinement-material placement-name definition-name material-name)",
@@ -2565,7 +2567,7 @@
         "desc": "可以是已定义的细化窗口名称 (STRING)，或一个 Ref/Eval 窗口、材料和区域的列表，形式为 (list \"window\" \"refevalwin1\" \"material\" \"material1\" \"region\" \"region1\" ...)。如果指定了列表，则细化在所有条件的交集处执行"
       }
     ],
-    "example": "(sdedr:define-refinement-placement \"refPlace1\" \"d1\" \"rfwin1\")"
+    "example": "(sdedr:define-refinement-placement \"ref_place1\" \"ref_def1\" \"rw1\")"
   },
   "sdedr:define-refinement-region": {
     "signature": "(sdedr:define-refinement-region placement-name definition-name region-name)",
@@ -2629,7 +2631,7 @@
         "desc": "可选；z 方向的最小细化尺寸"
       }
     ],
-    "example": "(sdedr:define-refinement-size \"d1\" 0.1 0.1 0.1 0.01 0.01 0.01)"
+    "example": "(sdedr:define-refinement-size \"ref1\" 2 2 2 1 1 1)"
   },
   "sdedr:define-submesh": {
     "signature": "(sdedr:define-submesh definition-name geofile-name file1 mode1 file2 mode2 ... [(list field1 field2)])",
@@ -2661,7 +2663,7 @@
         "desc": "可选的字段名称列表，或字段-浓度对"
       }
     ],
-    "example": "(sdedr:define-submesh \"sub1\" \"geo.cad\" \"doping.dat\" \"r\" \"out.dat\" \"w\")"
+    "example": "(sdedr:define-submesh \"sub1\" \"geo.tdr\" \"doping.dat\" \"r\" \"out.dat\" \"w\")"
   },
   "sdedr:define-submesh-placement": {
     "signature": "(sdedr:define-submesh-placement placement-name definition-name evaluation-window [\"PlacementType\" eval-window-type] [\"DecayLength\" decay-length | \"GaussDecayLength\" gauss-decay-length] [\"Replace\" | \"NoReplace\" | \"LocalReplace\"] [\"IgnoreMat\"] [\"MatchMaterialType\"])",
@@ -2698,7 +2700,7 @@
         "desc": "可选：\"Replace\" 替换所有其他先前定义的剖面；\"NoReplace\" 将新剖面添加到现有剖面中；\"LocalReplace\" 仅替换相同物种。也支持 \"IgnoreMat\" 和 \"MatchMaterialType\" 选项"
       }
     ],
-    "example": "(sdedr:define-submesh-placement \"sp1\" \"sub1\" \"rfwin1\")"
+    "example": "(sdedr:define-submesh-placement \"place1\" \"sub1\" \"R.Sub\" \"region\")"
   },
   "sdedr:del-selected-drentity": {
     "signature": "(sdedr:del-selected-drentity entity | entity-list)",
@@ -2715,7 +2717,7 @@
         "desc": "指定要删除的实体名称列表"
       }
     ],
-    "example": "(sdedr:del-selected-drentity entityHandle)"
+    "example": "(sdedr:del-selected-drentity (list entity1 entity2))"
   },
   "sdedr:delete-multibox-placement": {
     "signature": "(sdedr:delete-multibox-placement placement-name)",
@@ -2739,7 +2741,7 @@
         "desc": "要删除的剖面放置的名称"
       }
     ],
-    "example": "(sdedr:delete-profile-placement \"profile_1\")"
+    "example": "(sdedr:delete-profile-placement \"profile_place1\")"
   },
   "sdedr:delete-refeval-window": {
     "signature": "(sdedr:delete-refeval-window bodies)",
@@ -2775,7 +2777,7 @@
         "desc": "要删除的 submesh placement 的名称"
       }
     ],
-    "example": "(sdedr:delete-submesh-placement \"submesh_1\")"
+    "example": "(sdedr:delete-submesh-placement \"place1\")"
   },
   "sdedr:get-cmdprecision": {
     "signature": "(sdedr:get-cmdprecision)",
@@ -2805,7 +2807,7 @@
         "desc": "要获取的 placement 列表类型：\"multibox\" | \"profile\" | \"refinement\""
       }
     ],
-    "example": "(sdedr:get-placement-list \"refinement\")"
+    "example": "(sdedr:get-placement-list \"profile\")"
   },
   "sdedr:hide-mbox": {
     "signature": "(sdedr:hide-mbox mbox-list)",
@@ -2817,7 +2819,7 @@
         "desc": "指定要隐藏的 multibox 名称列表 (STRING LIST)"
       }
     ],
-    "example": "(sdedr:hide-mbox (list \"MB1\" \"MB2\"))"
+    "example": "(sdedr:hide-mbox (list \"mbox1\" \"mbox2\"))"
   },
   "sdedr:hide-profile": {
     "signature": "(sdedr:hide-profile profile-list)",
@@ -2829,7 +2831,7 @@
         "desc": "指定要隐藏的掺杂分布名称列表 (STRING LIST)"
       }
     ],
-    "example": "(sdedr:hide-profile (list \"profile1\" \"profile2\"))"
+    "example": "(sdedr:hide-profile (list \"profile1\"))"
   },
   "sdedr:hide-refinement": {
     "signature": "(sdedr:hide-refinement refinement-list)",
@@ -2853,7 +2855,7 @@
         "desc": "指定要隐藏的单个 Ref/Eval 窗口名称 (STRING) 或 Ref/Eval 窗口名称列表 (STRING LIST)"
       }
     ],
-    "example": "(sdedr:hide-rewin (list \"N1\" \"N2\"))"
+    "example": "(sdedr:hide-rewin (list \"N1\" \"N2\" \"N3\"))"
   },
   "sdedr:offset-block": {
     "signature": "(sdedr:offset-block \"region\" region \"maxlevel\" maxlevel)",
@@ -2870,7 +2872,7 @@
         "desc": "偏移块的最大细化级别"
       }
     ],
-    "example": "(sdedr:offset-block \"region\" \"region_1\" \"maxlevel\" 3)"
+    "example": "(sdedr:offset-block \"region\" \"R.Substrate\" \"maxlevel\" 10)"
   },
   "sdedr:offset-global": {
     "signature": "(sdedr:offset-global \"collisionDistance\" collisionDistance \"factor\" factor \"hlocal\" hlocal \"maxlevel\" maxlevel \"minAngle\" minAngle)",
@@ -2902,7 +2904,7 @@
         "desc": "最小角度参数（标记为 \"minAngle\"）"
       }
     ],
-    "example": "(sdedr:offset-global \"collisionDistance\" 0.01 \"factor\" 1.5 \"hlocal\" 0.1 \"maxlevel\" 5 \"minAngle\" 30.0)"
+    "example": "(sdedr:offset-global \"collisionDistance\" 0.01 \"factor\" 1.3 \"hlocal\" 0.0 \"maxlevel\" 20 \"minAngle\" 20.0)"
   },
   "sdedr:offset-interface": {
     "signature": "(sdedr:offset-interface \"region\" region1 region2 \"hlocal\" hlocal \"factor\" factor \"window\" x1 y1 z1 x2 y2 z2)",
@@ -2934,7 +2936,7 @@
         "desc": "定义两个对角点的边界窗口坐标（六个 REAL 值，标记为 \"window\"）"
       }
     ],
-    "example": "(sdedr:offset-interface \"region\" \"region_1\" \"region_2\" \"hlocal\" 0.05 \"factor\" 1.2 \"window\" 0 0 0 10 10 0)"
+    "example": "(sdedr:offset-interface \"region\" \"R1\" \"R2\" \"hlocal\" 0.01 \"factor\" 1.5 \"window\" 0 0 0 10 10 10)"
   },
   "sdedr:read-cmd-file": {
     "signature": "(sdedr:read-cmd-file cmd-file-name)",
@@ -2946,7 +2948,7 @@
         "desc": "指定要加载的网格命令文件的名称"
       }
     ],
-    "example": "(sdedr:read-cmd-file \"mesh_cmd.tdr\")"
+    "example": "(sdedr:read-cmd-file \"msh.cmd\")"
   },
   "sdedr:redefine-refeval-window": {
     "signature": "(sdedr:redefine-refeval-window rfwin-name new-rfwin-name rfwin-type data)",
@@ -2973,7 +2975,7 @@
         "desc": "根据形状类型，为 POSITION 或 POSITION LIST"
       }
     ],
-    "example": "(sdedr:redefine-refeval-window \"win1\" \"win1_new\" \"Rectangle\" (position 0 0 0) (position 1 1 0))"
+    "example": "(sdedr:redefine-refeval-window \"rw1\" \"rw1_new\" \"Rectangle\" (position 0 0 0) (position 2 2 0))"
   },
   "sdedr:refine-box": {
     "signature": "(sdedr:refine-box refinement-name pos_min pos_max spacing)",
@@ -3000,7 +3002,7 @@
         "desc": "指定所有方向的单个网格间距值，或指定每个方向（x, y, z）间距的三个值的列表"
       }
     ],
-    "example": "(sdedr:refine-box \"ref1\" (position 0 0 0) (position 1 1 0) 0.1)"
+    "example": "(sdedr:refine-box \"refbox1\" (position 0 0 0) (position 10 10 0) 0.5)"
   },
   "sdedr:refine-doping": {
     "signature": "(sdedr:refine-doping spacing | sx sy sz [\"MaxTransDiff\" asinhdiff] [\"material\" \"m\" | \"region\" \"r\"])",
@@ -3022,7 +3024,7 @@
         "desc": "可选；\"material\" 后跟材料名称以将细化限制在特定材料（默认为 \"Silicon\"），或 \"region\" 后跟区域名称"
       }
     ],
-    "example": "(sdedr:refine-doping 0.01 \"MaxTransDiff\" 2.0 \"material\" \"Silicon\")"
+    "example": "(sdedr:refine-doping 0.1 0.1 0.1 \"MaxTransDiff\" 0.5 \"material\" \"Silicon\")"
   },
   "sdedr:refine-interface": {
     "signature": "(sdedr:refine-interface \"region\" r1 r2 | \"material\" m1 m2 \"hlocal\" spacing [\"factor\" factor] [\"window\" x1 y1 z1 x2 y2 z2])",
@@ -3059,7 +3061,7 @@
         "desc": "可选；限制窗口的两个对角点（x1 y1 z1 x2 y2 z2）。默认无窗口，在 r1 或 m1 中放置"
       }
     ],
-    "example": "(sdedr:refine-interface \"material\" \"Silicon\" \"Oxide\" \"hlocal\" 0.01 \"factor\" 1.5)"
+    "example": "(sdedr:refine-interface \"region\" \"R.Gate\" \"R.Oxide\" \"hlocal\" 0.01 \"factor\" 1.5)"
   },
   "sdedr:set-cmdprecision": {
     "signature": "(sdedr:set-cmdprecision cmdprecision)",
@@ -3083,7 +3085,7 @@
         "desc": "指定命令文件的标题"
       }
     ],
-    "example": "(sdedr:set-title \"My Device Mesh\")"
+    "example": "(sdedr:set-title \"NMOS Device Mesh\")"
   },
   "sdedr:show-mbox": {
     "signature": "(sdedr:show-mbox mbox-list)",
@@ -3095,7 +3097,7 @@
         "desc": "指定要显示的多盒体名称列表（STRING LIST）。"
       }
     ],
-    "example": "(sdedr:show-mbox (list \"mbox1\" \"mbox2\"))"
+    "example": "(sdedr:show-mbox (list \"mbox1\"))"
   },
   "sdedr:show-profile": {
     "signature": "(sdedr:show-profile profile-list)",
@@ -3107,7 +3109,7 @@
         "desc": "指定要显示的掺杂分布名称列表（STRING LIST）。"
       }
     ],
-    "example": "(sdedr:show-profile (list \"profile1\" \"profile2\"))"
+    "example": "(sdedr:show-profile (list \"profile1\"))"
   },
   "sdedr:show-refinement": {
     "signature": "(sdedr:show-refinement refinement-list)",
@@ -3148,7 +3150,7 @@
         "desc": "变换操作：\"Reflect\" 轴（\"X\" | \"Y\" | \"Z\"）、\"Rotation\" 角度 轴、或 \"ShiftVector\" (gvector x y z)。可以指定任意数量的操作；它们按列出的顺序执行。"
       }
     ],
-    "example": "(sdedr:transform-submesh-placement \"place1\" \"Reflect\" \"X\" \"Rotation\" 45.0 \"Z\")"
+    "example": "(sdedr:transform-submesh-placement \"place1\" \"Reflect\" \"X\" \"Rotation\" 90 \"Y\" \"ShiftVector\" (gvector 0.5 0 0))"
   },
   "sdedr:write-cmd-file": {
     "signature": "(sdedr:write-cmd-file cmd-file-name)",
@@ -3160,7 +3162,7 @@
         "desc": "指定要写入的网格命令文件的名称。"
       }
     ],
-    "example": "(sdedr:write-cmd-file \"nmos_des.cmd\")"
+    "example": "(sdedr:write-cmd-file \"msh.cmd\")"
   },
   "sdedr:write-scaled-cmd-file": {
     "signature": "(sdedr:write-scaled-cmd-file cmd-file-name scaling-factor)",
@@ -3177,7 +3179,7 @@
         "desc": "缩放因子；所有位置和长度参数都乘以该因子，所有梯度参数都除以该因子。"
       }
     ],
-    "example": "(sdedr:write-scaled-cmd-file \"nmos_des.cmd\" 1e-6)"
+    "example": "(sdedr:write-scaled-cmd-file \"Scaled_msh.cmd\" scale-factor)"
   },
   "sdeepi:create-layerstack": {
     "signature": "(sdeepi:create-layerstack file-name)",
