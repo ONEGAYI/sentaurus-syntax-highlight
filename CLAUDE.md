@@ -85,9 +85,8 @@
 
 - **SDE 函数文档**（中英文双语）：`syntaxes/sde_function_docs.json`（400 个 KEYWORD1 API）
 - **Scheme 内置函数文档**（中英文双语）：`syntaxes/scheme_function_docs.json`（191 个 R5RS 标准函数）
-- **sdevice 命令文档**（英文默认）：`syntaxes/sdevice_command_docs.json`
-  覆盖全部 339 个 KEYWORD1+KEYWORD2+KEYWORD3 关键词（25+31+290=346 去重后 339 唯一条目，含 2 个额外条目共 341 条）。
-  中文版待翻译。格式在 SDE 基础上增强，新增 `section`（所属模块）和 `keywords`（子关键词列表）字段。
+- **sdevice 命令文档**（中英文双语）：`syntaxes/sdevice_command_docs.json`（英文）、`syntaxes/sdevice_command_docs.zh-CN.json`（中文）
+  覆盖全部 341 个 KEYWORD1+KEYWORD2+KEYWORD3 关键词。格式在 SDE 基础上增强，新增 `section`（所属模块）和 `keywords`（子关键词列表）字段。
 
 ### 未来工作
 
@@ -111,6 +110,32 @@
 
 - 只进行 `(define Var Val)` 等关键语法的正则匹配，实时扫描实时添加到补全列表。（当前）
 - 大改架构，引入语言服务器，采用 AST 获取变量及确定的语义，可跨文件 - 工作量巨大。
+
+## 代码片段系统（Snippets & QuickPick）
+
+### Snippets 文件
+
+`snippets/` 目录下按语言存放 VSCode snippet JSON 文件，每种语言独立：
+
+| 文件 | Language ID | 说明 |
+|------|-------------|------|
+| `snippets/sde.json` | `sde` | SDE (Scheme) 代码片段 |
+| `snippets/sdevice.json` | `sdevice` | SDEVICE 代码片段 |
+| `snippets/sprocess.json` | `sprocess` | SPROCESS 代码片段 |
+| `snippets/emw.json` | `emw` | EMW 代码片段 |
+| `snippets/inspect.json` | `inspect` | Inspect 代码片段 |
+
+**语言隔离机制**：多种语言共用 `.cmd` 扩展名，但 VSCode 根据 `filenamePatterns` 匹配到不同的 language id，snippets 跟随 language id 分发，不会冲突。用户自定义 snippets（Preferences → Configure User Snippets）也自动按 language id 隔离。
+
+### 命令面板 QuickPick
+
+注册了命令 `sentaurus.insertSnippet`（`Ctrl+Shift+P` → "Sentaurus: Insert Snippet"），弹出多层级 QuickPick 菜单：
+
+- **顶层分类**：Clipboard、Editing、Emacs、Files、Interface、Java、Misc、Properties、Sentaurus-Device、Sentaurus-Inspect、Sentaurus-Mesh、Sentaurus-Process、Sentaurus-StructEditor、Text
+- **独立操作**：Open Include（与分类之间有分隔线）
+- **子选项**：待填充，选中分类后展示该分类下的具体命令模板
+
+实现位于 `src/extension.js` 的 `activate()` 函数末尾，使用 `vscode.window.showQuickPick()` 链式调用。
 
 ## 关键约束
 

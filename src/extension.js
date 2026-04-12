@@ -250,6 +250,39 @@ function activate(context) {
         );
         context.subscriptions.push(definitionDisposable);
     }
+
+    // === Snippet QuickPick Command ===
+    const snippetCategories = [
+        'Clipboard', 'Editing', 'Emacs', 'Files', 'Interface',
+        'Java', 'Misc', 'Properties',
+        'Sentaurus-Device', 'Sentaurus-Inspect', 'Sentaurus-Mesh',
+        'Sentaurus-Process', 'Sentaurus-StructEditor', 'Text',
+    ];
+
+    const snippetDisposable = vscode.commands.registerCommand('sentaurus.insertSnippet', async () => {
+        const items = [
+            ...snippetCategories.map(label => ({
+                label,
+                description: '$(chevron-right)',
+            })),
+            { kind: vscode.QuickPickItemKind.Separator },
+            { label: 'Open Include' },
+        ];
+
+        const selected = await vscode.window.showQuickPick(items, {
+            placeHolder: 'Select a snippet category...',
+        });
+
+        if (!selected || selected.kind === vscode.QuickPickItemKind.Separator) return;
+
+        if (selected.label === 'Open Include') {
+            vscode.window.showInformationMessage('Open Include: coming soon');
+            return;
+        }
+
+        vscode.window.showInformationMessage(`${selected.label}: sub-options coming soon`);
+    });
+    context.subscriptions.push(snippetDisposable);
 }
 
 function deactivate() {}
