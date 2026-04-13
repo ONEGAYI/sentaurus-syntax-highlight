@@ -1196,3 +1196,62 @@ git add docs/superpowers/plans/2026-04-13-sde-lsp-blueprint.md docs/superpowers/
 git commit -m "docs: update LSP blueprint — Phase 2C complete"
 ```
 
+---
+
+## 实施后修复记录
+
+以下是 Task 1–7 完成并提交后，在实际 VSCode 环境中测试发现并修复的问题。
+
+### Fix 1: argIndex 值与 AST 子节点位置不匹配
+
+**发现时间：** 实施后首次 VSCode 实测
+
+**症状：** 所有模式分派函数的 Signature Help 都显示组合签名（`{... | ...}` 格式），无法按模式显示特定签名。
+
+**根因：** 计划中的 `argIndex` 值是"参数在第几个 children 位置"（1-based offset），而实现中 `resolveMode` 通过 `children[argIndex + 1]` 访问参数节点（+1 跳过函数名）。这导致 argIndex 语义不一致——计划值和实现对 argIndex 的理解差了 1。
+
+**修正方案：** 通过实际 AST 解析测试逐个验证 12 个函数的 children 结构，将 argIndex 统一为"0-based 参数索引"语义。
+
+**修正的 4 个函数：**
+
+| 函数 | 原 argIndex | 修正后 | 验证方式 |
+|------|-----------|--------|---------|
+| `sdedr:define-refinement-function` | 2 | 1 | `children[2]` = `"MaxGradient"` → argIndex 应为 1 |
+| `sdedr:define-gaussian-profile` | 3 | 4 | 标签参数在 `children[5]` → argIndex 应为 4 |
+| `sdedr:define-erf-profile` | 3 | 4 | 同上，标签参数位置偏移 |
+| `sdedr:define-analytical-profile` | 6 | 5 | `children[6]` = `"Gauss"` → argIndex 应为 5 |
+
+**提交：** `e89066c` — 修正 4 个 SDE 函数的 argIndex 配置
+
+### Fix 2: i18n 环境下 modeDispatch 元数据缺失
+
+**发现时间：** Fix 1 修正在 VSCode 中验证时
+
+**症状：** 修正 argIndex 后，Node.js 测试全部通过（包括模式分派验证），但在 VSCode Extension Development Host 中仍然显示组合签名。
+
+**根因：** `modeDispatch` 元数据仅添加到英文版 `sde_function_docs.json`。`extension.js` 中 `loadDocsJson('sde_function_docs.json', useZh)` 在中文环境下优先加载 `sde_function_docs.zh-CN.json`，该文件不含 `modeDispatch` 字段。结果 `modeDispatchTable` 构建时遍历的是中文 funcDocs，表中无任何条目，`dispatcher.dispatch()` 返回 `mode: null`，代码走到 `funcDoc.signature` 的 fallback 路径。
+
+**诊断过程：**
+1. Node.js 直接测试 → 模式分派正确 ✓
+2. 检查 `sde_function_docs.zh-CN.json` 是否存在 → 存在 ✓
+3. 检查 zh-CN 文件是否含 modeDispatch → **不含** ✗
+4. 确认 `loadDocsJson` 的 i18n 优先加载逻辑 → 这就是根因
+
+**修正方案：** `extension.js` 中 `modeDispatchTable` 始终从英文文件构建：
+
+```js
+// 修正前：从 funcDocs（可能是 zh-CN 版本）构建
+const modeDispatchTable = {};
+for (const [fnName, fnDoc] of Object.entries(funcDocs)) { ... }
+
+// 修正后：始终从英文文件构建（结构化元数据与语言无关）
+const enSdeDocs = loadDocsJson('sde_function_docs.json', false);
+const modeDispatchSource = enSdeDocs || funcDocs;
+const modeDispatchTable = {};
+for (const [fnName, fnDoc] of Object.entries(modeDispatchSource)) { ... }
+```
+
+**架构教训：** 结构性元数据（modeDispatch、参数定义）与翻译内容（description、example）应分离加载。翻译文件只负责用户可见文本，机器消费的结构数据应从权威源（英文文件）加载。
+
+**提交：** `0488ed9` — 修复中文语言环境下 modeDispatch 元数据缺失导致模式分派失效
+
