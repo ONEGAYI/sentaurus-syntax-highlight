@@ -65,9 +65,13 @@ test('提取 define 变量', () => {
 
 test('提取 define 函数', () => {
     const defs = extractSchemeDefinitions('(define (my-func x y) (+ x y))');
-    assert.strictEqual(defs.length, 1);
+    assert.strictEqual(defs.length, 3);
     assert.strictEqual(defs[0].name, 'my-func');
     assert.strictEqual(defs[0].kind, 'function');
+    assert.strictEqual(defs[1].name, 'x');
+    assert.strictEqual(defs[1].kind, 'parameter');
+    assert.strictEqual(defs[2].name, 'y');
+    assert.strictEqual(defs[2].kind, 'parameter');
 });
 
 test('提取跨行 define', () => {
@@ -80,22 +84,31 @@ test('提取跨行 define', () => {
     assert.strictEqual(defs[0].kind, 'variable');
 });
 
-test('let 绑定不暴露到全局', () => {
+test('let 绑定提取', () => {
     const text = '(let ((a 1) (b 2)) (+ a b))';
     const defs = extractSchemeDefinitions(text);
-    assert.strictEqual(defs.length, 0);
+    assert.strictEqual(defs.length, 2);
+    assert.strictEqual(defs[0].name, 'a');
+    assert.strictEqual(defs[1].name, 'b');
+    assert.strictEqual(defs[0].kind, 'variable');
 });
 
-test('let* 绑定不暴露到全局', () => {
+test('let* 绑定提取', () => {
     const text = '(let* ((x 1) (y (+ x 1))) y)';
     const defs = extractSchemeDefinitions(text);
-    assert.strictEqual(defs.length, 0);
+    assert.strictEqual(defs.length, 2);
+    assert.strictEqual(defs[0].name, 'x');
+    assert.strictEqual(defs[1].name, 'y');
+    assert.strictEqual(defs[0].kind, 'variable');
 });
 
-test('letrec 绑定不暴露到全局', () => {
+test('letrec 绑定提取', () => {
     const text = '(letrec ((even? (lambda (n) n)) (odd? (lambda (n) n))) (even? 10))';
     const defs = extractSchemeDefinitions(text);
-    assert.strictEqual(defs.length, 0);
+    assert.strictEqual(defs.length, 2);
+    assert.strictEqual(defs[0].name, 'even?');
+    assert.strictEqual(defs[1].name, 'odd?');
+    assert.strictEqual(defs[0].kind, 'variable');
 });
 
 test('跳过注释中的 define', () => {
@@ -108,13 +121,15 @@ test('跳过注释中的 define', () => {
 test('多 define 混合', () => {
     const text = '(define x 1)\n(define y 2)\n(define (f z) (+ z 1))';
     const defs = extractSchemeDefinitions(text);
-    assert.strictEqual(defs.length, 3);
+    assert.strictEqual(defs.length, 4);
     assert.strictEqual(defs[0].name, 'x');
     assert.strictEqual(defs[1].name, 'y');
     assert.strictEqual(defs[2].name, 'f');
+    assert.strictEqual(defs[3].name, 'z');
     assert.strictEqual(defs[0].kind, 'variable');
     assert.strictEqual(defs[1].kind, 'variable');
     assert.strictEqual(defs[2].kind, 'function');
+    assert.strictEqual(defs[3].kind, 'parameter');
 });
 
 test('define 后紧跟闭括号（空定义）', () => {

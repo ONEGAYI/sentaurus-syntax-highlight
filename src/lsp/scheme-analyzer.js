@@ -52,12 +52,39 @@ function extractDefinitionsFromList(listNode, definitions) {
                 definitionText: listNode.text,
                 kind: 'function',
             });
+            // 提取函数参数
+            for (let i = 1; i < children[1].children.length; i++) {
+                const param = children[1].children[i];
+                if (param.type === 'Identifier') {
+                    definitions.push({
+                        name: param.value,
+                        line: listNode.line,
+                        endLine: listNode.endLine,
+                        definitionText: listNode.text,
+                        kind: 'parameter',
+                    });
+                }
+            }
         }
         return;
     }
 
-    // let/let*/letrec bindings are local-scope — not extracted for global completions.
-    // Scoped completion support will be added in Phase 2.
+    // (let/let*/letrec ((var val) ...) body...)
+    if ((first.value === 'let' || first.value === 'let*' || first.value === 'letrec') && children.length >= 2) {
+        if (children[1].type === 'List') {
+            for (const binding of children[1].children) {
+                if (binding.type === 'List' && binding.children.length >= 1 && binding.children[0].type === 'Identifier') {
+                    definitions.push({
+                        name: binding.children[0].value,
+                        line: listNode.line,
+                        endLine: listNode.endLine,
+                        definitionText: listNode.text,
+                        kind: 'variable',
+                    });
+                }
+            }
+        }
+    }
 }
 
 function extractFoldingRange(node, ranges) {

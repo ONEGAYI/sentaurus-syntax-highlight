@@ -212,9 +212,13 @@ test('从 AST 提取 define 变量', () => {
 test('从 AST 提取 define 函数', () => {
     const { ast } = parse('(define (my-func x y) (+ x y))');
     const result = analyze(ast);
-    assert.strictEqual(result.definitions.length, 1);
+    assert.strictEqual(result.definitions.length, 3);
     assert.strictEqual(result.definitions[0].name, 'my-func');
     assert.strictEqual(result.definitions[0].kind, 'function');
+    assert.strictEqual(result.definitions[1].name, 'x');
+    assert.strictEqual(result.definitions[1].kind, 'parameter');
+    assert.strictEqual(result.definitions[2].name, 'y');
+    assert.strictEqual(result.definitions[2].kind, 'parameter');
 });
 
 test('从 AST 提取跨行 define', () => {
@@ -226,22 +230,28 @@ test('从 AST 提取跨行 define', () => {
     assert.strictEqual(result.definitions[0].kind, 'variable');
 });
 
-test('let 绑定不暴露到全局', () => {
+test('let 绑定提取', () => {
     const { ast } = parse('(let ((a 1) (b 2)) (+ a b))');
     const result = analyze(ast);
-    assert.strictEqual(result.definitions.length, 0);
+    assert.strictEqual(result.definitions.length, 2);
+    assert.strictEqual(result.definitions[0].name, 'a');
+    assert.strictEqual(result.definitions[1].name, 'b');
+    assert.strictEqual(result.definitions[0].kind, 'variable');
 });
 
-test('let* 绑定不暴露到全局', () => {
+test('let* 绑定提取', () => {
     const { ast } = parse('(let* ((x 1) (y 2)) y)');
     const result = analyze(ast);
-    assert.strictEqual(result.definitions.length, 0);
+    assert.strictEqual(result.definitions.length, 2);
+    assert.strictEqual(result.definitions[0].name, 'x');
+    assert.strictEqual(result.definitions[1].name, 'y');
 });
 
-test('letrec 绑定不暴露到全局', () => {
+test('letrec 绑定提取', () => {
     const { ast } = parse('(letrec ((even? (lambda (n) n))) (even? 10))');
     const result = analyze(ast);
-    assert.strictEqual(result.definitions.length, 0);
+    assert.strictEqual(result.definitions.length, 1);
+    assert.strictEqual(result.definitions[0].name, 'even?');
 });
 
 test('AST 跳过注释中的 define', () => {
@@ -261,13 +271,15 @@ test('AST 跳过字符串中的 define', () => {
 test('AST 多 define 混合', () => {
     const { ast } = parse('(define x 1)\n(define y 2)\n(define (f z) (+ z 1))');
     const result = analyze(ast);
-    assert.strictEqual(result.definitions.length, 3);
+    assert.strictEqual(result.definitions.length, 4);
     assert.strictEqual(result.definitions[0].name, 'x');
     assert.strictEqual(result.definitions[1].name, 'y');
     assert.strictEqual(result.definitions[2].name, 'f');
+    assert.strictEqual(result.definitions[3].name, 'z');
     assert.strictEqual(result.definitions[0].kind, 'variable');
     assert.strictEqual(result.definitions[1].kind, 'variable');
     assert.strictEqual(result.definitions[2].kind, 'function');
+    assert.strictEqual(result.definitions[3].kind, 'parameter');
 });
 
 console.log('\nanalyze — folding ranges:');
@@ -314,13 +326,14 @@ test('兼容: define 函数格式一致', () => {
     assert.strictEqual(oldDefs[0].name, newDefs[0].name);
 });
 
-test('兼容: define 变量格式一致（let 不影响）', () => {
+test('兼容: let 内嵌 define 同时提取', () => {
     const text = '(let ((a 1)) (define x 2))';
-    const oldDefs = oldExtract(text);
     const { ast } = parse(text);
     const newDefs = analyze(ast).definitions;
-    assert.strictEqual(newDefs.length, 1);
-    assert.strictEqual(newDefs[0].name, 'x');
+    // let 绑定 a 和 define x 都被提取
+    assert.strictEqual(newDefs.length, 2);
+    assert.strictEqual(newDefs[0].name, 'a');
+    assert.strictEqual(newDefs[1].name, 'x');
 });
 
 test('兼容: 多 define 混合格式一致', () => {
