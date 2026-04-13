@@ -45,7 +45,7 @@
 
 纯 CommonJS 模块，在任一语言激活时加载。启动时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。关键词按类别分配图标（关键字/函数/常量/类/结构体）并按类别优先级排序。
 
-零原生依赖——运行在 VSCode Server 自带的 Node.js 上，兼容 GLIBC 2.17（CentOS 7）。
+零原生依赖——运行在 VSCode 自带的 Node.js 上，兼容 GLIBC 2.17（CentOS 7, VSCode 1.85.2-）。
 
 ### 用户变量支持（src/definitions.js）
 
