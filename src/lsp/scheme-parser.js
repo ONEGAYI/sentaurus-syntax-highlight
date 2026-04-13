@@ -91,4 +91,153 @@ function tokenize(text) {
     return tokens;
 }
 
-module.exports = { tokenize };
+/**
+ * Parse source text into AST with error tolerance.
+ * @param {string} text Source code text
+ * @returns {{ ast: object, errors: object[] }}
+ */
+function parse(text) {
+    const tokens = tokenize(text);
+    const errors = [];
+    let pos = 0;
+
+    function current() { return tokens[pos]; }
+    function advance() { return tokens[pos++]; }
+
+    function countLinesUpTo(offset) {
+        let count = 1;
+        for (let j = 0; j < offset; j++) {
+            if (text[j] === '\n') count++;
+        }
+        return count;
+    }
+
+    function parseExpr() {
+        const tok = current();
+
+        if (tok.type === TokenType.EOF) {
+            return null;
+        }
+
+        if (tok.type === TokenType.QUOTE) {
+            advance();
+            const expr = parseExpr();
+            return {
+                type: 'Quote',
+                expression: expr,
+                start: tok.start,
+                end: expr.end,
+                line: tok.line,
+                endLine: expr.endLine,
+            };
+        }
+
+        if (tok.type === TokenType.LPAREN) {
+            return parseList();
+        }
+
+        if (tok.type === TokenType.COMMENT) {
+            advance();
+            return {
+                type: 'Comment',
+                value: tok.value,
+                start: tok.start,
+                end: tok.end,
+                line: tok.line,
+                endLine: tok.line,
+            };
+        }
+
+        if (tok.type === TokenType.RPAREN) {
+            errors.push({
+                message: '多余的闭括号',
+                start: tok.start,
+                end: tok.end,
+                line: tok.line,
+                severity: 'warning',
+            });
+            advance();
+            return parseExpr();
+        }
+
+        advance();
+        if (tok.type === TokenType.NUMBER) {
+            return { type: 'Number', value: tok.value, start: tok.start, end: tok.end, line: tok.line, endLine: tok.line };
+        }
+        if (tok.type === TokenType.STRING) {
+            return { type: 'String', value: tok.value, start: tok.start, end: tok.end, line: tok.line, endLine: tok.line };
+        }
+        if (tok.type === TokenType.BOOLEAN) {
+            return { type: 'Boolean', value: tok.value, start: tok.start, end: tok.end, line: tok.line, endLine: tok.line };
+        }
+        if (tok.type === TokenType.SYMBOL) {
+            return { type: 'Identifier', value: tok.value, start: tok.start, end: tok.end, line: tok.line, endLine: tok.line };
+        }
+
+        return { type: 'Identifier', value: '', start: tok.start, end: tok.end, line: tok.line, endLine: tok.line };
+    }
+
+    function parseList() {
+        const openTok = advance();
+        const children = [];
+        let endLine = openTok.line;
+
+        while (current().type !== TokenType.RPAREN && current().type !== TokenType.EOF) {
+            const child = parseExpr();
+            if (!child) break;
+            children.push(child);
+            endLine = child.endLine;
+        }
+
+        if (current().type === TokenType.RPAREN) {
+            const closeTok = advance();
+            endLine = closeTok.line;
+            return {
+                type: 'List',
+                children,
+                start: openTok.start,
+                end: closeTok.end,
+                line: openTok.line,
+                endLine,
+                text: text.slice(openTok.start, closeTok.end),
+            };
+        }
+
+        errors.push({
+            message: `未闭合的括号（在第 ${openTok.line} 行打开）`,
+            start: openTok.start,
+            end: text.length,
+            line: openTok.line,
+            severity: 'error',
+        });
+
+        return {
+            type: 'List',
+            children,
+            start: openTok.start,
+            end: text.length,
+            line: openTok.line,
+            endLine,
+            text: text.slice(openTok.start),
+        };
+    }
+
+    const body = [];
+    while (current().type !== TokenType.EOF) {
+        const node = parseExpr();
+        if (node) body.push(node);
+    }
+
+    const ast = {
+        type: 'Program',
+        body,
+        start: 0,
+        end: text.length,
+        line: 1,
+        endLine: countLinesUpTo(text.length),
+    };
+
+    return { ast, errors };
+}
+
+module.exports = { tokenize, parse, TokenType };
