@@ -8,13 +8,14 @@
 
 ```
 src/
-├── extension.js                 ← 注册 3 个新命令（入口）
-├── expression-converter.js      ← 新文件，转换核心逻辑
-├── lsp/scheme-parser.js         ← 现有，复用 parse() 进行前缀解析
+├── extension.js                       ← 注册 3 个新命令（入口）
+├── commands/                          ← 新目录，辅助功能命令模块
+│   └── expression-converter.js        ← 表达式转换核心逻辑
+├── lsp/scheme-parser.js               ← 现有，复用 parse() 进行前缀解析
 └── ...
 ```
 
-**新增文件** `src/expression-converter.js` 导出三个函数：
+**新增文件** `src/commands/expression-converter.js` 导出三个函数：
 - `prefixToInfix(text)` — Scheme 前缀 → 中缀/函数调用
 - `infixToPrefix(text)` — 中缀/函数调用 → Scheme 前缀
 - `getSupportedOperators()` — 返回支持的运算符和函数列表（供帮助命令使用）
