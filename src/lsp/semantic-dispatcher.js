@@ -89,8 +89,8 @@ function resolveActiveParam(callNode, line, column) {
         activeParam = i - 1;
     }
 
-    // 光标在函数名和第一个参数之间，视为第 0 个参数
-    if (activeParam === -1 && callNode.children.length > 1) {
+    // 光标在函数调用括号内（含尚无参数的情况），视为第 0 个参数
+    if (activeParam === -1) {
         activeParam = 0;
     }
 

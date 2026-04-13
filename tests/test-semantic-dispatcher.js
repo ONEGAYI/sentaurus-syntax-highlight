@@ -114,6 +114,22 @@ test('跨行调用：光标在第 2 行对应参数索引', () => {
     assert.strictEqual(param, 1);
 });
 
+test('闭合括号内无参数时 activeParam 为 0（自动补全右括号场景）', () => {
+    const { ast } = parse('(sdegeo )');
+    const call = dispatcher.findEnclosingCall(ast, 1, 8);
+    assert.ok(call);
+    const param = dispatcher.resolveActiveParam(call, 1, 8);
+    assert.strictEqual(param, 0);
+});
+
+test('未闭合括号内无参数时 activeParam 为 0', () => {
+    const { ast } = parse('(sdegeo ');
+    const call = dispatcher.findEnclosingCall(ast, 1, 8);
+    assert.ok(call);
+    const param = dispatcher.resolveActiveParam(call, 1, 8);
+    assert.strictEqual(param, 0);
+});
+
 console.log('\ndispatch (integration):');
 
 test('完整分派：识别模式和参数位置', () => {
