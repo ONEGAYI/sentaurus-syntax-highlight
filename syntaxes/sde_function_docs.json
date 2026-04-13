@@ -1303,12 +1303,12 @@
   },
   "sdegeo:set-contact": {
     "signature": "(sdegeo:set-contact entity | entity-list [contact-name] [\"remove\"])",
-    "description": "Attaches the active contact to specified entities. Pass \"remove\" to detach.",
+    "description": "Attaches the active contact to specified edges or faces. When \"remove\" is passed, deletes the specified region and converts its boundaries into a contact.",
     "parameters": [
       {
         "name": "entity | entity-list",
         "type": "entity | list",
-        "desc": "Entity or list of entities"
+        "desc": "Edge, face, body, or list of entities"
       },
       {
         "name": "contact-name",
@@ -1318,7 +1318,7 @@
       {
         "name": "\"remove\"",
         "type": "string",
-        "desc": "Optional; pass \"remove\" to detach contact"
+        "desc": "Optional; deletes the region and converts its boundary edges (2D) or boundary faces (3D) into the specified contact"
       }
     ],
     "example": "(sdegeo:set-contact (car (sde:get-body-list)) \"Gate\")"
@@ -4694,7 +4694,7 @@
       {
         "name": "replace",
         "type": "string",
-        "desc": "Optional; \"Replace\" replaces all other previously defined profiles with this doping profile; \"LocalReplace\" replaces only the doping species being defined"
+        "desc": "Optional; \"Replace\" replaces all other previously defined profiles; \"LocalReplace\" replaces only the doping species being defined; \"NoReplace\" adds the new profile to all previously defined profiles (default)"
       }
     ],
     "example": "(sdedr:define-constant-profile-material \"PlaceCD.BG\" \"Const.BG\" \"GaAs\")"
@@ -4726,7 +4726,7 @@
       {
         "name": "replace",
         "type": "string",
-        "desc": "Optional; \"Replace\" replaces all other previously defined profiles with this doping profile; \"LocalReplace\" replaces only the doping species being defined"
+        "desc": "Optional; \"Replace\" replaces all other previously defined profiles; \"LocalReplace\" replaces only the doping species being defined; \"NoReplace\" adds the new profile to all previously defined profiles (default)"
       }
     ],
     "example": "(sdedr:define-constant-profile-placement \"Place1\" \"Const.BG\" \"rw1\" 2 \"Replace\")"
@@ -4758,7 +4758,7 @@
       {
         "name": "replace",
         "type": "string",
-        "desc": "Optional; \"Replace\" replaces all other previously defined profiles with this doping profile; \"LocalReplace\" replaces only the doping species being defined"
+        "desc": "Optional; \"Replace\" replaces all other previously defined profiles; \"LocalReplace\" replaces only the doping species being defined; \"NoReplace\" adds the new profile to all previously defined profiles (default)"
       }
     ],
     "example": "(sdedr:define-constant-profile-region \"PlaceCD.GaAsCap\" \"Const.GaAsCap\" \"R.GaAsCap\" 2 \"Replace\")"

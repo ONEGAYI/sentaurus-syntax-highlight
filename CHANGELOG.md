@@ -4,6 +4,20 @@
 
 ---
 
+## [0.7.1] - 2026-04-13
+
+### Bug 修复
+
+- **修正 Signature Help 触发条件**：修复自动补全插入右括号后导致 Signature Help 无法触发的问题，改为同时监听 `(` 和 `)` 字符触发
+- **修正 sdegeo:set-contact "remove" 参数文档**：原描述"分离接触"不准确，更正为"删除区域并将其边界转换为接触"，同步更新中英文文档
+- **补充 define-constant-profile-* 系列 NoReplace 选项**：为 `define-constant-profile-material`、`define-constant-profile-placement`、`define-constant-profile-region` 三个函数的 `replace` 参数补充缺失的 `"NoReplace"` 选项说明
+
+### 其他改进
+
+- **新增 i18n 校对脚本**：添加 `scripts/validate_i18n.py`，自动校验中英文文档对的结构一致性（跳过 desc/example/modeDispatch 等允许差异的字段），支持按工具名筛选
+
+---
+
 ## [0.7.0] - 2026-04-13
 
 ### 新功能
@@ -251,6 +265,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[0.7.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.9...v0.7.0
 [0.6.9]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.8...v0.6.9
 [0.6.8]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.7...v0.6.8
