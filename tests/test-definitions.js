@@ -60,12 +60,14 @@ test('提取 define 变量', () => {
     assert.strictEqual(defs.length, 1);
     assert.strictEqual(defs[0].name, 'TboxTest');
     assert.strictEqual(defs[0].line, 1);
+    assert.strictEqual(defs[0].kind, 'variable');
 });
 
 test('提取 define 函数', () => {
     const defs = extractSchemeDefinitions('(define (my-func x y) (+ x y))');
     assert.strictEqual(defs.length, 1);
     assert.strictEqual(defs[0].name, 'my-func');
+    assert.strictEqual(defs[0].kind, 'function');
 });
 
 test('提取跨行 define', () => {
@@ -75,6 +77,7 @@ test('提取跨行 define', () => {
     assert.strictEqual(defs[0].name, 'TboxTest');
     assert.strictEqual(defs[0].endLine, 2);
     assert.ok(defs[0].definitionText.includes('0.42'));
+    assert.strictEqual(defs[0].kind, 'variable');
 });
 
 test('let 绑定不暴露到全局', () => {
@@ -109,6 +112,9 @@ test('多 define 混合', () => {
     assert.strictEqual(defs[0].name, 'x');
     assert.strictEqual(defs[1].name, 'y');
     assert.strictEqual(defs[2].name, 'f');
+    assert.strictEqual(defs[0].kind, 'variable');
+    assert.strictEqual(defs[1].kind, 'variable');
+    assert.strictEqual(defs[2].kind, 'function');
 });
 
 test('define 后紧跟闭括号（空定义）', () => {
