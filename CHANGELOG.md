@@ -4,6 +4,21 @@
 
 ---
 
+## [0.8.0] - 2026-04-14
+
+### 新功能
+
+- **Scheme 表达式双向转换**：新增前缀表达式 ↔ 中缀/函数调用表达式的双向转换功能，通过命令面板调用（`Sentaurus: Scheme → Infix`、`Sentaurus: Infix → Scheme`）。支持选中文本直接替换或输入框转换，结果插入光标处并自动全选，输入框支持上下箭头浏览历史记录（会话内 20 条）
+- **表达式帮助命令**：新增 `Sentaurus: Expression Help` 命令，通过 QuickPick 分组展示所有支持的运算符和函数，选中可插入代码片段
+- **完整运算符覆盖**：支持算术运算符（`+`、`-`、`*`、`/`）、特殊运算符（`^`/`**` 幂、`%` 取模、`%%` 取余、`//` 取整商）、数学函数（`sin`、`cos`、`tan`、`asin`、`acos`、`atan`、`sqrt`、`abs`、`exp`、`log`）、取整函数（`floor`、`ceil`、`round`）和聚合函数（`min`、`max`）
+- **智能优先级处理**：转换器自动根据运算符优先级决定是否添加括号，支持嵌套表达式、多参数运算和链式运算
+
+### 其他改进
+
+- **新增 `src/commands/` 目录**：表达式转换器模块独立放置在 `src/commands/expression-converter.js`，与 LSP 相关模块分离
+
+---
+
 ## [0.7.2] - 2026-04-13
 
 ### Bug 修复
@@ -273,6 +288,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[0.8.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.7.2...v0.8.0
 [0.7.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.9...v0.7.0
