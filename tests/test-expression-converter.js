@@ -272,6 +272,72 @@ test('复杂嵌套表达式', () => {
     assert.ok(r.result.startsWith('(/ '));
 });
 
+// ─── 往返一致性 ─────────────────────────────
+console.log('\n往返一致性测试:');
+
+test('前缀→中缀→前缀: 加法', () => {
+    const original = '(+ a b)';
+    const infix = prefixToInfix(original).result;
+    const back = infixToPrefix(infix).result;
+    assert.strictEqual(back, original);
+});
+
+test('前缀→中缀→前缀: 乘法', () => {
+    const original = '(* a b)';
+    const infix = prefixToInfix(original).result;
+    const back = infixToPrefix(infix).result;
+    assert.strictEqual(back, original);
+});
+
+test('前缀→中缀→前缀: 除法', () => {
+    const original = '(/ W 2)';
+    const infix = prefixToInfix(original).result;
+    const back = infixToPrefix(infix).result;
+    assert.strictEqual(back, original);
+});
+
+test('前缀→中缀→前缀: 幂运算', () => {
+    const original = '(expt a 2)';
+    const infix = prefixToInfix(original).result;
+    const back = infixToPrefix(infix).result;
+    assert.strictEqual(back, original);
+});
+
+test('前缀→中缀→前缀: 函数', () => {
+    const original = '(sin x)';
+    const infix = prefixToInfix(original).result;
+    const back = infixToPrefix(infix).result;
+    assert.strictEqual(back, original);
+});
+
+test('前缀→中缀→前缀: 嵌套乘加', () => {
+    const original = '(+ (* a b) c)';
+    const infix = prefixToInfix(original).result;
+    const back = infixToPrefix(infix).result;
+    assert.strictEqual(back, original);
+});
+
+test('中缀→前缀→中缀: 简单加法', () => {
+    const original = 'a + b';
+    const prefix = infixToPrefix(original).result;
+    const back = prefixToInfix(prefix).result;
+    assert.strictEqual(back, original);
+});
+
+test('中缀→前缀→中缀: 带括号混合运算', () => {
+    const original = 'a * b + c';
+    const prefix = infixToPrefix(original).result;
+    const back = prefixToInfix(prefix).result;
+    assert.strictEqual(back, original);
+});
+
+test('中缀→前缀→中缀: 函数调用', () => {
+    const original = 'sin(x)';
+    const prefix = infixToPrefix(original).result;
+    const back = prefixToInfix(prefix).result;
+    assert.strictEqual(back, original);
+});
+
 // ─── 汇总 ───────────────────────────────────
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);
