@@ -1,6 +1,8 @@
 # Scheme 表达式双向转换器 实现计划
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **Status:** ✅ 已完成（2026-04-13）— 10 个功能提交，57 个测试全部通过，32 个已有测试无回归
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 为 SDE (Scheme) 语言实现前缀表达式与中缀/函数调用表达式的双向转换功能，通过命令面板调用。
 
