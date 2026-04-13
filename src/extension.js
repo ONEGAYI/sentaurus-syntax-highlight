@@ -257,9 +257,11 @@ function activate(context) {
         Object.assign(funcDocs, sdeviceDocs);
     }
 
-    // 构建 modeDispatch 查找表：从 funcDocs 中提取有 modeDispatch 的函数
+    // 构建 modeDispatch 查找表：始终从英文文档提取（结构化元数据，与语言无关）
+    const enSdeDocs = loadDocsJson('sde_function_docs.json', false);
+    const modeDispatchSource = enSdeDocs || funcDocs;
     const modeDispatchTable = {};
-    for (const [fnName, fnDoc] of Object.entries(funcDocs)) {
+    for (const [fnName, fnDoc] of Object.entries(modeDispatchSource)) {
         if (fnDoc.modeDispatch) {
             modeDispatchTable[fnName] = fnDoc.modeDispatch;
         }
