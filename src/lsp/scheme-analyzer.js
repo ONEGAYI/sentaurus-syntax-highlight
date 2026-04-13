@@ -54,21 +54,8 @@ function extractDefinitionsFromList(listNode, definitions) {
         return;
     }
 
-    // (let/let*/letrec ((var1 val1) (var2 val2) ...) ...)
-    if ((first.value === 'let' || first.value === 'let*' || first.value === 'letrec')
-        && children.length >= 2 && children[1].type === 'List') {
-        const bindList = children[1];
-        for (const binding of bindList.children) {
-            if (binding.type === 'List' && binding.children.length >= 1) {
-                definitions.push({
-                    name: binding.children[0].value,
-                    line: listNode.line,
-                    endLine: listNode.endLine,
-                    definitionText: listNode.text,
-                });
-            }
-        }
-    }
+    // let/let*/letrec bindings are local-scope — not extracted for global completions.
+    // Scoped completion support will be added in Phase 2.
 }
 
 function extractFoldingRange(node, ranges) {
