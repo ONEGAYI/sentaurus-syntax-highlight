@@ -206,6 +206,7 @@ test('从 AST 提取 define 变量', () => {
     assert.strictEqual(result.definitions.length, 1);
     assert.strictEqual(result.definitions[0].name, 'TboxTest');
     assert.strictEqual(result.definitions[0].line, 1);
+    assert.strictEqual(result.definitions[0].kind, 'variable');
 });
 
 test('从 AST 提取 define 函数', () => {
@@ -213,6 +214,7 @@ test('从 AST 提取 define 函数', () => {
     const result = analyze(ast);
     assert.strictEqual(result.definitions.length, 1);
     assert.strictEqual(result.definitions[0].name, 'my-func');
+    assert.strictEqual(result.definitions[0].kind, 'function');
 });
 
 test('从 AST 提取跨行 define', () => {
@@ -221,6 +223,7 @@ test('从 AST 提取跨行 define', () => {
     assert.strictEqual(result.definitions.length, 1);
     assert.strictEqual(result.definitions[0].endLine, 2);
     assert.ok(result.definitions[0].definitionText.includes('0.42'));
+    assert.strictEqual(result.definitions[0].kind, 'variable');
 });
 
 test('let 绑定不暴露到全局', () => {
@@ -262,6 +265,9 @@ test('AST 多 define 混合', () => {
     assert.strictEqual(result.definitions[0].name, 'x');
     assert.strictEqual(result.definitions[1].name, 'y');
     assert.strictEqual(result.definitions[2].name, 'f');
+    assert.strictEqual(result.definitions[0].kind, 'variable');
+    assert.strictEqual(result.definitions[1].kind, 'variable');
+    assert.strictEqual(result.definitions[2].kind, 'function');
 });
 
 console.log('\nanalyze — folding ranges:');
