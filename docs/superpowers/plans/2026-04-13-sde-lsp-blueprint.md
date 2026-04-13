@@ -135,6 +135,8 @@ tests/
 ### 2C 实施中修复的额外问题
 
 - **argIndex 语义修正**：原始计划中 `argIndex` 的含义模糊（children 偏移 vs 参数索引）。实施中统一为"参数索引（0-based）"语义，`resolveMode` 内部通过 `children[argIndex + 1]` 访问参数节点（+1 跳过函数名 children[0]）。
+- **argIndex 值修正**（4 个函数）：通过实际 AST 解析验证发现 `sdedr:define-refinement-function`（2→1）、`sdedr:define-gaussian-profile`（3→4）、`sdedr:define-erf-profile`（3→4）、`sdedr:define-analytical-profile`（6→5）的 argIndex 与实际 AST 子节点位置不匹配。修正后 resolveMode 能正确识别模式。
+- **i18n 环境下 modeDispatch 丢失**：`modeDispatch` 结构化元数据仅添加到英文版 `sde_function_docs.json`，未同步到 `sde_function_docs.zh-CN.json`。当 VSCode 设置为中文时，`loadDocsJson('sde_function_docs.json', true)` 优先加载 zh-CN 文件，导致 `modeDispatchTable` 为空，Signature Help 始终走 fallback 路径显示组合签名。修复：`extension.js` 中 `modeDispatchTable` 始终从英文文件构建（`loadDocsJson('sde_function_docs.json', false)`），因为结构化元数据与语言无关。
 - **参数值补全推迟**：原 Architecture 包含 `param-completion.js`（材料名/区域名自动补全），实施中评估后决定推迟到 Phase 3 交叉引用分析，因为参数值补全需要全局符号索引能力。
 
 ### 2A: 定义分类（前置工作）
