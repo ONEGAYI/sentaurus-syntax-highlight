@@ -123,5 +123,23 @@ test('光标不在函数调用上返回 null', () => {
     assert.strictEqual(result, null);
 });
 
+test('自动补全右括号：括号内无参数时仍返回签名', () => {
+    const doc = { getText: () => '(sdegeo )' };
+    const pos = { line: 0, character: 8 };
+    const funcDocs = {
+        'sdegeo': {
+            signature: '(sdegeo command arg ...)',
+            parameters: [
+                { name: 'command', desc: 'SDE command' },
+                { name: 'arg', desc: 'Arguments' },
+            ],
+        },
+    };
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs);
+    assert.ok(result);
+    assert.strictEqual(result.activeParameter, 0);
+    assert.ok(result.signatures[0].label.includes('sdegeo'));
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);
