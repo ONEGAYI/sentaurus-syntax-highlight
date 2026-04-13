@@ -16,13 +16,13 @@
 
 | Phase | 名称 | 核心产出 | 新增代码 | 状态 |
 |-------|------|---------|---------|------|
-| 1 | AST 基础设施 | 解析器 + 定义提取 + 折叠 + 括号诊断 | ~420 行 | 待实施 |
-| 2 | 语义分派 | 参数级补全 + Signature Help + 重载模式 | ~500 行 | 规划中 |
+| 1 | AST 基础设施 | 解析器 + 定义提取 + 折叠 + 括号诊断 | ~420 行 | ✅ 已完成 |
+| 2 | 语义分派 | 定义分类 + 参数感知 + 参数级补全 + Signature Help + 重载模式 | ~600 行 | 规划中 |
 | 3 | 交叉引用 | 材料名/区域名索引 + 语义诊断 + Rename | ~600 行 | 规划中 |
 
 ---
 
-## Phase 1: AST 基础设施
+## Phase 1: AST 基础设施 ✅
 
 **详细计划:** `docs/superpowers/plans/2026-04-13-sde-lsp-layer1.md`
 
@@ -33,11 +33,11 @@ src/
 ├── extension.js                  # 修改：注册 folding + diagnostic provider
 ├── definitions.js                # 修改：Scheme 部分内部改用 AST
 └── lsp/
-    ├── scheme-parser.js          # 新增：Tokenizer + Parser (~200 行)
-    ├── scheme-analyzer.js        # 新增：Definitions + Folding 分析 (~120 行)
+    ├── scheme-parser.js          # 新增：Tokenizer + Parser (~270 行)
+    ├── scheme-analyzer.js        # 新增：Definitions + Folding 分析 (~65 行)
     └── providers/
-        ├── folding-provider.js   # 新增：FoldingRangeProvider (~40 行)
-        └── bracket-diagnostic.js # 新增：防抖括号诊断 (~60 行)
+        ├── folding-provider.js   # 新增：FoldingRangeProvider (~20 行)
+        └── bracket-diagnostic.js # 新增：防抖括号诊断 (~55 行)
 ```
 
 ### 依赖关系
@@ -58,33 +58,86 @@ folding-provider.js  bracket-diagnostic.js   definitions.js (内部替换)
 
 ### 完成标准
 
-1. AST 解析器能正确处理所有 SDE 脚本（含未闭合括号）
-2. 定义提取结果和现有 `definitions.js` 完全一致
-3. 代码折叠在多行 S-expression 上正常工作
-4. 括号未闭合显示红色波浪线，300ms 防抖
-5. 纯 JS、零依赖、CommonJS、GLIBC 2.17 兼容
+1. ✅ AST 解析器能正确处理所有 SDE 脚本（含未闭合括号）
+2. ✅ 定义提取结果和现有 `definitions.js` 完全一致（define 部分）
+3. ✅ 代码折叠在多行 S-expression 上正常工作
+4. ✅ 括号未闭合显示红色波浪线，300ms 防抖
+5. ✅ 纯 JS、零依赖、CommonJS、GLIBC 2.17 兼容
+6. ✅ let/let*/letrec 绑定不暴露到全局作用域
+
+### Phase 1 实施中修复的额外问题
+
+- **let 作用域泄露**：旧版 definitions.js 将 let 绑定变量全局暴露，AST 迁移后修正为仅提取顶层 define
 
 ---
 
-## Phase 2: 语义分派（未来）
+## Phase 2: 语义分派（规划中）
 
 ### 目标
 
-在 AST 基础上实现函数调用的语义感知，支持 SDE 特有的模式分派重载。
+在 AST 基础上实现定义分类、函数参数感知、函数调用的语义分派，支持 SDE 特有的模式分派重载。
 
 ### 交付物
 
 ```
-src/lsp/
-├── semantic-dispatcher.js     # 模式分派引擎
-├── signature-provider.js      # Signature Help provider
-└── param-completion.js        # 参数级补全
+src/
+├── extension.js                  # 修改：补全分类 + 作用域感知
+├── definitions.js                # 修改：definitions 增加 kind 字段
+└── lsp/
+    ├── scheme-analyzer.js        # 修改：增加 kind 字段 + 作用域分析
+    ├── scope-analyzer.js         # 新增：作用域分析（参数可见性） (~100 行)
+    ├── semantic-dispatcher.js    # 新增：模式分派引擎 (~150 行)
+    ├── signature-provider.js     # 新增：Signature Help provider (~100 行)
+    └── param-completion.js       # 新增：参数级补全 (~150 行)
 
 syntaxes/
-└── sde_function_docs.json     # 新增 modeDispatch 结构化字段
+└── sde_function_docs.json        # 修改：新增 modeDispatch 结构化字段
 ```
 
-### 关键设计
+### 2A: 定义分类（前置工作）
+
+**问题：** 当前所有用户定义统一显示为"用户变量"，`(define (calc-mobility temp) ...)` 这样的函数定义应该显示为"用户函数"。
+
+**方案：** 在 `scheme-analyzer.js` 的 definitions 输出中增加 `kind` 字段：
+
+| 模式 | kind 值 | CompletionItemKind |
+|------|---------|-------------------|
+| `(define x 42)` | `'variable'` | `Variable` |
+| `(define (f args) body)` | `'function'` | `Function` |
+| `(let ((x 1)) ...)` | `'let-binding'` | `Variable`（局部，不暴露全局） |
+
+**改动范围：**
+- `scheme-analyzer.js`: `extractDefinitionsFromList` 追加 `kind` 字段
+- `extension.js`: 补全提供器根据 `kind` 设置不同的 `CompletionItemKind` 和标签
+
+### 2B: 函数参数感知（作用域分析）
+
+**问题：** `(define (calc-mobility temp) ...)` 中的 `temp` 在函数体内应该出现在补全中，但当前不提取参数。
+
+**方案：** 新增 `scope-analyzer.js`，基于 AST 构建作用域树：
+
+```
+全局作用域
+├── define: TboxTest (variable)
+├── define: calc-mobility (function)
+│   └── 函数作用域
+│       ├── param: temp
+│       ├── let: T0 (variable)
+│       ├── let: mu0 (variable)
+│       └── let*: ratio (variable)
+└── define: material-list (variable)
+```
+
+**补全行为：**
+- 光标在函数体外 → 补全全局 define（变量 + 函数名）
+- 光标在函数体内 → 补全全局 define + 函数参数 + 体内 let 绑定
+- 光标在 let 体内 → 补全外层 define + 函数参数 + 外层 let + 当前 let 绑定
+
+**改动范围：**
+- `scope-analyzer.js`: 作用域树构建 + 查询接口
+- `extension.js`: 补全提供器调用作用域查询，按位置过滤可用定义
+
+### 2C: 模式分派（核心功能）
 
 **modeDispatch 数据模型：**
 ```json
@@ -112,17 +165,19 @@ syntaxes/
 
 ### 前置条件
 
-- Phase 1 完成（AST 解析器可用）
+- ✅ Phase 1 完成（AST 解析器可用）
 - 函数文档 JSON 需要添加 `modeDispatch` 结构化字段（~20 个重载函数需要手动编写）
 
 ### 预估工作量
 
 | 任务 | 行数 | 难度 |
 |------|------|------|
-| modeDispatch 元数据编写 | 每函数 ~15 行 × 20 = 300 行 | 中（需阅读官方文档） |
-| semantic-dispatcher.js | ~150 行 | 中 |
-| signature-provider.js | ~100 行 | 中 |
-| param-completion.js | ~150 行 | 高（需处理参数位置追踪） |
+| 定义分类 (2A) | ~30 行改动 | 低 |
+| scope-analyzer.js (2B) | ~100 行 | 中 |
+| modeDispatch 元数据编写 (2C) | 每函数 ~15 行 × 20 = 300 行 | 中（需阅读官方文档） |
+| semantic-dispatcher.js (2C) | ~150 行 | 中 |
+| signature-provider.js (2C) | ~100 行 | 中 |
+| param-completion.js (2C) | ~150 行 | 高（需处理参数位置追踪） |
 
 ---
 
@@ -156,8 +211,8 @@ src/lsp/
 
 ### 前置条件
 
-- Phase 1 完成（AST 解析器）
-- Phase 2 完成（函数调用语义理解）
+- ✅ Phase 1 完成（AST 解析器）
+- Phase 2 完成（函数调用语义理解 + 作用域分析）
 - 需要确定：是否支持多文件索引（跨文件引用）
 
 ### 预估工作量
