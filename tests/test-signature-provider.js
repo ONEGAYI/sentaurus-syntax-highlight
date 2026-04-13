@@ -78,7 +78,7 @@ test('模式分派函数返回正确签名', () => {
     const pos = { line: 0, character: 48 };
     const table = {
         'sdedr:define-refinement-function': {
-            argIndex: 2,
+            argIndex: 1,
             modes: {
                 MaxGradient: { params: ['definition-name', 'function-name', 'MaxGradient', 'value'] },
             },
