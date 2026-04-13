@@ -63,11 +63,11 @@ folding-provider.js  bracket-diagnostic.js   definitions.js (内部替换)
 3. ✅ 代码折叠在多行 S-expression 上正常工作
 4. ✅ 括号未闭合显示红色波浪线，300ms 防抖
 5. ✅ 纯 JS、零依赖、CommonJS、GLIBC 2.17 兼容
-6. ✅ let/let*/letrec 绑定不暴露到全局作用域
+6. ✅ let/let*/letrec 绑定被提取但由作用域过滤控制可见性
 
 ### Phase 1 实施中修复的额外问题
 
-- **let 作用域泄露**：旧版 definitions.js 将 let 绑定变量全局暴露，AST 迁移后修正为仅提取顶层 define
+- **let 作用域处理演进**：旧版 definitions.js 将 let 绑定变量全局暴露；AST 迁移后先修正为不提取 let 绑定；Phase 2 引入 scope-analyzer 后改为"提取全部、作用域过滤"，统一了提取层与可见性层的职责
 
 ---
 
@@ -93,17 +93,18 @@ tests/
 
 ### 完成标准（2A+2B）
 
-1. ✅ define 变量输出 `kind: 'variable'`，define 函数输出 `kind: 'function'`
+1. ✅ define 变量输出 `kind: 'variable'`，define 函数输出 `kind: 'function'`，函数参数输出 `kind: 'parameter'`
 2. ✅ 函数参数在函数体内可见于补全
 3. ✅ let/let*/letrec 绑定在对应作用域内可见于补全
 4. ✅ 作用域外定义不出现在补全列表中
 5. ✅ 同名变量内层覆盖外层
 6. ✅ 非SDE语言不受影响
-7. ✅ 96 个测试全部通过（42 + 32 + 17 + 5）
+7. ✅ 91 个测试全部通过（42 + 32 + 17）
 
 ### Phase 2 实施中修复的额外问题
 
 - **简单变量定义遗漏**：原计划 `buildScopeTree` 只处理了 `(define (func params) body)` 形式，遗漏了 `(define var val)` 形式。实施中补充了简单变量定义的全局作用域注册。
+- **提取层与可见性层职责错位**：`scheme-analyzer.js` 原本只提取 `define` 定义，不提取 `let` 绑定和函数参数。虽然 `scope-analyzer.js` 正确构建了包含 let 和参数的作用域树，但补全过滤采用交集机制——不在提取列表中的定义即使作用域内可见也无法补全。修复方案：让 `scheme-analyzer.js` 提取所有定义（包括 let 绑定和函数参数），可见性完全由 `scope-analyzer.js` 的作用域过滤控制。
 
 ### 待实施（2C：模式分派）
 

@@ -1,6 +1,6 @@
 # SDE LSP Phase 2 Implementation Plan — 定义分类与作用域感知补全
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** 在 Phase 1 AST 基础设施之上，为 SDE (Scheme) 实现定义分类（函数 vs 变量）和作用域感知补全（函数参数 + let 绑定可见性）。
 
@@ -18,7 +18,7 @@
 - Modify: `src/lsp/scheme-analyzer.js:30-55`
 - Test: `tests/test-scheme-parser.js` (更新断言)
 
-- [ ] **Step 1: 在 extractDefinitionsFromList 中添加 kind 字段**
+- [x] **Step 1: 在 extractDefinitionsFromList 中添加 kind 字段**
 
 修改 `src/lsp/scheme-analyzer.js` 的 `extractDefinitionsFromList` 函数，在两个 `definitions.push(...)` 调用中添加 `kind` 字段：
 
@@ -44,17 +44,17 @@ if (children[1].type === 'Identifier') {
 }
 ```
 
-- [ ] **Step 2: 运行现有测试确认不破坏兼容性**
+- [x] **Step 2: 运行现有测试确认不破坏兼容性**
 
 Run: `node tests/test-scheme-parser.js`
 Expected: 全部通过（kind 字段是新增的，现有断言只检查 name/line/endLine）
 
-- [ ] **Step 3: 运行 definitions 测试确认透传**
+- [x] **Step 3: 运行 definitions 测试确认透传**
 
 Run: `node tests/test-definitions.js`
 Expected: 全部通过（definitions.js 透传 kind，现有断言不受影响）
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```bash
 git add src/lsp/scheme-analyzer.js
@@ -68,7 +68,7 @@ git commit -m "feat(lsp): add kind field to scheme definition extraction"
 **Files:**
 - Modify: `tests/test-scheme-parser.js:201-265`
 
-- [ ] **Step 1: 在 analyze definitions 测试中添加 kind 检查**
+- [x] **Step 1: 在 analyze definitions 测试中添加 kind 检查**
 
 在 `tests/test-scheme-parser.js` 的 `analyze — definitions:` 部分，更新以下测试：
 
@@ -94,12 +94,12 @@ assert.strictEqual(result.definitions[1].kind, 'variable');
 assert.strictEqual(result.definitions[2].kind, 'function');
 ```
 
-- [ ] **Step 2: 运行测试确认通过**
+- [x] **Step 2: 运行测试确认通过**
 
 Run: `node tests/test-scheme-parser.js`
 Expected: 全部通过
 
-- [ ] **Step 3: 提交**
+- [x] **Step 3: 提交**
 
 ```bash
 git add tests/test-scheme-parser.js
@@ -113,7 +113,7 @@ git commit -m "test(lsp): add kind field assertions to parser tests"
 **Files:**
 - Modify: `tests/test-definitions.js:56-125`
 
-- [ ] **Step 1: 在 extractSchemeDefinitions 测试中添加 kind 检查**
+- [x] **Step 1: 在 extractSchemeDefinitions 测试中添加 kind 检查**
 
 在 `tests/test-definitions.js` 的 `extractSchemeDefinitions:` 部分，更新以下测试：
 
@@ -139,12 +139,12 @@ assert.strictEqual(defs[1].kind, 'variable');
 assert.strictEqual(defs[2].kind, 'function');
 ```
 
-- [ ] **Step 2: 运行测试确认通过**
+- [x] **Step 2: 运行测试确认通过**
 
 Run: `node tests/test-definitions.js`
 Expected: 全部通过
 
-- [ ] **Step 3: 提交**
+- [x] **Step 3: 提交**
 
 ```bash
 git add tests/test-definitions.js
@@ -159,7 +159,7 @@ git commit -m "test: add kind field assertions to definitions tests"
 - Create: `src/lsp/scope-analyzer.js`
 - Test: `tests/test-scope-analyzer.js`
 
-- [ ] **Step 1: 编写 scope-analyzer.js 的核心实现**
+- [x] **Step 1: 编写 scope-analyzer.js 的核心实现**
 
 创建 `src/lsp/scope-analyzer.js`：
 
@@ -300,7 +300,7 @@ function getVisibleDefinitions(tree, line) {
 module.exports = { buildScopeTree, getVisibleDefinitions };
 ```
 
-- [ ] **Step 2: 编写作用域树构建的基础测试**
+- [x] **Step 2: 编写作用域树构建的基础测试**
 
 创建 `tests/test-scope-analyzer.js`，先写作用域树构建测试：
 
@@ -403,12 +403,12 @@ console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);
 ```
 
-- [ ] **Step 3: 运行测试确认作用域树构建正确**
+- [x] **Step 3: 运行测试确认作用域树构建正确**
 
 Run: `node tests/test-scope-analyzer.js`
 Expected: 全部通过
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```bash
 git add src/lsp/scope-analyzer.js tests/test-scope-analyzer.js
@@ -422,7 +422,7 @@ git commit -m "feat(lsp): add scope tree builder for function params and let bin
 **Files:**
 - Modify: `tests/test-scope-analyzer.js`
 
-- [ ] **Step 1: 在测试文件中添加 getVisibleDefinitions 测试**
+- [x] **Step 1: 在测试文件中添加 getVisibleDefinitions 测试**
 
 在 `tests/test-scope-analyzer.js` 中，在作用域树构建测试之后、`console.log` 结果输出之前，添加：
 
@@ -492,12 +492,12 @@ test('行号在作用域外时只返回全局', () => {
 });
 ```
 
-- [ ] **Step 2: 运行测试确认通过**
+- [x] **Step 2: 运行测试确认通过**
 
 Run: `node tests/test-scope-analyzer.js`
 Expected: 全部通过
 
-- [ ] **Step 3: 提交**
+- [x] **Step 3: 提交**
 
 ```bash
 git add tests/test-scope-analyzer.js
@@ -511,7 +511,7 @@ git commit -m "test(lsp): add getVisibleDefinitions query tests"
 **Files:**
 - Modify: `src/extension.js:1-10, 276-300`
 
-- [ ] **Step 1: 在 extension.js 顶部添加 scope-analyzer 导入**
+- [x] **Step 1: 在 extension.js 顶部添加 scope-analyzer 导入**
 
 在 `src/extension.js` 行 6 之后添加：
 
@@ -519,7 +519,7 @@ git commit -m "test(lsp): add getVisibleDefinitions query tests"
 const scopeAnalyzer = require('./lsp/scope-analyzer');
 ```
 
-- [ ] **Step 2: 修改 SDE 补全提供器，添加 kind 分类和作用域过滤**
+- [x] **Step 2: 修改 SDE 补全提供器，添加 kind 分类和作用域过滤**
 
 替换 `src/extension.js` 中的补全提供器注册（行 276-300 的 `provideCompletionItems` 方法）。
 
@@ -567,12 +567,12 @@ provideCompletionItems(document, position) {
 
 注意：此处直接在 `provideCompletionItems` 中调用 `parse` + `buildScopeTree` 是因为补全触发频率低（用户每次按键最多触发一次），不需要额外的缓存层。如果后续性能成为问题可以添加 `document.version` 缓存。
 
-- [ ] **Step 3: 运行所有测试确认无破坏**
+- [x] **Step 3: 运行所有测试确认无破坏**
 
 Run: `node tests/test-scheme-parser.js && node tests/test-definitions.js && node tests/test-scope-analyzer.js`
 Expected: 全部通过
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```bash
 git add src/extension.js
@@ -586,20 +586,39 @@ git commit -m "feat(lsp): scope-aware completion with kind classification for SD
 **Files:**
 - None (验证性任务)
 
-- [ ] **Step 1: 运行全部测试套件**
+- [x] **Step 1: 运行全部测试套件**
 
 Run: `node tests/test-scheme-parser.js && node tests/test-definitions.js && node tests/test-scope-analyzer.js && node tests/test-snippet-prefixes.js`
 Expected: 全部通过（0 失败）
 
-- [ ] **Step 2: 更新蓝图文档，标记 Phase 2 部分完成**
+- [x] **Step 2: 更新蓝图文档，标记 Phase 2 部分完成**
 
 在 `docs/superpowers/plans/2026-04-13-sde-lsp-blueprint.md` 中：
 - 将 Phase 2 行的状态从 "规划中" 改为 "2A+2B 已完成，2C 待实施"
 - 更新完成标准，添加 2A 和 2B 的完成标记
 
-- [ ] **Step 3: 最终提交**
+- [x] **Step 3: 最终提交**
 
 ```bash
 git add docs/superpowers/plans/2026-04-13-sde-lsp-blueprint.md
 git commit -m "docs: update LSP blueprint — Phase 2A+2B done, 2C pending"
 ```
+
+---
+
+## 验收后修复（Task 8）：提取层补全 let 绑定和函数参数
+
+**问题：** 验收发现 `define` 变量可见，但 `let` 绑定变量和函数参数在各自作用域内不可见于补全。
+
+**根因：** `scheme-analyzer.js` 的 `extractDefinitionsFromList` 只提取 `define` 定义，不提取 `let` 绑定和函数参数。虽然 `scope-analyzer.js` 正确构建了包含它们的作用域树，但补全过滤采用交集机制（`filteredDefs.filter(d => visibleNames.has(d.name))`），不在提取列表中的定义即使作用域可见也无法补全。
+
+**修复：** 在 `scheme-analyzer.js` 的 `extractDefinitionsFromList` 中补充提取：
+- `(let/let*/letrec ((var val) ...) body...)` 的绑定变量，`kind: 'variable'`
+- `(define (func params...) body...)` 的参数，`kind: 'parameter'`
+
+**设计原则确认：** 提取层（analyzer）应与可见性层（scope）解耦——提取器不管作用域，提取所有可能的定义；作用域层不管提取，纯粹负责可见性过滤。
+
+- [x] **修复 scheme-analyzer.js 提取 let 绑定和函数参数**
+- [x] **更新 test-definitions.js 和 test-scheme-parser.js 的断言**
+- [x] **91 个测试全部通过（42 + 32 + 17）**
+- [x] **验收通过，提交**
