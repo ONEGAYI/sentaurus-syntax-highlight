@@ -38,6 +38,10 @@
         {
           "name": "constant.character.escape",
           "match": "\\\\."
+        },
+        {
+          "match": "@[a-zA-Z_<][^@]*@",
+          "name": "constant.character.format.placeholder"
         }
       ]
     },
@@ -47,7 +51,7 @@
     },
     {
       "match": "@[a-zA-Z_<][^@]*@",
-      "name": "variable.parameter"
+      "name": "constant.character.format.placeholder"
     },
     {
       "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
