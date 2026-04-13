@@ -4,6 +4,15 @@
 
 ---
 
+## [0.6.9] - 2026-04-13
+
+### Bug 修复
+
+- **补全中文文档 signature 字段**：为 405 个 SDE 函数补回缺失的 `signature` 字段，修复悬停提示中函数签名不显示的问题
+- **清理空 example 字段**：移除 46 个函数中多余的空 `example` 字段，与英文原文结构对齐
+
+---
+
 ## [0.6.8] - 2026-04-13
 
 ### 新功能
@@ -214,6 +223,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[0.6.9]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.8...v0.6.9
 [0.6.8]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.7...v0.6.8
 [0.6.7]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.6...v0.6.7
 [0.6.6]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.5...v0.6.6
