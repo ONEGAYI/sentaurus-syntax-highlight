@@ -1,5 +1,6 @@
 {
   "sdegeo:create-circle": {
+    "description": "创建一个二维圆形区域。当指定可选的起始角和终止角时，将生成一段圆弧。",
     "example": "(sdegeo:create-circle (position 0 0 0) 10 \"Silicon\" \"Region_1\")",
     "parameters": [
       {
@@ -33,9 +34,10 @@
         "desc": "可选的终止角度（度）。当与 start-angle 一起指定时，将生成圆弧而非完整圆。"
       }
     ],
-    "description": "创建一个二维圆形区域。当指定可选的起始角和终止角时，将生成一段圆弧。"
+    "signature": "(sdegeo:create-circle center-pos radius region-material region-name [start-angle end-angle])"
   },
   "sdegeo:create-cone": {
+    "description": "创建一个圆锥体（如果指定了 ratio 和 position3，则创建椭圆锥体）。支持使用 `(position ...)` 或裸 xyz 语法指定轴端点。",
     "example": "(sdegeo:create-cone (position -20 -5 -9) (position 15 20 10) 10 2 \"Gold\" \"\")",
     "parameters": [
       {
@@ -79,9 +81,10 @@
         "desc": "分配给该体的区域名称字符串。"
       }
     ],
-    "description": "创建一个圆锥体（如果指定了 ratio 和 position3，则创建椭圆锥体）。支持使用 `(position ...)` 或裸 xyz 语法指定轴端点。"
+    "signature": "(sdegeo:create-cone {start-axis end-axis} base-radius top-radius [ratio [position3]] region-material region-name)"
   },
   "sdegeo:create-cuboid": {
+    "description": "创建一个由两个对角顶点位置定义的实心块（三维长方体）。",
     "example": "(sdegeo:create-cuboid (position 0 0 0) (position 1 1 1) (sde:get-default-material) \"r1\")",
     "parameters": [
       {
@@ -105,9 +108,10 @@
         "desc": "分配给该体的区域名称字符串。"
       }
     ],
-    "description": "创建一个由两个对角顶点位置定义的实心块（三维长方体）。"
+    "signature": "(sdegeo:create-cuboid diagonal1 diagonal2 region-material region-name)"
   },
   "sdegeo:create-cylinder": {
+    "description": "创建一个圆柱体（如果指定了 ratio 和 position3，则创建椭圆柱体）。支持使用 `(position ...)` 或裸 xyz 语法指定端点。",
     "example": "(sdegeo:create-cylinder (position 0 0 0) (position 25 25 0) 30 \"Gold\" \"\")",
     "parameters": [
       {
@@ -146,9 +150,10 @@
         "desc": "分配给该体的区域名称字符串。"
       }
     ],
-    "description": "创建一个圆柱体（如果指定了 ratio 和 position3，则创建椭圆柱体）。支持使用 `(position ...)` 或裸 xyz 语法指定端点。"
+    "signature": "(sdegeo:create-cylinder {start-pos end-pos} radius [ratio [position3]] region-material region-name)"
   },
   "sdegeo:create-ellipse": {
+    "description": "创建一个二维椭圆区域。position1 是中心，position2 是长轴的端点，ratio 是长轴与短轴之比。",
     "example": "(sdegeo:create-ellipse (position 0 0 0) (position 10 0 0) 0.5 \"PolySi\" \"x1\")",
     "parameters": [
       {
@@ -177,9 +182,10 @@
         "desc": "分配给该区域的区域名称字符串。"
       }
     ],
-    "description": "创建一个二维椭圆区域。position1 是中心，position2 是长轴的端点，ratio 是长轴与短轴之比。"
+    "signature": "(sdegeo:create-ellipse position1 position2 ratio region-material region-name)"
   },
   "sdegeo:create-ellipsoid": {
+    "description": "创建一个三维椭球体。position1 是中心，position2 是长轴的端点，ratio 是长轴与短轴之比。",
     "example": "(sdegeo:create-ellipsoid (position 0 0 0) (position 10 0 0) 0.5 \"PolySi\" \"x1\")",
     "parameters": [
       {
@@ -208,9 +214,10 @@
         "desc": "分配给该体的区域名称字符串。"
       }
     ],
-    "description": "创建一个三维椭球体。position1 是中心，position2 是长轴的端点，ratio 是长轴与短轴之比。"
+    "signature": "(sdegeo:create-ellipsoid position1 position2 ratio region-material region-name)"
   },
   "sdegeo:create-linear-edge": {
+    "description": "在两个位置之间创建一条线性边。返回一个 EDGE 实体。",
     "example": "(sdegeo:create-linear-edge (position 0 0 0) (position 1 0 0))",
     "parameters": [
       {
@@ -224,9 +231,10 @@
         "desc": "线性边的终止位置 (POSITION)。指定边的另一个端点。"
       }
     ],
-    "description": "在两个位置之间创建一条线性边。返回一个 EDGE 实体。"
+    "signature": "(sdegeo:create-linear-edge position1 position2)"
   },
   "sdegeo:create-ot-ellipsoid": {
+    "description": "创建一个具有指定截断角处平坦顶面和底面的定向截断椭球体。",
     "example": "(sdegeo:create-ot-ellipsoid (position 0 0 2) (position 0 0 3) 0.5 20 80 \"Gold\" \"xx\")",
     "parameters": [
       {
@@ -265,9 +273,10 @@
         "desc": "分配给该体的区域名称字符串。"
       }
     ],
-    "description": "创建一个具有指定截断角处平坦顶面和底面的定向截断椭球体。"
+    "signature": "(sdegeo:create-ot-ellipsoid center-position major-axis-position ratio truncate-angle-1 truncate-angle-2 region-material region-name)"
   },
   "sdegeo:create-ot-sphere": {
+    "description": "创建一个具有平坦顶面和底面的定向截断球体。方向向量定义极点方向。",
     "example": "(sdegeo:create-ot-sphere (position 0 0 0) (gvector 1 0 0) 1 65 65 \"Silicon\" \"x1\")",
     "parameters": [
       {
@@ -306,9 +315,10 @@
         "desc": "分配给该体的区域名称字符串。"
       }
     ],
-    "description": "创建一个具有平坦顶面和底面的定向截断球体。方向向量定义极点方向。"
+    "signature": "(sdegeo:create-ot-sphere center-position orientation radius truncate-angle-1 truncate-angle-2 region-material region-name)"
   },
   "sdegeo:create-polygon": {
+    "description": "创建一个由顶点位置列表定义的二维多边形区域。如果第一个和最后一个顶点不同，多边形会自动闭合。",
     "example": "(sdegeo:create-polygon (list (position 0 0 0) (position 1 0 0) (position 1 1 0) (position 0 1 0)) \"Silicon\" \"R.Sub\")",
     "parameters": [
       {
@@ -327,9 +337,10 @@
         "desc": "分配给该区域的区域名称字符串。"
       }
     ],
-    "description": "创建一个由顶点位置列表定义的二维多边形区域。如果第一个和最后一个顶点不同，多边形会自动闭合。"
+    "signature": "(sdegeo:create-polygon vertex-list region-material region-name)"
   },
   "sdegeo:create-polyline-wire": {
+    "description": "创建仅由直线边组成的多段线线体。没有材料或区域属性；适用于扫描操作。",
     "example": "(sdegeo:create-polyline-wire (list (position 0 0 0) (position 1 0 0) (position 1 1 0)))",
     "parameters": [
       {
@@ -338,9 +349,10 @@
         "desc": "定义线体顶点位置的位置列表(POSITION LIST)，例如 `(list (position 0 0 0) (position 1 0 0) ...)`。该线体没有附加的材料或区域名称属性，也不会写入输出边界文件。可在使用“沿线扫描”选项的扫描操作中使用。"
       }
     ],
-    "description": "创建仅由直线边组成的多段线线体。没有材料或区域属性；适用于扫描操作。"
+    "signature": "(sdegeo:create-polyline-wire vertex-list)"
   },
   "sdegeo:create-prism": {
+    "description": "创建一个具有 nsides 条边（>= 3）的实心棱柱体。以 centerposition 为中心，高度沿 z 轴。",
     "example": "(sdegeo:create-prism (position 0 0 0) 20 40 40 6 \"PolySilicon\" \"\")",
     "parameters": [
       {
@@ -379,9 +391,10 @@
         "desc": "分配给体的区域名称字符串"
       }
     ],
-    "description": "创建一个具有 nsides 条边（>= 3）的实心棱柱体。以 centerposition 为中心，高度沿 z 轴。"
+    "signature": "(sdegeo:create-prism centerposition height major-radius minor-radius nsides region-material region-name)"
   },
   "sdegeo:create-pyramid": {
+    "description": "创建一个具有 nsides 条边（>= 3）的实心棱锥体。`top` 参数指定顶部的长轴长度。",
     "example": "(sdegeo:create-pyramid (position 0 0 0) 20 40 40 6 12 \"PolySilicon\" \"\")",
     "parameters": [
       {
@@ -425,9 +438,10 @@
         "desc": "分配给体的区域名称字符串"
       }
     ],
-    "description": "创建一个具有 nsides 条边（>= 3）的实心棱锥体。`top` 参数指定顶部的长轴长度。"
+    "signature": "(sdegeo:create-pyramid centerposition height major-radius minor-radius nsides top region-material region-name)"
   },
   "sdegeo:create-rectangle": {
+    "description": "创建由两个对角顶点位置定义的矩形区域。",
     "example": "(sdegeo:create-rectangle (position 0 0 0) (position 2 1 0) \"Silicon\" \"R.Substrate\")",
     "parameters": [
       {
@@ -451,9 +465,10 @@
         "desc": "分配给区域的区域名称字符串，例如 `\"R.Substrate\"`"
       }
     ],
-    "description": "创建由两个对角顶点位置定义的矩形区域。"
+    "signature": "(sdegeo:create-rectangle pos1 pos2 material region)"
   },
   "sdegeo:create-reg-polygon": {
+    "description": "创建由中心、半径以及可选的边数和旋转角度定义的二维正多边形区域。",
     "example": "(sdegeo:create-reg-polygon (position 0 0 0) 5 6 0 \"Silicon\" \"R.Hex\")",
     "parameters": [
       {
@@ -487,9 +502,10 @@
         "desc": "分配给区域的区域名称字符串"
       }
     ],
-    "description": "创建由中心、半径以及可选的边数和旋转角度定义的二维正多边形区域。"
+    "signature": "(sdegeo:create-reg-polygon center radius [nsides] [angle] region-material region-name)"
   },
   "sdegeo:create-ruled-region": {
+    "description": "在两条现有边之间创建二维直纹区域。两条边不能相交。",
     "example": "(sdegeo:create-ruled-region edge1 edge2 \"Silicon\" \"R.Ruled\")",
     "parameters": [
       {
@@ -513,9 +529,10 @@
         "desc": "分配给区域的区域名称字符串"
       }
     ],
-    "description": "在两条现有边之间创建二维直纹区域。两条边不能相交。"
+    "signature": "(sdegeo:create-ruled-region edge1 edge2 region-material region-name)"
   },
   "sdegeo:create-sphere": {
+    "description": "创建以指定位置为中心的球体。支持 `(position ...)` 和裸 xyz 语法。",
     "example": "(sdegeo:create-sphere (position -4 -4 0) 1.5 \"Gold\" \"\")",
     "parameters": [
       {
@@ -539,9 +556,10 @@
         "desc": "分配给体的区域名称字符串"
       }
     ],
-    "description": "创建以指定位置为中心的球体。支持 `(position ...)` 和裸 xyz 语法。"
+    "signature": "(sdegeo:create-sphere {center-position | {cx cy cz}} radius region-material region-name)"
   },
   "sdegeo:create-spline-wire": {
+    "description": "根据顶点位置列表创建样条线体。没有材料或区域属性；适用于扫描操作。",
     "example": "(sdegeo:create-spline-wire (list (position 0 0 0) (position 1 1 0) (position 2 0 0)))",
     "parameters": [
       {
@@ -550,9 +568,10 @@
         "desc": "定义样条线体顶点位置的位置列表(POSITION LIST)，例如 `(list (position 0 0 0) (position 1 1 0) ...)`。该线体没有附加的材料或区域名称属性，也不会写入输出边界文件。可在使用“沿线扫描”选项的扫描操作中使用。"
       }
     ],
-    "description": "根据顶点位置列表创建样条线体。没有材料或区域属性；适用于扫描操作。"
+    "signature": "(sdegeo:create-spline-wire vertex-list)"
   },
   "sdegeo:create-torus": {
+    "description": "在 xy 平面内创建实心圆环体。形状取决于半径比例：圆环（major > minor）、苹果形（major < minor）或柠檬形（major < 0）。",
     "example": "(sdegeo:create-torus (position -10 -5 -10) 7 3 \"Gold\" \"\")",
     "parameters": [
       {
@@ -581,9 +600,10 @@
         "desc": "分配给体的区域名称字符串"
       }
     ],
-    "description": "在 xy 平面内创建实心圆环体。形状取决于半径比例：圆环（major > minor）、苹果形（major < minor）或柠檬形（major < 0）。"
+    "signature": "(sdegeo:create-torus {center-position | {cx cy cz}} major-radius minor-radius region-material region-name)"
   },
   "sdegeo:create-triangle": {
+    "description": "创建由三个顶点位置定义的二维三角形区域。",
     "example": "(sdegeo:create-triangle (position 0 0 0) (position 1 0 0) (position 0.5 1 0) \"Silicon\" \"sir\")",
     "parameters": [
       {
@@ -612,9 +632,10 @@
         "desc": "分配给区域的区域名称字符串"
       }
     ],
-    "description": "创建由三个顶点位置定义的二维三角形区域。"
+    "signature": "(sdegeo:create-triangle v1 v2 v3 region-material region-name)"
   },
   "sdegeo:extrude": {
+    "description": "将二维体沿正 z 方向拉伸为三维体。使用 `\"all\"` 可拉伸整个模型。",
     "example": "(sdegeo:extrude \"all\" 4)",
     "parameters": [
       {
@@ -633,9 +654,10 @@
         "desc": "extrude-option — 可选。过滤输入的体列表：\"2D\"（默认）仅拉伸面体；\"3D\" 仅拉伸实体的面；\"Mixed\" 同时拉伸二维和三维实体。参数类型: STRING (optional)"
       }
     ],
-    "description": "将二维体沿正 z 方向拉伸为三维体。使用 `\"all\"` 可拉伸整个模型。"
+    "signature": "(sdegeo:extrude body-list extrusion-depth [extrude-option])"
   },
   "sdegeo:mirror-selected": {
+    "description": "使用 transform:reflection-type 变换对象对实体进行镜像。替代已废弃的 `sdegeo:reflect`。",
     "example": "(sdegeo:mirror-selected (get-body-list) tr1 #t)",
     "parameters": [
       {
@@ -659,9 +681,10 @@
         "desc": "reverse-DRS-flag — 如果为 #t，则在镜像前反转掺杂和 Ref/Eval 线体（如掺杂基线方向）。默认为 #f"
       }
     ],
-    "description": "使用 transform:reflection-type 变换对象对实体进行镜像。替代已废弃的 `sdegeo:reflect`。"
+    "signature": "(sdegeo:mirror-selected entity-list transform keep-flag [reverse-DRS-flag])"
   },
   "sdegeo:reflect": {
+    "description": "通过由基准位置和方向向量定义的平面对实体进行镜像。**已废弃** — 请改用 `sdegeo:mirror-selected`。",
     "example": "(sdegeo:reflect \"all\" (position 10 0 0) (gvector 1 0 0) #t)",
     "parameters": [
       {
@@ -685,9 +708,10 @@
         "desc": "keep-flag — 如果为 #t，则保留父单元；如果为 #f，则删除父单元"
       }
     ],
-    "description": "通过由基准位置和方向向量定义的平面对实体进行镜像。**已废弃** — 请改用 `sdegeo:mirror-selected`。"
+    "signature": "(sdegeo:reflect entity-list base-position base-vector keep-flag)"
   },
   "sdegeo:revolve": {
+    "description": "绕由基准位置和方向向量定义的轴，将实体旋转指定角度。",
     "example": "(sdegeo:revolve \"all\" (position 0 0 0) (gvector 0 1 0) 90)",
     "parameters": [
       {
@@ -711,9 +735,10 @@
         "desc": "angle — 旋转角度（度）"
       }
     ],
-    "description": "绕由基准位置和方向向量定义的轴，将实体旋转指定角度。"
+    "signature": "(sdegeo:revolve entity-list base-position base-vector angle)"
   },
   "sdegeo:rotate-selected": {
+    "description": "使用 transform:rotation-type 变换对象旋转实体。支持可选的重复次数和重叠控制规则。",
     "example": "(sdegeo:rotate-selected mb tr #t 6 \"BAB\")",
     "parameters": [
       {
@@ -742,9 +767,10 @@
         "desc": "overlap-rule — 控制自动布尔重叠移除。默认为 #t（自动移除重叠）。可以是 #f（禁用）或字符串，如 \"ABA\", \"BAB\""
       }
     ],
-    "description": "使用 transform:rotation-type 变换对象旋转实体。支持可选的重复次数和重叠控制规则。"
+    "signature": "(sdegeo:rotate-selected entity-list transform [keep-flag] [repeat-number] [overlap-rule])"
   },
   "sdegeo:align-horizontal": {
+    "description": "将指定的顶点对齐到给定 y 坐标的水平线上。仅用于二维模型。",
     "example": "(sdegeo:align-horizontal (list v1 v2 v3) 0.0)",
     "parameters": [
       {
@@ -758,9 +784,10 @@
         "desc": "align-position — 指定水平对齐线的位置（y 坐标）。参数类型: REAL"
       }
     ],
-    "description": "将指定的顶点对齐到给定 y 坐标的水平线上。仅用于二维模型。"
+    "signature": "(sdegeo:align-horizontal vertex-list align-position)"
   },
   "sdegeo:align-horizontal-aut": {
+    "description": "将指定的顶点对齐到其平均 y 坐标的水平线上。仅用于二维模型。",
     "example": "(sdegeo:align-horizontal-aut (list v1 v2 v3))",
     "parameters": [
       {
@@ -769,9 +796,10 @@
         "desc": "vertex-list — 指定顶点列表。对齐位置（y 坐标）自动计算为指定顶点的平均 y 坐标。参数类型: VERTEX LIST"
       }
     ],
-    "description": "将指定的顶点对齐到其平均 y 坐标的水平线上。仅用于二维模型。"
+    "signature": "(sdegeo:align-horizontal-aut vertex-list)"
   },
   "sdegeo:align-to-line": {
+    "description": "通过将指定顶点投影到由两点定义的线上，将它们对齐到该线。仅用于二维模型。",
     "example": "(sdegeo:align-to-line (list v1 v2) (position 0 0 0) (position 1 1 0))",
     "parameters": [
       {
@@ -790,9 +818,10 @@
         "desc": "pos2 — 指定对齐线的第二个点。该点必须与所列顶点位于同一工作平面。参数类型: POSITION"
       }
     ],
-    "description": "通过将指定顶点投影到由两点定义的线上，将它们对齐到该线。仅用于二维模型。"
+    "signature": "(sdegeo:align-to-line vertex-list pos1 pos2)"
   },
   "sdegeo:align-vertical": {
+    "description": "将指定的顶点对齐到给定 x 坐标的垂直线上。仅用于二维模型。",
     "example": "(sdegeo:align-vertical (list v1 v2) 0.0)",
     "parameters": [
       {
@@ -806,9 +835,10 @@
         "desc": "align-position — 指定垂直对齐线的新位置（x 坐标）。参数类型: REAL"
       }
     ],
-    "description": "将指定的顶点对齐到给定 x 坐标的垂直线上。仅用于二维模型。"
+    "signature": "(sdegeo:align-vertical vertex-list align-position)"
   },
   "sdegeo:align-vertical-aut": {
+    "description": "将指定的顶点对齐到其平均 x 坐标的垂直线上。仅用于二维模型。",
     "example": "(sdegeo:align-vertical-aut (list v1 v2 v3))",
     "parameters": [
       {
@@ -817,9 +847,10 @@
         "desc": "vertex-list — 指定顶点列表。对齐位置（x 坐标）自动计算为指定顶点的平均 x 坐标。参数类型: VERTEX LIST"
       }
     ],
-    "description": "将指定的顶点对齐到其平均 x 坐标的垂直线上。仅用于二维模型。"
+    "signature": "(sdegeo:align-vertical-aut vertex-list)"
   },
   "sdegeo:bool-intersect": {
+    "description": "将第一个体与列表中的其余体进行求交运算。结果体继承第一个体的材料和区域属性。",
     "example": "(sdegeo:bool-intersect (list b2 b1))",
     "parameters": [
       {
@@ -828,9 +859,10 @@
         "desc": "指定一个体列表。列表中的第一个体将与其余体进行求交运算。结果体继承第一个体的 DATEX 材料属性。适用于 2D 和 3D 体。参数类型：BODY LIST"
       }
     ],
-    "description": "将第一个体与列表中的其余体进行求交运算。结果体继承第一个体的材料和区域属性。"
+    "signature": "(sdegeo:bool-intersect body-list)"
   },
   "sdegeo:bool-subtract": {
+    "description": "从列表中的其余体减去第一个体。结果体继承第一个体的材料和区域属性。",
     "example": "(sdegeo:bool-subtract (list b2 b1))",
     "parameters": [
       {
@@ -839,9 +871,10 @@
         "desc": "指定一个体列表。列表中的第一个体将被其余体减去。结果体继承第一个体的 DATEX 材料属性。适用于 2D 和 3D 体。参数类型：BODY LIST"
       }
     ],
-    "description": "从列表中的其余体减去第一个体。结果体继承第一个体的材料和区域属性。"
+    "signature": "(sdegeo:bool-subtract body-list)"
   },
   "sdegeo:bool-unite": {
+    "description": "对指定的体列表执行布尔并集运算。结果体继承第一个体的材料和区域属性。",
     "example": "(sdegeo:bool-unite (get-body-list))",
     "parameters": [
       {
@@ -850,9 +883,10 @@
         "desc": "指定要合并的体列表。新合并的体继承第一个体的 DATEX 材料属性。适用于 2D 和 3D 体。参数类型：BODY LIST"
       }
     ],
-    "description": "对指定的体列表执行布尔并集运算。结果体继承第一个体的材料和区域属性。"
+    "signature": "(sdegeo:bool-unite body-list)"
   },
   "sdegeo:chamfer": {
+    "description": "使用指定的倒角距离执行 3D 边或顶点倒角。",
     "example": "(sdegeo:chamfer edge1 2)",
     "parameters": [
       {
@@ -871,9 +905,10 @@
         "desc": "可选。如果设置为 #t，则执行自适应倒角：如果使用原始 chamfer-dist 值操作失败，则会使用一系列更小的倒角距离重复操作，直到成功。参数类型：BOOLEAN (optional)"
       }
     ],
-    "description": "使用指定的倒角距离执行 3D 边或顶点倒角。"
+    "signature": "(sdegeo:chamfer edge | vertex-list chamfer-dist [adaptive-chamfering])"
   },
   "sdegeo:chamfer-2d": {
+    "description": "对指定的一个或多个顶点执行 2D 倒角操作。",
     "example": "(sdegeo:chamfer-2d (list (list-ref myvertices 0) (list-ref myvertices 1)) 3)",
     "parameters": [
       {
@@ -887,9 +922,10 @@
         "desc": "指定倒角距离。距离的选择必须确保操作不会导致无效的几何形状。参数类型：REAL"
       }
     ],
-    "description": "对指定的一个或多个顶点执行 2D 倒角操作。"
+    "signature": "(sdegeo:chamfer-2d vertex(s) chamfer-dist)"
   },
   "sdegeo:check-overlap": {
+    "description": "检查几何体之间的重叠。如果没有重叠则返回 null，否则返回一个重叠体序对(pair)的列表。",
     "example": "(sdegeo:check-overlap (get-body-list) #f)",
     "parameters": [
       {
@@ -903,9 +939,10 @@
         "desc": "可选。如果为 #t（默认），使用快速的包围盒重叠检查（可能报告错误的重叠）。如果为 #f，则执行更可靠的精确检查。参数类型：BOOLEAN (default is #t)"
       }
     ],
-    "description": "检查几何体之间的重叠。如果没有重叠则返回 null，否则返回一个重叠体序对(pair)的列表。"
+    "signature": "(sdegeo:check-overlap body-list [use-bbox-check])"
   },
   "sdegeo:chop-domain": {
+    "description": "切割 3D 器件，使其在 z 方向上仅覆盖指定的多边形基底。器件底部必须位于 xy 平面上。",
     "example": "(sdegeo:chop-domain (list 0 0 2 2 6 0 10 4 3 10 0 4))",
     "parameters": [
       {
@@ -914,9 +951,10 @@
         "desc": "指定一个定义多边形基底的 x, y 点序对(pair)列表。器件被切割为仅覆盖此多边形。器件必须放置在 xy 平面上，切割在 z 方向进行。参数类型：REAL REAL (a list of alternating x and y values)"
       }
     ],
-    "description": "切割 3D 器件，使其在 z 方向上仅覆盖指定的多边形基底。器件底部必须位于 xy 平面上。"
+    "signature": "(sdegeo:chop-domain point-pairs)"
   },
   "sdegeo:delete-collinear-edges": {
+    "description": "通过将相邻的共线边合并为单个边实体来删除共线边。",
     "example": "(sdegeo:delete-collinear-edges (sde:get-edge-list))",
     "parameters": [
       {
@@ -925,9 +963,10 @@
         "desc": "指定要合并的共线边列表。相邻的共线边被合并为一个边实体。参数类型：EDGE LIST"
       }
     ],
-    "description": "通过将相邻的共线边合并为单个边实体来删除共线边。"
+    "signature": "(sdegeo:delete-collinear-edges edge-list)"
   },
   "sdegeo:delete-contact-boundary-edges": {
+    "description": "从指定区域的所有边中移除活动接触集属性。",
     "example": "(sdegeo:delete-contact-boundary-edges (car (sde:get-body-list)))",
     "parameters": [
       {
@@ -936,9 +975,10 @@
         "desc": "可选。指定一个体或体列表。如果省略，Scheme 扩展将从 (sde:selected-entities) 获取体。仅移除活动接触。参数类型：BODY | BODY LIST (optional)"
       }
     ],
-    "description": "从指定区域的所有边中移除活动接触集属性。"
+    "signature": "(sdegeo:delete-contact-boundary-edges [body | body-list])"
   },
   "sdegeo:delete-contact-boundary-faces": {
+    "description": "从指定体的所有面中删除接触属性。",
     "example": "(sdegeo:delete-contact-boundary-faces mycube)",
     "parameters": [
       {
@@ -947,9 +987,10 @@
         "desc": "可选。指定一个体或体列表。如果省略且未定义 face-list，Scheme 扩展将从 (sde:selected-entities) 获取体。使用活动接触集名称来指定要删除的接触。参数类型：BODY | BODY LIST (optional)"
       }
     ],
-    "description": "从指定体的所有面中删除接触属性。"
+    "signature": "(sdegeo:delete-contact-boundary-faces [body | body-list])"
   },
   "sdegeo:delete-contact-edges": {
+    "description": "从选定的边移除当前接触集属性。",
     "example": "(sdegeo:delete-contact-edges (sde:get-edge-list))",
     "parameters": [
       {
@@ -958,9 +999,10 @@
         "desc": "可选。指定一个边或边列表。如果省略，Scheme扩展将从(sde:selected-entities)获取边。仅移除活动的接触。参数类型: EDGE | EDGE LIST (optional)"
       }
     ],
-    "description": "从选定的边移除当前接触集属性。"
+    "signature": "(sdegeo:delete-contact-edges [edge | edge-list])"
   },
   "sdegeo:delete-contact-faces": {
+    "description": "从指定的面移除接触属性。",
     "example": "(sdegeo:delete-contact-faces (sde:get-face-list))",
     "parameters": [
       {
@@ -969,9 +1011,10 @@
         "desc": "可选。指定一个面或面列表。如果省略且未定义面列表，Scheme扩展将从(sde:selected-entities)获取面。使用活动接触集的名称。参数类型: FACE | FACE LIST (optional)"
       }
     ],
-    "description": "从指定的面移除接触属性。"
+    "signature": "(sdegeo:delete-contact-faces [face | face-list])"
   },
   "sdegeo:delete-contact-set": {
+    "description": "删除指定的接触集并移除相应的接触属性。",
     "example": "(sdegeo:delete-contact-set \"Gate\")",
     "parameters": [
       {
@@ -980,9 +1023,10 @@
         "desc": "指定要删除的接触集名称。相应的接触属性（2D接触或3D接触）也将被移除。参数类型: STRING"
       }
     ],
-    "description": "删除指定的接触集并移除相应的接触属性。"
+    "signature": "(sdegeo:delete-contact-set contact-name)"
   },
   "sdegeo:delete-coord-sys": {
+    "description": "删除指定的坐标系。",
     "example": "(sdegeo:delete-coord-sys \"cs1\")",
     "parameters": [
       {
@@ -991,9 +1035,10 @@
         "desc": "指定要删除的坐标系名称。参数类型: STRING"
       }
     ],
-    "description": "删除指定的坐标系。"
+    "signature": "(sdegeo:delete-coord-sys cs-name)"
   },
   "sdegeo:delete-edges": {
+    "description": "从模型中移除指定的边。默认90度角向容差用于保护特征。",
     "example": "(sdegeo:delete-edges (sde:get-edge-list) 45)",
     "parameters": [
       {
@@ -1007,9 +1052,10 @@
         "desc": "可选。指定用于保护模型特征的角向容差（度）。默认使用90度：只有夹角大于此值的边才会被移除。参数类型: REAL (optional)"
       }
     ],
-    "description": "从模型中移除指定的边。默认90度角向容差用于保护特征。"
+    "signature": "(sdegeo:delete-edges edge-list [angular-tolerance])"
   },
   "sdegeo:delete-nearly-collinear-edges": {
+    "description": "删除近似共线的边，其中两条边中点之间的距离小于dist。",
     "example": "(sdegeo:delete-nearly-collinear-edges (sde:get-edge-list) 0.01)",
     "parameters": [
       {
@@ -1023,9 +1069,10 @@
         "desc": "指定最大距离阈值。如果两条边中点之间的距离到由其他端点定义的直线小于此值，则这些边被归类为近似共线并被移除。参数类型: REAL"
       }
     ],
-    "description": "删除近似共线的边，其中两条边中点之间的距离小于dist。"
+    "signature": "(sdegeo:delete-nearly-collinear-edges edge-list dist)"
   },
   "sdegeo:delete-region": {
+    "description": "从模型中永久删除指定的区域，包括Ref/Eval窗口体。",
     "example": "(sdegeo:delete-region (car (sde:get-body-list)))",
     "parameters": [
       {
@@ -1034,9 +1081,10 @@
         "desc": "指定要从模型中永久移除的一个或多个体，包括Ref/Eval窗口体。体由其实体编号指定。参数类型: BODY | BODY LIST"
       }
     ],
-    "description": "从模型中永久删除指定的区域，包括Ref/Eval窗口体。"
+    "signature": "(sdegeo:delete-region bodies)"
   },
   "sdegeo:delete-short-edges": {
+    "description": "删除列表中所有短于指定最大长度的边。",
     "example": "(sdegeo:delete-short-edges (sde:get-edge-list) 0.001)",
     "parameters": [
       {
@@ -1050,9 +1098,10 @@
         "desc": "指定最大边长度阈值。短于此值的边将从模型中删除。参数类型: REAL"
       }
     ],
-    "description": "删除列表中所有短于指定最大长度的边。"
+    "signature": "(sdegeo:delete-short-edges edge-list max-edge-length)"
   },
   "sdegeo:delete-vertices": {
+    "description": "从模型中移除指定的顶点。必须从所有体中选择共享顶点。",
     "example": "(sdegeo:delete-vertices (entity:vertices mybody))",
     "parameters": [
       {
@@ -1061,9 +1110,10 @@
         "desc": "指定要从模型中移除的顶点列表。如果存在相邻区域，必须从所有体中选择共享顶点以保持共形性。只能删除由线性边共享的顶点。仅适用于2D模型。参数类型: VERTEX LIST"
       }
     ],
-    "description": "从模型中移除指定的顶点。必须从所有体中选择共享顶点。"
+    "signature": "(sdegeo:delete-vertices vertex-list)"
   },
   "sdegeo:delete-work-plane": {
+    "description": "删除指定的工作平面。全局工作平面\"base\"无法删除。",
     "example": "(sdegeo:delete-work-plane \"wp1\")",
     "parameters": [
       {
@@ -1072,9 +1122,10 @@
         "desc": "指定要删除的工作平面名称。全局工作平面'base'是自动创建的，无法删除。参数类型: STRING"
       }
     ],
-    "description": "删除指定的工作平面。全局工作平面\"base\"无法删除。"
+    "signature": "(sdegeo:delete-work-plane wp-name)"
   },
   "sdegeo:fillet": {
+    "description": "使用恒定半径圆角执行三维边或顶点倒圆。",
     "example": "(sdegeo:fillet edge1 2)",
     "parameters": [
       {
@@ -1093,9 +1144,10 @@
         "desc": "可选。如果设置为 #t，则执行自适应倒圆：如果使用原始 fillet-radius 值操作失败，则会使用一系列更小的半径重复操作，直到成功为止。参数类型：BOOLEAN (可选)"
       }
     ],
-    "description": "使用恒定半径圆角执行三维边或顶点倒圆。"
+    "signature": "(sdegeo:fillet edge | vertex-list fillet-radius [adaptive-filleting])"
   },
   "sdegeo:fillet-2d": {
+    "description": "在二维模型中圆角化指定的一个或多个顶点。",
     "example": "(sdegeo:fillet-2d (entity:vertices mybody) 1)",
     "parameters": [
       {
@@ -1109,19 +1161,22 @@
         "desc": "指定圆角半径。必须选择适当的半径以确保操作不会导致无效的几何形状。过小的圆角可能导致网格划分时产生过多的小单元。参数类型：REAL"
       }
     ],
-    "description": "在二维模型中圆角化指定的一个或多个顶点。"
+    "signature": "(sdegeo:fillet-2d vertex(s) fillet-radius)"
   },
   "sdegeo:get-active-work-plane": {
+    "description": "以字符串形式返回活动工作平面的名称。",
     "example": "(sdegeo:get-active-work-plane)",
     "parameters": [],
-    "description": "以字符串形式返回活动工作平面的名称。"
+    "signature": "(sdegeo:get-active-work-plane)"
   },
   "sdegeo:get-auto-region-naming": {
+    "description": "返回自动区域命名选项的状态（#t 或 #f）。",
     "example": "(sdegeo:get-auto-region-naming)",
     "parameters": [],
-    "description": "返回自动区域命名选项的状态（#t 或 #f）。"
+    "signature": "(sdegeo:get-auto-region-naming)"
   },
   "sdegeo:get-contact-edgelist": {
+    "description": "返回所有具有指定接触集名称的边，作为二维接触属性。",
     "example": "(sdegeo:get-contact-edgelist \"Drain\")",
     "parameters": [
       {
@@ -1130,9 +1185,10 @@
         "desc": "接触集的名称"
       }
     ],
-    "description": "返回所有具有指定接触集名称的边，作为二维接触属性。"
+    "signature": "(sdegeo:get-contact-edgelist contact-set-name)"
   },
   "sdegeo:get-contact-facelist": {
+    "description": "返回所有具有指定接触集名称的面，作为三维接触属性。",
     "example": "(sdegeo:get-contact-facelist \"Gate\")",
     "parameters": [
       {
@@ -1141,24 +1197,28 @@
         "desc": "接触集的名称"
       }
     ],
-    "description": "返回所有具有指定接触集名称的面，作为三维接触属性。"
+    "signature": "(sdegeo:get-contact-facelist contact-set-name)"
   },
   "sdegeo:get-current-contact-set": {
+    "description": "返回当前（活动）接触集的名称。",
     "example": "(sdegeo:get-current-contact-set)",
     "parameters": [],
-    "description": "返回当前（活动）接触集的名称。"
+    "signature": "(sdegeo:get-current-contact-set)"
   },
   "sdegeo:get-default-boolean": {
+    "description": "返回默认的布尔行为：\"AB\"、\"ABA\"、\"BAB\"、\"ABiA\"、\"ABiB\" 或 \"XX\"。",
     "example": "(sdegeo:get-default-boolean)",
     "parameters": [],
-    "description": "返回默认的布尔行为：\"AB\"、\"ABA\"、\"BAB\"、\"ABiA\"、\"ABiB\" 或 \"XX\"。"
+    "signature": "(sdegeo:get-default-boolean)"
   },
   "sdegeo:get-region-counter": {
+    "description": "返回用于自动区域命名（Region_N）的当前区域计数器值。",
     "example": "(sdegeo:get-region-counter)",
     "parameters": [],
-    "description": "返回用于自动区域命名（Region_N）的当前区域计数器值。"
+    "signature": "(sdegeo:get-region-counter)"
   },
   "sdegeo:set-active-coord-sys": {
+    "description": "将指定的坐标系设置为后续几何创建的活动坐标系。",
     "example": "(sdegeo:set-active-coord-sys \"Global\")",
     "parameters": [
       {
@@ -1167,9 +1227,10 @@
         "desc": "要设置为活动坐标系的名称"
       }
     ],
-    "description": "将指定的坐标系设置为后续几何创建的活动坐标系。"
+    "signature": "(sdegeo:set-active-coord-sys cs-name)"
   },
   "sdegeo:set-active-work-plane": {
+    "description": "将指定的工作平面设置为后续几何体创建的激活平面。",
     "example": "(sdegeo:set-active-work-plane \"wp1\")",
     "parameters": [
       {
@@ -1178,9 +1239,10 @@
         "desc": "要设置为激活状态的工作平面名称"
       }
     ],
-    "description": "将指定的工作平面设置为后续几何体创建的激活平面。"
+    "signature": "(sdegeo:set-active-work-plane wp-name)"
   },
   "sdegeo:set-auto-region-naming": {
+    "description": "开启或关闭自动区域命名选项。",
     "example": "(sdegeo:set-auto-region-naming #t)",
     "parameters": [
       {
@@ -1189,9 +1251,10 @@
         "desc": "布尔值，用于开启(#t)或关闭(#f)自动区域命名"
       }
     ],
-    "description": "开启或关闭自动区域命名选项。"
+    "signature": "(sdegeo:set-auto-region-naming on-off)"
   },
   "sdegeo:set-contact": {
+    "description": "将激活的接触附着到指定的实体上。传递 \"remove\" 以分离接触。",
     "example": "(sdegeo:set-contact (car (sde:get-body-list)) \"Gate\")",
     "parameters": [
       {
@@ -1210,9 +1273,10 @@
         "desc": "可选；传递 \"remove\" 以分离接触"
       }
     ],
-    "description": "将激活的接触附着到指定的实体上。传递 \"remove\" 以分离接触。"
+    "signature": "(sdegeo:set-contact entity | entity-list [contact-name] [\"remove\"])"
   },
   "sdegeo:set-contact-boundary-edges": {
+    "description": "使用激活的接触集，将指定区域的所有边界边定义为接触。",
     "example": "(sdegeo:set-contact-boundary-edges (car (sde:get-body-list)))",
     "parameters": [
       {
@@ -1221,9 +1285,10 @@
         "desc": "体或体列表"
       }
     ],
-    "description": "使用激活的接触集，将指定区域的所有边界边定义为接触。"
+    "signature": "(sdegeo:set-contact-boundary-edges body | body-list)"
   },
   "sdegeo:set-contact-boundary-faces": {
+    "description": "使用激活的接触集，将接触属性附着到指定体的每个面上。",
     "example": "(sdegeo:set-contact-boundary-faces mycube)",
     "parameters": [
       {
@@ -1232,9 +1297,10 @@
         "desc": "体或体列表"
       }
     ],
-    "description": "使用激活的接触集，将接触属性附着到指定体的每个面上。"
+    "signature": "(sdegeo:set-contact-boundary-faces body | body-list)"
   },
   "sdegeo:set-contact-edges": {
+    "description": "将列表中的所有边标记为属于指定接触集的接触。",
     "example": "(sdegeo:set-contact-edges (sde:get-edge-list) \"Drain\")",
     "parameters": [
       {
@@ -1248,9 +1314,10 @@
         "desc": "要分配的预定义接触集名称"
       }
     ],
-    "description": "将列表中的所有边标记为属于指定接触集的接触。"
+    "signature": "(sdegeo:set-contact-edges edge-list contact-set-name)"
   },
   "sdegeo:set-contact-faces": {
+    "description": "使用激活的接触集名称，将接触属性附着到指定的面上。",
     "example": "(sdegeo:set-contact-faces (sde:get-face-list))",
     "parameters": [
       {
@@ -1259,9 +1326,10 @@
         "desc": "面或面列表"
       }
     ],
-    "description": "使用激活的接触集名称，将接触属性附着到指定的面上。"
+    "signature": "(sdegeo:set-contact-faces face | face-list)"
   },
   "sdegeo:set-contact-faces-by-polygon": {
+    "description": "在现有面上压印多边形，并将 3D 接触属性附着到压印的线段上。",
     "example": "(sdegeo:set-contact-faces-by-polygon (list (list (position 8 7 10) (position 9 8 10))) (list (gvector 0 0 -1)) \"c1\")",
     "parameters": [
       {
@@ -1280,9 +1348,10 @@
         "desc": "要分配给压印面线段的接触集名称"
       }
     ],
-    "description": "在现有面上压印多边形，并将 3D 接触属性附着到压印的线段上。"
+    "signature": "(sdegeo:set-contact-faces-by-polygon polygon-list normal-list contact-set-name)"
   },
   "sdegeo:set-current-contact-set": {
+    "description": "设置当前（激活）接触集的名称。",
     "example": "(sdegeo:set-current-contact-set \"Drain\")",
     "parameters": [
       {
@@ -1291,9 +1360,10 @@
         "desc": "要设置为激活状态的接触集名称"
       }
     ],
-    "description": "设置当前（激活）接触集的名称。"
+    "signature": "(sdegeo:set-current-contact-set csName)"
   },
   "sdegeo:set-default-boolean": {
+    "description": "为重叠区域设置默认布尔行为：\"AB\"、\"ABA\"、\"BAB\"、\"ABiA\"、\"ABiB\" 或 \"XX\"。",
     "example": "(sdegeo:set-default-boolean \"ABA\")",
     "parameters": [
       {
@@ -1302,9 +1372,10 @@
         "desc": "预定义字符串：\"AB\"（合并）、\"ABA\"（从现有区域中减去新区域）、\"BAB\"（从新区域中减去现有区域）、\"ABiA\"、\"ABiB\" 或 \"XX\"（允许重叠）"
       }
     ],
-    "description": "为重叠区域设置默认布尔行为：\"AB\"、\"ABA\"、\"BAB\"、\"ABiA\"、\"ABiB\" 或 \"XX\"。"
+    "signature": "(sdegeo:set-default-boolean boolean-value)"
   },
   "sdegeo:set-region-counter": {
+    "description": "显式设置区域计数器。下一个生成的区域将是 Region_N。",
     "example": "(sdegeo:set-region-counter 10)",
     "parameters": [
       {
@@ -1313,14 +1384,16 @@
         "desc": "区域计数器的整数值。下一个生成的区域将被命名为 Region_N，其中 N 为此计数器值。"
       }
     ],
-    "description": "显式设置区域计数器。下一个生成的区域将是 Region_N。"
+    "signature": "(sdegeo:set-region-counter counter)"
   },
   "sdegeo:set-region-counter-aut": {
+    "description": "通过扫描现有的 Region_N 属性，自动将区域计数器设置为下一个可用的数值。",
     "example": "(sdegeo:set-region-counter-aut)",
     "parameters": [],
-    "description": "通过扫描现有的 Region_N 属性，自动将区域计数器设置为下一个可用的数值。"
+    "signature": "(sdegeo:set-region-counter-aut)"
   },
   "sdegeo:move-2d-regions": {
+    "description": "通过给定的向量将指定的区域移动到新位置。用于 2D 建模。",
     "example": "(sdegeo:move-2d-regions region1 (gvector 1 0 0))",
     "parameters": [
       {
@@ -1334,9 +1407,10 @@
         "desc": "指定移动到新位置的位移向量。"
       }
     ],
-    "description": "通过给定的向量将指定的区域移动到新位置。用于 2D 建模。"
+    "signature": "(sdegeo:move-2d-regions body | body-list gvector)"
   },
   "sdegeo:move-edge": {
+    "description": "通过给定的向量将指定的边移动到新位置。",
     "example": "(sdegeo:move-edge edge1 (gvector 1 0 0))",
     "parameters": [
       {
@@ -1350,9 +1424,10 @@
         "desc": "指定移动到新位置的位移向量。"
       }
     ],
-    "description": "通过给定的向量将指定的边移动到新位置。"
+    "signature": "(sdegeo:move-edge edge gvector)"
   },
   "sdegeo:move-vertex": {
+    "description": "将指定的顶点或顶点列表移动到由位置或向量给定的新位置。",
     "example": "(sdegeo:move-vertex lower-left-vertex (position -0.2 0.2 0))",
     "parameters": [
       {
@@ -1366,9 +1441,10 @@
         "desc": "新位置，可以是一个位置实体、一个向量（单个顶点）或一个位置列表（顶点列表）。"
       }
     ],
-    "description": "将指定的顶点或顶点列表移动到由位置或向量给定的新位置。"
+    "signature": "(sdegeo:move-vertex ve pe)"
   },
   "sdegeo:scale": {
+    "description": "使用指定的因子缩放实体。已过时 — 请使用 sdegeo:scale-selected。",
     "example": "(sdegeo:scale (list region1 region2) 2.0 2.0)",
     "parameters": [
       {
@@ -1392,9 +1468,10 @@
         "desc": "沿 z 轴的缩放因子（可选）。"
       }
     ],
-    "description": "使用指定的因子缩放实体。已过时 — 请使用 sdegeo:scale-selected。"
+    "signature": "(sdegeo:scale entity-list scale-x scale-y [scale-z])"
   },
   "sdegeo:scale-selected": {
+    "description": "使用 transform:scaling-type 变换对象缩放实体。",
     "example": "(sdegeo:scale-selected (list region1) (transform:scaling 2.0 2.0 2.0))",
     "parameters": [
       {
@@ -1408,9 +1485,10 @@
         "desc": "缩放数据，指定为 transform:scaling-type 变换对象。"
       }
     ],
-    "description": "使用 transform:scaling-type 变换对象缩放实体。"
+    "signature": "(sdegeo:scale-selected entity-list transform)"
   },
   "sdegeo:sweep": {
+    "description": "通过沿路径（线、距离、向量或轴）扫描轮廓面来创建面或实体。",
     "example": "(sdegeo:sweep face1 1.0)",
     "parameters": [
       {
@@ -1429,9 +1507,10 @@
         "desc": "可选的扫描选项数据结构，由 sweep:options 创建。默认值：实体，拔模角 0，间隙类型 2，扭曲 0，最小旋转导轨法则。"
       }
     ],
-    "description": "通过沿路径（线、距离、向量或轴）扫描轮廓面来创建面或实体。"
+    "signature": "(sdegeo:sweep profile {path | distance | vector | axis} [sweep-options])"
   },
   "sdegeo:sweep-corner": {
+    "description": "执行扫描，生成一个包含立体角的形状，由扫描轴（位置 + 向量）定义。",
     "example": "(sdegeo:sweep-corner (find-face-id (position 0.5 0.5 0)) (position 0 4 0) (gvector 1 0 0))",
     "parameters": [
       {
@@ -1450,9 +1529,10 @@
         "desc": "扫描轴的方向。"
       }
     ],
-    "description": "执行扫描，生成一个包含立体角的形状，由扫描轴（位置 + 向量）定义。"
+    "signature": "(sdegeo:sweep-corner face | face-list position gvector)"
   },
   "sdegeo:split-insert-device": {
+    "description": "在指定位置分割器件，并在分割后的体之间插入一个部件。用于 2D 和 3D 器件。",
     "example": "(sdegeo:split-insert-device (position 0.2 0 0) (gvector 1 0 0) 0.4 #t)",
     "parameters": [
       {
@@ -1476,9 +1556,10 @@
         "desc": "如果为 #t，则合并分割后的面。"
       }
     ],
-    "description": "在指定位置分割器件，并在分割后的体之间插入一个部件。用于 2D 和 3D 器件。"
+    "signature": "(sdegeo:split-insert-device splitpos splitdir splitlength [splitmerge])"
   },
   "sdegeo:split-solid": {
+    "description": "使用由基准位置和法向量定义的切割平面，将一个实体分割为两部分。",
     "example": "(sdegeo:split-solid my_cube (position 0 0 0) (gvector 1 1 0))",
     "parameters": [
       {
@@ -1497,9 +1578,10 @@
         "desc": "切割平面的法向量"
       }
     ],
-    "description": "使用由基准位置和法向量定义的切割平面，将一个实体分割为两部分。"
+    "signature": "(sdegeo:split-solid solid-body base-position plane-normal)"
   },
   "sdegeo:translate": {
+    "description": "按指定的 xyz 距离平移实体。已过时 — 请使用 sdegeo:translate-selected。",
     "example": "(sdegeo:translate (list region1) 1.0 0.0)",
     "parameters": [
       {
@@ -1523,9 +1605,10 @@
         "desc": "沿当前坐标系 z 轴的平移距离 (可选)"
       }
     ],
-    "description": "按指定的 xyz 距离平移实体。已过时 — 请使用 sdegeo:translate-selected。"
+    "signature": "(sdegeo:translate entity-list translate-x translate-y [translate-z])"
   },
   "sdegeo:translate-selected": {
+    "description": "使用 transform:translation-type 变换对象平移实体。支持重复和重叠控制。",
     "example": "(sdegeo:translate-selected (list region1) (transform:translation 1.0 0.0 0.0) #t)",
     "parameters": [
       {
@@ -1549,9 +1632,10 @@
         "desc": "重复平移的次数 (可选)"
       }
     ],
-    "description": "使用 transform:translation-type 变换对象平移实体。支持重复和重叠控制。"
+    "signature": "(sdegeo:translate-selected entity-list transform keep-flag [repeat-number])"
   },
   "sdegeo:2d-cut": {
+    "description": "从 2D 器件中提取一个由两个对角点指定的矩形部分。",
     "example": "(sdegeo:2d-cut (position 0 0 0) (position 10 10 0))",
     "parameters": [
       {
@@ -1565,9 +1649,10 @@
         "desc": "指定矩形的另一个对角点。参数类型: POSITION"
       }
     ],
-    "description": "从 2D 器件中提取一个由两个对角点指定的矩形部分。"
+    "signature": "(sdegeo:2d-cut p1 p2)"
   },
   "sdegeo:3d-cut": {
+    "description": "从 3D 器件中切割一个由基准点和切割平面法向量定义的 2D 切片。",
     "example": "(sdegeo:3d-cut (position 5 0 2) (gvector 0 0 1))",
     "parameters": [
       {
@@ -1596,9 +1681,10 @@
         "desc": "可选。指定是否为轴对齐切割触发新的变换规则。如果应用新的变换规则，则可以按照简单规则显式计算 2D 切割的定位。默认值为 #f。参数类型: BOOLEAN"
       }
     ],
-    "description": "从 3D 器件中切割一个由基准点和切割平面法向量定义的 2D 切片。"
+    "signature": "(sdegeo:3d-cut base-position normal-vector [tr-xy] [tr-record] [tr-axisaligned])"
   },
   "sdegeo:average-edge-length": {
+    "description": "计算边列表中每条边的长度并返回平均边长。",
     "example": "(sdegeo:average-edge-length (entity:edges (get-body-list)))",
     "parameters": [
       {
@@ -1607,9 +1693,10 @@
         "desc": "指定一个边列表，计算并平均其长度。参数类型: EDGE LIST"
       }
     ],
-    "description": "计算边列表中每条边的长度并返回平均边长。"
+    "signature": "(sdegeo:average-edge-length edge-list)"
   },
   "sdegeo:body-trim": {
+    "description": "将所有体修剪到指定的框，移除位于框外的部分。",
     "example": "(sdegeo:body-trim 5 5 5 20 20 20)",
     "parameters": [
       {
@@ -1643,9 +1730,10 @@
         "desc": "修剪框的最大 z 坐标"
       }
     ],
-    "description": "将所有体修剪到指定的框，移除位于框外的部分。"
+    "signature": "(sdegeo:body-trim x0 y0 z0 x1 y1 z1)"
   },
   "sdegeo:break-nearly-axis-aligned-edges": {
+    "description": "通过插入额外的顶点和阶梯状边，将近轴对齐的线性边分解为水平或垂直分量。仅适用于 2D 建模。",
     "example": "(sdegeo:break-nearly-axis-aligned-edges edge-list 3)",
     "parameters": [
       {
@@ -1659,9 +1747,10 @@
         "desc": "指定模型边与 x 轴和 y 轴之间允许的最小角度（度）。如果角度小于此值，该边将被分割为水平和垂直分量。默认值为 5 度。参数类型: REAL (可选)"
       }
     ],
-    "description": "通过插入额外的顶点和阶梯状边，将近轴对齐的线性边分解为水平或垂直分量。仅适用于 2D 建模。"
+    "signature": "(sdegeo:break-nearly-axis-aligned-edges edge-list [angular-tolerance])"
   },
   "sdegeo:chull2d": {
+    "description": "计算指定位置列表的 2D 凸包，并将其作为 POSITION LIST 返回。输入必须位于 z=0 的 xy 平面。",
     "example": "(sdegeo:chull2d (list (position 8 4 0) (position 0 0 0) (position 5 -4 0)))",
     "parameters": [
       {
@@ -1670,14 +1759,16 @@
         "desc": "指定一个位置列表，计算其 2D 凸包。输入位置必须定义在 xy 平面，且 z 坐标必须为 0。参数类型: POSITION LIST"
       }
     ],
-    "description": "计算指定位置列表的 2D 凸包，并将其作为 POSITION LIST 返回。输入必须位于 z=0 的 xy 平面。"
+    "signature": "(sdegeo:chull2d position-list)"
   },
   "sdegeo:contact-sets": {
+    "description": "将所有已定义的接触集名称作为 Scheme 列表返回。",
     "example": "(sdegeo:contact-sets)",
     "parameters": [],
-    "description": "将所有已定义的接触集名称作为 Scheme 列表返回。"
+    "signature": "(sdegeo:contact-sets)"
   },
   "sdegeo:curve-intersect": {
+    "description": "返回指定曲线的交点位置。",
     "example": "(sdegeo:curve-intersect e1 e2)",
     "parameters": [
       {
@@ -1691,9 +1782,10 @@
         "desc": "指定第二条曲线（边实体）。参数类型：EDGE"
       }
     ],
-    "description": "返回指定曲线的交点位置。"
+    "signature": "(sdegeo:curve-intersect edge1 edge2)"
   },
   "sdegeo:define-3d-contact-by-polygon": {
+    "description": "通过将通用(细化类型)多边形线框压印到现有体上，分割其面以创建多边形接触面积，从而定义一个三维面接触。",
     "example": "(sdegeo:define-3d-contact-by-polygon (list (position 1 1 10) (position 5 1 10) (position 5 5 10) (position 3 2 10) (position 1 5 10) (position 1 1 10)) (gvector 0 0 -1) \"demo\")",
     "parameters": [
       {
@@ -1712,9 +1804,10 @@
         "desc": "指定接触集的名称。参数类型：STRING"
       }
     ],
-    "description": "通过将通用(细化类型)多边形线框压印到现有体上，分割其面以创建多边形接触面积，从而定义一个三维面接触。"
+    "signature": "(sdegeo:define-3d-contact-by-polygon pos-list dir-vector contact-name)"
   },
   "sdegeo:define-contact-set": {
+    "description": "定义接触集名称并初始化支持数据（边厚度、颜色和面图案）。",
     "example": "(sdegeo:define-contact-set \"Source\" 4.0 (color:rgb 1.0 0.0 0.0) \"##\")",
     "parameters": [
       {
@@ -1738,9 +1831,10 @@
         "desc": "可选。指定三维面接触的面图案。可以是以下之一：\"solid\", \"###\", \"||\", \"==\", \"//\", \"::\", \"<><\", \"[]\"。默认值为\"##\"。参数类型：STRING (optional)"
       }
     ],
-    "description": "定义接触集名称并初始化支持数据（边厚度、颜色和面图案）。"
+    "signature": "(sdegeo:define-contact-set name [edgeThickness Color] | [Color facePattern])"
   },
   "sdegeo:define-coord-sys": {
+    "description": "在活动工作平面中创建一个新的坐标系，原点位于相对于工作平面原点的(x-pos, y-pos)处，并旋转angle度。",
     "example": "(sdegeo:define-coord-sys \"cs1\" 0.0 0.0 0.0)",
     "parameters": [
       {
@@ -1764,9 +1858,10 @@
         "desc": "指定旋转角度（度）。逆时针旋转为正（从活动工作平面的正z轴方向看）。参数类型：REAL"
       }
     ],
-    "description": "在活动工作平面中创建一个新的坐标系，原点位于相对于工作平面原点的(x-pos, y-pos)处，并旋转angle度。"
+    "signature": "(sdegeo:define-coord-sys cs-name x-pos y-pos angle)"
   },
   "sdegeo:define-work-plane": {
+    "description": "使用给定的名称、原点、x轴方向和y轴方向创建一个新的工作平面；z轴由右手定则定义。",
     "example": "(sdegeo:define-work-plane \"wp1\" (position 0 0 1) (position 1 0 1) (position 0 1 1))",
     "parameters": [
       {
@@ -1790,9 +1885,10 @@
         "desc": "指定y轴指向的点。z轴由右手定则定义。参数类型：POSITION"
       }
     ],
-    "description": "使用给定的名称、原点、x轴方向和y轴方向创建一个新的工作平面；z轴由右手定则定义。"
+    "signature": "(sdegeo:define-work-plane wp-name origin x-axis y-axis)"
   },
   "sdegeo:del-short-edges": {
+    "description": "删除短于指定边长的线性边；脊线可以通过基于顶点法向差值的角向的容差来保护。仅应用于二维建模。",
     "example": "(sdegeo:del-short-edges (list body1) 0.001 30.0)",
     "parameters": [
       {
@@ -1811,9 +1907,10 @@
         "desc": "指定脊线保护的角向的容差。如果在顶点位置处的顶点法向差值大于此值，则即使边长短于edge-length，该顶点及相邻边也会受到保护不被删除。参数类型：REAL"
       }
     ],
-    "description": "删除短于指定边长的线性边；脊线可以通过基于顶点法向差值的角向的容差来保护。仅应用于二维建模。"
+    "signature": "(sdegeo:del-short-edges entity edge-length angular-tolerance)"
   },
   "sdegeo:distance": {
+    "description": "返回两个顶点之间的距离。",
     "example": "(sdegeo:distance (list vertex1 vertex2))",
     "parameters": [
       {
@@ -1822,9 +1919,10 @@
         "desc": "指定包含两个顶点的列表。返回它们之间的距离。参数类型：VERTEX LIST"
       }
     ],
-    "description": "返回两个顶点之间的距离。"
+    "signature": "(sdegeo:distance vertex-list)"
   },
   "sdegeo:dnce": {
+    "description": "从二维模型中删除近共线边。",
     "example": "(sdegeo:dnce 1.0)",
     "parameters": [
       {
@@ -1833,9 +1931,10 @@
         "desc": "指定角向的容差（度）。如果在给定顶点处，边法向的差值小于此值，则删除两个相邻边，并用连接另外两个顶点的线性边替换。参数类型：REAL"
       }
     ],
-    "description": "从二维模型中删除近共线边。"
+    "signature": "(sdegeo:dnce angular-tolerance)"
   },
   "sdegeo:extend-device": {
+    "description": "沿其轴对齐的边界扩展器件（仅限二维）。",
     "example": "(sdegeo:extend-device \"right\" 0.3 \"top\" 0.2)",
     "parameters": [
       {
@@ -1879,9 +1978,10 @@
         "desc": "指定向下的扩展距离。参数类型：REAL"
       }
     ],
-    "description": "沿其轴对齐的边界扩展器件（仅限二维）。"
+    "signature": "(sdegeo:extend-device \"right\" right \"left\" left \"top\" top \"bottom\" bottom)"
   },
   "sdegeo:face-find-interior-point": {
+    "description": "在面上查找一个内部点并返回一个位置对象。",
     "example": "(sdegeo:face-find-interior-point (car (find-face-id (position 5 5 10))))",
     "parameters": [
       {
@@ -1890,9 +1990,10 @@
         "desc": "指定一个面实体。该函数返回该面内部点的位置对象。参数类型：FACE"
       }
     ],
-    "description": "在面上查找一个内部点并返回一个位置对象。"
+    "signature": "(sdegeo:face-find-interior-point face)"
   },
   "sdegeo:find-closest-edge": {
+    "description": "查找距离指定位置最近的边的实体ID。",
     "example": "(sdegeo:find-closest-edge (position 5 5 0))",
     "parameters": [
       {
@@ -1901,9 +2002,10 @@
         "desc": "position — 指定一个参考位置。该函数在所有已定义几何体的边列表中搜索，并返回最近边的实体ID。参数类型: POSITION"
       }
     ],
-    "description": "查找距离指定位置最近的边的实体ID。"
+    "signature": "(sdegeo:find-closest-edge position)"
   },
   "sdegeo:find-closest-face": {
+    "description": "查找距离指定位置最近的面的实体ID。",
     "example": "(sdegeo:find-closest-face (position 5 5 0))",
     "parameters": [
       {
@@ -1912,9 +2014,10 @@
         "desc": "position — 指定一个参考位置。该函数在所有已定义几何体的面列表中搜索，并返回最近面的实体ID。参数类型: POSITION"
       }
     ],
-    "description": "查找距离指定位置最近的面的实体ID。"
+    "signature": "(sdegeo:find-closest-face position)"
   },
   "sdegeo:find-closest-vertex": {
+    "description": "查找距离指定位置最近的顶点的实体ID。",
     "example": "(sdegeo:find-closest-vertex (position 5 5 0))",
     "parameters": [
       {
@@ -1923,9 +2026,10 @@
         "desc": "position — 指定一个参考位置。该函数在所有已定义几何体的顶点列表中搜索，并返回最近顶点的实体ID。参数类型: POSITION"
       }
     ],
-    "description": "查找距离指定位置最近的顶点的实体ID。"
+    "signature": "(sdegeo:find-closest-vertex position)"
   },
   "sdegeo:find-touching-faces": {
+    "description": "查找给定面或面列表中所有相邻接触的面；返回输入面与其相邻面的序对(pair)。",
     "example": "(sdegeo:find-touching-faces (entity:faces mb2))",
     "parameters": [
       {
@@ -1934,9 +2038,10 @@
         "desc": "flist — 指定一个面或一个面列表。返回一个序对(pair)列表，包含输入面的实体ID及其相邻接触面的实体ID，仅针对有相邻面的面。参数类型: FACE | FACE LIST"
       }
     ],
-    "description": "查找给定面或面列表中所有相邻接触的面；返回输入面与其相邻面的序对(pair)。"
+    "signature": "(sdegeo:find-touching-faces flist)"
   },
   "sdegeo:find-touching-faces-global": {
+    "description": "全局查找所有相邻接触的面；为每个有相邻面的输入面返回一个相邻面ID的列表。",
     "example": "(sdegeo:find-touching-faces-global (entity:faces mb2))",
     "parameters": [
       {
@@ -1945,9 +2050,10 @@
         "desc": "flist — 指定一个面或一个面列表。返回一个包含相邻接触面ID的面列表，仅针对有相邻面的面。参数类型: FACE | FACE LIST"
       }
     ],
-    "description": "全局查找所有相邻接触的面；为每个有相邻面的输入面返回一个相邻面ID的列表。"
+    "signature": "(sdegeo:find-touching-faces-global flist)"
   },
   "sdegeo:imprint-circular-wire": {
+    "description": "通过将圆形线体压印到模型上来分割边界面。",
     "example": "(sdegeo:imprint-circular-wire (position 5 5 0) 2)",
     "parameters": [
       {
@@ -1961,14 +2067,16 @@
         "desc": "radius — 圆形面片的半径"
       }
     ],
-    "description": "通过将圆形线体压印到模型上来分割边界面。"
+    "signature": "(sdegeo:imprint-circular-wire center-position radius)"
   },
   "sdegeo:imprint-contact": {
+    "description": "将所有3D面接触压印到相邻的接触面上。",
     "example": "(sdegeo:imprint-contact)",
     "parameters": [],
-    "description": "将所有3D面接触压印到相邻的接触面上。"
+    "signature": "(sdegeo:imprint-contact)"
   },
   "sdegeo:imprint-polygonal-wire": {
+    "description": "通过将多边形线体压印到模型上来分割边界面。",
     "example": "(sdegeo:imprint-polygonal-wire (list (position 1 1 0) (position 3 1 0) (position 3 3 0) (position 1 3 0) (position 1 1 0)))",
     "parameters": [
       {
@@ -1977,9 +2085,10 @@
         "desc": "vertex-list — 压印多边形的顶点列表。多边形必须是闭合的，因此第一个位置必须作为最后一个位置重复出现"
       }
     ],
-    "description": "通过将多边形线体压印到模型上来分割边界面。"
+    "signature": "(sdegeo:imprint-polygonal-wire vertex-list)"
   },
   "sdegeo:imprint-rectangular-wire": {
+    "description": "通过将矩形线体压印到模型上来分割边界面。",
     "example": "(sdegeo:imprint-rectangular-wire (position 2 2 0) (position 8 8 0))",
     "parameters": [
       {
@@ -1993,9 +2102,10 @@
         "desc": "position2 — 压印矩形体两个对角顶点中的另一个"
       }
     ],
-    "description": "通过将矩形线体压印到模型上来分割边界面。"
+    "signature": "(sdegeo:imprint-rectangular-wire position1 position2)"
   },
   "sdegeo:imprint-triangular-wire": {
+    "description": "通过将三角形线体压印到模型上来分割边界面。",
     "example": "(sdegeo:imprint-triangular-wire (position 2 2 0) (position 6 2 0) (position 4 6 0))",
     "parameters": [
       {
@@ -2014,9 +2124,10 @@
         "desc": "position3 — 压印三角形线体的第三个顶点"
       }
     ],
-    "description": "通过将三角形线体压印到模型上来分割边界面。"
+    "signature": "(sdegeo:imprint-triangular-wire position1 position2 position3)"
   },
   "sdegeo:insert-vertex": {
+    "description": "通过将指定的插入位置投影到最近的边，在二维模型中插入一个顶点。",
     "example": "(sdegeo:insert-vertex (list (position 1 0.5 0)))",
     "parameters": [
       {
@@ -2025,9 +2136,10 @@
         "desc": "要插入到二维模型中的顶点列表"
       }
     ],
-    "description": "通过将指定的插入位置投影到最近的边，在二维模型中插入一个顶点。"
+    "signature": "(sdegeo:insert-vertex vertex-list)"
   },
   "sdegeo:max-edge-length": {
+    "description": "返回给定边列表中长度最长的边的长度。",
     "example": "(sdegeo:max-edge-length (entity:edges (get-body-list)))",
     "parameters": [
       {
@@ -2036,9 +2148,10 @@
         "desc": "用于计算长度的边列表"
       }
     ],
-    "description": "返回给定边列表中长度最长的边的长度。"
+    "signature": "(sdegeo:max-edge-length edge-list)"
   },
   "sdegeo:min-edge-length": {
+    "description": "返回给定边列表中长度最短的边的长度。",
     "example": "(sdegeo:min-edge-length (entity:edges (get-body-list)))",
     "parameters": [
       {
@@ -2047,9 +2160,10 @@
         "desc": "用于计算长度的边列表"
       }
     ],
-    "description": "返回给定边列表中长度最短的边的长度。"
+    "signature": "(sdegeo:min-edge-length edge-list)"
   },
   "sdegeo:point-entity-relationship": {
+    "description": "返回一个体与一个点之间的包含关系：\"inside\"、\"boundary\" 或 \"outside\"。",
     "example": "(sdegeo:point-entity-relationship mb1 (position 5 5 4))",
     "parameters": [
       {
@@ -2063,9 +2177,10 @@
         "desc": "要测试的位置"
       }
     ],
-    "description": "返回一个体与一个点之间的包含关系：\"inside\"、\"boundary\" 或 \"outside\"。"
+    "signature": "(sdegeo:point-entity-relationship body lposition)"
   },
   "sdegeo:polygonal-split": {
+    "description": "沿由位置列表定义的指定路径分割二维器件。",
     "example": "(sdegeo:polygonal-split (list (position 2 4.5 0) (position 4 1 0) (position 9 1 0) (position 9 6 0)))",
     "parameters": [
       {
@@ -2074,9 +2189,10 @@
         "desc": "定义分割路径的位置列表。第一个和最后一个位置会吸附到最近的边界边"
       }
     ],
-    "description": "沿由位置列表定义的指定路径分割二维器件。"
+    "signature": "(sdegeo:polygonal-split plist)"
   },
   "sdegeo:prune-vertices": {
+    "description": "通过修剪其边法向量的夹角在角从容差范围内的顶点来合并相邻的边（仅适用于二维模型）。",
     "example": "(sdegeo:prune-vertices (get-body-list) 5)",
     "parameters": [
       {
@@ -2090,9 +2206,10 @@
         "desc": "以度为单位的角向阈值。如果公共顶点处的边法向量之差小于此值，则通过移除该公共顶点来合并边"
       }
     ],
-    "description": "通过修剪其边法向量的夹角在角从容差范围内的顶点来合并相邻的边（仅适用于二维模型）。"
+    "signature": "(sdegeo:prune-vertices {body-list | edge-list | vertex-list} angular-tolerance)"
   },
   "sdegeo:ray-test": {
+    "description": "返回光线与实体相交的位置，以 (ENTITY . POSITION) 序对的形式，并沿光线方向排序。",
     "example": "(sdegeo:ray-test block1 (ray (position 10 20 60) (gvector 0 0 -1)) 0.1)",
     "parameters": [
       {
@@ -2111,9 +2228,10 @@
         "desc": "用于光线交集测试的搜索半径"
       }
     ],
-    "description": "返回光线与实体相交的位置，以 (ENTITY . POSITION) 序对的形式，并沿光线方向排序。"
+    "signature": "(sdegeo:ray-test entity ray radius)"
   },
   "sdegeo:rename-contact": {
+    "description": "重命名一个现有的接触。",
     "example": "(sdegeo:rename-contact \"old_name\" \"new_name\")",
     "parameters": [
       {
@@ -2127,9 +2245,10 @@
         "desc": "接触的新名称"
       }
     ],
-    "description": "重命名一个现有的接触。"
+    "signature": "(sdegeo:rename-contact oldContName newContName)"
   },
   "sdegeo:skin-wires": {
+    "description": "创建一个插值一系列线体或面的片体。",
     "example": "(sdegeo:skin-wires (list f1 f2))",
     "parameters": [
       {
@@ -2148,9 +2267,10 @@
         "desc": "可选的蒙皮选项数据结构（参见 skin:options）"
       }
     ],
-    "description": "创建一个插值一系列线体或面的片体。"
+    "signature": "(sdegeo:skin-wires body-list [path] [skin-options])"
   },
   "sdegeo:skin-wires-guides": {
+    "description": "使用一条引导曲线创建一个插值一系列线体或面的片体。",
     "example": "(sdegeo:skin-wires-guides (list w1 w2) (list edge1 edge2))",
     "parameters": [
       {
@@ -2169,9 +2289,10 @@
         "desc": "可选的蒙皮选项数据结构（参见 skin:options）"
       }
     ],
-    "description": "使用一条引导曲线创建一个插值一系列线体或面的片体。"
+    "signature": "(sdegeo:skin-wires-guides body-list guides [skin-options])"
   },
   "sdegeo:skin-wires-normal": {
+    "description": "创建一个插值一系列线体或面的片体，其起始向量垂直于线体所在的平面。",
     "example": "(sdegeo:skin-wires-normal (list w1 w2) \"all_normal\")",
     "parameters": [
       {
@@ -2190,9 +2311,10 @@
         "desc": "可选的蒙皮选项数据结构（参见 skin:options）"
       }
     ],
-    "description": "创建一个插值一系列线体或面的片体，其起始向量垂直于线体所在的平面。"
+    "signature": "(sdegeo:skin-wires-normal body-list normal-type [skin-options])"
   },
   "sdegeo:skin-wires-vectors": {
+    "description": "创建一个插值一系列线体的片体，使用起始向量作为约束。",
     "example": "(sdegeo:skin-wires-vectors (list w1 w2) (list (gvector 0 0 1) (gvector 0 0 1)))",
     "parameters": [
       {
@@ -2221,9 +2343,10 @@
         "desc": "可选的蒙皮选项数据结构（参见 skin:options）"
       }
     ],
-    "description": "创建一个插值一系列线体的片体，使用起始向量作为约束。"
+    "signature": "(sdegeo:skin-wires-vectors body-list SPAvector-list ([guide-list] | [magnitude-list]) [skin-options])"
   },
   "sdegeo:taper-faces": {
+    "description": "围绕一个点和给定的拔模向量，以指定的拔模角度对一组面进行拔模。",
     "example": "(sdegeo:taper-faces face-list (position 0 0 0) (gvector 0 0 1) 5.0)",
     "parameters": [
       {
@@ -2247,9 +2370,10 @@
         "desc": "拔模的旋转角度（度）"
       }
     ],
-    "description": "围绕一个点和给定的拔模向量，以指定的拔模角度对一组面进行拔模。"
+    "signature": "(sdegeo:taper-faces face-list point normal angle)"
   },
   "sdegeo:vsmooth": {
+    "description": "使用多项式最小二乘拟合进行二维边界平滑。",
     "example": "(sdegeo:vsmooth 2 (entity:vertices (get-body-list)))",
     "parameters": [
       {
@@ -2263,9 +2387,10 @@
         "desc": "待平滑的顶点列表。使用 (entity:vertices (get-body-list)) 获取所有模型顶点"
       }
     ],
-    "description": "使用多项式最小二乘拟合进行二维边界平滑。"
+    "signature": "(sdegeo:vsmooth polynomial-degree vertex-list)"
   },
   "sde:min-x": {
+    "description": "返回指定体或体列表的最小 x 坐标。",
     "example": "(sde:min-x body)",
     "parameters": [
       {
@@ -2274,9 +2399,10 @@
         "desc": "要查询的体或体列表"
       }
     ],
-    "description": "返回指定体或体列表的最小 x 坐标。"
+    "signature": "(sde:min-x body | body-list)"
   },
   "sde:min-y": {
+    "description": "返回指定体或体列表的最小 y 坐标。",
     "example": "(sde:min-y body)",
     "parameters": [
       {
@@ -2285,9 +2411,10 @@
         "desc": "要查询的体或体列表"
       }
     ],
-    "description": "返回指定体或体列表的最小 y 坐标。"
+    "signature": "(sde:min-y body | body-list)"
   },
   "sde:min-z": {
+    "description": "返回指定体或体列表的最小 z 坐标。",
     "example": "(sde:min-z body)",
     "parameters": [
       {
@@ -2296,19 +2423,22 @@
         "desc": "要查询的体或体列表"
       }
     ],
-    "description": "返回指定体或体列表的最小 z 坐标。"
+    "signature": "(sde:min-z body | body-list)"
   },
   "sde:pick-point-on-wp": {
+    "description": "在视图窗口中选择一个点，并将其全局 xyz 坐标作为位置实体返回。",
     "example": "(sde:pick-point-on-wp)",
     "parameters": [],
-    "description": "在视图窗口中选择一个点，并将其全局 xyz 坐标作为位置实体返回。"
+    "signature": "(sde:pick-point-on-wp)"
   },
   "sde:pick-two-points-on-wp": {
+    "description": "在视图窗口中选择两个点，并将它们的全局 xyz 坐标作为包含两个位置实体的列表返回。",
     "example": "(sde:pick-two-points-on-wp)",
     "parameters": [],
-    "description": "在视图窗口中选择两个点，并将它们的全局 xyz 坐标作为包含两个位置实体的列表返回。"
+    "signature": "(sde:pick-two-points-on-wp)"
   },
   "sde:save-model": {
+    "description": "保存模型的所有信息，包括几何（ACIS .sat）、网格命令、定义的参数和 TDR 边界文件。",
     "example": "(sde:save-model \"my_model\")",
     "parameters": [
       {
@@ -2317,9 +2447,10 @@
         "desc": "指定保存模型文件的基础文件名。该扩展名会保存几何和 Ref/Eval 窗口的原生 ACIS .sat 文件、包含细化和掺杂信息的网格命令文件、包含所有定义参数的 Scheme 文件以及一个 TDR 边界文件。参数类型：STRING"
       }
     ],
-    "description": "保存模型的所有信息，包括几何（ACIS .sat）、网格命令、定义的参数和 TDR 边界文件。"
+    "signature": "(sde:save-model file-name)"
   },
   "sde:save-parameters": {
+    "description": "将所有已定义的参数（使用 sde:define-parameter 创建的 Scheme 变量）保存到 .scm 文件中。",
     "example": "(sde:save-parameters \"params.scm\")",
     "parameters": [
       {
@@ -2328,34 +2459,40 @@
         "desc": "file-name — 指定用于保存所有已定义参数的文件名。保存的 .scm 文件可被编辑，并用于后续会话以恢复建模器的完整先前状态。部分 GUI 信息（如大小和背景颜色）也会被记录。参数类型：STRING"
       }
     ],
-    "description": "将所有已定义的参数（使用 sde:define-parameter 创建的 Scheme 变量）保存到 .scm 文件中。"
+    "signature": "(sde:save-parameters file-name)"
   },
   "sde:scmwin-get-font-families": {
+    "description": "返回命令行窗口中可用的字体类型。",
     "example": "(sde:scmwin-get-font-families)",
     "parameters": [],
-    "description": "返回命令行窗口中可用的字体类型。"
+    "signature": "(sde:scmwin-get-font-families)"
   },
   "sde:scmwin-get-font-family": {
+    "description": "返回命令行窗口中使用的字体类型。",
     "example": "(sde:scmwin-get-font-family)",
     "parameters": [],
-    "description": "返回命令行窗口中使用的字体类型。"
+    "signature": "(sde:scmwin-get-font-family)"
   },
   "sde:scmwin-get-font-size": {
+    "description": "返回命令行窗口中使用的字体大小。",
     "example": "(sde:scmwin-get-font-size)",
     "parameters": [],
-    "description": "返回命令行窗口中使用的字体大小。"
+    "signature": "(sde:scmwin-get-font-size)"
   },
   "sde:scmwin-get-font-style": {
+    "description": "以序对(pair)形式返回字体样式：第一个值是 0（法向的）、1（Italic）或 2（Oblique）；第二个值是 #t（Bold）或 #f。",
     "example": "(sde:scmwin-get-font-style)",
     "parameters": [],
-    "description": "以序对(pair)形式返回字体样式：第一个值是 0（法向的）、1（Italic）或 2（Oblique）；第二个值是 #t（Bold）或 #f。"
+    "signature": "(sde:scmwin-get-font-style)"
   },
   "sde:scmwin-select-font": {
+    "description": "显示用于选择命令行窗口字体、字体样式和大小的“选择字体”对话框。",
     "example": "(sde:scmwin-select-font)",
     "parameters": [],
-    "description": "显示用于选择命令行窗口字体、字体样式和大小的“选择字体”对话框。"
+    "signature": "(sde:scmwin-select-font)"
   },
   "sde:scmwin-set-font-family": {
+    "description": "设置命令行窗口中要使用的字体类型。",
     "example": "(sde:scmwin-set-font-family \"Courier\")",
     "parameters": [
       {
@@ -2364,9 +2501,10 @@
         "desc": "font-type — 指定要使用的字体类型。使用 sde:scmwin-get-font-families 获取可用字体，使用 sde:scmwin-get-font-family 获取当前设置。参数类型：STRING"
       }
     ],
-    "description": "设置命令行窗口中要使用的字体类型。"
+    "signature": "(sde:scmwin-set-font-family font-type)"
   },
   "sde:scmwin-set-font-size": {
+    "description": "设置命令行窗口中要使用的字体大小。",
     "example": "(sde:scmwin-set-font-size 12)",
     "parameters": [
       {
@@ -2375,9 +2513,10 @@
         "desc": "font-size — 指定要使用的字体大小。参数类型：INTEGER"
       }
     ],
-    "description": "设置命令行窗口中要使用的字体大小。"
+    "signature": "(sde:scmwin-set-font-size font-size)"
   },
   "sde:scmwin-set-prefs": {
+    "description": "设置命令行窗口的偏好，包括字体类型、字体样式、字体大小和窗口高度。",
     "example": "(sde:scmwin-set-prefs \"Courier\" \"Normal\" 12 30)",
     "parameters": [
       {
@@ -2401,9 +2540,10 @@
         "desc": "cmdwin-height — 指定命令行窗口的高度。参数类型：INTEGER"
       }
     ],
-    "description": "设置命令行窗口的偏好，包括字体类型、字体样式、字体大小和窗口高度。"
+    "signature": "(sde:scmwin-set-prefs font-type font-style font-size cmdwin-height)"
   },
   "sde:scmwin-set-window-height": {
+    "description": "设置命令行窗口的高度（以像素为单位）。",
     "example": "(sde:scmwin-set-window-height 400)",
     "parameters": [
       {
@@ -2412,9 +2552,10 @@
         "desc": "height — 指定命令行窗口的高度。参数类型：INTEGER"
       }
     ],
-    "description": "设置命令行窗口的高度（以像素为单位）。"
+    "signature": "(sde:scmwin-set-window-height height)"
   },
   "sde:scmwin-suppress-output": {
+    "description": "在命令行窗口中显示或隐藏消息。",
     "example": "(sde:scmwin-suppress-output #t)",
     "parameters": [
       {
@@ -2423,29 +2564,34 @@
         "desc": "指定是否在命令行窗口中显示消息。参数类型：BOOLEAN"
       }
     ],
-    "description": "在命令行窗口中显示或隐藏消息。"
+    "signature": "(sde:scmwin-suppress-output bool)"
   },
   "sde:scmwin-get-window-height": {
+    "description": "返回命令行窗口的高度（以文本行数（或窗口行数）计）。",
     "example": "(sde:scmwin-get-window-height)",
     "parameters": [],
-    "description": "返回命令行窗口的高度（以文本行数（或窗口行数）计）。"
+    "signature": "(sde:scmwin-get-window-height)"
   },
   "sde:selected-entities": {
+    "description": "以 Scheme 列表形式返回当前活动的选定几何实体（体、面、边、顶点）。可以使用 GUI 的选择工具（选择模式）来选择几何实体；选定的实体会高亮显示。",
     "example": "(sde:selected-entities)",
     "parameters": [],
-    "description": "以 Scheme 列表形式返回当前活动的选定几何实体（体、面、边、顶点）。可以使用 GUI 的选择工具（选择模式）来选择几何实体；选定的实体会高亮显示。"
+    "signature": "(sde:selected-entities)"
   },
   "sde:selected-refeval-windows": {
+    "description": "以 Scheme 列表形式返回当前选定的 Ref/Eval 窗口的名称。可以使用 GUI 的选择工具（选择模式）来选择先前定义的 Ref/Eval 窗口；选定的窗口会高亮显示。",
     "example": "(sde:selected-refeval-windows)",
     "parameters": [],
-    "description": "以 Scheme 列表形式返回当前选定的 Ref/Eval 窗口的名称。可以使用 GUI 的选择工具（选择模式）来选择先前定义的 Ref/Eval 窗口；选定的窗口会高亮显示。"
+    "signature": "(sde:selected-refeval-windows)"
   },
   "sde:check-3d-license-status": {
+    "description": "检查 3D 许可证的状态，根据是否检出 3D 许可证返回 #t 或 #f。",
     "example": "(sde:check-3d-license-status)",
     "parameters": [],
-    "description": "检查 3D 许可证的状态，根据是否检出 3D 许可证返回 #t 或 #f。"
+    "signature": "(sde:check-3d-license-status)"
   },
   "sde:check-model": {
+    "description": "执行详细的模型检查，并将问题报告到报告文件。",
     "example": "(sde:check-model \"my-model-debug.log\")",
     "parameters": [
       {
@@ -2454,9 +2600,10 @@
         "desc": "可选的报告文件名，默认为 sde-model-debug.log"
       }
     ],
-    "description": "执行详细的模型检查，并将问题报告到报告文件。"
+    "signature": "(sde:check-model [filename])"
   },
   "sde:create-bg-image": {
+    "description": "将 GIF 图像文件加载到 Sentaurus Structure Editor 中（仅限 GIF87a 格式）。",
     "example": "(sde:create-bg-image \"background.gif\" 100.0 80.0)",
     "parameters": [
       {
@@ -2475,9 +2622,10 @@
         "desc": "图像的纵向 GUI 尺寸"
       }
     ],
-    "description": "将 GIF 图像文件加载到 Sentaurus Structure Editor 中（仅限 GIF87a 格式）。"
+    "signature": "(sde:create-bg-image filename horizontal-size vertical-size)"
   },
   "sde:create-dialog": {
+    "description": "创建并注册一个对话框对象，返回对话框实体 ID。",
     "example": "(define dlg (sde:create-dialog \"2D MOSFET DEVICE\"))",
     "parameters": [
       {
@@ -2486,9 +2634,10 @@
         "desc": "对话框的名称/标题"
       }
     ],
-    "description": "创建并注册一个对话框对象，返回对话框实体 ID。"
+    "signature": "(sde:create-dialog dlg-name)"
   },
   "sde:delay-graphics-update": {
+    "description": "开启或关闭视图窗口的自动刷新。",
     "example": "(sde:delay-graphics-update #t)",
     "parameters": [
       {
@@ -2497,19 +2646,22 @@
         "desc": "#t 表示抑制图形更新，#f 表示启用并刷新缓冲区"
       }
     ],
-    "description": "开启或关闭视图窗口的自动刷新。"
+    "signature": "(sde:delay-graphics-update flag)"
   },
   "sde:delay-graphics-update?": {
+    "description": "返回 sde:delay-graphics-update 的当前状态。",
     "example": "(sde:delay-graphics-update?)",
     "parameters": [],
-    "description": "返回 sde:delay-graphics-update 的当前状态。"
+    "signature": "(sde:delay-graphics-update?)"
   },
   "sde:delete-bg-image": {
+    "description": "从内存中移除先前加载的图像。",
     "example": "(sde:delete-bg-image)",
     "parameters": [],
-    "description": "从内存中移除先前加载的图像。"
+    "signature": "(sde:delete-bg-image)"
   },
   "sde:delete-materials": {
+    "description": "删除具有指定 DATEX 材料的几何体。",
     "example": "(sde:delete-materials \"Silicon\")",
     "parameters": [
       {
@@ -2518,9 +2670,10 @@
         "desc": "DATEX 材料名称或 DATEX 材料名称列表"
       }
     ],
-    "description": "删除具有指定 DATEX 材料的几何体。"
+    "signature": "(sde:delete-materials materials)"
   },
   "sde:delete-parameter": {
+    "description": "删除先前定义的参数。",
     "example": "(sde:delete-parameter \"myParam\")",
     "parameters": [
       {
@@ -2529,9 +2682,10 @@
         "desc": "要删除的参数名称"
       }
     ],
-    "description": "删除先前定义的参数。"
+    "signature": "(sde:delete-parameter parameter-name)"
   },
   "sde:dialog-add-input": {
+    "description": "向对话框添加一个输入字段。",
     "example": "(sde:dialog-add-input dlg \"width1\" \"Base Width\" \"real\")",
     "parameters": [
       {
@@ -2560,9 +2714,10 @@
         "desc": "可选的默认值"
       }
     ],
-    "description": "向对话框添加一个输入字段。"
+    "signature": "(sde:dialog-add-input dlgid varname inputstrfield inputtype [default-value])"
   },
   "sde:dialog-add-pixmap": {
+    "description": "向对话框添加一个位图图像。",
     "example": "(sde:dialog-add-pixmap dlg \"mosfet2d.bmp\")",
     "parameters": [
       {
@@ -2576,9 +2731,10 @@
         "desc": "位图图像的文件名"
       }
     ],
-    "description": "向对话框添加一个位图图像。"
+    "signature": "(sde:dialog-add-pixmap dlgid bmpfilename)"
   },
   "sde:dialog-delete": {
+    "description": "从内存中移除一个对话框。",
     "example": "(sde:dialog-delete dlg)",
     "parameters": [
       {
@@ -2587,9 +2743,10 @@
         "desc": "由 sde:create-dialog 返回的对话框对象"
       }
     ],
-    "description": "从内存中移除一个对话框。"
+    "signature": "(sde:dialog-delete dlgid)"
   },
   "sde:dialog-ok-command": {
+    "description": "将对话框的 OK 按钮绑定到一个预定义的 Scheme 函数。",
     "example": "(sde:dialog-ok-command dlg \"create-2d-mosfet\" \"width1 width2\")",
     "parameters": [
       {
@@ -2608,9 +2765,10 @@
         "desc": "传递给 Scheme 函数的参数名称列表（用双引号括起）"
       }
     ],
-    "description": "将对话框的 OK 按钮绑定到一个预定义的 Scheme 函数。"
+    "signature": "(sde:dialog-ok-command dlgid schemefnname argument-list)"
   },
   "sde:dialog-show": {
+    "description": "显示一个预定义的对话框。",
     "example": "(sde:dialog-show dlg)",
     "parameters": [
       {
@@ -2619,9 +2777,10 @@
         "desc": "由 sde:create-dialog 返回的对话框对象"
       }
     ],
-    "description": "显示一个预定义的对话框。"
+    "signature": "(sde:dialog-show dlgid)"
   },
   "sde:display": {
+    "description": "在命令行窗口中显示一个字符串；需要换行符来刷新缓冲区。",
     "example": "(sde:display \"Processing...\\n\")",
     "parameters": [
       {
@@ -2630,9 +2789,10 @@
         "desc": "要显示的字符串"
       }
     ],
-    "description": "在命令行窗口中显示一个字符串；需要换行符来刷新缓冲区。"
+    "signature": "(sde:display string)"
   },
   "sde:display-err": {
+    "description": "在终端窗口中写入一个字符串；会自动追加换行符。",
     "example": "(sde:display-err \"Error: invalid input\")",
     "parameters": [
       {
@@ -2641,9 +2801,10 @@
         "desc": "要写入终端窗口的字符串"
       }
     ],
-    "description": "在终端窗口中写入一个字符串；会自动追加换行符。"
+    "signature": "(sde:display-err string)"
   },
   "sde:display-std": {
+    "description": "在终端窗口中写入一个字符串；会自动追加换行符。",
     "example": "(sde:display-std \"Standard output message\")",
     "parameters": [
       {
@@ -2652,19 +2813,22 @@
         "desc": "STRING — 要写入终端窗口的字符串"
       }
     ],
-    "description": "在终端窗口中写入一个字符串；会自动追加换行符。"
+    "signature": "(sde:display-std string)"
   },
   "sde:fix-imprint": {
+    "description": "通过将模型的边和面压印到相邻体上，生成一个共形模型。",
     "example": "(sde:fix-imprint)",
     "parameters": [],
-    "description": "通过将模型的边和面压印到相邻体上，生成一个共形模型。"
+    "signature": "(sde:fix-imprint)"
   },
   "sde:fix-orientation": {
+    "description": "修改三维体的方向，使表面法向指向体内。",
     "example": "(sde:fix-orientation)",
     "parameters": [],
-    "description": "修改三维体的方向，使表面法向指向体内。"
+    "signature": "(sde:fix-orientation)"
   },
   "sde:get-backwards-compatibility": {
+    "description": "返回给定向后兼容性参数的值。",
     "example": "(sde:get-backwards-compatibility \"param-name\")",
     "parameters": [
       {
@@ -2673,19 +2837,22 @@
         "desc": "STRING — 向后兼容性参数的名称"
       }
     ],
-    "description": "返回给定向后兼容性参数的值。"
+    "signature": "(sde:get-backwards-compatibility backcompat-param)"
   },
   "sde:get-default-material": {
+    "description": "以字符串形式返回当前活动的 DATEX 材料。",
     "example": "(sde:get-default-material)",
     "parameters": [],
-    "description": "以字符串形式返回当前活动的 DATEX 材料。"
+    "signature": "(sde:get-default-material)"
   },
   "sde:get-view-params": {
+    "description": "将当前的 GUI 视图设置（视点位置、目标点、上向量、宽度、高度、投影）记录到一个列表中。",
     "example": "(define myview (sde:get-view-params))",
     "parameters": [],
-    "description": "将当前的 GUI 视图设置（视点位置、目标点、上向量、宽度、高度、投影）记录到一个列表中。"
+    "signature": "(sde:get-view-params)"
   },
   "sde:gui-get-integer": {
+    "description": "显示一个对话框用于输入一个整数变量；返回该整数，若取消则返回 #f。",
     "example": "(sde:gui-get-integer \"my-int\" 0 \"Enter Value\")",
     "parameters": [
       {
@@ -2704,9 +2871,10 @@
         "desc": "STRING — 输入对话框的可选名称"
       }
     ],
-    "description": "显示一个对话框用于输入一个整数变量；返回该整数，若取消则返回 #f。"
+    "signature": "(sde:gui-get-integer variable-name default-value [dialog-name])"
   },
   "sde:gui-get-real": {
+    "description": "显示一个对话框用于输入一个实数变量；返回该实数，若取消则返回 #f。",
     "example": "(sde:gui-get-real \"my-real\" 1.0 \"Enter Value\")",
     "parameters": [
       {
@@ -2725,9 +2893,10 @@
         "desc": "STRING — 输入对话框的可选名称"
       }
     ],
-    "description": "显示一个对话框用于输入一个实数变量；返回该实数，若取消则返回 #f。"
+    "signature": "(sde:gui-get-real variable-name default-value [dialog-name])"
   },
   "sde:gui-get-string": {
+    "description": "显示一个对话框用于输入一个字符串变量；返回该字符串，若取消则返回 #f。",
     "example": "(sde:gui-get-string \"my-str\" \"default\" \"Enter Value\")",
     "parameters": [
       {
@@ -2746,9 +2915,10 @@
         "desc": "STRING — 输入对话框的可选名称"
       }
     ],
-    "description": "显示一个对话框用于输入一个字符串变量；返回该字符串，若取消则返回 #f。"
+    "signature": "(sde:gui-get-string variable-name default-value [dialog-name])"
   },
   "sde:hide": {
+    "description": "从视图窗口中移除指定的一个或多个实体。",
     "example": "(sde:hide r1)",
     "parameters": [
       {
@@ -2757,14 +2927,16 @@
         "desc": "ENTITY — 要隐藏的一个实体或实体列表"
       }
     ],
-    "description": "从视图窗口中移除指定的一个或多个实体。"
+    "signature": "(sde:hide entity | entity-list)"
   },
   "sde:hide-bg-image": {
+    "description": "隐藏先前加载的背景图像。",
     "example": "(sde:hide-bg-image)",
     "parameters": [],
-    "description": "隐藏先前加载的背景图像。"
+    "signature": "(sde:hide-bg-image)"
   },
   "sde:hide-contact": {
+    "description": "从视图中移除所有具有指定接触属性的区域。",
     "example": "(sde:hide-contact \"contact_1\")",
     "parameters": [
       {
@@ -2773,9 +2945,10 @@
         "desc": "接触属性名称或名称列表"
       }
     ],
-    "description": "从视图中移除所有具有指定接触属性的区域。"
+    "signature": "(sde:hide-contact contact-name | contact-name-list)"
   },
   "sde:hide-interface": {
+    "description": "从视图中移除所有具有指定属性界面的区域。",
     "example": "(sde:hide-interface \"interface_1\")",
     "parameters": [
       {
@@ -2784,9 +2957,10 @@
         "desc": "界面属性名称或名称列表"
       }
     ],
-    "description": "从视图中移除所有具有指定属性界面的区域。"
+    "signature": "(sde:hide-interface interface-name | interface-name-list)"
   },
   "sde:hide-mask": {
+    "description": "从视图窗口中移除指定的掩模。",
     "example": "(sde:hide-mask \"mask_1\")",
     "parameters": [
       {
@@ -2795,9 +2969,10 @@
         "desc": "掩模名称或掩模名称列表"
       }
     ],
-    "description": "从视图窗口中移除指定的掩模。"
+    "signature": "(sde:hide-mask mask-name | mask-name-list)"
   },
   "sde:hide-material": {
+    "description": "从视图窗口中移除具有指定 DATEX 材料属性的区域。",
     "example": "(sde:hide-material \"Silicon\")",
     "parameters": [
       {
@@ -2806,9 +2981,10 @@
         "desc": "DATEX 材料名称或名称列表"
       }
     ],
-    "description": "从视图窗口中移除具有指定 DATEX 材料属性的区域。"
+    "signature": "(sde:hide-material datex-material | datex-material-list)"
   },
   "sde:hide-region": {
+    "description": "从视图窗口中移除指定的区域。",
     "example": "(sde:hide-region \"region_1\")",
     "parameters": [
       {
@@ -2817,14 +2993,16 @@
         "desc": "区域名称或区域名称列表"
       }
     ],
-    "description": "从视图窗口中移除指定的区域。"
+    "signature": "(sde:hide-region region-name | region-name-list)"
   },
   "sde:hide-ruler": {
+    "description": "隐藏 GUI 中所有用户定义的标尺。",
     "example": "(sde:hide-ruler)",
     "parameters": [],
-    "description": "隐藏 GUI 中所有用户定义的标尺。"
+    "signature": "(sde:hide-ruler)"
   },
   "sde:max-x": {
+    "description": "返回指定体或体列表的最大 x 维度。",
     "example": "(sde:max-x body)",
     "parameters": [
       {
@@ -2833,9 +3011,10 @@
         "desc": "要查询的体或体列表"
       }
     ],
-    "description": "返回指定体或体列表的最大 x 维度。"
+    "signature": "(sde:max-x body | body-list)"
   },
   "sde:max-y": {
+    "description": "返回指定体或体列表的最大 y 维度。",
     "example": "(sde:max-y body)",
     "parameters": [
       {
@@ -2844,9 +3023,10 @@
         "desc": "要查询的体或体列表"
       }
     ],
-    "description": "返回指定体或体列表的最大 y 维度。"
+    "signature": "(sde:max-y body | body-list)"
   },
   "sde:set-background-color": {
+    "description": "设置 GUI 的背景颜色，可选择渐变（RGB 0-255）。",
     "example": "(sde:set-background-color 200 200 255 200 200 255)",
     "parameters": [
       {
@@ -2880,9 +3060,10 @@
         "desc": "指定背景颜色底部的蓝色值（0-255）。如果顶部和底部颜色不同，则使用渐变背景；如果相同，则背景为均匀色。参数类型：INTEGER"
       }
     ],
-    "description": "设置 GUI 的背景颜色，可选择渐变（RGB 0-255）。"
+    "signature": "(sde:set-background-color rtop gtop btop rbottom gbottom bbottom)"
   },
   "sde:set-backwards-compatibility": {
+    "description": "设置整体向后兼容性至指定版本，或设置特定参数。",
     "example": "(sde:set-backwards-compatibility \"M-2016.12\")",
     "parameters": [
       {
@@ -2896,9 +3077,10 @@
         "desc": "指定一个向后兼容性参数。可用参数：\"Save Part at End\"（默认为 #t；设置为 #f 以兼容 E-2010.12 及更早版本，其中 .sat 文件在模型修改前保存）和 \"Z Align Polygons\"（默认为 #f；设置为 #t 以兼容 E-2010.12 及更早版本，用于反转法向不平行于 z 轴的共面多边形的方向）。参数类型: STRING"
       }
     ],
-    "description": "设置整体向后兼容性至指定版本，或设置特定参数。"
+    "signature": "(sde:set-backwards-compatibility backcompat-release | backcompat-param backcompat-release ...)"
   },
   "sde:set-default-material": {
+    "description": "将活动的 DATEX 材料设置为指定值。同时更改 DATEX 列表中所选的 DATEX 材料。",
     "example": "(sde:set-default-material \"Silicon\")",
     "parameters": [
       {
@@ -2907,9 +3089,10 @@
         "desc": "指定 datecodes.txt 文件中定义的一种 DATEX 颜色/材料。参数类型: DATEMAT"
       }
     ],
-    "description": "将活动的 DATEX 材料设置为指定值。同时更改 DATEX 列表中所选的 DATEX 材料。"
+    "signature": "(sde:set-default-material datex-material)"
   },
   "sde:set-menubar-font-size": {
+    "description": "更改图形用户界面(GUI)菜单栏的字体大小（建议值 10-14）。",
     "example": "(sde:set-menubar-font-size 12)",
     "parameters": [
       {
@@ -2918,9 +3101,10 @@
         "desc": "指定字体大小。建议值为 10-14。参数类型: INTEGER"
       }
     ],
-    "description": "更改图形用户界面(GUI)菜单栏的字体大小（建议值 10-14）。"
+    "signature": "(sde:set-menubar-font-size font-size)"
   },
   "sde:set-process-up-direction": {
+    "description": "指定工艺仿真期间使用的坐标系的向上方向约定。",
     "example": "(sde:set-process-up-direction \"+z\")",
     "parameters": [
       {
@@ -2929,9 +3113,10 @@
         "desc": "指定向上方向。选项：\"-x\" 表示 -x 向上方向（默认），或 \"+z\" 表示 +z 向上方向。当使用 Sentaurus Process-Sentaurus Structure Editor 界面时，生成的 Scheme 脚本将包含自动选择正确坐标系的指令。参数类型: STRING"
       }
     ],
-    "description": "指定工艺仿真期间使用的坐标系的向上方向约定。"
+    "signature": "(sde:set-process-up-direction up-direction)"
   },
   "sde:set-project-name": {
+    "description": "设置“构建网格(Build Mesh)”对话框中使用的项目名称。",
     "example": "(sde:set-project-name \"MyProject\")",
     "parameters": [
       {
@@ -2940,9 +3125,10 @@
         "desc": "指定项目名称，在“构建网格(Build Mesh)”对话框中用作保存的网格的名称。参数类型: STRING"
       }
     ],
-    "description": "设置“构建网格(Build Mesh)”对话框中使用的项目名称。"
+    "signature": "(sde:set-project-name project-name)"
   },
   "sde:set-rendering-mode": {
+    "description": "设置 3D 渲染模式：面片(facet)、线框(wire)、平面(flat)、Gouraud（平滑着色）或隐藏线(hidden)。",
     "example": "(sde:set-rendering-mode \"gouraud\")",
     "parameters": [
       {
@@ -2951,9 +3137,10 @@
         "desc": "指定渲染模式。选项：\"facet\"（面片显示）、\"wire\"（线框）、\"flat\"（平面着色）、\"gouraud\" 或 \"smooth\"（平滑着色）、\"hidden\"（隐藏线消除）。参数类型: STRING"
       }
     ],
-    "description": "设置 3D 渲染模式：面片(facet)、线框(wire)、平面(flat)、Gouraud（平滑着色）或隐藏线(hidden)。"
+    "signature": "(sde:set-rendering-mode rendering-mode)"
   },
   "sde:set-selection-level": {
+    "description": "将选择过滤器设置为指定的实体类型。",
     "example": "(sde:set-selection-level \"edge\")",
     "parameters": [
       {
@@ -2962,9 +3149,10 @@
         "desc": "为所有后续选择操作指定过滤器类型。选项：\"body\" | \"face\" | \"edge\" | \"vertex\" | \"other\"。只有与指定类型对应的实体才会被选中。参数类型: STRING"
       }
     ],
-    "description": "将选择过滤器设置为指定的实体类型。"
+    "signature": "(sde:set-selection-level filter-type)"
   },
   "sde:set-translucency": {
+    "description": "设置实体的半透明度：#t 表示半透明，#f 表示不透明。",
     "example": "(sde:set-translucency body-list #t)",
     "parameters": [
       {
@@ -2978,9 +3166,10 @@
         "desc": "指定实体是半透明(#t)还是不透明(#f)。参数类型: BOOLEAN"
       }
     ],
-    "description": "设置实体的半透明度：#t 表示半透明，#f 表示不透明。"
+    "signature": "(sde:set-translucency body-list tflag)"
   },
   "sde:set-view-mode": {
+    "description": "设置视图并执行缩放至范围(zoom extent)操作。选项：ISO、XY、XZ、YZ、X-Y。",
     "example": "(sde:set-view-mode \"XZ\")",
     "parameters": [
       {
@@ -2989,9 +3178,10 @@
         "desc": "指定视图模式。选项：\"ISO\"（等轴测视图）、\"XY\"（xy 平面）、\"XZ\"（xZ 平面）、\"YZ\"（yZ 平面）、\"X-Y\"（x 轴水平，y 轴指向下方）。同时会执行缩放至范围操作。参数类型: STRING"
       }
     ],
-    "description": "设置视图并执行缩放至范围(zoom extent)操作。选项：ISO、XY、XZ、YZ、X-Y。"
+    "signature": "(sde:set-view-mode view-mode)"
   },
   "sde:set-view-operator": {
+    "description": "设置视图操作符（工具栏活动动作）：orbit（轨道旋转）、zoom（缩放）、pan（平移）或 select（选择）。",
     "example": "(sde:set-view-operator \"orbit\")",
     "parameters": [
       {
@@ -3000,9 +3190,10 @@
         "desc": "指定操作模式，设置工具栏活动动作。选项：\"orbit\"（旋转）、\"pan\"（平移）、\"select\"（选择模式）或 \"zoom\"（缩放）。参数类型: STRING"
       }
     ],
-    "description": "设置视图操作符（工具栏活动动作）：orbit（轨道旋转）、zoom（缩放）、pan（平移）或 select（选择）。"
+    "signature": "(sde:set-view-operator op-mode)"
   },
   "sde:set-view-params": {
+    "description": "根据 sde:get-view-params 返回的视图参数列表恢复 GUI 视图。",
     "example": "(sde:set-view-params (sde:get-view-params))",
     "parameters": [
       {
@@ -3011,9 +3202,10 @@
         "desc": "指定包含视图参数的列表：eye (POSITION), target (POSITION), up-vector (GVECTOR, 可选), width (REAL, 可选), height (REAL, 可选), projection (STRING, 可选)。顺序不重要，但 eye 必须在 target 之前，width 必须在 height 之前。缺失的可选值将从当前相机位置提取。参数类型: LIST"
       }
     ],
-    "description": "根据 sde:get-view-params 返回的视图参数列表恢复 GUI 视图。"
+    "signature": "(sde:set-view-params view-params)"
   },
   "sde:set-window-position": {
+    "description": "将主 GUI 窗口定位到指定的屏幕坐标。",
     "example": "(sde:set-window-position 100 100)",
     "parameters": [
       {
@@ -3027,9 +3219,10 @@
         "desc": "指定 GUI 在屏幕上的纵向位置。参数类型: INTEGER"
       }
     ],
-    "description": "将主 GUI 窗口定位到指定的屏幕坐标。"
+    "signature": "(sde:set-window-position xpos ypos)"
   },
   "sde:set-window-size": {
+    "description": "将主 GUI 窗口调整为指定的像素尺寸。",
     "example": "(sde:set-window-size 1024 768)",
     "parameters": [
       {
@@ -3043,9 +3236,10 @@
         "desc": "指定 GUI 的纵向尺寸（以像素为单位）。参数类型: INTEGER"
       }
     ],
-    "description": "将主 GUI 窗口调整为指定的像素尺寸。"
+    "signature": "(sde:set-window-size xsize ysize)"
   },
   "sde:set-window-style": {
+    "description": "设置 GUI 样式：Windows, Motif, Cleanlooks, Plastique, 或 CDE。",
     "example": "(sde:set-window-style \"Windows\")",
     "parameters": [
       {
@@ -3054,9 +3248,10 @@
         "desc": "设置 GUI 样式。可用样式：\"Windows\", \"Motif\", \"Cleanlooks\", \"Plastique\", 和 \"CDE\"。参数类型: STRING"
       }
     ],
-    "description": "设置 GUI 样式：Windows, Motif, Cleanlooks, Plastique, 或 CDE。"
+    "signature": "(sde:set-window-style wstyle)"
   },
   "sde:show": {
+    "description": "将指定的一个或多个实体添加到视图窗口并刷新它。如果实体已可见，则无变化。",
     "example": "(sde:show r1)",
     "parameters": [
       {
@@ -3065,9 +3260,10 @@
         "desc": "指定要在视图窗口中显示的实体 (ENTITY) 或实体列表 (ENTITY LIST)"
       }
     ],
-    "description": "将指定的一个或多个实体添加到视图窗口并刷新它。如果实体已可见，则无变化。"
+    "signature": "(sde:show entity | entity-list)"
   },
   "sde:showattribs": {
+    "description": "显示附加到体上的 SDE 属性（ACIS 部件编号、材料、区域）。",
     "example": "(sde:showattribs \"all\")",
     "parameters": [
       {
@@ -3076,14 +3272,16 @@
         "desc": "指定要检查的实体列表 (ENTITY_LIST)，或使用关键字 \"all\" 来显示所有 ACIS 体的属性"
       }
     ],
-    "description": "显示附加到体上的 SDE 属性（ACIS 部件编号、材料、区域）。"
+    "signature": "(sde:showattribs entity-list | \"all\")"
   },
   "sde:show-bg-image": {
+    "description": "显示先前加载的背景图像。",
     "example": "(sde:show-bg-image)",
     "parameters": [],
-    "description": "显示先前加载的背景图像。"
+    "signature": "(sde:show-bg-image)"
   },
   "sde:show-contact": {
+    "description": "将具有指定接触属性的所有区域添加到视图中。接触通过属性名 contact 标识；在 2D 中，接触是边；在 3D 中，接触是面。",
     "example": "(sde:show-contact \"gate_contact\")",
     "parameters": [
       {
@@ -3092,9 +3290,10 @@
         "desc": "指定要显示的接触名称 (STRING) 或接触名称列表 (STRING LIST)"
       }
     ],
-    "description": "将具有指定接触属性的所有区域添加到视图中。接触通过属性名 contact 标识；在 2D 中，接触是边；在 3D 中，接触是面。"
+    "signature": "(sde:show-contact contact-name | contact-name-list)"
   },
   "sde:show-grid": {
+    "description": "在视图窗口中打开或关闭网格可视化。",
     "example": "(sde:show-grid #t)",
     "parameters": [
       {
@@ -3103,9 +3302,10 @@
         "desc": "指定是打开 (#t) 还是关闭 (#f) 网格可视化。参数类型: BOOLEAN"
       }
     ],
-    "description": "在视图窗口中打开或关闭网格可视化。"
+    "signature": "(sde:show-grid on-off)"
   },
   "sde:show-interface": {
+    "description": "将相邻区域之间的指定界面添加到视图窗口。在 2D 中，界面是相邻区域之间的边；在 3D 中，界面是相邻区域之间的面。",
     "example": "(sde:show-interface \"SiO2_Si\")",
     "parameters": [
       {
@@ -3114,9 +3314,10 @@
         "desc": "指定要显示的界面名称 (STRING) 或界面名称列表 (STRING LIST)"
       }
     ],
-    "description": "将相邻区域之间的指定界面添加到视图窗口。在 2D 中，界面是相邻区域之间的边；在 3D 中，界面是相邻区域之间的面。"
+    "signature": "(sde:show-interface interface-name | interface-name-list)"
   },
   "sde:show-mask": {
+    "description": "将指定的掩模（平面线体）添加到视图窗口中。",
     "example": "(sde:show-mask \"mask_1\")",
     "parameters": [
       {
@@ -3125,9 +3326,10 @@
         "desc": "mask-name (STRING) — 指定一个掩模的名称\nmask-name-list (STRING LIST) — 指定一个掩模名称的列表。掩模是具有指定掩模名称作为掩模名称属性的平面线体。"
       }
     ],
-    "description": "将指定的掩模（平面线体）添加到视图窗口中。"
+    "signature": "(sde:show-mask mask-name | mask-name-list)"
   },
   "sde:show-material": {
+    "description": "将具有指定 DATEX 材料名称的区域添加到视图窗口中。如果区域已可见，则无变化。",
     "example": "(sde:show-material \"Silicon\")",
     "parameters": [
       {
@@ -3136,9 +3338,10 @@
         "desc": "datex-material (DATEXMAT) — 指定一个要显示其区域的 DATEX 材料\ndatex-material-list (DATEXMAT LIST) — 指定一个要显示其区域的 DATEX 材料列表"
       }
     ],
-    "description": "将具有指定 DATEX 材料名称的区域添加到视图窗口中。如果区域已可见，则无变化。"
+    "signature": "(sde:show-material datex-material | datex-material-list)"
   },
   "sde:show-pcurves": {
+    "description": "可视化每个实体的参数曲线；仅影响线框视图。",
     "example": "(sde:show-pcurves #t 10 10)",
     "parameters": [
       {
@@ -3157,9 +3360,10 @@
         "desc": "v-params (INTEGER) — 可选。v 方向上的参数线数量。如果未指定，默认为 5。"
       }
     ],
-    "description": "可视化每个实体的参数曲线；仅影响线框视图。"
+    "signature": "(sde:show-pcurves rendering-flag [u-params [v-params]])"
   },
   "sde:show-region": {
+    "description": "将具有指定区域名称的体添加到视图窗口中。如果区域已可见，则无变化。",
     "example": "(sde:show-region \"region_1\")",
     "parameters": [
       {
@@ -3168,9 +3372,10 @@
         "desc": "region-name (STRING) — 指定一个区域的名称\nregion-name-list (STRING LIST) — 指定一个区域名称的列表。必须是已存在的区域名称。"
       }
     ],
-    "description": "将具有指定区域名称的体添加到视图窗口中。如果区域已可见，则无变化。"
+    "signature": "(sde:show-region region-name | region-name-list)"
   },
   "sde:max-z": {
+    "description": "返回指定体或体列表的最大 z 坐标。",
     "example": "(sde:max-z body_list)",
     "parameters": [
       {
@@ -3179,14 +3384,16 @@
         "desc": "body | body-list (ENTITY) — 要查询的体或体列表"
       }
     ],
-    "description": "返回指定体或体列表的最大 z 坐标。"
+    "signature": "(sde:max-z body | body-list)"
   },
   "sde:view-filter-reset": {
+    "description": "将视图窗口重置为默认设置；显示所有区域和接触，隐藏界面。",
     "example": "(sde:view-filter-reset)",
     "parameters": [],
-    "description": "将视图窗口重置为默认设置；显示所有区域和接触，隐藏界面。"
+    "signature": "(sde:view-filter-reset)"
   },
   "sde:view-set-light-intensity": {
+    "description": "设置 GUI 视图窗口的光照强度（值在 0 到 1 之间）。",
     "example": "(sde:view-set-light-intensity 0.5)",
     "parameters": [
       {
@@ -3195,9 +3402,10 @@
         "desc": "lintensity (INTEGER) — 将光照强度设置为 0 到 1 之间的值。"
       }
     ],
-    "description": "设置 GUI 视图窗口的光照强度（值在 0 到 1 之间）。"
+    "signature": "(sde:view-set-light-intensity lintensity)"
   },
   "sde:view-set-visible-area": {
+    "description": "将 GUI 绘图区域调整为指定的边界框。如果已知所创建器件的边界框，可以方便地将视图区域预设为该大小。",
     "example": "(sde:view-set-visible-area 0.0 10.0 0.0 5.0)",
     "parameters": [
       {
@@ -3221,9 +3429,10 @@
         "desc": "ymax (REAL) — 可见区域边界框的最大 y 坐标。"
       }
     ],
-    "description": "将 GUI 绘图区域调整为指定的边界框。如果已知所创建器件的边界框，可以方便地将视图区域预设为该大小。"
+    "signature": "(sde:view-set-visible-area xmin xmax ymin ymax)"
   },
   "sde:window-select-2d": {
+    "description": "返回指定 2D 窗口内的实体（仅限 2D 模型）。",
     "example": "(sde:window-select-2d -1 -1 3 4 \"all\" \"body\")",
     "parameters": [
       {
@@ -3257,9 +3466,10 @@
         "desc": "stype (STRING) — 指定选择标准（实体类型）。选项：\"vertex\"（返回顶点列表）、\"edge\"（返回边列表）或 \"body\"（返回体列表）。如果未找到实体，则返回空列表。"
       }
     ],
-    "description": "返回指定 2D 窗口内的实体（仅限 2D 模型）。"
+    "signature": "(sde:window-select-2d x-left y-left x-right y-right elist stype)"
   },
   "sde:window-select-3d": {
+    "description": "返回指定 3D 长方体内部的实体（仅限 3D 模型）。",
     "example": "(sde:window-select-3d (position 0 0 0) (position 10 10 5) \"all\" \"face\")",
     "parameters": [
       {
@@ -3283,9 +3493,10 @@
         "desc": "stype (STRING) — 指定选择标准（实体类型）。选项：\"vertex\"（返回顶点列表）、\"edge\"（返回边列表）、\"face\"（返回面列表）或 \"body\"（返回体列表）。如果未找到实体，则返回空列表。"
       }
     ],
-    "description": "返回指定 3D 长方体内部的实体（仅限 3D 模型）。"
+    "signature": "(sde:window-select-3d pmin pmax elist stype)"
   },
   "sde:xshow": {
+    "description": "将指定实体独占添加到视图中，隐藏所有其他实体。",
     "example": "(sde:xshow (list r3 r4))",
     "parameters": [
       {
@@ -3294,9 +3505,10 @@
         "desc": "entity — 指定要独占显示的实体 (ENTITY) 或实体列表 (ENTITY LIST)。所有其他实体将从视图窗口中移除。"
       }
     ],
-    "description": "将指定实体独占添加到视图中，隐藏所有其他实体。"
+    "signature": "(sde:xshow entity | entity-list)"
   },
   "sde:xshow-contact": {
+    "description": "独占显示具有指定接触属性的区域，并移除所有其他区域。接触通过属性名 contact 标识；在 2D 中，接触是边；在 3D 中，接触是面。",
     "example": "(sde:xshow-contact \"anode\")",
     "parameters": [
       {
@@ -3305,9 +3517,10 @@
         "desc": "string — 指定要独占显示的接触名称 (STRING) 或接触名称列表 (STRING LIST)。"
       }
     ],
-    "description": "独占显示具有指定接触属性的区域，并移除所有其他区域。接触通过属性名 contact 标识；在 2D 中，接触是边；在 3D 中，接触是面。"
+    "signature": "(sde:xshow-contact contact-name | contact-name-list)"
   },
   "sde:xshow-interface": {
+    "description": "独占显示具有指定界面属性的区域，并移除所有其他界面。在 2D 中，界面是相邻区域之间的边；在 3D 中，界面是相邻区域之间的面。",
     "example": "(sde:xshow-interface \"SiO2_Si\")",
     "parameters": [
       {
@@ -3316,9 +3529,10 @@
         "desc": "string — 指定要独占显示的界面名称 (STRING) 或界面名称列表 (STRING LIST)。"
       }
     ],
-    "description": "独占显示具有指定界面属性的区域，并移除所有其他界面。在 2D 中，界面是相邻区域之间的边；在 3D 中，界面是相邻区域之间的面。"
+    "signature": "(sde:xshow-interface interface-name | interface-name-list)"
   },
   "sde:xshow-mask": {
+    "description": "将指定掩模独占添加到视图窗口；所有其他掩模被移除。",
     "example": "(sde:xshow-mask \"photo_mask\")",
     "parameters": [
       {
@@ -3327,9 +3541,10 @@
         "desc": "string — 指定掩模名称 (STRING) 或掩模名称列表 (STRING LIST)。掩模是具有指定掩模名称作为掩模名称属性的平面线体。"
       }
     ],
-    "description": "将指定掩模独占添加到视图窗口；所有其他掩模被移除。"
+    "signature": "(sde:xshow-mask mask-name | mask-name-list)"
   },
   "sde:xshow-material": {
+    "description": "独占显示具有指定 DATEX 材料名称的区域。所有其他区域将从视图窗口中移除。",
     "example": "(sde:xshow-material \"Silicon\")",
     "parameters": [
       {
@@ -3338,9 +3553,10 @@
         "desc": "string — 指定要独占显示的 DATEX 材料 (DATEXMAT) 或 DATEX 材料列表 (DATEXMAT LIST)。"
       }
     ],
-    "description": "独占显示具有指定 DATEX 材料名称的区域。所有其他区域将从视图窗口中移除。"
+    "signature": "(sde:xshow-material datex-material | datex-material-list)"
   },
   "sde:xshow-region": {
+    "description": "独占显示具有指定区域名称的体。所有其他体将从视图窗口中移除。",
     "example": "(sde:xshow-region \"region_1\")",
     "parameters": [
       {
@@ -3349,9 +3565,10 @@
         "desc": "string — 指定区域名称 (STRING) 或区域名称列表 (STRING LIST)。区域名称必须存在。"
       }
     ],
-    "description": "独占显示具有指定区域名称的体。所有其他体将从视图窗口中移除。"
+    "signature": "(sde:xshow-region region-name | region-name-list)"
   },
   "sde:save-tcl-parameters": {
+    "description": "将定义的接触颜色保存到 Tcl 文件，使用 Sentaurus Visual 的接触颜色分配语法。保存的 Tcl 文件可以在加载 TDR 文件后加载到 Sentaurus Visual 中，这样接触在 Sentaurus Visual 中将具有与 Sentaurus Structure Editor 中相同的颜色。",
     "example": "(sde:save-tcl-parameters \"params.tcl\")",
     "parameters": [
       {
@@ -3360,14 +3577,16 @@
         "desc": "string — 指定用于保存接触颜色定义的 Tcl 文件名。该文件包含针对每个已定义接触的带有 -color 参数的 set_region_prop 命令。参数类型：STRING"
       }
     ],
-    "description": "将定义的接触颜色保存到 Tcl 文件，使用 Sentaurus Visual 的接触颜色分配语法。保存的 Tcl 文件可以在加载 TDR 文件后加载到 Sentaurus Visual 中，这样接触在 Sentaurus Visual 中将具有与 Sentaurus Structure Editor 中相同的颜色。"
+    "signature": "(sde:save-tcl-parameters filename)"
   },
   "sde:get-datex-color-scheme": {
+    "description": "返回当前的 DATEX 配色方案名称。",
     "example": "(sde:get-datex-color-scheme)",
     "parameters": [],
-    "description": "返回当前的 DATEX 配色方案名称。"
+    "signature": "(sde:get-datex-color-scheme)"
   },
   "sde:add-material": {
+    "description": "将指定的材料和区域属性分配给一个体。",
     "example": "(sde:add-material (car (sde:get-body-list)) \"Silicon\" \"Reg.Silicon\")",
     "parameters": [
       {
@@ -3386,9 +3605,10 @@
         "desc": "string — 在镶嵌边界输出中使用的区域名称。"
       }
     ],
-    "description": "将指定的材料和区域属性分配给一个体。"
+    "signature": "(sde:add-material body material-name region-name)"
   },
   "sde:back-coord": {
+    "description": "返回指定体或体列表的后坐标。对于 UCS：最小 z；对于 DF-ISE：最小 x。",
     "example": "(sde:back-coord (car (sde:get-body-list)))",
     "parameters": [
       {
@@ -3402,9 +3622,10 @@
         "desc": "body-list — 几何体列表。"
       }
     ],
-    "description": "返回指定体或体列表的后坐标。对于 UCS：最小 z；对于 DF-ISE：最小 x。"
+    "signature": "(sde:back-coord body | body-list)"
   },
   "sde:bg-image-transparency": {
+    "description": "设置已加载背景图像的透明度。",
     "example": "(sde:bg-image-transparency 0.5)",
     "parameters": [
       {
@@ -3413,9 +3634,10 @@
         "desc": "透明度值，介于 0（不透明）和 1（完全透明）之间"
       }
     ],
-    "description": "设置已加载背景图像的透明度。"
+    "signature": "(sde:bg-image-transparency transparency-value)"
   },
   "sde:bool-regularise": {
+    "description": "合并指定 3D 体的共面面。",
     "example": "(sde:bool-regularise (sde:get-body-list))",
     "parameters": [
       {
@@ -3424,9 +3646,10 @@
         "desc": "其共面面将被合并的体列表"
       }
     ],
-    "description": "合并指定 3D 体的共面面。"
+    "signature": "(sde:bool-regularise body-list)"
   },
   "sde:bottom-coord": {
+    "description": "返回指定体或体列表的底部坐标。对于 UCS：最大 x；对于 DF-ISE：最小 z。",
     "example": "(sde:bottom-coord (car (sde:get-body-list)))",
     "parameters": [
       {
@@ -3440,9 +3663,10 @@
         "desc": "几何体列表"
       }
     ],
-    "description": "返回指定体或体列表的底部坐标。对于 UCS：最大 x；对于 DF-ISE：最小 z。"
+    "signature": "(sde:bottom-coord body | body-list)"
   },
   "sde:build-mesh": {
+    "description": "生成一个镶嵌的 TDR 边界输出文件和一个网格命令文件，然后调用 Sentaurus Mesh。",
     "example": "(sde:build-mesh \"nmos\")",
     "parameters": [
       {
@@ -3456,9 +3680,10 @@
         "desc": "输出边界文件 (_bnd.tdr) 和网格命令文件 (_msh.cmd) 的基础文件名"
       }
     ],
-    "description": "生成一个镶嵌的 TDR 边界输出文件和一个网格命令文件，然后调用 Sentaurus Mesh。"
+    "signature": "(sde:build-mesh [options] file-basename)"
   },
   "sde:change-datex-color-scheme": {
+    "description": "选择 DATEX 颜色可视化方案（来自 datexcodes.txt 的第一个或第二个颜色定义）。",
     "example": "(sde:change-datex-color-scheme 1)",
     "parameters": [
       {
@@ -3467,19 +3692,22 @@
         "desc": "0 表示第一个 DATEXMAT 颜色（默认），1 表示第二个（通常更亮）"
       }
     ],
-    "description": "选择 DATEX 颜色可视化方案（来自 datexcodes.txt 的第一个或第二个颜色定义）。"
+    "signature": "(sde:change-datex-color-scheme color-scheme)"
   },
   "sde:checkout-3d-license": {
+    "description": "显式签出 Sentaurus Structure Editor 的 3D 许可证。",
     "example": "(sde:checkout-3d-license)",
     "parameters": [],
-    "description": "显式签出 Sentaurus Structure Editor 的 3D 许可证。"
+    "signature": "(sde:checkout-3d-license)"
   },
   "sde:clear": {
+    "description": "清除建模器数据库并将所有设置恢复为初始值。",
     "example": "(sde:clear)",
     "parameters": [],
-    "description": "清除建模器数据库并将所有设置恢复为初始值。"
+    "signature": "(sde:clear)"
   },
   "sde:define-parameter": {
+    "description": "定义一个 Scheme 参数，该参数可在后续任何 Scheme 命令中使用，并可被 sde:save-parameters 保存。",
     "example": "(sde:define-parameter width 2.0 0.5 10.0)",
     "parameters": [
       {
@@ -3503,9 +3731,10 @@
         "desc": "REAL 参数的可选最大值"
       }
     ],
-    "description": "定义一个 Scheme 参数，该参数可在后续任何 Scheme 命令中使用，并可被 sde:save-parameters 保存。"
+    "signature": "(sde:define-parameter parameter-name value [min-value max-value])"
   },
   "sde:draw-ruler": {
+    "description": "在 GUI 中绘制一个用户定义的标尺，可配置其位置、长度、方向、刻度划分和颜色。",
     "example": "(sde:draw-ruler \"startpos\" (position 0 4 0) \"alength\" 6 \"adir\" 0 \"startval\" 0 \"endval\" 6 \"numdiv\" 6 \"numdiv2\" 5 \"npos\" 1 \"acolor\" GREEN \"tcolor\" BLUE)",
     "parameters": [
       {
@@ -3559,9 +3788,10 @@
         "desc": "文本颜色：命名颜色或 color:rgb 值"
       }
     ],
-    "description": "在 GUI 中绘制一个用户定义的标尺，可配置其位置、长度、方向、刻度划分和颜色。"
+    "signature": "(sde:draw-ruler \"startpos\" startpos \"alength\" alength \"adir\" adir \"startval\" startval \"endval\" endval [\"numdiv\" numdiv] [\"numdiv2\" numdiv2] [\"npos\" npos] [\"acolor\" acolor] [\"tcolor\" tcolor])"
   },
   "sde:dump-non-default-options": {
+    "description": "将所有非默认的 ACIS 选项保存到文本文件中，用于调试和问题报告。",
     "example": "(sde:dump-non-default-options \"acis_options_dump.txt\")",
     "parameters": [
       {
@@ -3570,14 +3800,16 @@
         "desc": "输出文本文件的文件名"
       }
     ],
-    "description": "将所有非默认的 ACIS 选项保存到文本文件中，用于调试和问题报告。"
+    "signature": "(sde:dump-non-default-options fname)"
   },
   "sde:exact-coords?": {
+    "description": "检查精确坐标模式的状态；如果使用精确坐标则返回 #t，否则返回 #f。",
     "example": "(sde:exact-coords?)",
     "parameters": [],
-    "description": "检查精确坐标模式的状态；如果使用精确坐标则返回 #t，否则返回 #f。"
+    "signature": "(sde:exact-coords?)"
   },
   "sde:extract-tdr-boundary": {
+    "description": "从 TDR 网格文件中提取边界，并使用 Sentaurus Mesh 将其保存为 TDR 边界文件。",
     "example": "(sde:extract-tdr-boundary \"grid.tdr\" \"boundary.tdr\")",
     "parameters": [
       {
@@ -3591,9 +3823,10 @@
         "desc": "STRING — 提取的 TDR 边界文件的输出文件名（可选）"
       }
     ],
-    "description": "从 TDR 网格文件中提取边界，并使用 Sentaurus Mesh 将其保存为 TDR 边界文件。"
+    "signature": "(sde:extract-tdr-boundary fname [file-name])"
   },
   "sde:front-coord": {
+    "description": "返回指定体或体列表的前端坐标。对于 UCS：最大 z 坐标；对于 DF-ISE：最大 x 坐标。",
     "example": "(sde:front-coord (car (sde:get-body-list)))",
     "parameters": [
       {
@@ -3607,9 +3840,10 @@
         "desc": "BODY-LIST — 一个几何体列表"
       }
     ],
-    "description": "返回指定体或体列表的前端坐标。对于 UCS：最大 z 坐标；对于 DF-ISE：最大 x 坐标。"
+    "signature": "(sde:front-coord body | body-list)"
   },
   "sde:ft_scalar": {
+    "description": "在终端窗口中写入一个字符串；用于 Sentaurus Workbench 中的 DoE 参数提取。",
     "example": "(sde:ft_scalar \"aval 3\")",
     "parameters": [
       {
@@ -3618,9 +3852,10 @@
         "desc": "STRING — 要写入终端窗口的字符串"
       }
     ],
-    "description": "在终端窗口中写入一个字符串；用于 Sentaurus Workbench 中的 DoE 参数提取。"
+    "signature": "(sde:ft_scalar string)"
   },
   "sde:info": {
+    "description": "返回附加到指定体的 Sentaurus Structure Editor 属性，包括实体编号、材料和区域属性。",
     "example": "(sde:info (list body1 body2))",
     "parameters": [
       {
@@ -3629,9 +3864,10 @@
         "desc": "ENTITY-LIST — 要显示其属性的体列表"
       }
     ],
-    "description": "返回附加到指定体的 Sentaurus Structure Editor 属性，包括实体编号、材料和区域属性。"
+    "signature": "(sde:info entity-list)"
   },
   "sde:left-coord": {
+    "description": "返回指定体或体列表的左侧坐标（最小 y 坐标）。",
     "example": "(sde:left-coord (car (sde:get-body-list)))",
     "parameters": [
       {
@@ -3645,9 +3881,10 @@
         "desc": "BODY-LIST — 一个几何体列表"
       }
     ],
-    "description": "返回指定体或体列表的左侧坐标（最小 y 坐标）。"
+    "signature": "(sde:left-coord body | body-list)"
   },
   "sde:load-sat": {
+    "description": "将原生 ACIS .sat 文件加载到 Sentaurus Structure Editor 中，并根据当前活动的布尔设置进行正确的重叠处理。",
     "example": "(sde:load-sat \"geometry.sat\")",
     "parameters": [
       {
@@ -3656,9 +3893,10 @@
         "desc": "STRING — 要加载的 ACIS .sat 文件的路径"
       }
     ],
-    "description": "将原生 ACIS .sat 文件加载到 Sentaurus Structure Editor 中，并根据当前活动的布尔设置进行正确的重叠处理。"
+    "signature": "(sde:load-sat file-name)"
   },
   "sde:material-type": {
+    "description": "从 datexcodes.txt 文件中返回指定材料的组类型（半导体、导体或绝缘体）。",
     "example": "(sde:material-type \"Silicon\")",
     "parameters": [
       {
@@ -3667,9 +3905,10 @@
         "desc": "STRING — 要查询的 DATEX 材料名称"
       }
     ],
-    "description": "从 datexcodes.txt 文件中返回指定材料的组类型（半导体、导体或绝缘体）。"
+    "signature": "(sde:material-type material-name)"
   },
   "sde:merge-materials": {
+    "description": "合并（联合）具有指定 DATEX 材料的几何体，并将新材料分配给生成的联合体。",
     "example": "(sde:merge-materials (list \"Oxide1\" \"Oxide2\") \"Oxide\")",
     "parameters": [
       {
@@ -3683,19 +3922,22 @@
         "desc": "STRING — 要分配给合并体的 DATEX 材料"
       }
     ],
-    "description": "合并（联合）具有指定 DATEX 材料的几何体，并将新材料分配给生成的联合体。"
+    "signature": "(sde:merge-materials materials newmaterial)"
   },
   "sde:new-region-name": {
+    "description": "基于当前区域计数器，返回一个自动生成的唯一区域名称（region_N）。",
     "example": "(sde:new-region-name)",
     "parameters": [],
-    "description": "基于当前区域计数器，返回一个自动生成的唯一区域名称（region_N）。"
+    "signature": "(sde:new-region-name)"
   },
   "sde:off-lights": {
+    "description": "关闭视图窗口中的光源。",
     "example": "(sde:off-lights)",
     "parameters": [],
-    "description": "关闭视图窗口中的光源。"
+    "signature": "(sde:off-lights)"
   },
   "sde:offset-mask": {
+    "description": "将指定的掩模偏移（偏置）一个给定的距离。",
     "example": "(sde:offset-mask \"gate_mask\" 0.1)",
     "parameters": [
       {
@@ -3709,14 +3951,16 @@
         "desc": "偏移掩模的距离"
       }
     ],
-    "description": "将指定的掩模偏移（偏置）一个给定的距离。"
+    "signature": "(sde:offset-mask mask-name offset-distance)"
   },
   "sde:on-lights": {
+    "description": "打开视图窗口中的光源。",
     "example": "(sde:on-lights)",
     "parameters": [],
-    "description": "打开视图窗口中的光源。"
+    "signature": "(sde:on-lights)"
   },
   "sde:open-model": {
+    "description": "加载一个完整的 Sentaurus Structure Editor 模型，恢复几何结构 (.sat)、参数 (.scm) 和网格命令。",
     "example": "(sde:open-model \"my_device\")",
     "parameters": [
       {
@@ -3725,9 +3969,10 @@
         "desc": "基础文件名（不带扩展名）；如果存在，将加载 .sat、.scm 和网格命令文件"
       }
     ],
-    "description": "加载一个完整的 Sentaurus Structure Editor 模型，恢复几何结构 (.sat)、参数 (.scm) 和网格命令。"
+    "signature": "(sde:open-model file-name)"
   },
   "sde:part-load": {
+    "description": "将原生 ACIS .sat 文件加载到 Sentaurus Structure Editor 中，可选择自动处理重叠。",
     "example": "(sde:part-load \"part.sat\" #t)",
     "parameters": [
       {
@@ -3741,9 +3986,10 @@
         "desc": "可选；#t 启用自动重叠控制，#f（默认）加载时不进行重叠检查"
       }
     ],
-    "description": "将原生 ACIS .sat 文件加载到 Sentaurus Structure Editor 中，可选择自动处理重叠。"
+    "signature": "(sde:part-load file-name [loadoption])"
   },
   "sde:post-message": {
+    "description": "显示一个包含消息的对话框；必须点击 OK 才能关闭。",
     "example": "(sde:post-message \"Hello World\")",
     "parameters": [
       {
@@ -3752,19 +3998,22 @@
         "desc": "要在对话框中显示的消息文本"
       }
     ],
-    "description": "显示一个包含消息的对话框；必须点击 OK 才能关闭。"
+    "signature": "(sde:post-message message)"
   },
   "sde:project-name": {
+    "description": "返回在 Build Mesh 对话框中用于保存所创建网格文件的工程名称。",
     "example": "(sde:project-name)",
     "parameters": [],
-    "description": "返回在 Build Mesh 对话框中用于保存所创建网格文件的工程名称。"
+    "signature": "(sde:project-name)"
   },
   "sde:refresh": {
+    "description": "通过丢弃并重新生成实体显示列表来刷新和重建视图窗口。",
     "example": "(sde:refresh)",
     "parameters": [],
-    "description": "通过丢弃并重新生成实体显示列表来刷新和重建视图窗口。"
+    "signature": "(sde:refresh)"
   },
   "sde:rename-regions": {
+    "description": "基于几何体沿指定方向的空间排序自动重命名区域。",
     "example": "(sde:rename-regions (list body1 body2 body3) \"+x\")",
     "parameters": [
       {
@@ -3778,14 +4027,16 @@
         "desc": "指定几何体的排序方向。选项：\"+x\" | \"-x\" | \"+y\" | \"-y\" | \"+z\" | \"-z\"。\n几何体根据其在指定方向上的最小边界框坐标进行排序，并被分配区域名称 \"region_RC\"，其中 RC 是从 0 开始的数字计数器。\n对于 \"+x\"，最小边界框 x 坐标最小的体获得 \"region_0\"；对于 \"-x\"，体按最大 x 坐标递减顺序排序。\n类似的规则适用于 y 和 z 方向。"
       }
     ],
-    "description": "基于几何体沿指定方向的空间排序自动重命名区域。"
+    "signature": "(sde:rename-regions entity-list direction)"
   },
   "sde:restore-cursor": {
+    "description": "将指针恢复为默认指针。",
     "example": "(sde:restore-cursor)",
     "parameters": [],
-    "description": "将指针恢复为默认指针。"
+    "signature": "(sde:restore-cursor)"
   },
   "sde:right-coord": {
+    "description": "返回指定体或体列表的右坐标（最大 y 坐标）。",
     "example": "(sde:right-coord body1)",
     "parameters": [
       {
@@ -3799,9 +4050,10 @@
         "desc": "指定要查询的体列表。参数类型：BODY LIST"
       }
     ],
-    "description": "返回指定体或体列表的右坐标（最大 y 坐标）。"
+    "signature": "(sde:right-coord body | body-list)"
   },
   "sde:scale-scene": {
+    "description": "缩放视图窗口中的模型（仅视觉，模型坐标不变）。",
     "example": "(sde:scale-scene 1 1 1)",
     "parameters": [
       {
@@ -3820,9 +4072,10 @@
         "desc": "Z 轴缩放因子。参数类型：REAL"
       }
     ],
-    "description": "缩放视图窗口中的模型（仅视觉，模型坐标不变）。"
+    "signature": "(sde:scale-scene xs ys zs)"
   },
   "sde:separate-lumps": {
+    "description": "分离体中的不相连块，使每个块具有唯一的区域名称，这是生成 TDR 边界文件前必需的步骤。",
     "example": "(sde:separate-lumps)",
     "parameters": [
       {
@@ -3836,9 +4089,10 @@
         "desc": "指定要分离的体列表。可选；如果参数列表为空，则分离所有几何体。参数类型：BODY LIST"
       }
     ],
-    "description": "分离体中的不相连块，使每个块具有唯一的区域名称，这是生成 TDR 边界文件前必需的步骤。"
+    "signature": "(sde:separate-lumps [body | body-list])"
   },
   "sde:setrefprops": {
+    "description": "为在 TDR 输出前镶嵌曲边界的内部面片器设置细化属性。已弃用；请改用 sdeio:save-tdr-bnd 的 aspect-ratio、max-edge-length、normal-tolerance 和 surface-tolerance 参数。",
     "example": "(sde:setrefprops 0.01 5.0 3.0 0.5)",
     "parameters": [
       {
@@ -3862,9 +4116,10 @@
         "desc": "max-edge-length — 可选。控制镶嵌边界中允许的最大边长度。有助于为网格划分创建更规则的镶嵌，但过小的值可能导致不必要的过度细化。参数类型：REAL"
       }
     ],
-    "description": "为在 TDR 输出前镶嵌曲边界的内部面片器设置细化属性。已弃用；请改用 sdeio:save-tdr-bnd 的 aspect-ratio、max-edge-length、normal-tolerance 和 surface-tolerance 参数。"
+    "signature": "(sde:setrefprops surface-tolerance normal-tolerance [aspect-ratio max-edge-length])"
   },
   "sde:setup-grid": {
+    "description": "设置基本网格参数，包括间距、线宽和线型。",
     "example": "(sde:setup-grid 1 1 2 \"...\")",
     "parameters": [
       {
@@ -3888,9 +4143,10 @@
         "desc": "指定用于绘制网格的线型。可能的值：\"----\"（实线）、\"- - \"（虚线）、\". . .\"（点线）、\"-.-.\"（点划线交替）、\"-.-.-.\"（划线和两点交替）、\"-.-.-.-.\"（划线和三点交替）、\"------ ------\"（长划线）、\"center\"（特长划线和短划线交替）、\"phantom\"（特长划线和两个短划线交替）。参数类型：STRING"
       }
     ],
-    "description": "设置基本网格参数，包括间距、线宽和线型。"
+    "signature": "(sde:setup-grid x-spacing y-spacing edge-weight edge-pattern)"
   },
   "sde:split-solid": {
+    "description": "沿由基准位置和法向向量定义的切割平面将实体（2D 和 3D）分割成独立的体。分割后，区域名称不再唯一（所有分割部分共享相同的区域名称），因此可能需要重命名。",
     "example": "(sde:split-solid my_cube (position 0 0 0) (gvector 1 1 0))",
     "parameters": [
       {
@@ -3909,9 +4165,10 @@
         "desc": "定义切割平面的法向向量（一个向量变量）。参数类型：GVECTOR"
       }
     ],
-    "description": "沿由基准位置和法向向量定义的切割平面将实体（2D 和 3D）分割成独立的体。分割后，区域名称不再唯一（所有分割部分共享相同的区域名称），因此可能需要重命名。"
+    "signature": "(sde:split-solid solid-body base-position plane-normal)"
   },
   "sde:substring": {
+    "description": "返回输入字符串的子字符串，从字符位置 min 到 max（索引从 0 开始）。如果字符串长度小于 max，则返回空字符串。",
     "example": "(sde:substring \"Silicon\" 0 2)",
     "parameters": [
       {
@@ -3930,9 +4187,10 @@
         "desc": "指定结束字符位置。如果字符串长度小于此值，则返回空字符串。参数类型: INTEGER"
       }
     ],
-    "description": "返回输入字符串的子字符串，从字符位置 min 到 max（索引从 0 开始）。如果字符串长度小于 max，则返回空字符串。"
+    "signature": "(sde:substring string min max)"
   },
   "sde:test-entity": {
+    "description": "返回实体类型：\"unknown\"、\"solid\"（正体积流形）、\"non-manifold\"（零体积）或 \"mask\"。",
     "example": "(sde:test-entity (car (sde:get-body-list)))",
     "parameters": [
       {
@@ -3941,14 +4199,16 @@
         "desc": "指定要测试的实体（ENTITY）或实体列表（ENTITY LIST）。返回 \"unknown\"、\"solid\"（正体积的实体，流形）、\"non-manifold\"（零体积的实体，非流形）或 \"mask\"（条件与非流形相同，但还定义了 maskname 属性）。"
       }
     ],
-    "description": "返回实体类型：\"unknown\"、\"solid\"（正体积流形）、\"non-manifold\"（零体积）或 \"mask\"。"
+    "signature": "(sde:test-entity entities)"
   },
   "sde:toggle-lights": {
+    "description": "打开或关闭视图窗口的灯光，行为类似于电灯开关。",
     "example": "(sde:toggle-lights)",
     "parameters": [],
-    "description": "打开或关闭视图窗口的灯光，行为类似于电灯开关。"
+    "signature": "(sde:toggle-lights)"
   },
   "sde:top-coord": {
+    "description": "返回指定体或体列表的顶部坐标。对于 UCS：最小 x；对于 DF-ISE：最大 z。",
     "example": "(sde:top-coord (car (sde:get-body-list)))",
     "parameters": [
       {
@@ -3962,24 +4222,28 @@
         "desc": "指定要查询的体列表。参数类型：BODY LIST"
       }
     ],
-    "description": "返回指定体或体列表的顶部坐标。对于 UCS：最小 x；对于 DF-ISE：最大 z。"
+    "signature": "(sde:top-coord body | body-list)"
   },
   "sde:tr-get": {
+    "description": "返回通过 sdegeo:3d-cut 将 3D 切割放置到 xy 平面所使用的 3x3 旋转矩阵和 3D 平移向量。返回 12 个实数：前 9 个是旋转矩阵 (A)，后 3 个是平移向量 (T)。切割中的任何点可通过公式 P_cut = P_original x A + T 计算得出。",
     "example": "(sde:tr-get)",
     "parameters": [],
-    "description": "返回通过 sdegeo:3d-cut 将 3D 切割放置到 xy 平面所使用的 3x3 旋转矩阵和 3D 平移向量。返回 12 个实数：前 9 个是旋转矩阵 (A)，后 3 个是平移向量 (T)。切割中的任何点可通过公式 P_cut = P_original x A + T 计算得出。"
+    "signature": "(sde:tr-get)"
   },
   "sde:wait-cursor": {
+    "description": "将指针更改为沙漏指针。",
     "example": "(sde:wait-cursor)",
     "parameters": [],
-    "description": "将指针更改为沙漏指针。"
+    "signature": "(sde:wait-cursor)"
   },
   "sde:zoom-all": {
+    "description": "将模型适配到视图窗口。",
     "example": "(sde:zoom-all)",
     "parameters": [],
-    "description": "将模型适配到视图窗口。"
+    "signature": "(sde:zoom-all)"
   },
   "sde:stripextension": {
+    "description": "通过定位最后一个点 (.) 并删除其后的所有字符，从字符串中删除文件扩展名。如果输入字符串没有点，则返回未更改的输入字符串。",
     "example": "(sde:stripextension \"geometry.sat\")",
     "parameters": [
       {
@@ -3988,9 +4252,10 @@
         "desc": "指定要从中剥离文件扩展名的输入字符串。参数类型：STRING"
       }
     ],
-    "description": "通过定位最后一个点 (.) 并删除其后的所有字符，从字符串中删除文件扩展名。如果输入字符串没有点，则返回未更改的输入字符串。"
+    "signature": "(sde:stripextension name)"
   },
   "sdedr:append-cmd-file": {
+    "description": "将一个文本文件追加到网格命令文件的末尾。此 Scheme 扩展不会创建网格命令文件。必须在调用 sdedr:append-cmd-file 后调用 sdedr:write-cmd-file 来创建网格命令文件。",
     "example": "(sdedr:append-cmd-file \"extra_commands.txt\")",
     "parameters": [
       {
@@ -3999,49 +4264,58 @@
         "desc": "指定要追加的文本文件的名称"
       }
     ],
-    "description": "将一个文本文件追加到网格命令文件的末尾。此 Scheme 扩展不会创建网格命令文件。必须在调用 sdedr:append-cmd-file 后调用 sdedr:write-cmd-file 来创建网格命令文件。"
+    "signature": "(sdedr:append-cmd-file filename)"
   },
   "sdedr:clear": {
+    "description": "清除 Sentaurus Structure Editor 中所有与掺杂和细化相关的数据。后续的 sdedr:write-cmd-file 调用将创建一个空的命令文件。",
     "example": "(sdedr:clear)",
     "parameters": [],
-    "description": "清除 Sentaurus Structure Editor 中所有与掺杂和细化相关的数据。后续的 sdedr:write-cmd-file 调用将创建一个空的命令文件。"
+    "signature": "(sdedr:clear)"
   },
   "sdedr:clear-multibox-definitions": {
+    "description": "从掺杂和细化容器中删除所有与多盒定义相关的数据。",
     "example": "(sdedr:clear-multibox-definitions)",
     "parameters": [],
-    "description": "从掺杂和细化容器中删除所有与多盒定义相关的数据。"
+    "signature": "(sdedr:clear-multibox-definitions)"
   },
   "sdedr:clear-multibox-placements": {
+    "description": "从掺杂和细化容器中删除所有与多盒放置相关的数据。",
     "example": "(sdedr:clear-multibox-placements)",
     "parameters": [],
-    "description": "从掺杂和细化容器中删除所有与多盒放置相关的数据。"
+    "signature": "(sdedr:clear-multibox-placements)"
   },
   "sdedr:clear-profile-definitions": {
+    "description": "从掺杂和细化容器中删除所有与剖面定义相关的数据。",
     "example": "(sdedr:clear-profile-definitions)",
     "parameters": [],
-    "description": "从掺杂和细化容器中删除所有与剖面定义相关的数据。"
+    "signature": "(sdedr:clear-profile-definitions)"
   },
   "sdedr:clear-profile-placements": {
+    "description": "从掺杂和细化容器中删除所有与剖面放置相关的数据。",
     "example": "(sdedr:clear-profile-placements)",
     "parameters": [],
-    "description": "从掺杂和细化容器中删除所有与剖面放置相关的数据。"
+    "signature": "(sdedr:clear-profile-placements)"
   },
   "sdedr:clear-ref-windows": {
+    "description": "从数据库中删除所有先前定义的 Ref/Eval 窗口。",
     "example": "(sdedr:clear-ref-windows)",
     "parameters": [],
-    "description": "从数据库中删除所有先前定义的 Ref/Eval 窗口。"
+    "signature": "(sdedr:clear-ref-windows)"
   },
   "sdedr:clear-refinement-definitions": {
+    "description": "从掺杂和细化容器中删除所有与细化定义相关的数据。Definitions 部分包含细化实体的定义（定义名称、细化尺寸信息）。",
     "example": "(sdedr:clear-refinement-definitions)",
     "parameters": [],
-    "description": "从掺杂和细化容器中删除所有与细化定义相关的数据。Definitions 部分包含细化实体的定义（定义名称、细化尺寸信息）。"
+    "signature": "(sdedr:clear-refinement-definitions)"
   },
   "sdedr:clear-refinement-placements": {
+    "description": "从掺杂和细化容器中删除所有与细化放置相关的数据。Placements 部分包含细化的命名放置（关联的细化窗口）。",
     "example": "(sdedr:clear-refinement-placements)",
     "parameters": [],
-    "description": "从掺杂和细化容器中删除所有与细化放置相关的数据。Placements 部分包含细化的命名放置（关联的细化窗口）。"
+    "signature": "(sdedr:clear-refinement-placements)"
   },
   "sdedr:clear-submesh-placement-transform": {
+    "description": "清除为指定外部剖面放置定义的所有变换操作（反射、旋转和位移向量），这些操作通过 sdedr:transform-submesh-placement 定义。",
     "example": "(sdedr:clear-submesh-placement-transform \"place1\")",
     "parameters": [
       {
@@ -4050,9 +4324,10 @@
         "desc": "STRING — 指定一个放置名称，以清除其所有变换操作"
       }
     ],
-    "description": "清除为指定外部剖面放置定义的所有变换操作（反射、旋转和位移向量），这些操作通过 sdedr:transform-submesh-placement 定义。"
+    "signature": "(sdedr:clear-submesh-placement-transform placement-name)"
   },
   "sdedr:convert-mask-to-drs-body": {
+    "description": "将指定的掩模转换为 Ref/Eval 窗口。如果未找到掩模则返回 #f，如果转换成功则返回 #t。",
     "example": "(sdedr:convert-mask-to-drs-body \"mask1\" \"refwin1\")",
     "parameters": [
       {
@@ -4066,9 +4341,10 @@
         "desc": "STRING — 指定 Ref/Eval 窗口的名称"
       }
     ],
-    "description": "将指定的掩模转换为 Ref/Eval 窗口。如果未找到掩模则返回 #f，如果转换成功则返回 #t。"
+    "signature": "(sdedr:convert-mask-to-drs-body maskname refwindowname)"
   },
   "sdedr:define-1d-external-profile": {
+    "description": "在网格命令文件中创建一个 1D 外部剖面。默认单位为微米。横向剖面可以指定为高斯(Gaussian)函数或误差函数。",
     "example": "(sdedr:define-1d-external-profile \"ext1\" \"profile.plx\" \"Scale\" 1.0 \"DataScale\" 1e18)",
     "parameters": [
       {
@@ -4107,9 +4383,10 @@
         "desc": "OPTIONS — 可选；指定横向函数。\n\"Erf\" {\"Factor\" lateral-factor | \"Length\" length}\n\"Eval\" {eval-init eval-function}\n\"Gauss\" {\"Factor\" lateral-factor | \"Length\" length | \"StdDev\" standard-deviation}"
       }
     ],
-    "description": "在网格命令文件中创建一个 1D 外部剖面。默认单位为微米。横向剖面可以指定为高斯(Gaussian)函数或误差函数。"
+    "signature": "(sdedr:define-1d-external-profile name filename \"Scale\" scale \"DataScale\" data-scale [\"Range\" range-from range-to] [lateral-function])"
   },
   "sdedr:define-analytical-profile": {
+    "description": "在网格命令文件中创建一个用户定义的解析函数，用于描述掺杂。如果主方向上的定义是解析类型 \"General\"，则不可选定义横向扩散。",
     "example": "(sdedr:define-analytical-profile \"Prof.Mole\" \"xMoleFraction\" \"a=0.16/0.075\" \"0.1*a*x\" 0.1)",
     "parameters": [
       {
@@ -4148,9 +4425,10 @@
         "desc": "OPTIONS — 可选；指定横向函数类型。\n\"Gauss\" | \"Erf\" 配合 lateral-parameter (\"factor\" | \"length\" | \"stddev\") 和 lateral-value\n或 \"Eval\" 配合 init-string 和 function-string"
       }
     ],
-    "description": "在网格命令文件中创建一个用户定义的解析函数，用于描述掺杂。如果主方向上的定义是解析类型 \"General\"，则不可选定义横向扩散。"
+    "signature": "(sdedr:define-analytical-profile name species initialization function start-value analytic-type [lateral-type-gauss-erf lateral-parameter lateral-value | \"Eval\" lateral-eval-init lateral-eval-func])"
   },
   "sdedr:define-analytical-profile-placement": {
+    "description": "在网格命令文件中为解析剖面定义创建一个放置。",
     "example": "(sdedr:define-analytical-profile-placement \"Impl.Halo\" \"Impl.Haloprof\" \"BaseLine.Halo\" \"Positive\" \"NoReplace\" \"Eval\")",
     "parameters": [
       {
@@ -4199,9 +4477,10 @@
         "desc": "STRING — 指定 Ref/Eval 窗口的类型。\n\"region\" 表示 eval-window 名称引用区域名称\n\"material\" 引用材料名称\n\"evalwin\" 引用 Ref/Eval 窗口（默认）"
       }
     ],
-    "description": "在网格命令文件中为解析剖面定义创建一个放置。"
+    "signature": "(sdedr:define-analytical-profile-placement placement-name definition-name ref-eval-window symmetry replacement evaluation eval-window decay-length [\"Gauss\"] eval-window-type)"
   },
   "sdedr:define-body-interface-refwin": {
+    "description": "在指定几何体的界面之间定义一个细化窗口。如果界面是多边形（2D 线体），则转换为边列表，并在名称后附加 \"_edge_EN\"。如果界面是面列表（3D），则每个面转换为多边形，并在名称后附加 \"_lump_FN\"。",
     "example": "(sdedr:define-body-interface-refwin (list body1 body2) \"rw_interface\")",
     "parameters": [
       {
@@ -4215,9 +4494,10 @@
         "desc": "STRING — 指定要创建的细化窗口的名称"
       }
     ],
-    "description": "在指定几何体的界面之间定义一个细化窗口。如果界面是多边形（2D 线体），则转换为边列表，并在名称后附加 \"_edge_EN\"。如果界面是面列表（3D），则每个面转换为多边形，并在名称后附加 \"_lump_FN\"。"
+    "signature": "(sdedr:define-body-interface-refwin body-list ref-eval-window)"
   },
   "sdedr:define-constant-profile": {
+    "description": "在网格命令文件中为均匀掺杂剖面创建一个定义。",
     "example": "(sdedr:define-constant-profile \"Const.BG\" \"BoronActiveConcentration\" 1e7)",
     "parameters": [
       {
@@ -4236,9 +4516,10 @@
         "desc": "NUMBER — 恒定掺杂浓度值"
       }
     ],
-    "description": "在网格命令文件中为均匀掺杂剖面创建一个定义。"
+    "signature": "(sdedr:define-constant-profile definition-name species concentration)"
   },
   "sdedr:define-constant-profile-material": {
+    "description": "基于网格命令文件中的材料，创建一个均匀掺杂剖面放置。",
     "example": "(sdedr:define-constant-profile-material \"PlaceCD.BG\" \"Const.BG\" \"GaAs\")",
     "parameters": [
       {
@@ -4267,9 +4548,10 @@
         "desc": "STRING — 可选；\"Replace\" 用此掺杂分布替换所有其他先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类"
       }
     ],
-    "description": "基于网格命令文件中的材料，创建一个均匀掺杂剖面放置。"
+    "signature": "(sdedr:define-constant-profile-material placement-name definition-name material [decay-length [\"Gauss\"]] [replace])"
   },
   "sdedr:define-constant-profile-placement": {
+    "description": "在网格命令文件中创建一个均匀掺杂剖面定义的 Ref/Eval 窗口放置。",
     "example": "(sdedr:define-constant-profile-placement \"Place1\" \"Const.BG\" \"rw1\" 2 \"Replace\")",
     "parameters": [
       {
@@ -4298,9 +4580,10 @@
         "desc": "STRING — 可选；\"Replace\" 用此掺杂分布替换所有其他先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类"
       }
     ],
-    "description": "在网格命令文件中创建一个均匀掺杂剖面定义的 Ref/Eval 窗口放置。"
+    "signature": "(sdedr:define-constant-profile-placement placement-name definition-name ref-win-name [decay-length [\"Gauss\"]] [replace])"
   },
   "sdedr:define-constant-profile-region": {
+    "description": "基于网格命令文件中的区域，创建一个均匀掺杂剖面放置。",
     "example": "(sdedr:define-constant-profile-region \"PlaceCD.GaAsCap\" \"Const.GaAsCap\" \"R.GaAsCap\" 2 \"Replace\")",
     "parameters": [
       {
@@ -4329,9 +4612,10 @@
         "desc": "STRING — 可选；\"Replace\" 用此掺杂分布替换所有其他先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类"
       }
     ],
-    "description": "基于网格命令文件中的区域，创建一个均匀掺杂剖面放置。"
+    "signature": "(sdedr:define-constant-profile-region placement-name definition-name region-name [decay-length [\"Gauss\"]] [replace])"
   },
   "sdedr:define-erf-profile": {
+    "description": "在网格命令文件中创建一个误差函数掺杂剖面的定义。",
     "example": "(sdedr:define-erf-profile \"Impl.Erf\" \"BoronActiveConcentration\" \"SymPos\" 0 \"MaxVal\" 1e18 \"Junction\" 0.1 \"ValueAtDepth\" 1e16 \"Depth\" 0.05 \"Length\" 0.02 \"StdDev\" 0.01)",
     "parameters": [
       {
@@ -4390,9 +4674,10 @@
         "desc": "OPTIONS — 可选；指定横向函数。\n\"Erf\" {\"Factor\" lateral-factor | \"Length\" length}\n\"Eval\" {eval-init eval-function}\n\"Gauss\" {\"Factor\" lateral-factor | \"Length\" length | \"StdDev\" standard-deviation}"
       }
     ],
-    "description": "在网格命令文件中创建一个误差函数掺杂剖面的定义。"
+    "signature": "(sdedr:define-erf-profile definition-name species \"SymPos\" symmetry-position {\"MaxVal\" max-value | \"Dose\" dose} \"Junction\" junction \"ValueAtDepth\" value-at-depth \"Depth\" depth \"Length\" length \"StdDev\" standard-deviation [lateral-function])"
   },
   "sdedr:define-gaussian-profile": {
+    "description": "在网格命令文件中创建一个高斯函数掺杂剖面的定义。",
     "example": "(sdedr:define-gaussian-profile \"Impl.Haloprof\" \"BoronActiveConcentration\" \"PeakPos\" 0 \"PeakVal\" 1.5e18 \"ValueAtDepth\" 1.5e17 \"Depth\" 0.07 \"Gauss\" \"Factor\" 1.0)",
     "parameters": [
       {
@@ -4446,9 +4731,10 @@
         "desc": "OPTIONS — 可选；指定横向函数。\n\"Erf\" {\"Factor\" lateral-factor | \"Length\" length}\n\"Eval\" {eval-init eval-function}\n\"Gauss\" {\"Factor\" lateral-factor | \"Length\" length | \"StdDev\" standard-deviation}"
       }
     ],
-    "description": "在网格命令文件中创建一个高斯函数掺杂剖面的定义。"
+    "signature": "(sdedr:define-gaussian-profile definition-name species \"PeakPos\" peak-position {\"PeakVal\" peak-concentration | \"Dose\" dose} {\"ValueAtDepth\" concentration-at-depth \"Depth\" depth | \"Length\" diffusion-length | \"StdDev\" standard-deviation} [lateral-function])"
   },
   "sdedr:define-multibox-placement": {
+    "description": "定义多盒定义的放置部分。",
     "example": "(sdedr:define-multibox-placement \"p1\" \"d1\" \"refwindow1\")",
     "parameters": [
       {
@@ -4467,9 +4753,10 @@
         "desc": "STRING — 参考窗口的名称"
       }
     ],
-    "description": "定义多盒定义的放置部分。"
+    "signature": "(sdedr:define-multibox-placement placement-name definition-name refwindow-name)"
   },
   "sdedr:define-multibox-size": {
+    "description": "定义多盒定义的定义部分。",
     "example": "(sdedr:define-multibox-size \"multibox-2d\" 10 10 1 1 2 2)",
     "parameters": [
       {
@@ -4523,9 +4810,10 @@
         "desc": "NUMBER — z 方向的细化比率（可选，用于 3D）"
       }
     ],
-    "description": "定义多盒定义的定义部分。"
+    "signature": "(sdedr:define-multibox-size mbox-name max-x max-y [max-z] min-x min-y [min-z] ratio-x ratio-y [ratio-z])"
   },
   "sdedr:define-particle-profile": {
+    "description": "在网格命令文件中创建一个粒子掺杂剖面。",
     "example": "(sdedr:define-particle-profile \"ion_implant\" \"implant.bpt\" \"Species\" \"BoronActiveConcentration\" \"DopingAssignment\" \"CIC\")",
     "parameters": [
       {
@@ -4544,9 +4832,10 @@
         "desc": "OPTIONS — 可选标记参数：\n\"AutoScreeningFactor\" (BOOLEAN) — 自动筛选因子\n\"BoundaryExtension\" (REAL) — 边界扩展\n\"Divisions\" (INTEGER) — 划分数量\n\"DopingAssignment\" (\"CIC\" | \"NGP\" | \"Sano\") — 掺杂分配方法\n\"Normalization\" (BOOLEAN) — 归一化\n\"NumberOfThreads\" (INTEGER) — 线程数\n\"ScreeningFactor\" (REAL) — 筛选因子\n\"ScreeningScalingFactor\" (BOOLEAN) — 筛选缩放因子\n\"Species\" (STRING) — 掺杂种类"
       }
     ],
-    "description": "在网格命令文件中创建一个粒子掺杂剖面。"
+    "signature": "(sdedr:define-particle-profile name file [\"AutoScreeningFactor\" auto-screening-factor] [\"BoundaryExtension\" boundary-extension] [\"Divisions\" divisions] [\"DopingAssignment\" doping-assignment] [\"Normalization\" normalization] [\"NumberOfThreads\" number-of-threads] [\"ScreeningFactor\" screening-factor] [\"ScreeningScalingFactor\" screening-scaling-factor] [\"Species\" species])"
   },
   "sdedr:define-particle-profile-placement": {
+    "description": "在网格命令文件中为粒子剖面定义创建一个放置。只能同时将 \"Replace\" 或 \"LocalReplace\" 之一设置为 true。",
     "example": "(sdedr:define-particle-profile-placement \"Place1\" \"ion_implant\" \"EvalWindow\" \"R.Substrate\" \"region\" \"Replace\" #t)",
     "parameters": [
       {
@@ -4580,9 +4869,10 @@
         "desc": "BOOLEAN — 可选；是否仅替换正在定义的掺杂种类（标记为 \"LocalReplace\"，与 Replace 互斥）"
       }
     ],
-    "description": "在网格命令文件中为粒子剖面定义创建一个放置。只能同时将 \"Replace\" 或 \"LocalReplace\" 之一设置为 true。"
+    "signature": "(sdedr:define-particle-profile-placement placement-name definition-name \"EvalWindow\" eval-window eval-window-type [\"Replace\" replace | \"LocalReplace\" local-replace])"
   },
   "sdedr:define-refeval-window": {
+    "description": "定义一个可用作 Ref/Eval 窗口的几何区域。可以通过列出多个单一形状来创建多个体形状。面是有方向的；面法向遵循右手定则（多边形的顶点列表为逆时针）。返回 ACIS 体 Ref/Eval 窗口的 ENTITY，如果操作失败则返回 #f。",
     "example": "(sdedr:define-refeval-window \"rfwin1\" \"Line\" (position 0 0 0) (position 1 0 0))",
     "parameters": [
       {
@@ -4601,9 +4891,10 @@
         "desc": "LIST — 根据形状类型，为 POSITION 或 POSITION LIST。对于多形状，使用 (list single-shape1 single-shape2 ...)"
       }
     ],
-    "description": "定义一个可用作 Ref/Eval 窗口的几何区域。可以通过列出多个单一形状来创建多个体形状。面是有方向的；面法向遵循右手定则（多边形的顶点列表为逆时针）。返回 ACIS 体 Ref/Eval 窗口的 ENTITY，如果操作失败则返回 #f。"
+    "signature": "(sdedr:define-refeval-window rfwin-name {multi-shape | single-shape})"
   },
   "sdedr:define-refinement-function": {
+    "description": "向指定的细化添加一个细化函数。",
     "example": "(sdedr:define-refinement-function \"ref1\" \"MaxLenInt\" \"Silicon\" \"Oxide\" 0.05 1.5)",
     "parameters": [
       {
@@ -4622,9 +4913,10 @@
         "desc": "函数特定的参数：\n\"MaxLenInt\" mat-reg mat-reg value [factor] [\"DoubleSide\"] [\"UseRegionNames\"] — 用于界面处的最大界面长度；mat-reg 指定定义界面的材料名或区域名\n\"MaxInterval\" \"Variable\" dopant \"Cmin\" cmin \"Cmax\" cmax [\"Scaling\" scaling] [\"TargetLength\" targetLength] [\"Rolloff\"] — 用于基于掺杂变量的最大间距\n\"MaxGradient\" value — 用于最大梯度\n\"MaxTransDiff\" value — 用于最大过渡差"
       }
     ],
-    "description": "向指定的细化添加一个细化函数。"
+    "signature": "(sdedr:define-refinement-function definition-name function-name {\"MaxLenInt\" mat-reg mat-reg value [factor] [\"DoubleSide\"] [\"UseRegionNames\"] | \"MaxInterval\" \"Variable\" dopant-name \"Cmin\" cmin \"Cmax\" cmax [\"Scaling\" scaling] [\"TargetLength\" targetLength] [\"Rolloff\"] | \"MaxGradient\" value | \"MaxTransDiff\" value})"
   },
   "sdedr:define-refinement-material": {
+    "description": "定义按材料细化的放置信息。",
     "example": "(sdedr:define-refinement-material \"p1\" \"d1\" \"Silicon\")",
     "parameters": [
       {
@@ -4643,9 +4935,10 @@
         "desc": "材料名称 (DATEXMAT 类型)"
       }
     ],
-    "description": "定义按材料细化的放置信息。"
+    "signature": "(sdedr:define-refinement-material placement-name definition-name material-name)"
   },
   "sdedr:define-refinement-placement": {
+    "description": "在网格命令文件中创建一个细化放置。",
     "example": "(sdedr:define-refinement-placement \"ref_place1\" \"ref_def1\" \"rw1\")",
     "parameters": [
       {
@@ -4664,9 +4957,10 @@
         "desc": "可以是一个已定义的细化窗口名称 (STRING)，或者是一个 Ref/Eval 窗口、材料和区域的列表，格式为 (list \"window\" \"refevalwin1\" \"material\" \"material1\" \"region\" \"region1\" ...)。如果指定了列表，则细化在所有条件的交集处执行"
       }
     ],
-    "description": "在网格命令文件中创建一个细化放置。"
+    "signature": "(sdedr:define-refinement-placement refinement-name definition-name ref-eval-window)"
   },
   "sdedr:define-refinement-region": {
+    "description": "定义按区域细化的放置信息。",
     "example": "(sdedr:define-refinement-region \"p1\" \"d1\" \"Region_1\")",
     "parameters": [
       {
@@ -4685,9 +4979,10 @@
         "desc": "区域的名称"
       }
     ],
-    "description": "定义按区域细化的放置信息。"
+    "signature": "(sdedr:define-refinement-region placement-name definition-name region-name)"
   },
   "sdedr:define-refinement-size": {
+    "description": "在网格命令文件中创建一个细化尺寸定义。",
     "example": "(sdedr:define-refinement-size \"ref1\" 2 2 2 1 1 1)",
     "parameters": [
       {
@@ -4726,9 +5021,10 @@
         "desc": "可选；z 方向的最小细化尺寸"
       }
     ],
-    "description": "在网格命令文件中创建一个细化尺寸定义。"
+    "signature": "(sdedr:define-refinement-size definition-name max-x [max-y] [max-z] min-x [min-y] [min-z])"
   },
   "sdedr:define-submesh": {
+    "description": "在网格命令文件中创建一个一维外部剖面（子网格）。",
     "example": "(sdedr:define-submesh \"sub1\" \"geo.tdr\" \"doping.dat\" \"r\" \"out.dat\" \"w\")",
     "parameters": [
       {
@@ -4757,9 +5053,10 @@
         "desc": "可选的字段名列表，或字段-浓度序对(pair)列表"
       }
     ],
-    "description": "在网格命令文件中创建一个一维外部剖面（子网格）。"
+    "signature": "(sdedr:define-submesh definition-name geofile-name file1 model file2 mode2 ... filen moden [(list field1 field2 ... fieldn)] | (sdedr:define-submesh definition-name geofile-name file1 model file2 mode2 ... filen moden [(list field1 conc1 field2 conc2 ... fieldn concn)])"
   },
   "sdedr:define-submesh-placement": {
+    "description": "在网格命令文件中创建一个子网格放置。要旋转、平移或反射子网格放置，请使用 sdedr:transform-submesh-placement。",
     "example": "(sdedr:define-submesh-placement \"place1\" \"sub1\" \"R.Sub\" \"region\")",
     "parameters": [
       {
@@ -4793,9 +5090,10 @@
         "desc": "可选：\"Replace\" 替换所有其他先前定义的剖面；\"NoReplace\" 将新剖面添加到现有剖面中；\"LocalReplace\" 仅替换相同种类。也支持 \"IgnoreMat\" 和 \"MatchMaterialType\" 选项"
       }
     ],
-    "description": "在网格命令文件中创建一个子网格放置。要旋转、平移或反射子网格放置，请使用 sdedr:transform-submesh-placement。"
+    "signature": "(sdedr:define-submesh-placement placement-name definition-name evaluation-window [\"PlacementType\" eval-window-type] [\"DecayLength\" decay-length | \"GaussDecayLength\" gauss-decay-length] [\"Replace\" | \"NoReplace\" | \"LocalReplace\"] [\"IgnoreMat\"] [\"MatchMaterialType\"])"
   },
   "sdedr:del-selected-drentity": {
+    "description": "删除指定的实体或实体列表。",
     "example": "(sdedr:del-selected-drentity (list entity1 entity2))",
     "parameters": [
       {
@@ -4809,9 +5107,10 @@
         "desc": "指定要删除的实体名称列表"
       }
     ],
-    "description": "删除指定的实体或实体列表。"
+    "signature": "(sdedr:del-selected-drentity entity | entity-list)"
   },
   "sdedr:delete-multibox-placement": {
+    "description": "从命令文件的放置部分删除指定的多盒放置。",
     "example": "(sdedr:delete-multibox-placement \"multibox_1\")",
     "parameters": [
       {
@@ -4820,9 +5119,10 @@
         "desc": "要删除的多盒放置的名称"
       }
     ],
-    "description": "从命令文件的放置部分删除指定的多盒放置。"
+    "signature": "(sdedr:delete-multibox-placement placement-name)"
   },
   "sdedr:delete-profile-placement": {
+    "description": "删除指定的剖面放置。",
     "example": "(sdedr:delete-profile-placement \"profile_place1\")",
     "parameters": [
       {
@@ -4831,9 +5131,10 @@
         "desc": "要删除的剖面放置的名称"
       }
     ],
-    "description": "删除指定的剖面放置。"
+    "signature": "(sdedr:delete-profile-placement placement-name)"
   },
   "sdedr:delete-refeval-window": {
+    "description": "删除一个或多个 Ref/Eval 窗口。也可接受 (sde:selected-refeval-windows) 的结果。",
     "example": "(sdedr:delete-refeval-window (list \"rw1\" \"rw2\"))",
     "parameters": [
       {
@@ -4842,9 +5143,10 @@
         "desc": "要删除的单个 Ref/Eval 窗口名称 (STRING) 或 Ref/Eval 窗口名称列表 (STRING LIST)"
       }
     ],
-    "description": "删除一个或多个 Ref/Eval 窗口。也可接受 (sde:selected-refeval-windows) 的结果。"
+    "signature": "(sdedr:delete-refeval-window bodies)"
   },
   "sdedr:delete-refinement-placement": {
+    "description": "从命令文件的 Placements 部分删除指定的细化放置。",
     "example": "(sdedr:delete-refinement-placement \"refinement_1\")",
     "parameters": [
       {
@@ -4853,9 +5155,10 @@
         "desc": "要删除的细化放置的名称"
       }
     ],
-    "description": "从命令文件的 Placements 部分删除指定的细化放置。"
+    "signature": "(sdedr:delete-refinement-placement placement-name)"
   },
   "sdedr:delete-submesh-placement": {
+    "description": "删除指定的子网格放置。",
     "example": "(sdedr:delete-submesh-placement \"place1\")",
     "parameters": [
       {
@@ -4864,14 +5167,16 @@
         "desc": "要删除的子网格放置的名称"
       }
     ],
-    "description": "删除指定的子网格放置。"
+    "signature": "(sdedr:delete-submesh-placement placement-name)"
   },
   "sdedr:get-cmdprecision": {
+    "description": "返回网格命令文件的精度值。默认值为 12。",
     "example": "(sdedr:get-cmdprecision)",
     "parameters": [],
-    "description": "返回网格命令文件的精度值。默认值为 12。"
+    "signature": "(sdedr:get-cmdprecision)"
   },
   "sdedr:get-definition-list": {
+    "description": "返回一种放置类型的定义名称列表。",
     "example": "(sdedr:get-definition-list \"profile\")",
     "parameters": [
       {
@@ -4880,9 +5185,10 @@
         "desc": "要获取的定义列表类型：\"multibox\" | \"profile\" | \"refinement\""
       }
     ],
-    "description": "返回一种放置类型的定义名称列表。"
+    "signature": "(sdedr:get-definition-list \"multibox\" | \"profile\" | \"refinement\")"
   },
   "sdedr:get-placement-list": {
+    "description": "返回一种放置类型的放置名称列表。",
     "example": "(sdedr:get-placement-list \"profile\")",
     "parameters": [
       {
@@ -4891,9 +5197,10 @@
         "desc": "要获取的放置列表类型：\"multibox\" | \"profile\" | \"refinement\""
       }
     ],
-    "description": "返回一种放置类型的放置名称列表。"
+    "signature": "(sdedr:get-placement-list \"multibox\" | \"profile\" | \"refinement\")"
   },
   "sdedr:hide-mbox": {
+    "description": "隐藏指定的多盒体。",
     "example": "(sdedr:hide-mbox (list \"mbox1\" \"mbox2\"))",
     "parameters": [
       {
@@ -4902,9 +5209,10 @@
         "desc": "指定要隐藏的多盒体名称列表 (STRING LIST)"
       }
     ],
-    "description": "隐藏指定的多盒体。"
+    "signature": "(sdedr:hide-mbox mbox-list)"
   },
   "sdedr:hide-profile": {
+    "description": "隐藏指定的解析掺杂剖面。",
     "example": "(sdedr:hide-profile (list \"profile1\"))",
     "parameters": [
       {
@@ -4913,9 +5221,10 @@
         "desc": "指定要隐藏的掺杂剖面名称列表 (STRING LIST)"
       }
     ],
-    "description": "隐藏指定的解析掺杂剖面。"
+    "signature": "(sdedr:hide-profile profile-list)"
   },
   "sdedr:hide-refinement": {
+    "description": "隐藏指定的细化。",
     "example": "(sdedr:hide-refinement \"ref1\")",
     "parameters": [
       {
@@ -4924,9 +5233,10 @@
         "desc": "指定要隐藏的细化名称列表 (STRING LIST)"
       }
     ],
-    "description": "隐藏指定的细化。"
+    "signature": "(sdedr:hide-refinement refinement-list)"
   },
   "sdedr:hide-rewin": {
+    "description": "隐藏指定的一个或多个 Ref/Eval 窗口。",
     "example": "(sdedr:hide-rewin (list \"N1\" \"N2\" \"N3\"))",
     "parameters": [
       {
@@ -4935,9 +5245,10 @@
         "desc": "指定要隐藏的单个 Ref/Eval 窗口名称 (STRING) 或 Ref/Eval 窗口名称列表 (STRING LIST)"
       }
     ],
-    "description": "隐藏指定的一个或多个 Ref/Eval 窗口。"
+    "signature": "(sdedr:hide-rewin rewin-list)"
   },
   "sdedr:offset-block": {
+    "description": "在网格命令文件的 Offsetting 部分内生成一个新的偏移块。",
     "example": "(sdedr:offset-block \"region\" \"R.Substrate\" \"maxlevel\" 10)",
     "parameters": [
       {
@@ -4951,9 +5262,10 @@
         "desc": "偏移块的最大细化级别"
       }
     ],
-    "description": "在网格命令文件的 Offsetting 部分内生成一个新的偏移块。"
+    "signature": "(sdedr:offset-block \"material\" material \"maxlevel\" maxlevel) | (sdedr:offset-block \"region\" region \"maxlevel\" maxlevel)"
   },
   "sdedr:offset-global": {
+    "description": "生成一个新的全局偏移参数块。 [信源不充分：T-2022 附录未包含此函数；描述源自 N-2017 手册]",
     "example": "(sdedr:offset-global \"collisionDistance\" 0.01 \"factor\" 1.3 \"hlocal\" 0.0 \"maxlevel\" 20 \"minAngle\" 20.0)",
     "parameters": [
       {
@@ -4982,9 +5294,10 @@
         "desc": "最小角度参数（标记为 \"minAngle\"）"
       }
     ],
-    "description": "生成一个新的全局偏移参数块。 [信源不充分：T-2022 附录未包含此函数；描述源自 N-2017 手册]"
+    "signature": "(sdedr:offset-global \"collisionDistance\" collisionDistance \"factor\" factor \"hlocal\" hlocal \"maxlevel\" maxlevel \"minAngle\" minAngle)"
   },
   "sdedr:offset-interface": {
+    "description": "在网格命令文件的 Offsetting 部分内生成一个新的偏移界面块。",
     "example": "(sdedr:offset-interface \"region\" \"R1\" \"R2\" \"hlocal\" 0.01 \"factor\" 1.5 \"window\" 0 0 0 10 10 10)",
     "parameters": [
       {
@@ -5013,9 +5326,10 @@
         "desc": "定义两个对角点的边界窗口坐标（六个 REAL 值，标记为 \"window\"）"
       }
     ],
-    "description": "在网格命令文件的 Offsetting 部分内生成一个新的偏移界面块。"
+    "signature": "(sdedr:offset-interface \"region\" region1 region2 \"hlocal\" hlocal \"factor\" factor \"window\" x1 y1 z1 x2 y2 z2) | (sdedr:offset-interface \"material\" material1 material2 \"hlocal\" hlocal \"factor\" factor \"window\" x1 y1 z1 x2 y2 z2)"
   },
   "sdedr:read-cmd-file": {
+    "description": "解析指定的网格命令文件，并初始化 Sentaurus Structure Editor 中与掺杂和细化相关的数据结构。命令文件实体可以使用 Placements Viewer 进行可视化，并通过 sdedr Scheme 扩展或 GUI 菜单进行操作。",
     "example": "(sdedr:read-cmd-file \"msh.cmd\")",
     "parameters": [
       {
@@ -5024,9 +5338,10 @@
         "desc": "指定要加载的网格命令文件的名称"
       }
     ],
-    "description": "解析指定的网格命令文件，并初始化 Sentaurus Structure Editor 中与掺杂和细化相关的数据结构。命令文件实体可以使用 Placements Viewer 进行可视化，并通过 sdedr Scheme 扩展或 GUI 菜单进行操作。"
+    "signature": "(sdedr:read-cmd-file cmd-file-name)"
   },
   "sdedr:redefine-refeval-window": {
+    "description": "重新定义先前定义的几何 Ref/Eval 窗口。主要用于重命名现有的 Ref/Eval 窗口。返回重新定义的 ACIS 体的 ENTITY ID，如果操作失败则返回 #f。",
     "example": "(sdedr:redefine-refeval-window \"rw1\" \"rw1_new\" \"Rectangle\" (position 0 0 0) (position 2 2 0))",
     "parameters": [
       {
@@ -5050,9 +5365,10 @@
         "desc": "根据形状类型，为 POSITION 或 POSITION 列表"
       }
     ],
-    "description": "重新定义先前定义的几何 Ref/Eval 窗口。主要用于重命名现有的 Ref/Eval 窗口。返回重新定义的 ACIS 体的 ENTITY ID，如果操作失败则返回 #f。"
+    "signature": "(sdedr:redefine-refeval-window rfwin-name new-rfwin-name rfwin-type data)"
   },
   "sdedr:refine-box": {
+    "description": "定义一个细化窗口样式的细化框。在 2D 中定义一个细化矩形，在 3D 中定义一个细化长方体。",
     "example": "(sdedr:refine-box \"refbox1\" (position 0 0 0) (position 10 10 0) 0.5)",
     "parameters": [
       {
@@ -5076,9 +5392,10 @@
         "desc": "指定所有方向的单个网格间距值，或指定三个值（x, y, z 方向）的列表"
       }
     ],
-    "description": "定义一个细化窗口样式的细化框。在 2D 中定义一个细化矩形，在 3D 中定义一个细化长方体。"
+    "signature": "(sdedr:refine-box refinement-name pos-min pos-max spacing)"
   },
   "sdedr:refine-doping": {
+    "description": "在整个区域或材料中基于掺杂（场：DopingConcentration）添加细化。",
     "example": "(sdedr:refine-doping 0.1 0.1 0.1 \"MaxTransDiff\" 0.5 \"material\" \"Silicon\")",
     "parameters": [
       {
@@ -5097,9 +5414,10 @@
         "desc": "可选；\"material\" 后跟材料名称以将细化限制在特定材料（默认为 \"Silicon\"），或 \"region\" 后跟区域名称"
       }
     ],
-    "description": "在整个区域或材料中基于掺杂（场：DopingConcentration）添加细化。"
+    "signature": "(sdedr:refine-doping spacing | sx sy sz [\"MaxTransDiff\" asinhdiff] [\"material\" material-name | \"region\" region-name])"
   },
   "sdedr:refine-interface": {
+    "description": "在界面处创建细化网格。细化仅放置在区域 r1 或材料 m1 中，除非指定了窗口，在这种情况下，细化在整个窗口内执行。",
     "example": "(sdedr:refine-interface \"region\" \"R.Gate\" \"R.Oxide\" \"hlocal\" 0.01 \"factor\" 1.5)",
     "parameters": [
       {
@@ -5133,9 +5451,10 @@
         "desc": "可选；限制窗口的两个对角点（x1 y1 z1 x2 y2 z2）。默认无窗口，细化在 r1 或 m1 内进行"
       }
     ],
-    "description": "在界面处创建细化网格。细化仅放置在区域 r1 或材料 m1 中，除非指定了窗口，在这种情况下，细化在整个窗口内执行。"
+    "signature": "(sdedr:refine-interface \"region\" r1 r2 | \"material\" m1 m2 \"hlocal\" spacing [\"factor\" factor] [\"window\" x1 y1 z1 x2 y2 z2])"
   },
   "sdedr:set-cmdprecision": {
+    "description": "设置网格命令文件的精度值。控制为 Ref/Eval 窗口坐标写入的位数。顶点坐标可以被截断和舍入。默认值为 12。",
     "example": "(sdedr:set-cmdprecision 10)",
     "parameters": [
       {
@@ -5144,9 +5463,10 @@
         "desc": "网格命令文件中坐标的位数"
       }
     ],
-    "description": "设置网格命令文件的精度值。控制为 Ref/Eval 窗口坐标写入的位数。顶点坐标可以被截断和舍入。默认值为 12。"
+    "signature": "(sdedr:set-cmdprecision cmdprecision)"
   },
   "sdedr:set-title": {
+    "description": "设置命令文件的标题。信息将写入 Title 部分。若未显式调用，标题默认为 \"Untitled\"。",
     "example": "(sdedr:set-title \"NMOS Device Mesh\")",
     "parameters": [
       {
@@ -5155,9 +5475,10 @@
         "desc": "指定命令文件的标题"
       }
     ],
-    "description": "设置命令文件的标题。信息将写入 Title 部分。若未显式调用，标题默认为 \"Untitled\"。"
+    "signature": "(sdedr:set-title cmd-file-title)"
   },
   "sdedr:show-mbox": {
+    "description": "显示指定的多盒体。",
     "example": "(sdedr:show-mbox (list \"mbox1\"))",
     "parameters": [
       {
@@ -5166,9 +5487,10 @@
         "desc": "指定要显示的多盒体名称列表 (STRING LIST)"
       }
     ],
-    "description": "显示指定的多盒体。"
+    "signature": "(sdedr:show-mbox mbox-list)"
   },
   "sdedr:show-profile": {
+    "description": "显示指定的解析掺杂剖面。",
     "example": "(sdedr:show-profile (list \"profile1\"))",
     "parameters": [
       {
@@ -5177,9 +5499,10 @@
         "desc": "指定要显示的掺杂剖面名称列表 (STRING LIST)"
       }
     ],
-    "description": "显示指定的解析掺杂剖面。"
+    "signature": "(sdedr:show-profile profile-list)"
   },
   "sdedr:show-refinement": {
+    "description": "显示指定的细化。",
     "example": "(sdedr:show-refinement \"ref1\")",
     "parameters": [
       {
@@ -5188,9 +5511,10 @@
         "desc": "指定要显示的细化名称列表 (STRING LIST)"
       }
     ],
-    "description": "显示指定的细化。"
+    "signature": "(sdedr:show-refinement refinement-list)"
   },
   "sdedr:show-rewin": {
+    "description": "显示指定的一个或多个 Ref/Eval 窗口。",
     "example": "(sdedr:show-rewin (list \"N1\" \"N2\"))",
     "parameters": [
       {
@@ -5199,9 +5523,10 @@
         "desc": "指定一个 Ref/Eval 窗口名称 (STRING) 或一个 Ref/Eval 窗口名称列表 (STRING LIST) 以进行显示"
       }
     ],
-    "description": "显示指定的一个或多个 Ref/Eval 窗口。"
+    "signature": "(sdedr:show-rewin rewin-list)"
   },
   "sdedr:transform-submesh-placement": {
+    "description": "定义应用于指定外部剖面放置的变换操作。操作将追加到任何现有序列中并按顺序执行。使用 sdedr:clear-submesh-placement-transform 来清除列表。",
     "example": "(sdedr:transform-submesh-placement \"place1\" \"Reflect\" \"X\" \"Rotation\" 90 \"Y\" \"ShiftVector\" (gvector 0.5 0 0))",
     "parameters": [
       {
@@ -5215,9 +5540,10 @@
         "desc": "变换操作：\"Reflect\" axis (\"X\" | \"Y\" | \"Z\")、\"Rotation\" angle axis 或 \"ShiftVector\" (gvector x y z)。可以指定任意数量的操作；它们按列出的顺序执行"
       }
     ],
-    "description": "定义应用于指定外部剖面放置的变换操作。操作将追加到任何现有序列中并按顺序执行。使用 sdedr:clear-submesh-placement-transform 来清除列表。"
+    "signature": "(sdedr:transform-submesh-placement placement-name [<transform1> <transform2> ... <transformN>])"
   },
   "sdedr:write-cmd-file": {
+    "description": "将所有与掺杂相关和与细化相关的数据写入指定的网格命令文件。该命令文件可在后续的网格划分操作中与生成的边界文件一起使用。",
     "example": "(sdedr:write-cmd-file \"msh.cmd\")",
     "parameters": [
       {
@@ -5226,9 +5552,10 @@
         "desc": "指定要写入的网格命令文件的名称"
       }
     ],
-    "description": "将所有与掺杂相关和与细化相关的数据写入指定的网格命令文件。该命令文件可在后续的网格划分操作中与生成的边界文件一起使用。"
+    "signature": "(sdedr:write-cmd-file cmd-file-name)"
   },
   "sdedr:write-scaled-cmd-file": {
+    "description": "在缩放某些尺寸后，将所有与掺杂相关和与细化相关的数据写入指定的网格命令文件。所有位置和长度参数乘以缩放因子；所有梯度参数除以该因子。注意：Ref/Eval 窗口必须在调用此函数前使用 sdegeo:scale 单独缩放。",
     "example": "(sdedr:write-scaled-cmd-file \"Scaled_msh.cmd\" scale-factor)",
     "parameters": [
       {
@@ -5242,10 +5569,10 @@
         "desc": "缩放因子；所有位置和长度参数乘以该因子，所有梯度参数除以该因子"
       }
     ],
-    "description": "在缩放某些尺寸后，将所有与掺杂相关和与细化相关的数据写入指定的网格命令文件。所有位置和长度参数乘以缩放因子；所有梯度参数除以该因子。注意：Ref/Eval 窗口必须在调用此函数前使用 sdegeo:scale 单独缩放。"
+    "signature": "(sdedr:write-scaled-cmd-file cmd-file-name scaling-factor)"
   },
   "sdeepi:create-layerstack": {
-    "example": "",
+    "description": "根据 CSV 输入数据创建平面层叠结构。",
     "parameters": [
       {
         "name": "file-name",
@@ -5253,10 +5580,10 @@
         "desc": "包含平面层叠结构定义的 CSV 输入数据文件的 STRING 路径"
       }
     ],
-    "description": "根据 CSV 输入数据创建平面层叠结构。"
+    "signature": "(sdeepi:create-layerstack file-name)"
   },
   "sdeepi:publish-global-vars": {
-    "example": "",
+    "description": "将外延层叠结构变量定义为全局 Scheme 变量。",
     "parameters": [
       {
         "name": "make-global-vars",
@@ -5264,10 +5591,10 @@
         "desc": "BOOLEAN：如果为 #t，所有已发布的全局和层变量在堆栈创建后保留为全局 Scheme 变量；如果为 #f（默认值），则不保留任何变量，以避免覆盖现有的 Scheme 变量"
       }
     ],
-    "description": "将外延层叠结构变量定义为全局 Scheme 变量。"
+    "signature": "(sdeepi:publish-global-vars make-global-vars)"
   },
   "sdeepi:scm": {
-    "example": "",
+    "description": "根据 CSV 输入数据生成用于创建平面层叠结构的 Scheme 脚本。",
     "parameters": [
       {
         "name": "file-name",
@@ -5280,10 +5607,10 @@
         "desc": "STRING — 生成的 Scheme 脚本的可选路径；默认为文件名的 .scm 扩展名版本"
       }
     ],
-    "description": "根据 CSV 输入数据生成用于创建平面层叠结构的 Scheme 脚本。"
+    "signature": "(sdeepi:scm file-name [output-file-name])"
   },
   "sdeepi:tcl": {
-    "example": "",
+    "description": "生成一个 Tcl 脚本，其中包含来自 CSV 输入文件的所有层叠数据作为 Tcl 变量。",
     "parameters": [
       {
         "name": "file-name",
@@ -5296,15 +5623,15 @@
         "desc": "STRING — 生成的 Tcl 脚本的可选路径；默认为文件名的 .tcl 扩展名版本"
       }
     ],
-    "description": "生成一个 Tcl 脚本，其中包含来自 CSV 输入文件的所有层叠数据作为 Tcl 变量。"
+    "signature": "(sdeepi:tcl file-name [output-file-name])"
   },
   "sdeicwb:clear": {
-    "example": "",
+    "description": "从内存中移除所有与 IC WorkBench (ICWB) 相关的数据。",
     "parameters": [],
-    "description": "从内存中移除所有与 IC WorkBench (ICWB) 相关的数据。"
+    "signature": "(sdeicwb:clear)"
   },
   "sdeicwb:contact": {
-    "example": "",
+    "description": "为后续器件仿真创建接触，该接触与 TCAD 版图文件中的掩模或文本标签相关联。",
     "parameters": [
       {
         "name": "label-name",
@@ -5362,9 +5689,10 @@
         "desc": "可选；接触的自定义名称，默认为指定的层或文本标签的名称"
       }
     ],
-    "description": "为后续器件仿真创建接触，该接触与 TCAD 版图文件中的掩模或文本标签相关联。"
+    "signature": "(sdeicwb:contact (\"label.name\" label-name | \"layer.name\" layer-name) (\"type\" \"box\" \"material\" material [\"adjacent.material\" adjacent-material] ([\"boxheight\" boxheight] | [\"hi\" <n> \"lo\" <n>]) | \"type\" \"point\" \"material\" material [\"height\" <n>] [\"replace\" #t | #f]) [\"name\" name])"
   },
   "sdeicwb:create-boxes-from-layer": {
+    "description": "根据指定 ICWB 层的多边形边界框创建长方体，其横向范围由该边界框定义。",
     "example": "(define GATEMETAL (sdeicwb:create-boxes-from-layer \"ngate\" (sdeicwb:down PoTop 0.05) (sdeicwb:up PoTop 0.1) \"Metal\" \"R.dummy\"))",
     "parameters": [
       {
@@ -5393,9 +5721,10 @@
         "desc": "在长方体内部创建的区域的名称"
       }
     ],
-    "description": "根据指定 ICWB 层的多边形边界框创建长方体，其横向范围由该边界框定义。"
+    "signature": "(sdeicwb:create-boxes-from-layer lname top bot region-material region-name)"
   },
   "sdeicwb:define-refinement-from-layer": {
+    "description": "根据 ICWB 层创建具有横向范围的细化窗口，纵向范围由参数定义；同时生成 3D 细化尺寸设置。",
     "example": "(sdeicwb:define-refinement-from-layer \"lname\" \"POLY\" \"rname\" \"Channel\" \"oversize\" 0.15 \"top\" (sdeicwb:up SiTop 0.03) \"bot\" (sdeicwb:down SiTop 0.1) \"dlrmax\" 0.05 \"dlrmin\" 0.025 \"dbtmax\" 0.02 \"dbtmin\" 0.01 \"dbfmax\" 0.05 \"dbfmin\" 0.025)",
     "parameters": [
       {
@@ -5469,9 +5798,10 @@
         "desc": "可选；若 #t（默认），使用多边形的边界框作为长方体体积；若 #f，使用多边形形状本身创建 3D 棱柱（仅适用于 3D 结构中的 2D 多边形）；当为 #f 时，忽略 oversize"
       }
     ],
-    "description": "根据 ICWB 层创建具有横向范围的细化窗口，纵向范围由参数定义；同时生成 3D 细化尺寸设置。"
+    "signature": "(sdeicwb:define-refinement-from-layer \"lname\" lname [\"rname\" rname] [\"oversize\" oversize] \"top\" top \"bot\" bot \"dlrmin\" dlrmin \"dlrmax\" dlrmax \"dbtmin\" dbtmin \"dbtmax\" dbtmax [\"dbfmin\" dbfmin] [\"dbfmax\" dbfmax] [\"material\" material] [\"region\" region] [\"use-bbox\" use-bbox])"
   },
   "sdeicwb:down": {
+    "description": "返回一个向下调整的坐标，以适应当前坐标系约定。",
     "example": "(define BelowSiInterface (sdeicwb:down SiTop epsilon))",
     "parameters": [
       {
@@ -5485,9 +5815,10 @@
         "desc": "要应用的增量；对于 UCS 返回 value + increment，对于 DF-ISE 返回 value - increment (REAL)"
       }
     ],
-    "description": "返回一个向下调整的坐标，以适应当前坐标系约定。"
+    "signature": "(sdeicwb:down value increment)"
   },
   "sdeicwb:gds2mac": {
+    "description": "将 GDS 版图文件转换为 .mac 文件，并可选择加载它以供 sdeicwb 命令进一步处理。",
     "example": "(sdeicwb:gds2mac \"gds.file\" GDSFILE \"cell\" CELLNAME \"layer.names\" LAYERNAMES \"layer.numbers\" LAYERNUMBERS \"sim3d\" (list 115 115 985 485) \"scale\" 1.e-3 \"mac.file\" \"xx\")",
     "parameters": [
       {
@@ -5546,10 +5877,10 @@
         "desc": "可选；若 #f，禁止自动加载转换后的 .mac 文件（默认 #t）"
       }
     ],
-    "description": "将 GDS 版图文件转换为 .mac 文件，并可选择加载它以供 sdeicwb 命令进一步处理。"
+    "signature": "(sdeicwb:gds2mac \"gds.file\" gdsfile \"cell\" cellname \"layer.names\" lnames \"layer.numbers\" lnumbers \"sim3d\" sim3ddomain \"scale\" scale \"domain.name\" dname \"mac.file\" macfile [\"recenter\" #t | #f] [\"stretches\" stretches] [\"loadmacfile\" #t | #f])"
   },
   "sdeicwb:generate-mask-by-layer-name": {
-    "example": "",
+    "description": "基于给定的 ICWB 层名称创建掩模，这些名称引用先前加载的宏文件和选定的域。",
     "parameters": [
       {
         "name": "maskname",
@@ -5572,40 +5903,42 @@
         "desc": "可选；若 #t，执行实体检查和边界修复以解决实体检查器发现的问题（默认 #f）"
       }
     ],
-    "description": "基于给定的 ICWB 层名称创建掩模，这些名称引用先前加载的宏文件和选定的域。"
+    "signature": "(sdeicwb:generate-mask-by-layer-name maskname layernames [with-overlaps do-entity-check])"
   },
   "sdeicwb:get-back": {
-    "example": "",
+    "description": "返回已应用拉伸的当前域的后边界框坐标。",
     "parameters": [],
-    "description": "返回已应用拉伸的当前域的后边界框坐标。"
+    "signature": "(sdeicwb:get-back)"
   },
   "sdeicwb:get-dimension": {
-    "example": "",
+    "description": "以整数形式返回当前域的维度（1=点，2=线，3=高亮）。",
     "parameters": [],
-    "description": "以整数形式返回当前域的维度（1=点，2=线，3=高亮）。"
+    "signature": "(sdeicwb:get-dimension)"
   },
   "sdeicwb:get-domains": {
-    "example": "",
+    "description": "返回由 sdeicwb:set-domain 设置的当前域名称列表。",
     "parameters": [],
-    "description": "返回由 sdeicwb:set-domain 设置的当前域名称列表。"
+    "signature": "(sdeicwb:get-domains)"
   },
   "sdeicwb:get-front": {
-    "example": "",
+    "description": "返回已应用拉伸后的当前域的前边界框坐标。",
     "parameters": [],
-    "description": "返回已应用拉伸后的当前域的前边界框坐标。"
+    "signature": "(sdeicwb:get-front)"
   },
   "sdeicwb:get-global-bot": {
+    "description": "以与坐标系无关的方式返回全局边界框的底部坐标。",
     "example": "(define GBot (sdeicwb:get-global-bot))",
     "parameters": [],
-    "description": "以与坐标系无关的方式返回全局边界框的底部坐标。"
+    "signature": "(sdeicwb:get-global-bot)"
   },
   "sdeicwb:get-global-top": {
+    "description": "以与坐标系无关的方式返回全局边界框的顶部坐标。",
     "example": "(define GTop (sdeicwb:get-global-top))",
     "parameters": [],
-    "description": "以与坐标系无关的方式返回全局边界框的顶部坐标。"
+    "signature": "(sdeicwb:get-global-top)"
   },
   "sdeicwb:get-label": {
-    "example": "",
+    "description": "返回一个包含指定标签信息的列表（图层名称、文本标签和坐标）。",
     "parameters": [
       {
         "name": "label-name",
@@ -5613,10 +5946,10 @@
         "desc": "要查询的标签名称（STRING）；返回图层名称、文本标签（均为字符串）和标签文本坐标（两个实数）"
       }
     ],
-    "description": "返回一个包含指定标签信息的列表（图层名称、文本标签和坐标）。"
+    "signature": "(sdeicwb:get-label label-name)"
   },
   "sdeicwb:get-label-for-layer": {
-    "example": "",
+    "description": "返回一个包含指定图层标签信息的列表（图层名称、文本标签和坐标）。",
     "parameters": [
       {
         "name": "layer-name",
@@ -5624,24 +5957,25 @@
         "desc": "要查询的图层名称（STRING）；返回图层名称、文本标签（均为字符串）和标签文本坐标（两个实数）"
       }
     ],
-    "description": "返回一个包含指定图层标签信息的列表（图层名称、文本标签和坐标）。"
+    "signature": "(sdeicwb:get-label-for-layer layer-name)"
   },
   "sdeicwb:get-labels": {
-    "example": "",
+    "description": "返回所有标签信息列表的列表，每个子列表包含图层名称、文本标签和坐标。",
     "parameters": [],
-    "description": "返回所有标签信息列表的列表，每个子列表包含图层名称、文本标签和坐标。"
+    "signature": "(sdeicwb:get-labels)"
   },
   "sdeicwb:get-layer-ids": {
-    "example": "",
+    "description": "返回先前由 sdeicwb:load-file 加载的 ICWB 掩模文件中的图层 ID 列表。",
     "parameters": [],
-    "description": "返回先前由 sdeicwb:load-file 加载的 ICWB 掩模文件中的图层 ID 列表。"
+    "signature": "(sdeicwb:get-layer-ids)"
   },
   "sdeicwb:get-layer-names": {
-    "example": "",
+    "description": "返回先前由 sdeicwb:load-file 加载的 ICWB 掩模文件中的图层名称列表。",
     "parameters": [],
-    "description": "返回先前由 sdeicwb:load-file 加载的 ICWB 掩模文件中的图层名称列表。"
+    "signature": "(sdeicwb:get-layer-names)"
   },
   "sdeicwb:get-layer-polygon-midpoints": {
+    "description": "计算层中线段或多边形的中点，用于定位由版图驱动操作创建的对象。",
     "example": "(define DRAINMETAL (find-body-id (car (sdeicwb:get-layer-polygon-midpoints \"ndrain\" (sdeicwb:up SiTop epsilon)))))",
     "parameters": [
       {
@@ -5655,15 +5989,15 @@
         "desc": "作为第三个坐标的高度值 (REAL)；用于从二维多边形中点构建三维位置"
       }
     ],
-    "description": "计算层中线段或多边形的中点，用于定位由版图驱动操作创建的对象。"
+    "signature": "(sdeicwb:get-layer-polygon-midpoints layer-name height)"
   },
   "sdeicwb:get-left": {
-    "example": "",
+    "description": "返回当前域在 SDE 坐标系中已应用拉伸后的左侧边界框坐标。",
     "parameters": [],
-    "description": "返回当前域在 SDE 坐标系中已应用拉伸后的左侧边界框坐标。"
+    "signature": "(sdeicwb:get-left)"
   },
   "sdeicwb:get-polygon-bounding-boxes-by-layer-name": {
-    "example": "",
+    "description": "返回给定层上多边形以及当前域作为对角线的边界框。",
     "parameters": [
       {
         "name": "layer-name",
@@ -5671,10 +6005,10 @@
         "desc": "层名称 (STRING)；需要先用 sdeicwb:set-domain 设置当前域"
       }
     ],
-    "description": "返回给定层上多边形以及当前域作为对角线的边界框。"
+    "signature": "(sdeicwb:get-polygon-bounding-boxes-by-layer-name layer-name)"
   },
   "sdeicwb:get-polygon-by-name": {
-    "example": "",
+    "description": "返回给定多边形名称的多边形坐标。",
     "parameters": [
       {
         "name": "polygon-name",
@@ -5682,10 +6016,10 @@
         "desc": "多边形名称 (STRING)；多边形在使用 sdeicwb:load-file 读入时被命名"
       }
     ],
-    "description": "返回给定多边形名称的多边形坐标。"
+    "signature": "(sdeicwb:get-polygon-by-name polygon-name)"
   },
   "sdeicwb:get-polygon-names-by-layer-name": {
-    "example": "",
+    "description": "返回给定层上的多边形名称。",
     "parameters": [
       {
         "name": "layer-name",
@@ -5693,9 +6027,10 @@
         "desc": "层名称 (STRING)；返回该层上的多边形名称列表"
       }
     ],
-    "description": "返回给定层上的多边形名称。"
+    "signature": "(sdeicwb:get-polygon-names-by-layer-name layer-name)"
   },
   "sdeicwb:get-region-bot": {
+    "description": "使用与坐标系无关的语法返回给定区域的底部坐标。",
     "example": "(define SiBottom (sdeicwb:get-region-bot (find-material-id \"Silicon\")))",
     "parameters": [
       {
@@ -5704,9 +6039,10 @@
         "desc": "区域的体 ID (BODY)；对于 UCS 返回最大 x 坐标，对于 DF-ISE 返回区域边界框的最小 z 坐标"
       }
     ],
-    "description": "使用与坐标系无关的语法返回给定区域的底部坐标。"
+    "signature": "(sdeicwb:get-region-bot body)"
   },
   "sdeicwb:get-region-top": {
+    "description": "使用与坐标系无关的语法返回给定区域的顶部坐标。",
     "example": "(define SiTop (sdeicwb:get-region-top (find-material-id \"Silicon\")))",
     "parameters": [
       {
@@ -5715,35 +6051,35 @@
         "desc": "区域的体 ID (BODY)；对于 UCS 返回最小 x 坐标，对于 DF-ISE 返回区域边界框的最大 z 坐标"
       }
     ],
-    "description": "使用与坐标系无关的语法返回给定区域的顶部坐标。"
+    "signature": "(sdeicwb:get-region-top body)"
   },
   "sdeicwb:get-right": {
-    "example": "",
+    "description": "返回当前域在 SDE 坐标系中已应用拉伸后的右侧边界框坐标。",
     "parameters": [],
-    "description": "返回当前域在 SDE 坐标系中已应用拉伸后的右侧边界框坐标。"
+    "signature": "(sdeicwb:get-right)"
   },
   "sdeicwb:get-xmax": {
-    "example": "",
+    "description": "返回当前域在 ICWB 坐标系中已应用拉伸后的 xmax 边界框坐标。",
     "parameters": [],
-    "description": "返回当前域在 ICWB 坐标系中已应用拉伸后的 xmax 边界框坐标。"
+    "signature": "(sdeicwb:get-xmax)"
   },
   "sdeicwb:get-xmin": {
-    "example": "",
+    "description": "返回当前域在 ICWB 坐标系中已应用拉伸后的 xmin 边界框坐标。",
     "parameters": [],
-    "description": "返回当前域在 ICWB 坐标系中已应用拉伸后的 xmin 边界框坐标。"
+    "signature": "(sdeicwb:get-xmin)"
   },
   "sdeicwb:get-ymax": {
-    "example": "",
+    "description": "返回当前域在 ICWB 坐标系中已应用拉伸后的边界框 ymax 坐标。",
     "parameters": [],
-    "description": "返回当前域在 ICWB 坐标系中已应用拉伸后的边界框 ymax 坐标。"
+    "signature": "(sdeicwb:get-ymax)"
   },
   "sdeicwb:get-ymin": {
-    "example": "",
+    "description": "返回当前域在 ICWB 坐标系中已应用拉伸后的边界框 ymin 坐标。",
     "parameters": [],
-    "description": "返回当前域在 ICWB 坐标系中已应用拉伸后的边界框 ymin 坐标。"
+    "signature": "(sdeicwb:get-ymin)"
   },
   "sdeicwb:load-file": {
-    "example": "",
+    "description": "加载一个 ICWB 宏文件；所有 ICWB 坐标可选择性地进行缩放和/或居中。",
     "parameters": [
       {
         "name": "filename",
@@ -5761,9 +6097,10 @@
         "desc": "可选标志；如果为 #t，则通过修改顶点坐标（顶点坐标减去高亮坐标）来居中加载的掩模"
       }
     ],
-    "description": "加载一个 ICWB 宏文件；所有 ICWB 坐标可选择性地进行缩放和/或居中。"
+    "signature": "(sdeicwb:load-file filename [(scale | center?) | (scale center?)])"
   },
   "sdeicwb:mapreader": {
+    "description": "解析一个 .map 文件，并以两个列表的形式返回图层名称和图层编号。",
     "example": "(define map-content (sdeicwb:mapreader \"layer.map\"))",
     "parameters": [
       {
@@ -5772,10 +6109,10 @@
         "desc": ".map 文件的路径（STRING）；文件必须具有两列格式：<图层名称><空格或制表符><图层编号>"
       }
     ],
-    "description": "解析一个 .map 文件，并以两个列表的形式返回图层名称和图层编号。"
+    "signature": "(sdeicwb:mapreader fname)"
   },
   "sdeicwb:set-domain": {
-    "example": "",
+    "description": "将当前域设置为给定的域名或域名列表。",
     "parameters": [
       {
         "name": "domain",
@@ -5783,10 +6120,10 @@
         "desc": "一个域名（STRING）或一个域名列表（STRING LIST）；是其他依赖于当前域的 sdeicwb 命令的先决条件"
       }
     ],
-    "description": "将当前域设置为给定的域名或域名列表。"
+    "signature": "(sdeicwb:set-domain domain)"
   },
   "sdeicwb:stretch": {
-    "example": "",
+    "description": "将给定的拉伸按指定的量应用到当前域。",
     "parameters": [
       {
         "name": "stretch-name",
@@ -5799,9 +6136,10 @@
         "desc": "拉伸的量（REAL）；应用拉伸的顺序很重要，因为其他拉伸的位置可能会改变"
       }
     ],
-    "description": "将给定的拉伸按指定的量应用到当前域。"
+    "signature": "(sdeicwb:stretch stretch-name stretch-amount)"
   },
   "sdeicwb:up": {
+    "description": "根据坐标系约定增加或减少纵向位置（UCS：值 - 增量；DF-ISE：值 + 增量）。",
     "example": "(define AboveSiInterface (sdeicwb:up SiTop epsilon))",
     "parameters": [
       {
@@ -5815,10 +6153,10 @@
         "desc": "要应用的增量；对于 UCS 返回 value - increment，对于 DF-ISE 返回 value + increment（REAL）"
       }
     ],
-    "description": "根据坐标系约定增加或减少纵向位置（UCS：值 - 增量；DF-ISE：值 + 增量）。"
+    "signature": "(sdeicwb:up value increment)"
   },
   "sdeio:assign-local-refs": {
-    "example": "",
+    "description": "自动分配局部细化以优化曲面细分边界输出的质量。",
     "parameters": [
       {
         "name": "lref",
@@ -5826,15 +6164,16 @@
         "desc": "介于 0 和 1 之间的细化级别（REAL）。值越接近 0 表示细化越少，越接近 1 表示细化越多。合理的范围是 0.2-0.8。每个面的细化仅由局部面的几何形状（曲率和其他属性）决定"
       }
     ],
-    "description": "自动分配局部细化以优化曲面细分边界输出的质量。"
+    "signature": "(sdeio:assign-local-refs lref)"
   },
   "sdeio:find-refinement-tolerances": {
+    "description": "检查模型几何形状，并找到合适的表面和法向的容差，以防止曲面细分边界输出中出现拓扑问题。",
     "example": "(define rtol (sdeio:find-refinement-tolerances))",
     "parameters": [],
-    "description": "检查模型几何形状，并找到合适的表面和法向的容差，以防止曲面细分边界输出中出现拓扑问题。"
+    "signature": "(sdeio:find-refinement-tolerances)"
   },
   "sdeio:read-dfise-mask": {
-    "example": "",
+    "description": "将掩模版图文件 (.1yt) 加载到建模器中，用于工艺仿真图形操作。",
     "parameters": [
       {
         "name": "filename",
@@ -5842,10 +6181,10 @@
         "desc": "具有 .1yt 扩展名的掩模版图文件名（STRING）。可以包含路径。掩模极性不固定；每个掩模既可用作'亮场'也可用作'暗场'"
       }
     ],
-    "description": "将掩模版图文件 (.1yt) 加载到建模器中，用于工艺仿真图形操作。"
+    "signature": "(sdeio:read-dfise-mask filename)"
   },
   "sdeio:read-tdr": {
-    "example": "",
+    "description": "从 TDR 网格文件中提取边界并加载到 Sentaurus Structure Editor 中，可选择跳过掺杂信息。",
     "parameters": [
       {
         "name": "file-name",
@@ -5858,10 +6197,10 @@
         "desc": "可选的字面量字符串，用于跳过根据 TDR 文件中的掺杂信息创建子网格定义和放置"
       }
     ],
-    "description": "从 TDR 网格文件中提取边界并加载到 Sentaurus Structure Editor 中，可选择跳过掺杂信息。"
+    "signature": "(sdeio:read-tdr file-name [\"skip-doping\"])"
   },
   "sdeio:read-tdr-bnd": {
-    "example": "",
+    "description": "将 TDR 边界文件加载到 Sentaurus Structure Editor 中，将 TDR 区域转换为具有材料属性和接触属性的 ACIS 体。",
     "parameters": [
       {
         "name": "file-name",
@@ -5869,9 +6208,10 @@
         "desc": "TDR 边界文件的路径 (STRING)。每个 TDR 区域单元被转换为一个 ACIS 体；2D 区域变为非均匀薄板体，3D 区域变为流形实体。接触属性附着在边（2D）或面（3D）上"
       }
     ],
-    "description": "将 TDR 边界文件加载到 Sentaurus Structure Editor 中，将 TDR 区域转换为具有材料属性和接触属性的 ACIS 体。"
+    "signature": "(sdeio:read-tdr-bnd file-name)"
   },
   "sdeio:save-1d-tdr-bnd": {
+    "description": "从沿向上坐标轴的简单 2D 几何中提取数据，创建 1D TDR 边界输出文件。",
     "example": "(sdeio:save-1d-tdr-bnd (get-body-list) \"1D.tdr\")",
     "parameters": [
       {
@@ -5890,10 +6230,10 @@
         "desc": "可选的网格化控制：\"aspect ratio\" (REAL, 默认 0), \"aut-tolerance-control\" (BOOLEAN, 默认 #t), \"faceter\" (\"v1\"|\"v2\", 默认 \"v1\"), \"max edge length\" (REAL, 默认 0), \"normal tolerance\" (REAL, 默认 15), \"surface tolerance\" (REAL, 默认 0), \"vertex-precision\" (INTEGER 8-16, 默认 bndprecision), writeinterface (BOOLEAN, 可选)"
       }
     ],
-    "description": "从沿向上坐标轴的简单 2D 几何中提取数据，创建 1D TDR 边界输出文件。"
+    "signature": "(sdeio:save-1d-tdr-bnd body-list file-name [options...])"
   },
   "sdeio:save-2d-tdr-bnd": {
-    "example": "",
+    "description": "从指定的体生成 2D TDR 边界输出文件。",
     "parameters": [
       {
         "name": "body-list",
@@ -5911,10 +6251,10 @@
         "desc": "可选的网格化控制：writeinterface (BOOLEAN), saveprecision (INTEGER), \"aut-tolerance-control\" (BOOLEAN, 默认 #t), \"vertex-precision\" (INTEGER 8-16, 默认 bndprecision), \"faceter\" (\"v1\"|\"v2\", 默认 \"v1\"), \"surface tolerance\" (REAL, 默认 0), \"normal tolerance\" (REAL, 默认 15), \"aspect ratio\" (REAL, 默认 0), \"max edge length\" (REAL, 默认 0)。前两个必需参数之后的关键字顺序任意"
       }
     ],
-    "description": "从指定的体生成 2D TDR 边界输出文件。"
+    "signature": "(sdeio:save-2d-tdr-bnd body-list file-name [options...])"
   },
   "sdeio:save-3d-tdr-bnd": {
-    "example": "",
+    "description": "从指定的体生成 3D TDR 边界输出文件。",
     "parameters": [
       {
         "name": "body-list",
@@ -5932,10 +6272,10 @@
         "desc": "可选的网格化控制：writeinterface (BOOLEAN), writesurfnormal (BOOLEAN, 默认 #f), saveprecision (INTEGER), \"aut-tolerance-control\" (BOOLEAN, 默认 #t), \"vertex-precision\" (INTEGER 8-16, 默认 bndprecision), \"faceter\" (\"v1\"|\"v2\", 默认 \"v1\"), \"surface tolerance\" (REAL, 默认 0), \"normal tolerance\" (REAL, 默认 15), \"aspect ratio\" (REAL, 默认 0), \"max edge length\" (REAL, 默认 0)"
       }
     ],
-    "description": "从指定的体生成 3D TDR 边界输出文件。"
+    "signature": "(sdeio:save-3d-tdr-bnd body-list file-name [options...])"
   },
   "sdeio:save-tdr-bnd": {
-    "example": "",
+    "description": "根据模型维度自动调用 2D 或 3D 变体，生成输出 TDR 边界文件。",
     "parameters": [
       {
         "name": "body-list",
@@ -5953,9 +6293,10 @@
         "desc": "可选的网格化控制（前两个必需参数之后的关键字顺序任意）：\"aspect ratio\" (REAL, 默认 0), \"aut-tolerance-control\" (BOOLEAN, 默认 #t), \"faceter\" (\"v1\"|\"v2\", 默认 \"v1\"), \"max edge length\" (REAL, 默认 0), \"normal tolerance\" (REAL, 默认 15), \"surface tolerance\" (REAL, 默认 0), \"triangulate\" (BOOLEAN, 默认 #t; 对于没有内部孔洞的多面体模型设置为 #f), \"vertex-precision\" (INTEGER 8-16, 默认 bndprecision), writeinterface (BOOLEAN), writesurfnormal (BOOLEAN, 默认 #f)"
       }
     ],
-    "description": "根据模型维度自动调用 2D 或 3D 变体，生成输出 TDR 边界文件。"
+    "signature": "(sdeio:save-tdr-bnd body-list file-name [options...])"
   },
   "sdepe:add-substrate": {
+    "description": "向器件添加初始衬底层。",
     "example": "(sdepe:add-substrate \"material\" \"Silicon\" \"thickness\" 2.0 \"base\" 0 \"region\" \"Substrate\")",
     "parameters": [
       {
@@ -5979,14 +6320,16 @@
         "desc": "分配给生成的衬底的显式区域名 (STRING, 可选)"
       }
     ],
-    "description": "向器件添加初始衬底层。"
+    "signature": "(sdepe:add-substrate \"material\" material \"thickness\" thickness [\"base\" base] [\"region\" region-name])"
   },
   "sdepe:clean": {
+    "description": "在工艺仿真操作之前，通过规则化所有体和修复压印来清理模型。",
     "example": "(sdepe:clean)",
     "parameters": [],
-    "description": "在工艺仿真操作之前，通过规则化所有体和修复压印来清理模型。"
+    "signature": "(sdepe:clean)"
   },
   "sdepe:define-pe-domain": {
+    "description": "在 xy 平面内将工艺仿真的基础域定义为一个矩形或凸多边形。",
     "example": "(sdepe:define-pe-domain (list 0 0 10 0 15 2.5 10 5 0 5))",
     "parameters": [
       {
@@ -6000,10 +6343,10 @@
         "desc": "定义 xy 平面内仿真域的简单连通凸多边形顶点坐标的 REAL LIST 坐标对"
       }
     ],
-    "description": "在 xy 平面内将工艺仿真的基础域定义为一个矩形或凸多边形。"
+    "signature": "(sdepe:define-pe-domain {X0 Y0 X1 Y1} | {polygon})"
   },
   "sdepe:depo": {
-    "example": "",
+    "description": "执行具有可配置类型、算法、圆角、锥度和其他选项的沉积步骤。",
     "parameters": [
       {
         "name": "material",
@@ -6061,9 +6404,10 @@
         "desc": "沉积步骤数，必须 >= 1 (INTEGER, 可选)"
       }
     ],
-    "description": "执行具有可配置类型、算法、圆角、锥度和其他选项的沉积步骤。"
+    "signature": "(sdepe:depo \"material\" material \"thickness\" thickness [\"region\" region-name] [\"type\" depo-type] [\"algorithm\" depo-alg] ...)"
   },
   "sdepe:doping-constant-placement": {
+    "description": "定义并向指定区域应用恒定掺杂。",
     "example": "(sdepe:doping-constant-placement \"myDoping\" \"Boron\" 1e16 \"region_1\")",
     "parameters": [
       {
@@ -6087,9 +6431,10 @@
         "desc": "应用恒定掺杂的区域名称 (STRING)"
       }
     ],
-    "description": "定义并向指定区域应用恒定掺杂。"
+    "signature": "(sdepe:doping-constant-placement name species concentration region-name)"
   },
   "sdepe:etch-material": {
+    "description": "在指定材料上执行刻蚀步骤，使用沉积参数进行几何控制。",
     "example": "(sdepe:etch-material \"material\" \"Oxide\" \"depth\" 0.5 \"type\" \"aniso\")",
     "parameters": [
       {
@@ -6113,9 +6458,10 @@
         "desc": "刻蚀体列表：\"all\"（默认，也影响初始未暴露的层）或 \"top\"（仅影响初始暴露的体），可选"
       }
     ],
-    "description": "在指定材料上执行刻蚀步骤，使用沉积参数进行几何控制。"
+    "signature": "(sdepe:etch-material \"material\" material \"depth\" depth [\"overetch\" overetch] [\"ebl\" ebl] ...depo-args)"
   },
   "sdepe:extend-masks": {
+    "description": "将所有掩模沿指定矩形边界向外扩展给定距离。",
     "example": "(sdepe:extend-masks 0 0 10 5 2)",
     "parameters": [
       {
@@ -6144,9 +6490,10 @@
         "desc": "将所有掩模扩展到指定边界之外的距离 (REAL)"
       }
     ],
-    "description": "将所有掩模沿指定矩形边界向外扩展给定距离。"
+    "signature": "(sdepe:extend-masks pminx pminy pmaxx pmaxy extension-distance)"
   },
   "sdepe:fill-device": {
+    "description": "用指定材料填充器件至指定高度。",
     "example": "(sdepe:fill-device \"material\" \"Oxide\" \"height\" 5.0 \"region\" \"fill_region\")",
     "parameters": [
       {
@@ -6165,14 +6512,16 @@
         "desc": "填充区域的区域名称 (STRING, 可选)"
       }
     ],
-    "description": "用指定材料填充器件至指定高度。"
+    "signature": "(sdepe:fill-device \"material\" material [\"height\" height] [\"region\" region-name])"
   },
   "sdepe:generate-domainboundary": {
+    "description": "从现有模型中提取仿真边界并初始化 domainboundary 变量。",
     "example": "(sdepe:generate-domainboundary)",
     "parameters": [],
-    "description": "从现有模型中提取仿真边界并初始化 domainboundary 变量。"
+    "signature": "(sdepe:generate-domainboundary)"
   },
   "sdepe:generate-empty-mask": {
+    "description": "创建一个新的空掩模，其行为类似于完全在域外（亮场）或覆盖域（暗场）的掩模。",
     "example": "(sdepe:generate-empty-mask \"M1\")",
     "parameters": [
       {
@@ -6181,9 +6530,10 @@
         "desc": "新空掩模的名称 (STRING)。该名称被注册，可通过 get-empty-mask-list 和 exists-empty-mask-name 查询"
       }
     ],
-    "description": "创建一个新的空掩模，其行为类似于完全在域外（亮场）或覆盖域（暗场）的掩模。"
+    "signature": "(sdepe:generate-empty-mask maskname)"
   },
   "sdepe:generate-mask": {
+    "description": "从多边形列表创建掩模，用于后续工艺操作。",
     "example": "(sdepe:generate-mask \"M1\" (list (list 0 0 10 5)))",
     "parameters": [
       {
@@ -6197,10 +6547,10 @@
         "desc": "指定掩模顶点的 POLYGON LIST。每个多边形是一个 xy 坐标列表；矩形多边形可以仅使用两个对角点。不允许相交边或零长度边（顶点间最小距离为 1.0e-06）"
       }
     ],
-    "description": "从多边形列表创建掩模，用于后续工艺操作。"
+    "signature": "(sdepe:generate-mask mask-name polygon-list)"
   },
   "sdepe:icon_layer": {
-    "example": "",
+    "description": "创建具有可配置掩模、锥度、材料和区域的互连结构。",
     "parameters": [
       {
         "name": "mname",
@@ -6253,9 +6603,10 @@
         "desc": "锥度位置：\"top\"（先挤出，然后从顶部锥化侧壁）或 \"bottom\"（从底部锥化）；默认为 \"bottom\""
       }
     ],
-    "description": "创建具有可配置掩模、锥度、材料和区域的互连结构。"
+    "signature": "(sdepe:icon_layer \"mask\" mname \"polarity\" mpolarity \"thickness\" lth ...)"
   },
   "sdepe:implant": {
+    "description": "将预定义的掺杂分布应用到器件的顶面，可选择平面投影和材料掩蔽。",
     "example": "(sdepe:implant \"myImplant\" \"flat\" \"delta-height\" 0.1)",
     "parameters": [
       {
@@ -6284,9 +6635,10 @@
         "desc": "分布相对于基线的方向：\"Positive\"、\"Negative\" 或 \"Both\" (STRING, 可选)；默认为 \"Both\""
       }
     ],
-    "description": "将预定义的掺杂分布应用到器件的顶面，可选择平面投影和材料掩蔽。"
+    "signature": "(sdepe:implant doping-name [\"flat\" [\"abs-height\" abs-height | \"delta-height\" delta-height] [\"pmat\" pmatlist] [\"direction\" direction]])"
   },
   "sdepe:pattern": {
+    "description": "通过定义的掩模沉积材料来执行图形化步骤。",
     "example": "(sdepe:pattern \"mask\" \"M1\" \"polarity\" \"light\" \"material\" \"Resist\" \"thickness\" 1.0)",
     "parameters": [
       {
@@ -6330,10 +6682,10 @@
         "desc": "图形化体的区域名称 (STRING, 可选)"
       }
     ],
-    "description": "通过定义的掩模沉积材料来执行图形化步骤。"
+    "signature": "(sdepe:pattern \"mask\" mask-name \"polarity\" polarity [\"type\" depo-type] \"material\" material [\"algorithm\" depo-alg] \"thickness\" thickness [\"steps\" nsteps] [\"region\" region])"
   },
   "sdepe:photo": {
-    "example": "",
+    "description": "执行光刻（平面图案）步骤，结合填充、图案化和刻蚀以创建平坦的顶部表面。",
     "parameters": [
       {
         "name": "mask-name",
@@ -6376,9 +6728,10 @@
         "desc": "图案化体的区域名称(STRING，可选)"
       }
     ],
-    "description": "执行光刻（平面图案）步骤，结合填充、图案化和刻蚀以创建平坦的顶部表面。"
+    "signature": "(sdepe:photo \"mask\" mask-name \"polarity\" polarity [\"type\" depo-type] \"material\" material {\"thickness\" thickness | \"height\" height} [\"steps\" nsteps] [\"region\" region])"
   },
   "sdepe:polish-device": {
+    "description": "通过指定的厚度或在指定的高度之上，移除器件的顶部部分。",
     "example": "(sdepe:polish-device \"thickness\" 0.5 \"material\" \"Oxide\")",
     "parameters": [
       {
@@ -6397,9 +6750,10 @@
         "desc": "DATEX 材料（可选）；如果指定，则仅抛光具有此材料属性的顶部暴露体（选择性抛光）"
       }
     ],
-    "description": "通过指定的厚度或在指定的高度之上，移除器件的顶部部分。"
+    "signature": "(sdepe:polish-device { [\"thickness\" thickness] | [\"height\" height] } [\"material\" material])"
   },
   "sdepe:remove": {
+    "description": "从器件中移除指定的区域或材料。",
     "example": "(sdepe:remove \"material\" \"Resist\")",
     "parameters": [
       {
@@ -6413,9 +6767,10 @@
         "desc": "要移除的 DATEX 材料(DATEXMAT，可选)。与 \"material\" 关键字一起使用"
       }
     ],
-    "description": "从器件中移除指定的区域或材料。"
+    "signature": "(sdepe:remove { [\"region\" region-name] | [\"material\" material] })"
   },
   "sdepe:trim-masks": {
+    "description": "修剪所有掩模，使其不延伸到域边界之外。",
     "example": "(sdepe:trim-masks domainboundary)",
     "parameters": [
       {
@@ -6424,9 +6779,10 @@
         "desc": "表示域边界的线体(WIRE BODY)。这是由 sdepe:define-pe-domain 设置的全局变量 domainboundary，或从现有模型中自动提取"
       }
     ],
-    "description": "修剪所有掩模，使其不延伸到域边界之外。"
+    "signature": "(sdepe:trim-masks domainboundary)"
   },
   "sdesnmesh:axisaligned": {
+    "description": "设置 Sentaurus Mesh 命令文件中 AxisAligned 部分内部使用的全局变量。",
     "example": "(sdesnmesh:axisaligned \"yCuts\" (list 0.1 0.5 2.0))",
     "parameters": [
       {
@@ -6480,9 +6836,10 @@
         "desc": "晶格尺寸，为 REAL 值列表：2D 结构为 2 个数值，3D 结构为 3 个数值"
       }
     ],
-    "description": "设置 Sentaurus Mesh 命令文件中 AxisAligned 部分内部使用的全局变量。"
+    "signature": "(sdesnmesh:axisaligned [\"xCuts\" xCuts] [\"yCuts\" yCuts] [\"zCuts\" zCuts] ...)"
   },
   "sdesnmesh:delaunizer": {
+    "description": "设置网格命令文件中 Delaunizer 部分内部使用的全局变量。",
     "example": "(sdesnmesh:delaunizer \"type\" \"boxmethod\" \"maxPoints\" 100000)",
     "parameters": [
       {
@@ -6526,9 +6883,10 @@
         "desc": "德劳内三角剖分算法的容差值"
       }
     ],
-    "description": "设置网格命令文件中 Delaunizer 部分内部使用的全局变量。"
+    "signature": "(sdesnmesh:delaunizer \"type\" type ...)"
   },
   "sdesnmesh:delaunizer-tolerance": {
+    "description": "设置 Sentaurus Mesh 命令文件中Delaunizer 算法的容差参数。",
     "example": "(sdesnmesh:delaunizer-tolerance 1 \"boundary\" \"global\")",
     "parameters": [
       {
@@ -6547,10 +6905,10 @@
         "desc": "空间限制的窗口定义：\"window\" x0 y0 z0 x1 y1 z1，指定轴对齐边界框的两个对角点"
       }
     ],
-    "description": "设置 Sentaurus Mesh 命令文件中Delaunizer 算法的容差参数。"
+    "signature": "(sdesnmesh:delaunizer-tolerance tolerance location-type window)"
   },
   "sdesnmesh:interpolate": {
-    "example": "",
+    "description": "设置网格命令文件中 Interpolate 部分使用的参数。",
     "parameters": [
       {
         "name": "interpolateElements",
@@ -6568,10 +6926,10 @@
         "desc": "在插值期间启用横向扩散（默认为 #f）"
       }
     ],
-    "description": "设置网格命令文件中 Interpolate 部分使用的参数。"
+    "signature": "(sdesnmesh:interpolate [\"interpolateElements\" val] [\"keepTotalConcentration\" val] [\"lateralDiffusion\" val])"
   },
   "sdesnmesh:iocontrols": {
-    "example": "",
+    "description": "设置网格命令文件中 IOControls 部分使用的参数。",
     "parameters": [
       {
         "name": "inputFile",
@@ -6604,9 +6962,10 @@
         "desc": "使用 UCS（通用坐标系）坐标（默认为 #t）"
       }
     ],
-    "description": "设置网格命令文件中 IOControls 部分使用的参数。"
+    "signature": "(sdesnmesh:iocontrols [\"inputFile\" inputFile] [\"outputFile\" outputFile] [\"verbosity\" verbosity] [\"numThreads\" numThreads] ...)"
   },
   "sdesnmesh:qualityreport": {
+    "description": "设置 Sentaurus Mesh 命令文件中 QualityReport 部分的参数。",
     "example": "(sdesnmesh:qualityreport \"Global\" \"limitMaxConnectivity\" 100)",
     "parameters": [
       {
@@ -6645,10 +7004,10 @@
         "desc": "指定网格单元允许的最小体积限制的 REAL"
       }
     ],
-    "description": "设置 Sentaurus Mesh 命令文件中 QualityReport 部分的参数。"
+    "signature": "(sdesnmesh:qualityreport qrtype qrelements [options...])"
   },
   "sdesnmesh:tensor": {
-    "example": "",
+    "description": "将网格命令文件的 Tensor 部分替换为给定的字符串，不进行语法检查。",
     "parameters": [
       {
         "name": "value",
@@ -6656,10 +7015,10 @@
         "desc": "用于替换 Tensor 部分的原始 STRING 内容；字符串内的双引号必须用反斜杠转义"
       }
     ],
-    "description": "将网格命令文件的 Tensor 部分替换为给定的字符串，不进行语法检查。"
+    "signature": "(sdesnmesh:tensor value)"
   },
   "sdesnmesh:tools": {
-    "example": "",
+    "description": "将网格命令文件的 Tools 部分替换为给定的字符串，不进行语法检查。",
     "parameters": [
       {
         "name": "value",
@@ -6667,15 +7026,15 @@
         "desc": "用于替换 Tools 部分的原始 STRING 内容；字符串内的双引号必须用反斜杠转义"
       }
     ],
-    "description": "将网格命令文件的 Tools 部分替换为给定的字符串，不进行语法检查。"
+    "signature": "(sdesnmesh:tools value)"
   },
   "sdesp:begin": {
-    "example": "",
+    "description": "启动 Sentaurus Process 和 Sentaurus Structure Editor 的边界合并模式（仅 3D）。",
     "parameters": [],
-    "description": "启动 Sentaurus Process 和 Sentaurus Structure Editor 的边界合并模式（仅 3D）。"
+    "signature": "(sdesp:begin)"
   },
   "sdesp:define-step": {
-    "example": "",
+    "description": "加载一个 .sat 文件并将其与当前几何结构合并，关联一个步骤名以便在 Sentaurus Process 中重现。",
     "parameters": [
       {
         "name": "step-name",
@@ -6688,10 +7047,10 @@
         "desc": "要加载并与当前已加载几何结构合并的 .sat 文件的 STRING 路径"
       }
     ],
-    "description": "加载一个 .sat 文件并将其与当前几何结构合并，关联一个步骤名以便在 Sentaurus Process 中重现。"
+    "signature": "(sdesp:define-step step-name file-name)"
   },
   "sdesp:finalize": {
-    "example": "",
+    "description": "完成边界合并，并写入一个包含 recreate_step 过程的 Sentaurus Process Tcl 文件。",
     "parameters": [
       {
         "name": "Tcl-file-name",
@@ -6699,10 +7058,10 @@
         "desc": "输出 Tcl 文件的 STRING 路径，该文件定义了用于 Sentaurus Process 的 recreate_step 过程"
       }
     ],
-    "description": "完成边界合并，并写入一个包含 recreate_step 过程的 Sentaurus Process Tcl 文件。"
+    "signature": "(sdesp:finalize Tcl-file-name)"
   },
   "sdesp:restore-state": {
-    "example": "",
+    "description": "恢复 Sentaurus Process 和 SDE 边界合并的内部状态，以便从保存点重新启动。",
     "parameters": [
       {
         "name": "step-name-list",
@@ -6710,6 +7069,6 @@
         "desc": "按正确顺序排列的所有步骤名的 STRING LIST，用于恢复边界合并序列"
       }
     ],
-    "description": "恢复 Sentaurus Process 和 SDE 边界合并的内部状态，以便从保存点重新启动。"
+    "signature": "(sdesp:restore-state step-name-list)"
   }
 }

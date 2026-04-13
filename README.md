@@ -92,7 +92,7 @@
 
 ```bash
 # 安装 / 升级
-code --install-extension sentaurus-tcad-syntax-0.6.8.vsix
+code --install-extension sentaurus-tcad-syntax-0.6.9.vsix
 
 # 卸载
 code --uninstall-extension onegayi.sentaurus-tcad-syntax
