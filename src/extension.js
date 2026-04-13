@@ -6,6 +6,7 @@ const foldingProvider = require('./lsp/providers/folding-provider');
 const bracketDiagnostic = require('./lsp/providers/bracket-diagnostic');
 const scopeAnalyzer = require('./lsp/scope-analyzer');
 const schemeParser = require('./lsp/scheme-parser');
+const signatureProvider = require('./lsp/providers/signature-provider');
 
 /** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
 function decodeHtml(str) {
@@ -256,6 +257,14 @@ function activate(context) {
         Object.assign(funcDocs, sdeviceDocs);
     }
 
+    // 构建 modeDispatch 查找表：从 funcDocs 中提取有 modeDispatch 的函数
+    const modeDispatchTable = {};
+    for (const [fnName, fnDoc] of Object.entries(funcDocs)) {
+        if (fnDoc.modeDispatch) {
+            modeDispatchTable[fnName] = fnDoc.modeDispatch;
+        }
+    }
+
     // FoldingRangeProvider (SDE only)
     context.subscriptions.push(
         vscode.languages.registerFoldingRangeProvider(
@@ -266,6 +275,21 @@ function activate(context) {
 
     // Bracket diagnostic (SDE only)
     bracketDiagnostic.activate(context);
+
+    // Signature Help (SDE only)
+    const sigHelpDisposable = vscode.languages.registerSignatureHelpProvider(
+        { language: 'sde' },
+        {
+            provideSignatureHelp(document, position, token) {
+                return signatureProvider.provideSignatureHelp(
+                    document, position, token,
+                    modeDispatchTable, funcDocs
+                );
+            },
+        },
+        ' ', '\t', '"', '('
+    );
+    context.subscriptions.push(sigHelpDisposable);
 
     const languages = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect'];
 
