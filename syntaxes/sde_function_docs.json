@@ -556,7 +556,30 @@
         "desc": "Region name string assigned to the body"
       }
     ],
-    "example": "(sdegeo:create-sphere (position -4 -4 0) 1.5 \"Gold\" \"\")"
+    "example": "(sdegeo:create-sphere (position -4 -4 0) 1.5 \"Gold\" \"\")",
+    "modeDispatch": {
+      "argIndex": 0,
+      "modes": {
+        "position": {
+          "params": [
+            "center-position",
+            "radius",
+            "region-material",
+            "region-name"
+          ]
+        },
+        "coords": {
+          "params": [
+            "cx",
+            "cy",
+            "cz",
+            "radius",
+            "region-material",
+            "region-name"
+          ]
+        }
+      }
+    }
   },
   "sdegeo:create-spline-wire": {
     "signature": "(sdegeo:create-spline-wire vertex-list)",
@@ -600,7 +623,32 @@
         "desc": "Region name string assigned to the body"
       }
     ],
-    "example": "(sdegeo:create-torus (position -10 -5 -10) 7 3 \"Gold\" \"\")"
+    "example": "(sdegeo:create-torus (position -10 -5 -10) 7 3 \"Gold\" \"\")",
+    "modeDispatch": {
+      "argIndex": 0,
+      "modes": {
+        "position": {
+          "params": [
+            "center-position",
+            "major-radius",
+            "minor-radius",
+            "region-material",
+            "region-name"
+          ]
+        },
+        "coords": {
+          "params": [
+            "cx",
+            "cy",
+            "cz",
+            "major-radius",
+            "minor-radius",
+            "region-material",
+            "region-name"
+          ]
+        }
+      }
+    }
   },
   "sdegeo:create-triangle": {
     "signature": "(sdegeo:create-triangle v1 v2 v3 region-material region-name)",
@@ -1507,7 +1555,41 @@
         "desc": "Optional sweep-options data structure created by sweep:options. Defaults: solid, draft angle 0, gap type 2, twist 0, minimum rotation rail law"
       }
     ],
-    "example": "(sdegeo:sweep face1 1.0)"
+    "example": "(sdegeo:sweep face1 1.0)",
+    "modeDispatch": {
+      "argIndex": 1,
+      "modes": {
+        "path": {
+          "params": [
+            "profile",
+            "path",
+            "sweep-options"
+          ]
+        },
+        "distance": {
+          "params": [
+            "profile",
+            "distance",
+            "sweep-options"
+          ]
+        },
+        "vector": {
+          "params": [
+            "profile",
+            "gvector",
+            "sweep-options"
+          ]
+        },
+        "axis": {
+          "params": [
+            "profile",
+            "position",
+            "position",
+            "sweep-options"
+          ]
+        }
+      }
+    }
   },
   "sdegeo:sweep-corner": {
     "signature": "(sdegeo:sweep-corner face | face-list position gvector)",
@@ -2206,7 +2288,30 @@
         "desc": "Angular threshold in degrees. If edge normals at a common vertex differ by less than this value, the edges merge by removing the common vertex"
       }
     ],
-    "example": "(sdegeo:prune-vertices (get-body-list) 5)"
+    "example": "(sdegeo:prune-vertices (get-body-list) 5)",
+    "modeDispatch": {
+      "argIndex": 0,
+      "modes": {
+        "body-list": {
+          "params": [
+            "body-list",
+            "angular-tolerance"
+          ]
+        },
+        "edge-list": {
+          "params": [
+            "edge-list",
+            "angular-tolerance"
+          ]
+        },
+        "vertex-list": {
+          "params": [
+            "vertex-list",
+            "angular-tolerance"
+          ]
+        }
+      }
+    }
   },
   "sdegeo:ray-test": {
     "signature": "(sdegeo:ray-test entity ray radius)",
@@ -4425,7 +4530,51 @@
         "desc": "Optional; specifies the lateral function type. \"Gauss\" | \"Erf\" with lateral-parameter (\"factor\" | \"length\" | \"stddev\") and lateral-value; or \"Eval\" with init-string and function-string"
       }
     ],
-    "example": "(sdedr:define-analytical-profile \"Prof.Mole\" \"xMoleFraction\" \"a=0.16/0.075\" \"0.1*a*x\" 0.1)"
+    "example": "(sdedr:define-analytical-profile \"Prof.Mole\" \"xMoleFraction\" \"a=0.16/0.075\" \"0.1*a*x\" 0.1)",
+    "modeDispatch": {
+      "argIndex": 6,
+      "modes": {
+        "Gauss": {
+          "params": [
+            "name",
+            "species",
+            "initialization",
+            "function",
+            "start-value",
+            "analytical-type",
+            "Gauss",
+            "lateral-parameter",
+            "lateral-value"
+          ]
+        },
+        "Erf": {
+          "params": [
+            "name",
+            "species",
+            "initialization",
+            "function",
+            "start-value",
+            "analytical-type",
+            "Erf",
+            "lateral-parameter",
+            "lateral-value"
+          ]
+        },
+        "Eval": {
+          "params": [
+            "name",
+            "species",
+            "initialization",
+            "function",
+            "start-value",
+            "analytical-type",
+            "Eval",
+            "lateral-eval-init",
+            "lateral-eval-func"
+          ]
+        }
+      }
+    }
   },
   "sdedr:define-analytical-profile-placement": {
     "signature": "(sdedr:define-analytical-profile-placement placement-name definition-name ref-eval-window symmetry replacement evaluation eval-window decay-length [\"Gauss\"] eval-window-type)",
@@ -4674,7 +4823,48 @@
         "desc": "Optional; specifies the lateral function. \"Erf\" {\"Factor\" lateral-factor | \"Length\" length}, \"Eval\" {eval-init eval-function}, or \"Gauss\" {\"Factor\" lateral-factor | \"Length\" length | \"StdDev\" standard-deviation}"
       }
     ],
-    "example": "(sdedr:define-erf-profile \"Impl.Erf\" \"BoronActiveConcentration\" \"SymPos\" 0 \"MaxVal\" 1e18 \"Junction\" 0.1 \"ValueAtDepth\" 1e16 \"Depth\" 0.05 \"Length\" 0.02 \"StdDev\" 0.01)"
+    "example": "(sdedr:define-erf-profile \"Impl.Erf\" \"BoronActiveConcentration\" \"SymPos\" 0 \"MaxVal\" 1e18 \"Junction\" 0.1 \"ValueAtDepth\" 1e16 \"Depth\" 0.05 \"Length\" 0.02 \"StdDev\" 0.01)",
+    "modeDispatch": {
+      "argIndex": 3,
+      "labelBased": true,
+      "modes": {
+        "MaxVal": {
+          "tag": "MaxVal",
+          "params": [
+            "definition-name",
+            "species",
+            "SymPos",
+            "symmetry-position",
+            "MaxVal",
+            "max-value"
+          ]
+        },
+        "Dose": {
+          "tag": "Dose",
+          "params": [
+            "definition-name",
+            "species",
+            "SymPos",
+            "symmetry-position",
+            "Dose",
+            "dose"
+          ]
+        }
+      },
+      "commonTail": [
+        "Junction",
+        "junction",
+        "ValueAtDepth",
+        "value-at-depth",
+        "Depth",
+        "depth",
+        "Length",
+        "length",
+        "StdDev",
+        "standard-deviation",
+        "lateral-function"
+      ]
+    }
   },
   "sdedr:define-gaussian-profile": {
     "signature": "(sdedr:define-gaussian-profile definition-name species \"PeakPos\" peak-position {\"PeakVal\" peak-concentration | \"Dose\" dose} {\"ValueAtDepth\" concentration-at-depth \"Depth\" depth | \"Length\" diffusion-length | \"StdDev\" standard-deviation} [lateral-function])",
@@ -4731,7 +4921,68 @@
         "desc": "Optional; specifies the lateral function. \"Erf\" {\"Factor\" lateral-factor | \"Length\" length}, \"Eval\" {eval-init eval-function}, or \"Gauss\" {\"Factor\" lateral-factor | \"Length\" length | \"StdDev\" standard-deviation}"
       }
     ],
-    "example": "(sdedr:define-gaussian-profile \"Impl.Haloprof\" \"BoronActiveConcentration\" \"PeakPos\" 0 \"PeakVal\" 1.5e18 \"ValueAtDepth\" 1.5e17 \"Depth\" 0.07 \"Gauss\" \"Factor\" 1.0)"
+    "example": "(sdedr:define-gaussian-profile \"Impl.Haloprof\" \"BoronActiveConcentration\" \"PeakPos\" 0 \"PeakVal\" 1.5e18 \"ValueAtDepth\" 1.5e17 \"Depth\" 0.07 \"Gauss\" \"Factor\" 1.0)",
+    "modeDispatch": {
+      "argIndex": 3,
+      "labelBased": true,
+      "modes": {
+        "PeakVal": {
+          "tag": "PeakVal",
+          "params": [
+            "definition-name",
+            "species",
+            "PeakPos",
+            "peak-position",
+            "PeakVal",
+            "peak-concentration"
+          ]
+        },
+        "Dose": {
+          "tag": "Dose",
+          "params": [
+            "definition-name",
+            "species",
+            "PeakPos",
+            "peak-position",
+            "Dose",
+            "dose"
+          ]
+        }
+      },
+      "secondaryChoices": [
+        {
+          "afterParam": 5,
+          "modes": {
+            "ValueAtDepth": {
+              "tag": "ValueAtDepth",
+              "extraParams": [
+                "ValueAtDepth",
+                "concentration-at-depth",
+                "Depth",
+                "depth"
+              ]
+            },
+            "Length": {
+              "tag": "Length",
+              "extraParams": [
+                "Length",
+                "diffusion-length"
+              ]
+            },
+            "StdDev": {
+              "tag": "StdDev",
+              "extraParams": [
+                "StdDev",
+                "standard-deviation"
+              ]
+            }
+          }
+        }
+      ],
+      "commonTail": [
+        "lateral-function"
+      ]
+    }
   },
   "sdedr:define-multibox-placement": {
     "signature": "(sdedr:define-multibox-placement placement-name definition-name refwindow-name)",
@@ -4891,7 +5142,50 @@
         "desc": "POSITION or POSITION LIST depending on shape type. For multi-shape, use (list single-shape1 single-shape2 ...)"
       }
     ],
-    "example": "(sdedr:define-refeval-window \"rfwin1\" \"Line\" (position 0 0 0) (position 1 0 0))"
+    "example": "(sdedr:define-refeval-window \"rfwin1\" \"Line\" (position 0 0 0) (position 1 0 0))",
+    "modeDispatch": {
+      "argIndex": 1,
+      "modes": {
+        "Point": {
+          "params": [
+            "rfwin-name",
+            "Point",
+            "position"
+          ]
+        },
+        "Line": {
+          "params": [
+            "rfwin-name",
+            "Line",
+            "start-position",
+            "end-position"
+          ]
+        },
+        "Rectangle": {
+          "params": [
+            "rfwin-name",
+            "Rectangle",
+            "start-position",
+            "end-position"
+          ]
+        },
+        "Circle": {
+          "params": [
+            "rfwin-name",
+            "Circle",
+            "center-position",
+            "radius"
+          ]
+        },
+        "Expression": {
+          "params": [
+            "rfwin-name",
+            "Expression",
+            "eval-function"
+          ]
+        }
+      }
+    }
   },
   "sdedr:define-refinement-function": {
     "signature": "(sdedr:define-refinement-function definition-name function-name {\"MaxLenInt\" mat-reg mat-reg value [factor] [\"DoubleSide\"] [\"UseRegionNames\"] | \"MaxInterval\" \"Variable\" dopant-name \"Cmin\" cmin \"Cmax\" cmax [\"Scaling\" scaling] [\"TargetLength\" targetLength] [\"Rolloff\"] | \"MaxGradient\" value | \"MaxTransDiff\" value})",
@@ -4913,7 +5207,83 @@
         "desc": "Function-specific arguments: \"MaxLenInt\" mat-reg mat-reg value [factor] [\"DoubleSide\"] [\"UseRegionNames\"] for maximum length at interface; \"MaxInterval\" \"Variable\" dopant \"Cmin\" cmin \"Cmax\" cmax [\"Scaling\" scaling] [\"TargetLength\" targetLength] [\"Rolloff\"] for maximum interval based on doping variable; \"MaxGradient\" value; \"MaxTransDiff\" value. mat-reg specifies the material name or region name defining the interface"
       }
     ],
-    "example": "(sdedr:define-refinement-function \"ref1\" \"MaxLenInt\" \"Silicon\" \"Oxide\" 0.05 1.5)"
+    "example": "(sdedr:define-refinement-function \"ref1\" \"MaxLenInt\" \"Silicon\" \"Oxide\" 0.05 1.5)",
+    "modeDispatch": {
+      "argIndex": 2,
+      "modes": {
+        "MaxLenInt": {
+          "params": [
+            "definition-name",
+            "function-name",
+            "MaxLenInt",
+            "mat-reg-1",
+            "mat-reg-2",
+            "value"
+          ],
+          "optionals": [
+            {
+              "name": "factor",
+              "type": "number"
+            },
+            {
+              "name": "DoubleSide",
+              "type": "flag"
+            },
+            {
+              "name": "UseRegionNames",
+              "type": "flag"
+            }
+          ]
+        },
+        "MaxInterval": {
+          "params": [
+            "definition-name",
+            "function-name",
+            "MaxInterval",
+            "Variable",
+            "dopant-name",
+            "Cmin",
+            "cmin",
+            "Cmax",
+            "cmax"
+          ],
+          "optionals": [
+            {
+              "name": "Scaling",
+              "tag": "Scaling",
+              "type": "number",
+              "param": "scaling"
+            },
+            {
+              "name": "TargetLength",
+              "tag": "TargetLength",
+              "type": "number",
+              "param": "targetLength"
+            },
+            {
+              "name": "Rolloff",
+              "type": "flag"
+            }
+          ]
+        },
+        "MaxGradient": {
+          "params": [
+            "definition-name",
+            "function-name",
+            "MaxGradient",
+            "value"
+          ]
+        },
+        "MaxTransDiff": {
+          "params": [
+            "definition-name",
+            "function-name",
+            "MaxTransDiff",
+            "value"
+          ]
+        }
+      }
+    }
   },
   "sdedr:define-refinement-material": {
     "signature": "(sdedr:define-refinement-material placement-name definition-name material-name)",
@@ -6728,7 +7098,25 @@
         "type": "string",
         "desc": "Region name for the patterned body (STRING, optional)"
       }
-    ]
+    ],
+    "modeDispatch": {
+      "labelBased": true,
+      "argIndex": -1,
+      "modes": {
+        "thickness": {
+          "tag": "thickness",
+          "extraParams": [
+            "thickness"
+          ]
+        },
+        "height": {
+          "tag": "height",
+          "extraParams": [
+            "height"
+          ]
+        }
+      }
+    }
   },
   "sdepe:polish-device": {
     "signature": "(sdepe:polish-device { [\"thickness\" thickness] | [\"height\" height] } [\"material\" material])",
@@ -6750,7 +7138,25 @@
         "desc": "DATEX material (optional); if specified, only the top exposed bodies with this material attribute are polished (selective polish)"
       }
     ],
-    "example": "(sdepe:polish-device \"thickness\" 0.5 \"material\" \"Oxide\")"
+    "example": "(sdepe:polish-device \"thickness\" 0.5 \"material\" \"Oxide\")",
+    "modeDispatch": {
+      "labelBased": true,
+      "argIndex": -1,
+      "modes": {
+        "thickness": {
+          "tag": "thickness",
+          "extraParams": [
+            "thickness"
+          ]
+        },
+        "height": {
+          "tag": "height",
+          "extraParams": [
+            "height"
+          ]
+        }
+      }
+    }
   },
   "sdepe:remove": {
     "signature": "(sdepe:remove { [\"region\" region-name] | [\"material\" material] })",
@@ -6767,7 +7173,25 @@
         "desc": "DATEX material to remove (DATEXMAT, optional). Use with the \"material\" keyword"
       }
     ],
-    "example": "(sdepe:remove \"material\" \"Resist\")"
+    "example": "(sdepe:remove \"material\" \"Resist\")",
+    "modeDispatch": {
+      "labelBased": true,
+      "argIndex": -1,
+      "modes": {
+        "region": {
+          "tag": "region",
+          "extraParams": [
+            "region-name"
+          ]
+        },
+        "material": {
+          "tag": "material",
+          "extraParams": [
+            "material"
+          ]
+        }
+      }
+    }
   },
   "sdepe:trim-masks": {
     "signature": "(sdepe:trim-masks domainboundary)",
