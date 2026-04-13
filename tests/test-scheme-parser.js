@@ -1,6 +1,6 @@
 // tests/test-scheme-parser.js
 const assert = require('assert');
-const { tokenize } = require('../src/lsp/scheme-parser');
+const { tokenize, parse } = require('../src/lsp/scheme-parser');
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -101,6 +101,99 @@ test('@Var@ 参数', () => {
     const tokens = tokenize('@previous@');
     assert.strictEqual(tokens[0].type, 'SYMBOL');
     assert.strictEqual(tokens[0].value, '@previous@');
+});
+
+console.log('\nparse:');
+
+test('简单列表', () => {
+    const { ast } = parse('(+ 1 2)');
+    assert.strictEqual(ast.type, 'Program');
+    assert.strictEqual(ast.body.length, 1);
+    const list = ast.body[0];
+    assert.strictEqual(list.type, 'List');
+    assert.strictEqual(list.children.length, 3);
+    assert.strictEqual(list.children[0].type, 'Identifier');
+    assert.strictEqual(list.children[0].value, '+');
+    assert.strictEqual(list.children[1].type, 'Number');
+    assert.strictEqual(list.children[1].value, 1);
+    assert.strictEqual(list.children[2].type, 'Number');
+    assert.strictEqual(list.children[2].value, 2);
+});
+
+test('嵌套列表', () => {
+    const { ast } = parse('(define (f x) (+ x 1))');
+    const outer = ast.body[0];
+    assert.strictEqual(outer.children[0].value, 'define');
+    const funcSig = outer.children[1];
+    assert.strictEqual(funcSig.type, 'List');
+    assert.strictEqual(funcSig.children[0].value, 'f');
+});
+
+test('define 变量', () => {
+    const { ast } = parse('(define x 42)');
+    const list = ast.body[0];
+    assert.strictEqual(list.children[0].value, 'define');
+    assert.strictEqual(list.children[1].value, 'x');
+    assert.strictEqual(list.children[2].value, 42);
+});
+
+test('字符串参数', () => {
+    const { ast } = parse('(sdegeo:create-rectangle "R.Si" "Silicon" (position 0 0 0))');
+    const list = ast.body[0];
+    assert.strictEqual(list.children[1].value, 'R.Si');
+    assert.strictEqual(list.children[2].value, 'Silicon');
+});
+
+test('布尔值', () => {
+    const { ast } = parse('(if #t 1 0)');
+    const list = ast.body[0];
+    assert.strictEqual(list.children[1].type, 'Boolean');
+    assert.strictEqual(list.children[1].value, true);
+});
+
+test('引号语法糖', () => {
+    const { ast } = parse("'(1 2 3)");
+    assert.strictEqual(ast.body[0].type, 'Quote');
+    assert.strictEqual(ast.body[0].expression.type, 'List');
+});
+
+test('跨行表达式行号', () => {
+    const { ast } = parse('(define TboxTest\n  0.42)');
+    const list = ast.body[0];
+    assert.strictEqual(list.line, 1);
+    assert.strictEqual(list.endLine, 2);
+});
+
+test('未闭合括号产生错误', () => {
+    const { ast, errors } = parse('(define x');
+    assert.strictEqual(errors.length, 1);
+    assert.strictEqual(errors[0].severity, 'error');
+    assert.ok(errors[0].message.includes('未闭合'));
+    assert.strictEqual(ast.body.length, 1);
+});
+
+test('多余闭括号产生警告', () => {
+    const { errors } = parse('(define x 1))');
+    assert.strictEqual(errors.length, 1);
+    assert.strictEqual(errors[0].severity, 'warning');
+});
+
+test('空输入', () => {
+    const { ast } = parse('');
+    assert.strictEqual(ast.type, 'Program');
+    assert.strictEqual(ast.body.length, 0);
+});
+
+test('注释被跳过但保留在 AST', () => {
+    const { ast } = parse('; comment\n(define x 1)');
+    assert.strictEqual(ast.body.length, 2);
+    assert.strictEqual(ast.body[0].type, 'Comment');
+});
+
+test('definitionText 字段', () => {
+    const { ast } = parse('(define x 42)');
+    const list = ast.body[0];
+    assert.strictEqual(list.text, '(define x 42)');
 });
 
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
