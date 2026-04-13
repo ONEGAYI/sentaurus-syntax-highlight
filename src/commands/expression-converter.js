@@ -365,7 +365,56 @@ function infixToPrefix(text) {
 }
 
 function getSupportedOperators() {
-    return {};
+    return [
+        {
+            category: '算术运算符',
+            items: [
+                { scheme: '+', infix: '+', description: '加法（支持多参数）', example_scheme: '(+ a b c)', example_infix: 'a + b + c' },
+                { scheme: '-', infix: '-', description: '减法 / 取负', example_scheme: '(- a b)', example_infix: 'a - b' },
+                { scheme: '*', infix: '*', description: '乘法（支持多参数）', example_scheme: '(* a b c)', example_infix: 'a * b * c' },
+                { scheme: '/', infix: '/', description: '除法', example_scheme: '(/ a b)', example_infix: 'a / b' },
+            ],
+        },
+        {
+            category: '特殊运算符',
+            items: [
+                { scheme: 'expt', infix: '^ 或 **', description: '幂运算', example_scheme: '(expt a b)', example_infix: 'a ^ b' },
+                { scheme: 'modulo', infix: '%', description: '取模（结果符号与除数相同）', example_scheme: '(modulo a b)', example_infix: 'a % b' },
+                { scheme: 'remainder', infix: '%%', description: '取余（结果符号与被除数相同）', example_scheme: '(remainder a b)', example_infix: 'a %% b' },
+                { scheme: 'quotient', infix: '//', description: '取整商', example_scheme: '(quotient a b)', example_infix: 'a // b' },
+            ],
+        },
+        {
+            category: '数学函数',
+            items: [
+                { scheme: 'sin', infix: 'sin()', description: '正弦（弧度）', example_scheme: '(sin x)', example_infix: 'sin(x)' },
+                { scheme: 'cos', infix: 'cos()', description: '余弦（弧度）', example_scheme: '(cos x)', example_infix: 'cos(x)' },
+                { scheme: 'tan', infix: 'tan()', description: '正切（弧度）', example_scheme: '(tan x)', example_infix: 'tan(x)' },
+                { scheme: 'asin', infix: 'asin()', description: '反正弦', example_scheme: '(asin x)', example_infix: 'asin(x)' },
+                { scheme: 'acos', infix: 'acos()', description: '反余弦', example_scheme: '(acos x)', example_infix: 'acos(x)' },
+                { scheme: 'atan', infix: 'atan()', description: '反正切（1~2 个参数）', example_scheme: '(atan y x)', example_infix: 'atan(y, x)' },
+                { scheme: 'sqrt', infix: 'sqrt()', description: '平方根', example_scheme: '(sqrt x)', example_infix: 'sqrt(x)' },
+                { scheme: 'abs', infix: 'abs()', description: '绝对值', example_scheme: '(abs x)', example_infix: 'abs(x)' },
+                { scheme: 'exp', infix: 'exp()', description: '指数函数 e^x', example_scheme: '(exp x)', example_infix: 'exp(x)' },
+                { scheme: 'log', infix: 'log()', description: '自然对数', example_scheme: '(log x)', example_infix: 'log(x)' },
+            ],
+        },
+        {
+            category: '取整函数',
+            items: [
+                { scheme: 'floor', infix: 'floor()', description: '向下取整', example_scheme: '(floor x)', example_infix: 'floor(x)' },
+                { scheme: 'ceiling', infix: 'ceil()', description: '向上取整', example_scheme: '(ceiling x)', example_infix: 'ceil(x)' },
+                { scheme: 'round', infix: 'round()', description: '四舍五入', example_scheme: '(round x)', example_infix: 'round(x)' },
+            ],
+        },
+        {
+            category: '聚合函数',
+            items: [
+                { scheme: 'min', infix: 'min()', description: '最小值（支持多参数）', example_scheme: '(min a b c)', example_infix: 'min(a, b, c)' },
+                { scheme: 'max', infix: 'max()', description: '最大值（支持多参数）', example_scheme: '(max a b c)', example_infix: 'max(a, b, c)' },
+            ],
+        },
+    ];
 }
 
 module.exports = {
