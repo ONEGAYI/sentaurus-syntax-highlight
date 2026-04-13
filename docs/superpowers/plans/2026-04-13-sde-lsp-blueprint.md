@@ -17,7 +17,7 @@
 | Phase | 名称 | 核心产出 | 新增代码 | 状态 |
 |-------|------|---------|---------|------|
 | 1 | AST 基础设施 | 解析器 + 定义提取 + 折叠 + 括号诊断 | ~420 行 | ✅ 已完成 |
-| 2 | 语义分派 | 定义分类 + 参数感知 + 参数级补全 + Signature Help + 重载模式 | ~600 行 | 规划中 |
+| 2 | 语义分派 | 定义分类 + 参数感知 + 参数级补全 + Signature Help + 重载模式 | ~600 行 | 2A+2B 已完成，2C 待实施 |
 | 3 | 交叉引用 | 材料名/区域名索引 + 语义诊断 + Rename | ~600 行 | 规划中 |
 
 ---
@@ -71,13 +71,41 @@ folding-provider.js  bracket-diagnostic.js   definitions.js (内部替换)
 
 ---
 
-## Phase 2: 语义分派（规划中）
+## Phase 2: 语义分派（2A+2B 已完成，2C 待实施）
 
-### 目标
+**详细计划:** `docs/superpowers/plans/2026-04-13-sde-lsp-layer2.md`
 
-在 AST 基础上实现定义分类、函数参数感知、函数调用的语义分派，支持 SDE 特有的模式分派重载。
+### 已完成交付物（2A+2B）
 
-### 交付物
+```
+src/
+├── extension.js                  # 修改：kind 分类 + 作用域感知补全过滤
+├── definitions.js                # 不变：透传 kind 字段
+└── lsp/
+    ├── scheme-analyzer.js        # 修改：定义输出增加 kind 字段
+    ├── scope-analyzer.js         # 新增：作用域树构建 + 可见性查询 (~130 行)
+    └── providers/
+        └── (无变更)
+
+tests/
+└── test-scope-analyzer.js        # 新增：17 个测试用例
+```
+
+### 完成标准（2A+2B）
+
+1. ✅ define 变量输出 `kind: 'variable'`，define 函数输出 `kind: 'function'`
+2. ✅ 函数参数在函数体内可见于补全
+3. ✅ let/let*/letrec 绑定在对应作用域内可见于补全
+4. ✅ 作用域外定义不出现在补全列表中
+5. ✅ 同名变量内层覆盖外层
+6. ✅ 非SDE语言不受影响
+7. ✅ 96 个测试全部通过（42 + 32 + 17 + 5）
+
+### Phase 2 实施中修复的额外问题
+
+- **简单变量定义遗漏**：原计划 `buildScopeTree` 只处理了 `(define (func params) body)` 形式，遗漏了 `(define var val)` 形式。实施中补充了简单变量定义的全局作用域注册。
+
+### 待实施（2C：模式分派）
 
 ```
 src/
