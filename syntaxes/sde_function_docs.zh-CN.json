@@ -1254,13 +1254,13 @@
     "signature": "(sdegeo:set-auto-region-naming on-off)"
   },
   "sdegeo:set-contact": {
-    "description": "将激活的接触附着到指定的实体上。传递 \"remove\" 以分离接触。",
+    "description": "将激活的接触附着到指定的边或面上。传递 \"remove\" 时，删除指定区域并将其边界转换为接触。",
     "example": "(sdegeo:set-contact (car (sde:get-body-list)) \"Gate\")",
     "parameters": [
       {
         "name": "entity | entity-list",
         "type": "entity | list",
-        "desc": "实体或实体列表"
+        "desc": "边、面、体或实体列表"
       },
       {
         "name": "contact-name",
@@ -1270,7 +1270,7 @@
       {
         "name": "\"remove\"",
         "type": "string",
-        "desc": "可选；传递 \"remove\" 以分离接触"
+        "desc": "可选；删除区域并将其边界边（2D）或边界面（3D）转换为指定接触"
       }
     ],
     "signature": "(sdegeo:set-contact entity | entity-list [contact-name] [\"remove\"])"
@@ -4545,7 +4545,7 @@
       {
         "name": "replace",
         "type": "string",
-        "desc": "STRING — 可选；\"Replace\" 用此掺杂分布替换所有其他先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类"
+        "desc": "STRING — 可选；\"Replace\" 替换所有先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类；\"NoReplace\" 将新分布叠加到所有先前定义的分布中（默认）"
       }
     ],
     "signature": "(sdedr:define-constant-profile-material placement-name definition-name material [decay-length [\"Gauss\"]] [replace])"
@@ -4577,7 +4577,7 @@
       {
         "name": "replace",
         "type": "string",
-        "desc": "STRING — 可选；\"Replace\" 用此掺杂分布替换所有其他先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类"
+        "desc": "STRING — 可选；\"Replace\" 替换所有先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类；\"NoReplace\" 将新分布叠加到所有先前定义的分布中（默认）"
       }
     ],
     "signature": "(sdedr:define-constant-profile-placement placement-name definition-name ref-win-name [decay-length [\"Gauss\"]] [replace])"
@@ -4609,7 +4609,7 @@
       {
         "name": "replace",
         "type": "string",
-        "desc": "STRING — 可选；\"Replace\" 用此掺杂分布替换所有其他先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类"
+        "desc": "STRING — 可选；\"Replace\" 替换所有先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类；\"NoReplace\" 将新分布叠加到所有先前定义的分布中（默认）"
       }
     ],
     "signature": "(sdedr:define-constant-profile-region placement-name definition-name region-name [decay-length [\"Gauss\"]] [replace])"
