@@ -17,7 +17,7 @@
 | Phase | 名称 | 核心产出 | 新增代码 | 状态 |
 |-------|------|---------|---------|------|
 | 1 | AST 基础设施 | 解析器 + 定义提取 + 折叠 + 括号诊断 | ~420 行 | ✅ 已完成 |
-| 2 | 语义分派 | 定义分类 + 参数感知 + 参数级补全 + Signature Help + 重载模式 | ~600 行 | 2A+2B 已完成，2C 待实施 |
+| 2 | 语义分派 | 定义分类 + 参数感知 + 参数级补全 + Signature Help + 重载模式 | ~600 行 | ✅ 已完成 |
 | 3 | 交叉引用 | 材料名/区域名索引 + 语义诊断 + Rename | ~600 行 | 规划中 |
 
 ---
@@ -71,7 +71,7 @@ folding-provider.js  bracket-diagnostic.js   definitions.js (内部替换)
 
 ---
 
-## Phase 2: 语义分派（2A+2B 已完成，2C 待实施）
+## Phase 2: 语义分派 ✅
 
 **详细计划:** `docs/superpowers/plans/2026-04-13-sde-lsp-layer2.md`
 
@@ -106,22 +106,36 @@ tests/
 - **简单变量定义遗漏**：原计划 `buildScopeTree` 只处理了 `(define (func params) body)` 形式，遗漏了 `(define var val)` 形式。实施中补充了简单变量定义的全局作用域注册。
 - **提取层与可见性层职责错位**：`scheme-analyzer.js` 原本只提取 `define` 定义，不提取 `let` 绑定和函数参数。虽然 `scope-analyzer.js` 正确构建了包含 let 和参数的作用域树，但补全过滤采用交集机制——不在提取列表中的定义即使作用域内可见也无法补全。修复方案：让 `scheme-analyzer.js` 提取所有定义（包括 let 绑定和函数参数），可见性完全由 `scope-analyzer.js` 的作用域过滤控制。
 
-### 待实施（2C：模式分派）
+### 2C 新增交付物
 
 ```
 src/
-├── extension.js                  # 修改：补全分类 + 作用域感知
-├── definitions.js                # 修改：definitions 增加 kind 字段
 └── lsp/
-    ├── scheme-analyzer.js        # 修改：增加 kind 字段 + 作用域分析
-    ├── scope-analyzer.js         # 新增：作用域分析（参数可见性） (~100 行)
-    ├── semantic-dispatcher.js    # 新增：模式分派引擎 (~150 行)
-    ├── signature-provider.js     # 新增：Signature Help provider (~100 行)
-    └── param-completion.js       # 新增：参数级补全 (~150 行)
+    ├── semantic-dispatcher.js        # 新增：模式分派引擎 (~120 行)
+    └── providers/
+        └── signature-provider.js     # 新增：Signature Help provider (~120 行)
 
 syntaxes/
-└── sde_function_docs.json        # 修改：新增 modeDispatch 结构化字段
+└── sde_function_docs.json            # 修改：12 个函数添加 modeDispatch 字段
+
+tests/
+├── test-semantic-dispatcher.js       # 新增：分派引擎测试 (14 用例)
+└── test-signature-provider.js        # 新增：Signature Help 测试 (8 用例)
 ```
+
+### 完成标准（2C：模式分派）
+
+8. ✅ 12 个模式分派函数拥有 modeDispatch 元数据
+9. ✅ Signature Help 在输入函数参数时自动触发
+10. ✅ 模式分派函数显示当前模式的参数签名
+11. ✅ 非模式分派函数显示基本签名（如果有文档）
+12. ✅ 光标位置正确映射到参数索引
+13. ✅ 114 个测试全部通过（42 + 32 + 17 + 14 + 8 + 1）
+
+### 2C 实施中修复的额外问题
+
+- **argIndex 语义修正**：原始计划中 `argIndex` 的含义模糊（children 偏移 vs 参数索引）。实施中统一为"参数索引（0-based）"语义，`resolveMode` 内部通过 `children[argIndex + 1]` 访问参数节点（+1 跳过函数名 children[0]）。
+- **参数值补全推迟**：原 Architecture 包含 `param-completion.js`（材料名/区域名自动补全），实施中评估后决定推迟到 Phase 3 交叉引用分析，因为参数值补全需要全局符号索引能力。
 
 ### 2A: 定义分类（前置工作）
 
@@ -166,7 +180,9 @@ syntaxes/
 - `scope-analyzer.js`: 作用域树构建 + 查询接口
 - `extension.js`: 补全提供器调用作用域查询，按位置过滤可用定义
 
-### 2C: 模式分派（核心功能）
+### 2C: 模式分派 ✅
+
+**详细计划:** `docs/superpowers/plans/2026-04-13-sde-lsp-layer2c.md`
 
 **modeDispatch 数据模型：**
 ```json
@@ -176,10 +192,14 @@ syntaxes/
       "argIndex": 1,
       "modes": {
         "MaxLenInt": {
-          "params": ["definition-name", "mat-reg-1", "mat-reg-2", "value", "..."],
-          "flags": { "UseRegionNames": { "affects": ["mat-reg-1", "mat-reg-2"] } }
+          "params": ["definition-name", "function-name", "MaxLenInt", "mat-reg-1", "mat-reg-2", "value"],
+          "optionals": [
+            { "name": "factor", "type": "number" },
+            { "name": "DoubleSide", "type": "flag" },
+            { "name": "UseRegionNames", "type": "flag" }
+          ]
         },
-        "MaxGradient": { "params": ["definition-name", "value"] }
+        "MaxGradient": { "params": ["definition-name", "function-name", "MaxGradient", "value"] }
       }
     }
   }
@@ -188,14 +208,14 @@ syntaxes/
 
 **工作流：**
 1. AST 解析识别 `(sdedr:define-refinement-function ...)` 调用
-2. 读取 arg[1] 值确定模式
-3. 基于模式提供参数级补全和 Signature Help
-4. 检测 flags（如 `UseRegionNames`）调整补全内容
+2. 读取 arg[argIndex] 值确定模式
+3. 基于模式提供 Signature Help（参数值补全推迟到 Phase 3）
+4. 12 个模式分派函数覆盖完成
 
 ### 前置条件
 
 - ✅ Phase 1 完成（AST 解析器可用）
-- 函数文档 JSON 需要添加 `modeDispatch` 结构化字段（~20 个重载函数需要手动编写）
+- ✅ 函数文档 JSON 已添加 `modeDispatch` 结构化字段（12 个重载函数）
 
 ### 预估工作量
 
