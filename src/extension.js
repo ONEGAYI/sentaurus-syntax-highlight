@@ -2,6 +2,8 @@ const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
 const defs = require('./definitions');
+const foldingProvider = require('./lsp/providers/folding-provider');
+const bracketDiagnostic = require('./lsp/providers/bracket-diagnostic');
 
 /** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
 function decodeHtml(str) {
@@ -251,6 +253,17 @@ function activate(context) {
     if (sdeviceDocs) {
         Object.assign(funcDocs, sdeviceDocs);
     }
+
+    // FoldingRangeProvider (SDE only)
+    context.subscriptions.push(
+        vscode.languages.registerFoldingRangeProvider(
+            { language: 'sde' },
+            foldingProvider
+        )
+    );
+
+    // Bracket diagnostic (SDE only)
+    bracketDiagnostic.activate(context);
 
     const languages = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect'];
 
