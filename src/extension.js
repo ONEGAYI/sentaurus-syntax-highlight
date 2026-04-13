@@ -4,6 +4,8 @@ const fs = require('fs');
 const defs = require('./definitions');
 const foldingProvider = require('./lsp/providers/folding-provider');
 const bracketDiagnostic = require('./lsp/providers/bracket-diagnostic');
+const scopeAnalyzer = require('./lsp/scope-analyzer');
+const schemeParser = require('./lsp/scheme-parser');
 
 /** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
 function decodeHtml(str) {
@@ -276,23 +278,39 @@ function activate(context) {
         const completionDisposable = vscode.languages.registerCompletionItemProvider(
             { language: langId },
             {
-                provideCompletionItems(document) {
+                provideCompletionItems(document, position) {
                     const userDefs = defs.getDefinitions(document, langId);
                     if (userDefs.length === 0) return items;
 
                     // 去重：跳过与静态关键词同名的用户变量
                     const staticNames = new Set(items.map(it => it.label));
-                    const userItems = userDefs
+                    let filteredDefs = userDefs
                         .filter(d => !staticNames.has(d.name))
                         // 同名变量可能在多处定义，去重
-                        .filter((d, i, arr) => arr.findIndex(x => x.name === d.name) === i)
-                        .map(d => {
-                            const item = new vscode.CompletionItem(d.name, vscode.CompletionItemKind.Variable);
-                            item.detail = 'User Variable';
-                            item.sortText = '4' + d.name;
-                            item.documentation = new vscode.MarkdownString('```scheme\n' + d.definitionText + '\n```');
-                            return item;
-                        });
+                        .filter((d, i, arr) => arr.findIndex(x => x.name === d.name) === i);
+
+                    // SDE (Scheme): 作用域感知过滤
+                    if (langId === 'sde') {
+                        const { ast } = schemeParser.parse(document.getText());
+                        const scopeTree = scopeAnalyzer.buildScopeTree(ast);
+                        const visible = scopeAnalyzer.getVisibleDefinitions(scopeTree, position.line + 1);
+                        const visibleNames = new Set(visible.map(v => v.name));
+                        filteredDefs = filteredDefs.filter(d => visibleNames.has(d.name));
+                    }
+
+                    const userItems = filteredDefs.map(d => {
+                        let itemKind = vscode.CompletionItemKind.Variable;
+                        let detail = 'User Variable';
+                        if (d.kind === 'function') {
+                            itemKind = vscode.CompletionItemKind.Function;
+                            detail = 'User Function';
+                        }
+                        const item = new vscode.CompletionItem(d.name, itemKind);
+                        item.detail = detail;
+                        item.sortText = '4' + d.name;
+                        item.documentation = new vscode.MarkdownString('```scheme\n' + d.definitionText + '\n```');
+                        return item;
+                    });
 
                     return [...items, ...userItems];
                 },
