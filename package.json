@@ -97,6 +97,18 @@
       {
         "command": "sentaurus.insertSnippet",
         "title": "Sentaurus: Insert Snippet"
+      },
+      {
+        "command": "sentaurus.scheme2infix",
+        "title": "Sentaurus: Scheme → Infix"
+      },
+      {
+        "command": "sentaurus.infix2scheme",
+        "title": "Sentaurus: Infix → Scheme"
+      },
+      {
+        "command": "sentaurus.exprHelp",
+        "title": "Sentaurus: Expression Help"
       }
     ],
     "snippets": [
