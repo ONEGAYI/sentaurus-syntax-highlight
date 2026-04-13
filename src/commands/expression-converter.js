@@ -315,7 +315,9 @@ function astToPrefix(node) {
 
     if (node.type === 'unary') {
         if (node.op === '-') {
-            return `(- ${astToPrefix(node.operand)})`;
+            const inner = astToPrefix(node.operand);
+            if (node.operand.type === 'number') return `-${inner}`;
+            return `(- ${inner})`;
         }
     }
 
