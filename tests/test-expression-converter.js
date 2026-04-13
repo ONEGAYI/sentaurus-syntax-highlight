@@ -137,6 +137,49 @@ test('非数学表达式原样返回', () => {
     assert.strictEqual(r.result, '(define x 42)');
 });
 
+// ─── infixToPrefix 基础 ─────────────────────
+console.log('\ninfixToPrefix - 基础运算:');
+
+test('加法', () => {
+    const r = infixToPrefix('1 + 2');
+    assert.strictEqual(r.result, '(+ 1 2)');
+});
+
+test('减法', () => {
+    const r = infixToPrefix('a - b');
+    assert.strictEqual(r.result, '(- a b)');
+});
+
+test('乘法', () => {
+    const r = infixToPrefix('3 * 4');
+    assert.strictEqual(r.result, '(* 3 4)');
+});
+
+test('除法', () => {
+    const r = infixToPrefix('W / 2');
+    assert.strictEqual(r.result, '(/ W 2)');
+});
+
+test('幂运算 ^ → expt', () => {
+    const r = infixToPrefix('a ^ 2');
+    assert.strictEqual(r.result, '(expt a 2)');
+});
+
+test('优先级：乘法优先于加法', () => {
+    const r = infixToPrefix('a * b + c');
+    assert.strictEqual(r.result, '(+ (* a b) c)');
+});
+
+test('优先级：加法在括号内优先', () => {
+    const r = infixToPrefix('(a + b) * c');
+    assert.strictEqual(r.result, '(* (+ a b) c)');
+});
+
+test('混合优先级', () => {
+    const r = infixToPrefix('a + b * c');
+    assert.strictEqual(r.result, '(+ a (* b c))');
+});
+
 // ─── 汇总 ───────────────────────────────────
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);
