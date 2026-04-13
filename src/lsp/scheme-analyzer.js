@@ -42,6 +42,7 @@ function extractDefinitionsFromList(listNode, definitions) {
                 line: listNode.line,
                 endLine: listNode.endLine,
                 definitionText: listNode.text,
+                kind: 'variable',
             });
         } else if (children[1].type === 'List' && children[1].children.length >= 1) {
             definitions.push({
@@ -49,6 +50,7 @@ function extractDefinitionsFromList(listNode, definitions) {
                 line: listNode.line,
                 endLine: listNode.endLine,
                 definitionText: listNode.text,
+                kind: 'function',
             });
         }
         return;
