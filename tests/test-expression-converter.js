@@ -180,6 +180,98 @@ test('混合优先级', () => {
     assert.strictEqual(r.result, '(+ a (* b c))');
 });
 
+// ─── infixToPrefix 函数和特殊运算符 ─────────
+console.log('\ninfixToPrefix - 函数和特殊运算符:');
+
+test('sin 函数', () => {
+    const r = infixToPrefix('sin(x)');
+    assert.strictEqual(r.result, '(sin x)');
+});
+
+test('sqrt 函数', () => {
+    const r = infixToPrefix('sqrt(a + b)');
+    assert.strictEqual(r.result, '(sqrt (+ a b))');
+});
+
+test('min 多参数函数', () => {
+    const r = infixToPrefix('min(a, b, c)');
+    assert.strictEqual(r.result, '(min a b c)');
+});
+
+test('max 多参数函数', () => {
+    const r = infixToPrefix('max(a, b, c)');
+    assert.strictEqual(r.result, '(max a b c)');
+});
+
+test('ceil 映射为 ceiling', () => {
+    const r = infixToPrefix('ceil(x)');
+    assert.strictEqual(r.result, '(ceiling x)');
+});
+
+test('% 映射为 modulo', () => {
+    const r = infixToPrefix('a % b');
+    assert.strictEqual(r.result, '(modulo a b)');
+});
+
+test('%% 映射为 remainder', () => {
+    const r = infixToPrefix('a %% b');
+    assert.strictEqual(r.result, '(remainder a b)');
+});
+
+test('// 映射为 quotient', () => {
+    const r = infixToPrefix('a // b');
+    assert.strictEqual(r.result, '(quotient a b)');
+});
+
+test('** 映射为 expt', () => {
+    const r = infixToPrefix('a ** 2');
+    assert.strictEqual(r.result, '(expt a 2)');
+});
+
+// ─── infixToPrefix 边界条件 ─────────────────
+console.log('\ninfixToPrefix - 边界条件:');
+
+test('取负 -a', () => {
+    const r = infixToPrefix('-a');
+    assert.strictEqual(r.result, '(- a)');
+});
+
+test('负数作除数 a / -2', () => {
+    const r = infixToPrefix('a / -2');
+    assert.strictEqual(r.result, '(/ a -2)');
+});
+
+test('单个数字不变', () => {
+    const r = infixToPrefix('42');
+    assert.strictEqual(r.result, '42');
+});
+
+test('单个标识符不变', () => {
+    const r = infixToPrefix('W');
+    assert.strictEqual(r.result, 'W');
+});
+
+test('空输入报错', () => {
+    const r = infixToPrefix('');
+    assert.ok(r.error);
+});
+
+test('非法表达式报错', () => {
+    const r = infixToPrefix('1 + + 2');
+    assert.ok(r.error);
+});
+
+test('外层括号自动去除', () => {
+    const r = infixToPrefix('(a + b)');
+    assert.strictEqual(r.result, '(+ a b)');
+});
+
+test('复杂嵌套表达式', () => {
+    const r = infixToPrefix('(W/2 + Lgate/2 + Wspacer)/-2');
+    assert.ok(r.result);
+    assert.ok(r.result.startsWith('(/ '));
+});
+
 // ─── 汇总 ───────────────────────────────────
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);
