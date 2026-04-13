@@ -1,6 +1,7 @@
 // tests/test-scheme-parser.js
 const assert = require('assert');
 const { tokenize, parse } = require('../src/lsp/scheme-parser');
+const { analyze } = require('../src/lsp/scheme-analyzer');
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -194,6 +195,76 @@ test('definitionText 字段', () => {
     const { ast } = parse('(define x 42)');
     const list = ast.body[0];
     assert.strictEqual(list.text, '(define x 42)');
+});
+
+console.log('\nanalyze — definitions:');
+
+test('从 AST 提取 define 变量', () => {
+    const { ast } = parse('(define TboxTest 0.42)');
+    const result = analyze(ast);
+    assert.strictEqual(result.definitions.length, 1);
+    assert.strictEqual(result.definitions[0].name, 'TboxTest');
+    assert.strictEqual(result.definitions[0].line, 1);
+});
+
+test('从 AST 提取 define 函数', () => {
+    const { ast } = parse('(define (my-func x y) (+ x y))');
+    const result = analyze(ast);
+    assert.strictEqual(result.definitions.length, 1);
+    assert.strictEqual(result.definitions[0].name, 'my-func');
+});
+
+test('从 AST 提取跨行 define', () => {
+    const { ast } = parse('(define TboxTest\n  0.42)');
+    const result = analyze(ast);
+    assert.strictEqual(result.definitions.length, 1);
+    assert.strictEqual(result.definitions[0].endLine, 2);
+    assert.ok(result.definitions[0].definitionText.includes('0.42'));
+});
+
+test('从 AST 提取 let 绑定', () => {
+    const { ast } = parse('(let ((a 1) (b 2)) (+ a b))');
+    const result = analyze(ast);
+    assert.strictEqual(result.definitions.length, 2);
+    assert.strictEqual(result.definitions[0].name, 'a');
+    assert.strictEqual(result.definitions[1].name, 'b');
+});
+
+test('从 AST 提取 let* 绑定', () => {
+    const { ast } = parse('(let* ((x 1) (y 2)) y)');
+    const result = analyze(ast);
+    assert.strictEqual(result.definitions.length, 2);
+    assert.strictEqual(result.definitions[0].name, 'x');
+});
+
+test('从 AST 提取 letrec 绑定', () => {
+    const { ast } = parse('(letrec ((even? (lambda (n) n))) (even? 10))');
+    const result = analyze(ast);
+    assert.strictEqual(result.definitions.length, 1);
+    assert.strictEqual(result.definitions[0].name, 'even?');
+});
+
+test('AST 跳过注释中的 define', () => {
+    const { ast } = parse('; (define commented 1)\n(define real 2)');
+    const result = analyze(ast);
+    assert.strictEqual(result.definitions.length, 1);
+    assert.strictEqual(result.definitions[0].name, 'real');
+});
+
+test('AST 跳过字符串中的 define', () => {
+    const { ast } = parse('(define x "(define fake 1)")');
+    const result = analyze(ast);
+    assert.strictEqual(result.definitions.length, 1);
+    assert.strictEqual(result.definitions[0].name, 'x');
+});
+
+test('AST 多 define 混合', () => {
+    const { ast } = parse('(define x 1)\n(define y 2)\n(define (f z) (+ z 1))');
+    const result = analyze(ast);
+    assert.strictEqual(result.definitions.length, 3);
+    assert.strictEqual(result.definitions[0].name, 'x');
+    assert.strictEqual(result.definitions[1].name, 'y');
+    assert.strictEqual(result.definitions[2].name, 'f');
 });
 
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
