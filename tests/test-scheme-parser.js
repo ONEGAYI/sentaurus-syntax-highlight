@@ -223,26 +223,22 @@ test('从 AST 提取跨行 define', () => {
     assert.ok(result.definitions[0].definitionText.includes('0.42'));
 });
 
-test('从 AST 提取 let 绑定', () => {
+test('let 绑定不暴露到全局', () => {
     const { ast } = parse('(let ((a 1) (b 2)) (+ a b))');
     const result = analyze(ast);
-    assert.strictEqual(result.definitions.length, 2);
-    assert.strictEqual(result.definitions[0].name, 'a');
-    assert.strictEqual(result.definitions[1].name, 'b');
+    assert.strictEqual(result.definitions.length, 0);
 });
 
-test('从 AST 提取 let* 绑定', () => {
+test('let* 绑定不暴露到全局', () => {
     const { ast } = parse('(let* ((x 1) (y 2)) y)');
     const result = analyze(ast);
-    assert.strictEqual(result.definitions.length, 2);
-    assert.strictEqual(result.definitions[0].name, 'x');
+    assert.strictEqual(result.definitions.length, 0);
 });
 
-test('从 AST 提取 letrec 绑定', () => {
+test('letrec 绑定不暴露到全局', () => {
     const { ast } = parse('(letrec ((even? (lambda (n) n))) (even? 10))');
     const result = analyze(ast);
-    assert.strictEqual(result.definitions.length, 1);
-    assert.strictEqual(result.definitions[0].name, 'even?');
+    assert.strictEqual(result.definitions.length, 0);
 });
 
 test('AST 跳过注释中的 define', () => {
@@ -312,14 +308,13 @@ test('兼容: define 函数格式一致', () => {
     assert.strictEqual(oldDefs[0].name, newDefs[0].name);
 });
 
-test('兼容: let 绑定格式一致', () => {
-    const text = '(let ((a 1) (b 2)) (+ a b))';
+test('兼容: define 变量格式一致（let 不影响）', () => {
+    const text = '(let ((a 1)) (define x 2))';
     const oldDefs = oldExtract(text);
     const { ast } = parse(text);
     const newDefs = analyze(ast).definitions;
-    assert.strictEqual(oldDefs.length, newDefs.length);
-    assert.strictEqual(oldDefs[0].name, newDefs[0].name);
-    assert.strictEqual(oldDefs[1].name, newDefs[1].name);
+    assert.strictEqual(newDefs.length, 1);
+    assert.strictEqual(newDefs[0].name, 'x');
 });
 
 test('兼容: 多 define 混合格式一致', () => {

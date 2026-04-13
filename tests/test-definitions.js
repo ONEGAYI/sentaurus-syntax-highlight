@@ -77,28 +77,22 @@ test('提取跨行 define', () => {
     assert.ok(defs[0].definitionText.includes('0.42'));
 });
 
-test('提取 let 绑定', () => {
+test('let 绑定不暴露到全局', () => {
     const text = '(let ((a 1) (b 2)) (+ a b))';
     const defs = extractSchemeDefinitions(text);
-    assert.strictEqual(defs.length, 2);
-    assert.strictEqual(defs[0].name, 'a');
-    assert.strictEqual(defs[1].name, 'b');
+    assert.strictEqual(defs.length, 0);
 });
 
-test('提取 let* 绑定', () => {
+test('let* 绑定不暴露到全局', () => {
     const text = '(let* ((x 1) (y (+ x 1))) y)';
     const defs = extractSchemeDefinitions(text);
-    assert.strictEqual(defs.length, 2);
-    assert.strictEqual(defs[0].name, 'x');
-    assert.strictEqual(defs[1].name, 'y');
+    assert.strictEqual(defs.length, 0);
 });
 
-test('提取 letrec 绑定', () => {
+test('letrec 绑定不暴露到全局', () => {
     const text = '(letrec ((even? (lambda (n) n)) (odd? (lambda (n) n))) (even? 10))';
     const defs = extractSchemeDefinitions(text);
-    assert.strictEqual(defs.length, 2);
-    assert.strictEqual(defs[0].name, 'even?');
-    assert.strictEqual(defs[1].name, 'odd?');
+    assert.strictEqual(defs.length, 0);
 });
 
 test('跳过注释中的 define', () => {
