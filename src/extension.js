@@ -7,6 +7,7 @@ const bracketDiagnostic = require('./lsp/providers/bracket-diagnostic');
 const scopeAnalyzer = require('./lsp/scope-analyzer');
 const schemeParser = require('./lsp/scheme-parser');
 const signatureProvider = require('./lsp/providers/signature-provider');
+const expressionConverter = require('./commands/expression-converter');
 
 /** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
 function decodeHtml(str) {
@@ -445,6 +446,127 @@ function activate(context) {
         }
     });
     context.subscriptions.push(snippetDisposable);
+
+    // ── 表达式转换命令 ──────────────────────────
+    const s2iHistory = [];
+    const i2sHistory = [];
+
+    function registerConvertCommand(commandId, convertFn, history, promptText, placeHolder) {
+        return vscode.commands.registerCommand(commandId, async () => {
+            const editor = vscode.window.activeTextEditor;
+            const selection = editor ? editor.selection : null;
+            const selectedText = selection && !selection.isEmpty ? editor.document.getText(selection) : '';
+
+            if (selectedText) {
+                const { result, error } = convertFn(selectedText);
+                if (error) {
+                    vscode.window.showErrorMessage(`转换失败: ${error}`);
+                    return;
+                }
+                editor.edit(builder => {
+                    builder.replace(selection, result);
+                });
+                return;
+            }
+
+            const input = await vscode.window.showInputBox({
+                prompt: promptText,
+                placeHolder: placeHolder,
+                history: history,
+            });
+            if (input === undefined) return;
+
+            const { result, error } = convertFn(input);
+            if (error) {
+                vscode.window.showErrorMessage(`转换失败: ${error}`);
+                return;
+            }
+
+            if (!history.includes(input)) {
+                history.unshift(input);
+                if (history.length > 20) history.pop();
+            }
+
+            if (editor) {
+                const cursor = editor.selection.active;
+                editor.edit(builder => {
+                    builder.insert(cursor, result);
+                }).then(success => {
+                    if (success) {
+                        const startPos = cursor;
+                        const endPos = cursor.translate(0, result.length);
+                        editor.selection = new vscode.Selection(startPos, endPos);
+                    }
+                });
+            } else {
+                vscode.env.clipboard.writeText(result);
+                vscode.window.showInformationMessage(`已复制到剪贴板: ${result}`);
+            }
+        });
+    }
+
+    context.subscriptions.push(
+        registerConvertCommand(
+            'sentaurus.scheme2infix',
+            expressionConverter.prefixToInfix,
+            s2iHistory,
+            '输入 Scheme 前缀表达式，转换为中缀格式',
+            '↑↓ 浏览历史 | 例: (+ (/ W 2) (/ L 2))'
+        ),
+        registerConvertCommand(
+            'sentaurus.infix2scheme',
+            expressionConverter.infixToPrefix,
+            i2sHistory,
+            '输入中缀表达式，转换为 Scheme 前缀格式',
+            '↑↓ 浏览历史 | 例: (W/2 + L/2)'
+        ),
+    );
+
+    // ── 表达式帮助命令 ──────────────────────────
+    const helpDisposable = vscode.commands.registerCommand('sentaurus.exprHelp', async () => {
+        const categories = expressionConverter.getSupportedOperators();
+        const items = [];
+        for (const cat of categories) {
+            items.push({ label: cat.category, kind: vscode.QuickPickItemKind.Separator });
+            for (const item of cat.items) {
+                items.push({
+                    label: `${item.scheme} ↔ ${item.infix}`,
+                    description: item.description,
+                    detail: `示例: ${item.example_scheme} ↔ ${item.example_infix}`,
+                });
+            }
+        }
+        items.push({ label: '格式说明', kind: vscode.QuickPickItemKind.Separator });
+        items.push({
+            label: '算术运算 → 中缀',
+            description: '符号前置 → 符号居中',
+            detail: '(+ a b) → a + b,  (* a b) → a * b,  (expt a b) → a ^ b',
+        });
+        items.push({
+            label: '数学函数 → 函数调用',
+            description: '括号前置 → 函数名(参数)',
+            detail: '(sin x) → sin(x),  (min a b c) → min(a, b, c)',
+        });
+
+        const selected = await vscode.window.showQuickPick(items, {
+            placeHolder: '支持的运算符和函数 — 选中可插入代码片段',
+            matchOnDescription: true,
+            matchOnDetail: true,
+        });
+        if (!selected || selected.kind) return;
+
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const detail = selected.detail || '';
+            const schemeExample = detail.match(/示例: ([^(↔]+)/);
+            if (schemeExample) {
+                editor.edit(builder => {
+                    builder.insert(editor.selection.active, schemeExample[1].trim());
+                });
+            }
+        }
+    });
+    context.subscriptions.push(helpDisposable);
 }
 
 function deactivate() {}
