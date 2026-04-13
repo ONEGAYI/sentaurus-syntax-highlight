@@ -4,6 +4,34 @@
 
 ---
 
+## [0.7.0] - 2026-04-13
+
+### 新功能
+
+- **Scheme AST 解析器**：新增完整的 S-expression 词法分析器和递归下降解析器（`src/lsp/scheme-parser.js`），支持注释、字符串、列表等语法结构的 AST 构建
+- **Scheme 定义提取器**：新增 `scheme-analyzer.js`，从 AST 中提取 `define`/`let`/`let*`/`letrec`/`lambda` 绑定，替代原有正则方案
+- **作用域分析器**：新增 `scope-analyzer.js`，构建函数参数和 `let` 绑定的作用域树，支持变量可见性判断
+- **感知作用域的补全**：SDE 自动补全现在区分函数参数、`let` 绑定和全局定义，按类别分配图标（Variable/Constant/Function/Module），仅在可见作用域内展示变量
+- **Signature Help**：新增签名帮助提供器（`src/lsp/providers/signature-provider.js`），输入 `(` 时自动弹出 SDE 函数签名，支持多参数文档悬停
+- **语义分派引擎**：新增 `semantic-dispatcher.js`，根据 SDE 函数调用上下文分派不同的签名模式（如 `define-refinement-function` 根据第二个参数切换 domain/refinement/profile 三种签名）
+- **12 个 SDE 函数 modeDispatch 元数据**：为 `define-gaussian-profile`、`define-erf-profile`、`define-analytical-profile`、`define-refinement-function`、`sdegeo:define-rectangle-set`、`sdegeo:define-polygon-set`、`sdegeo:define-contact-set`、`sdegeo:define-region-set`、`sdegeo:define-plane-set`、`sdegeo:define-line-set`、`sdegeo:define-point-set`、`sdegeo:sweep` 添加多模式签名元数据
+- **代码折叠**：注册 SDE 折叠范围提供器，支持 `define`、`let`、`lambda` 等 S-expression 的折叠
+- **括号诊断**：注册 SDE 括号匹配诊断提供器，检测不匹配的括号并标红
+
+### Bug 修复
+
+- **修正 let 绑定和函数参数在补全中不可见**：修复作用域分析器未正确将 `let` 绑定和函数参数纳入可见作用域的问题
+- **修正 modeDispatch argIndex 语义**：通过 AST 实际解析验证，修正 4 个函数的 `argIndex` 与实际 AST 子节点位置不匹配（`define-refinement-function` 2→1，`define-gaussian-profile`/`define-erf-profile` 3→4，`define-analytical-profile` 6→5）
+- **修复中文语言环境下 modeDispatch 丢失**：`modeDispatch` 元数据仅存在于英文版文档，VSCode 设置为中文时 `modeDispatchTable` 为空导致 Signature Help 失效。改为始终从英文文件构建 `modeDispatchTable`
+- **@Var@ 字符串内高亮**：修复 `@Var@` SWB 参数替换在字符串内未被正确高亮的问题，改用 `format.placeholder` scope
+
+### 其他改进
+
+- **definitions.js 轻量化**：将定义提取逻辑迁移至 AST 解析器后，`definitions.js` 从 80+ 行精简为调用入口
+- **let/let*/letrec 绑定不再泄漏到全局作用域**
+
+---
+
 ## [0.6.9] - 2026-04-13
 
 ### Bug 修复
@@ -223,6 +251,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[0.7.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.9...v0.7.0
 [0.6.9]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.8...v0.6.9
 [0.6.8]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.7...v0.6.8
 [0.6.7]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.6...v0.6.7
