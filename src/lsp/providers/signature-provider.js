@@ -76,10 +76,16 @@ function provideSignatureHelp(document, position, token, modeDispatchTable, func
     const text = document.getText();
     const { ast } = schemeParser.parse(text);
 
+    // 计算行首偏移表，用于将绝对偏移转换为行内列位置
+    const lineStarts = [0]; // lineStarts[0]=0 即第1行首偏移
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === '\n') lineStarts.push(i + 1);
+    }
+
     const line = position.line + 1;
     const column = position.character;
 
-    const result = dispatcher.dispatch(ast, line, column, modeDispatchTable);
+    const result = dispatcher.dispatch(ast, line, column, modeDispatchTable, lineStarts);
     if (!result) return null;
     if (result.activeParam < 0) return null;
 

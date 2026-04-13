@@ -4,6 +4,14 @@
 
 ---
 
+## [0.7.2] - 2026-04-13
+
+### Bug 修复
+
+- **修复长文件中 Signature Help 不触发的问题**：语义分派器将 AST 节点的文档绝对字符偏移与光标的行内列位置直接比较，导致超过数十行的文件中所有单行函数调用都无法被定位。现通过预计算行首偏移表，将绝对偏移正确转换为行内列位置后再比较
+
+---
+
 ## [0.7.1] - 2026-04-13
 
 ### Bug 修复
@@ -265,6 +273,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[0.7.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.7.0...v0.7.1
 [0.7.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.9...v0.7.0
 [0.6.9]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.6.8...v0.6.9
