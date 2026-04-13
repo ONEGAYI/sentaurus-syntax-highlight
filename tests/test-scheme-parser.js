@@ -2,6 +2,7 @@
 const assert = require('assert');
 const { tokenize, parse } = require('../src/lsp/scheme-parser');
 const { analyze } = require('../src/lsp/scheme-analyzer');
+const { extractSchemeDefinitions: oldExtract } = require('../src/definitions');
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -265,6 +266,71 @@ test('AST 多 define 混合', () => {
     assert.strictEqual(result.definitions[0].name, 'x');
     assert.strictEqual(result.definitions[1].name, 'y');
     assert.strictEqual(result.definitions[2].name, 'f');
+});
+
+console.log('\nanalyze — folding ranges:');
+
+test('单行表达式无折叠', () => {
+    const { ast } = parse('(define x 1)');
+    const result = analyze(ast);
+    assert.strictEqual(result.foldingRanges.length, 0);
+});
+
+test('跨行列表产生折叠范围', () => {
+    const { ast } = parse('(define TboxTest\n  0.42)');
+    const result = analyze(ast);
+    assert.strictEqual(result.foldingRanges.length, 1);
+    assert.strictEqual(result.foldingRanges[0].startLine, 0); // 0-based
+    assert.strictEqual(result.foldingRanges[0].endLine, 1);
+});
+
+test('嵌套折叠范围都保留', () => {
+    const code = '(define (f x)\n  (let ((a 1))\n    (+ a\n       x)))';
+    const { ast } = parse(code);
+    const result = analyze(ast);
+    assert.strictEqual(result.foldingRanges.length, 3); // define, let, +
+});
+
+console.log('\n兼容性 — 与 definitions.js 输出对比:');
+
+test('兼容: define 变量格式一致', () => {
+    const text = '(define TboxTest 0.42)';
+    const oldDefs = oldExtract(text);
+    const { ast } = parse(text);
+    const newDefs = analyze(ast).definitions;
+    assert.strictEqual(oldDefs.length, newDefs.length);
+    assert.strictEqual(oldDefs[0].name, newDefs[0].name);
+    assert.strictEqual(oldDefs[0].line, newDefs[0].line);
+});
+
+test('兼容: define 函数格式一致', () => {
+    const text = '(define (my-func x y) (+ x y))';
+    const oldDefs = oldExtract(text);
+    const { ast } = parse(text);
+    const newDefs = analyze(ast).definitions;
+    assert.strictEqual(oldDefs.length, newDefs.length);
+    assert.strictEqual(oldDefs[0].name, newDefs[0].name);
+});
+
+test('兼容: let 绑定格式一致', () => {
+    const text = '(let ((a 1) (b 2)) (+ a b))';
+    const oldDefs = oldExtract(text);
+    const { ast } = parse(text);
+    const newDefs = analyze(ast).definitions;
+    assert.strictEqual(oldDefs.length, newDefs.length);
+    assert.strictEqual(oldDefs[0].name, newDefs[0].name);
+    assert.strictEqual(oldDefs[1].name, newDefs[1].name);
+});
+
+test('兼容: 多 define 混合格式一致', () => {
+    const text = '(define x 1)\n(define y 2)\n(define (f z) (+ z 1))';
+    const oldDefs = oldExtract(text);
+    const { ast } = parse(text);
+    const newDefs = analyze(ast).definitions;
+    assert.strictEqual(oldDefs.length, newDefs.length);
+    for (let i = 0; i < oldDefs.length; i++) {
+        assert.strictEqual(oldDefs[i].name, newDefs[i].name);
+    }
 });
 
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
