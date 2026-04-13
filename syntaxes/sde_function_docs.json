@@ -4532,7 +4532,7 @@
     ],
     "example": "(sdedr:define-analytical-profile \"Prof.Mole\" \"xMoleFraction\" \"a=0.16/0.075\" \"0.1*a*x\" 0.1)",
     "modeDispatch": {
-      "argIndex": 6,
+      "argIndex": 5,
       "modes": {
         "Gauss": {
           "params": [
@@ -4825,7 +4825,7 @@
     ],
     "example": "(sdedr:define-erf-profile \"Impl.Erf\" \"BoronActiveConcentration\" \"SymPos\" 0 \"MaxVal\" 1e18 \"Junction\" 0.1 \"ValueAtDepth\" 1e16 \"Depth\" 0.05 \"Length\" 0.02 \"StdDev\" 0.01)",
     "modeDispatch": {
-      "argIndex": 3,
+      "argIndex": 4,
       "labelBased": true,
       "modes": {
         "MaxVal": {
@@ -4923,7 +4923,7 @@
     ],
     "example": "(sdedr:define-gaussian-profile \"Impl.Haloprof\" \"BoronActiveConcentration\" \"PeakPos\" 0 \"PeakVal\" 1.5e18 \"ValueAtDepth\" 1.5e17 \"Depth\" 0.07 \"Gauss\" \"Factor\" 1.0)",
     "modeDispatch": {
-      "argIndex": 3,
+      "argIndex": 4,
       "labelBased": true,
       "modes": {
         "PeakVal": {
@@ -5209,7 +5209,7 @@
     ],
     "example": "(sdedr:define-refinement-function \"ref1\" \"MaxLenInt\" \"Silicon\" \"Oxide\" 0.05 1.5)",
     "modeDispatch": {
-      "argIndex": 2,
+      "argIndex": 1,
       "modes": {
         "MaxLenInt": {
           "params": [
