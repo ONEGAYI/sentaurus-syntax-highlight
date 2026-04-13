@@ -1,6 +1,9 @@
 // src/definitions.js
 'use strict';
 
+const { parse } = require('./lsp/scheme-parser');
+const { analyze } = require('./lsp/scheme-analyzer');
+
 /**
  * 从 startPos 开始，找到匹配的闭括号位置。
  * 跳过字符串和注释内的括号。
@@ -88,69 +91,9 @@ function extractBindNames(bindList) {
 }
 
 function extractSchemeDefinitions(text) {
-    const defs = [];
-
-    // 1. (define name ...) 和 (define (func args) ...)
-    const defineRe = /\(define\s+/g;
-    let match;
-    while ((match = defineRe.exec(text)) !== null) {
-        const exprStart = match.index;
-
-        // 跳过注释或字符串内的 define
-        if (isInCommentOrString(text, exprStart)) continue;
-
-        const exprEnd = findBalancedExpression(text, exprStart);
-        if (exprEnd === -1) continue;
-
-        const afterDefine = text.slice(match.index + match[0].length);
-        let name;
-        if (afterDefine[0] === '(') {
-            // 函数定义: (define (name args ...) ...)
-            const funcMatch = afterDefine.match(/^\(([^()\s]+)/);
-            if (funcMatch) name = funcMatch[1];
-        } else {
-            // 变量定义: (define name ...)
-            const varMatch = afterDefine.match(/^([^()\s]+)/);
-            if (varMatch) name = varMatch[1];
-        }
-        if (!name) continue;
-
-        const line = text.substring(0, exprStart).split('\n').length;
-        const endLine = text.substring(0, exprEnd).split('\n').length;
-        const definitionText = text.substring(exprStart, exprEnd + 1);
-        defs.push({ name, line, endLine, definitionText });
-    }
-
-    // 2. (let/let*/letrec ((var1 val1) (var2 val2) ...) ...)
-    //    注意：let* 必须在 let 之前，否则 let 会先匹配
-    const letRe = /\((let\*|letrec|let)\s+\(/g;
-    while ((match = letRe.exec(text)) !== null) {
-        const exprStart = match.index;
-
-        // 跳过注释或字符串内的 let
-        if (isInCommentOrString(text, exprStart)) continue;
-
-        const exprEnd = findBalancedExpression(text, exprStart);
-        if (exprEnd === -1) continue;
-
-        // 绑定列表从匹配末尾的 '(' 开始
-        const bindListOpen = match.index + match[0].length - 1;
-        const bindListClose = findBalancedExpression(text, bindListOpen);
-        if (bindListClose === -1) continue;
-
-        // 提取顶层绑定对的变量名
-        const bindList = text.substring(bindListOpen + 1, bindListClose);
-        const names = extractBindNames(bindList);
-
-        const line = text.substring(0, exprStart).split('\n').length;
-        const endLine = text.substring(0, exprEnd).split('\n').length;
-        const definitionText = text.substring(exprStart, exprEnd + 1);
-        for (const name of names) {
-            defs.push({ name, line, endLine, definitionText });
-        }
-    }
-
-    return defs;
+    const { ast } = parse(text);
+    const { definitions } = analyze(ast);
+    return definitions;
 }
 
 /**
