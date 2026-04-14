@@ -74,17 +74,28 @@ function findEnclosingCall(ast, line, column, lineStarts) {
  */
 function resolveMode(callNode, modeDispatch) {
     const { argIndex, modes } = modeDispatch;
-    const argNode = callNode.children[argIndex + 1];
-    if (!argNode) return null;
 
-    let modeValue = null;
-    if (argNode.type === 'String') {
-        modeValue = argNode.value;
-    } else if (argNode.type === 'Identifier') {
-        modeValue = argNode.value;
+    const getModeFromChild = (childIdx) => {
+        const argNode = callNode.children[childIdx];
+        if (!argNode) return null;
+        let modeValue = null;
+        if (argNode.type === 'String') modeValue = argNode.value;
+        else if (argNode.type === 'Identifier') modeValue = argNode.value;
+        return (modeValue && modes[modeValue]) ? modeValue : null;
+    };
+
+    // Try primary argIndex first
+    const primary = getModeFromChild(argIndex + 1);
+    if (primary) return primary;
+
+    // Fallback: scan all argument children for a valid mode name.
+    // Handles cases where the mode is not at the expected position
+    // (e.g., MaxTransDiff/MaxGradient have dopant-name before the mode).
+    for (let i = 1; i < callNode.children.length; i++) {
+        if (i === argIndex + 1) continue;
+        const result = getModeFromChild(i);
+        if (result) return result;
     }
-
-    if (modeValue && modes[modeValue]) return modeValue;
     return null;
 }
 
