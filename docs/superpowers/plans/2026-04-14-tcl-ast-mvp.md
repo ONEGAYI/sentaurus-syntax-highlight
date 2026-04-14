@@ -412,7 +412,7 @@ git commit -m "feat: 添加 Tcl 代码折叠 Provider（4 语言共用）"
 **Files:**
 - Create: `src/lsp/providers/tcl-bracket-diagnostic.js`
 
-- [ ] **Step 1: 实现 tcl-bracket-diagnostic.js**
+- [x] **Step 1: 实现 tcl-bracket-diagnostic.js**
 
 ```javascript
 // src/lsp/providers/tcl-bracket-diagnostic.js
@@ -494,7 +494,7 @@ function updateDiagnostics(doc) {
 module.exports = { activate };
 ```
 
-- [ ] **Step 2: 提交**
+- [x] **Step 2: 提交**
 
 ```bash
 git add src/lsp/providers/tcl-bracket-diagnostic.js
@@ -509,7 +509,7 @@ git commit -m "feat: 添加 Tcl 括号诊断 Provider（4 语言共用）"
 - Modify: `src/extension.js:1-11` (require 导入)
 - Modify: `src/extension.js:337-355` (provider 注册)
 
-- [ ] **Step 1: 在 extension.js 头部添加 require**
+- [x] **Step 1: 在 extension.js 头部添加 require**
 
 在现有的 `const tclParserWasm = require('./lsp/tcl-parser-wasm');` 行之后添加两行：
 
@@ -518,7 +518,7 @@ const tclFoldingProvider = require('./lsp/providers/tcl-folding-provider');
 const tclBracketDiagnostic = require('./lsp/providers/tcl-bracket-diagnostic');
 ```
 
-- [ ] **Step 2: 在 provider 注册区域添加 Tcl provider 注册**
+- [x] **Step 2: 在 provider 注册区域添加 Tcl provider 注册**
 
 在 `bracketDiagnostic.activate(context);` 行（第 340 行）之后、`Signature Help` 注释之前添加：
 
@@ -543,7 +543,7 @@ const tclBracketDiagnostic = require('./lsp/providers/tcl-bracket-diagnostic');
 const astUtils = require('./lsp/tcl-ast-utils');
 ```
 
-- [ ] **Step 3: 验证扩展可加载**
+- [x] **Step 3: 验证扩展可加载**
 
 在 VSCode Extension Development Host 中按 F5 启动，确认：
 1. 扩展无报错加载
@@ -551,7 +551,7 @@ const astUtils = require('./lsp/tcl-ast-utils');
 3. Output 面板显示 "Tcl WASM 解析器初始化成功!"
 4. 尝试折叠 `{ }` 块
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```bash
 git add src/extension.js
@@ -565,7 +565,7 @@ git commit -m "feat: 集成 Tcl AST Provider 到扩展 — 代码折叠和括号
 **Files:**
 - 无新文件
 
-- [ ] **Step 1: 准备测试文件**
+- [x] **Step 1: 准备测试文件**
 
 使用项目中已有的 `testbench_des.cmd`（或创建测试文件），内容包含：
 
@@ -602,25 +602,25 @@ Solve {
 }
 ```
 
-- [ ] **Step 2: 测试代码折叠**
+- [x] **Step 2: 测试代码折叠**
 
 1. 在 Extension Development Host 中打开上述文件
 2. 确认语言 ID 为 `sdevice`
 3. 检查 `File {}`、`Device {}`、`Electrode {}`、`Physics {}` 等块的行号旁是否出现折叠箭头
 4. 点击折叠箭头，确认折叠行为正常
 
-- [ ] **Step 3: 测试括号诊断**
+- [x] **Step 3: 测试括号诊断**
 
 1. 删除一个 `}` 并等待约 500ms
 2. 确认在 Problem 面板中出现 `tcl-brackets` 来源的警告
 3. 恢复 `}`，确认警告消失
 
-- [ ] **Step 4: 测试多语言支持**
+- [x] **Step 4: 测试多语言支持**
 
 1. 对 `*_fps.cmd`（sprocess）文件重复步骤 2-3
 2. 确认功能同样生效
 
-- [ ] **Step 5: 最终提交（如有修复）**
+- [x] **Step 5: 最终提交（如有修复）**
 
 ```bash
 git add -A
