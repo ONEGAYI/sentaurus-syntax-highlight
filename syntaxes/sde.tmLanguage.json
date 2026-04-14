@@ -23,6 +23,26 @@
       "name": "entity.name.function.sde"
     },
     {
+      "name": "meta.preprocessor.sde",
+      "begin": "^\\s*(#\\s*(?:if|ifdef|ifndef|elif|else|endif|define|undef|include|error|set))\\b",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.preprocessor.sde"
+        }
+      },
+      "end": "$",
+      "patterns": [
+        {
+          "match": "\\b(defined|TRUE|FALSE)\\b",
+          "name": "keyword.control.preprocessor.sde"
+        },
+        {
+          "match": "\"[^\"]*\"",
+          "name": "string.quoted.double"
+        }
+      ]
+    },
+    {
       "name": "comment.line.hash",
       "match": "^\\s*#.*$"
     },

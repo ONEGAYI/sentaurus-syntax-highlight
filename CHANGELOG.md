@@ -4,6 +4,18 @@
 
 ---
 
+## [1.0.2] - 2026-04-14
+
+### Bug 修复
+
+- **修复 SDE 预处理指令被错误识别为注释**：在注释模式之前插入预处理指令模式，使 `#if`、`#ifdef`、`#define`、`#set` 等 Sentaurus 预处理指令正确高亮为 `keyword.control.preprocessor`，`##if`、`# comment` 等仍为注释
+
+### 文档
+
+- README 新增"更改 Sentaurus 默认编辑器为 VS Code"的使用技巧
+
+---
+
 ## [1.0.1] - 2026-04-14
 
 ### Bug 修复
@@ -336,6 +348,8 @@
 [0.5.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.3.2...v0.4.0
+[1.0.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.0...v1.0.1
 [0.3.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.2.1...v0.3.0
