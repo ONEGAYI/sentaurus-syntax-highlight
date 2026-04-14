@@ -5,7 +5,7 @@ const tclParserWasm = require('./tcl-parser-wasm');
 const symbolConfigs = require('./tcl-symbol-configs');
 
 /** 支持的 Tcl 语言 ID */
-const TCL_LANGS = new Set(['sdevice', 'sprocess', 'emw', 'inspect']);
+const TCL_LANGS = new Set(['sdevice', 'sprocess', 'emw', 'inspect', 'svisual']);
 
 /**
  * 检查语言 ID 是否为 Tcl 方言。
