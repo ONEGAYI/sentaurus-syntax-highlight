@@ -242,11 +242,9 @@ function activate(context) {
     // ── Tcl WASM 解析器初始化 ─────────────────────
     const tclWasmChannel = vscode.window.createOutputChannel('Sentaurus Tcl WASM');
     tclParserWasm.init(context, tclWasmChannel).then(() => {
-        tclWasmChannel.show(true);  // 首次显示在面板中，不抢占焦点
-        vscode.window.showInformationMessage('Sentaurus: Tcl WASM 解析器初始化成功! 查看 Output 面板了解详情。');
+        vscode.window.showInformationMessage('Sentaurus: Tcl WASM 解析器初始化成功!');
     }).catch(err => {
         tclWasmChannel.appendLine(`[ERROR] Tcl WASM 初始化失败: ${err.message}`);
-        tclWasmChannel.show(true);
         vscode.window.showWarningMessage(`Sentaurus: Tcl WASM 初始化失败 - ${err.message}`);
     });
 
