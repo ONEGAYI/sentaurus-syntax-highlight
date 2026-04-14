@@ -24,6 +24,7 @@ DOC_PAIRS = {
     "sde":     ("syntaxes/sde_function_docs.json",          "syntaxes/sde_function_docs.zh-CN.json"),
     "sdevice": ("syntaxes/sdevice_command_docs.json",       "syntaxes/sdevice_command_docs.zh-CN.json"),
     "scheme":  ("syntaxes/scheme_function_docs.json",        "syntaxes/scheme_function_docs.zh-CN.json"),
+    "svisual": ("syntaxes/svisual_command_docs.json",        "syntaxes/svisual_command_docs.zh-CN.json"),
 }
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
