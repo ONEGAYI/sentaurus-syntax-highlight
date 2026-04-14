@@ -8,6 +8,10 @@ const scopeAnalyzer = require('./lsp/scope-analyzer');
 const schemeParser = require('./lsp/scheme-parser');
 const signatureProvider = require('./lsp/providers/signature-provider');
 const expressionConverter = require('./commands/expression-converter');
+const tclParserWasm = require('./lsp/tcl-parser-wasm');
+const astUtils = require('./lsp/tcl-ast-utils');
+const tclFoldingProvider = require('./lsp/providers/tcl-folding-provider');
+const tclBracketDiagnostic = require('./lsp/providers/tcl-bracket-diagnostic');
 
 /** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
 function decodeHtml(str) {
@@ -234,6 +238,65 @@ function activate(context) {
         return;
     }
 
+    // ── Tcl WASM 解析器初始化 ─────────────────────
+    const tclWasmChannel = vscode.window.createOutputChannel('Sentaurus Tcl WASM');
+    tclParserWasm.init(context, tclWasmChannel).then(() => {
+        tclWasmChannel.show(true);  // 首次显示在面板中，不抢占焦点
+        vscode.window.showInformationMessage('Sentaurus: Tcl WASM 解析器初始化成功! 查看 Output 面板了解详情。');
+    }).catch(err => {
+        tclWasmChannel.appendLine(`[ERROR] Tcl WASM 初始化失败: ${err.message}`);
+        tclWasmChannel.show(true);
+        vscode.window.showWarningMessage(`Sentaurus: Tcl WASM 初始化失败 - ${err.message}`);
+    });
+
+    // 注册测试命令：解析当前文档
+    context.subscriptions.push(
+        vscode.commands.registerCommand('sentaurus.testTclWasm', async () => {
+            const editor = vscode.window.activeTextEditor;
+            if (!editor) {
+                vscode.window.showWarningMessage('请先打开一个文件');
+                return;
+            }
+
+            const langId = editor.document.languageId;
+            const TCL_LANGS = ['sdevice', 'sprocess', 'emw', 'inspect'];
+
+            tclWasmChannel.appendLine(`\n${'='.repeat(60)}`);
+            tclWasmChannel.appendLine(`[testTclWasm] 解析文档: ${editor.document.fileName}`);
+            tclWasmChannel.appendLine(`  语言: ${langId}`);
+            tclWasmChannel.appendLine(`  是否为 Tcl 语言: ${TCL_LANGS.includes(langId)}`);
+            tclWasmChannel.appendLine(`  解析器状态: ${tclParserWasm.isReady() ? '就绪' : '未初始化'}`);
+
+            if (!tclParserWasm.isReady()) {
+                vscode.window.showErrorMessage('Tcl WASM 解析器未初始化，请检查 Output 面板的错误信息');
+                return;
+            }
+
+            const text = editor.document.getText();
+            const result = tclParserWasm.parseWithDebug(text);
+
+            if (result) {
+                const statEntries = Object.entries(result.stats)
+                    .sort((a, b) => b[1] - a[1])
+                    .map(([k, v]) => `${k}(${v})`);
+                tclWasmChannel.appendLine(`  解析结果: ${result.rootType}, ${result.childCount} 子节点, 错误: ${result.hasError}`);
+                tclWasmChannel.appendLine(`  节点统计: ${statEntries.join(', ')}`);
+
+                if (result.hasError) {
+                    vscode.window.showWarningMessage('解析完成但有错误 — 查看详情请打开 Output 面板');
+                } else {
+                    vscode.window.showInformationMessage(`解析成功! 根节点: ${result.rootType}, ${result.childCount} 子节点`);
+                }
+                // 释放 tree 内存
+                result.tree.delete();
+            } else {
+                vscode.window.showErrorMessage('解析失败 — 查看 Output 面板');
+            }
+
+            tclWasmChannel.show(true);
+        })
+    );
+
     // Detect locale for i18n
     const useZh = vscode.env.language.startsWith('zh');
     if (useZh) {
@@ -278,6 +341,20 @@ function activate(context) {
 
     // Bracket diagnostic (SDE only)
     bracketDiagnostic.activate(context);
+
+    // ── Tcl Providers（4 语言共用）──────────────────
+    // 代码折叠
+    for (const langId of astUtils.TCL_LANGS) {
+        context.subscriptions.push(
+            vscode.languages.registerFoldingRangeProvider(
+                { language: langId },
+                tclFoldingProvider
+            )
+        );
+    }
+
+    // 括号诊断
+    tclBracketDiagnostic.activate(context);
 
     // Signature Help (SDE only)
     const sigHelpDisposable = vscode.languages.registerSignatureHelpProvider(
