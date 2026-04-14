@@ -3,6 +3,7 @@
 
 const { parse } = require('./lsp/scheme-parser');
 const { analyze } = require('./lsp/scheme-analyzer');
+const tclAstUtils = require('./lsp/tcl-ast-utils');
 
 /**
  * 从 startPos 开始，找到匹配的闭括号位置。
@@ -97,6 +98,7 @@ function extractSchemeDefinitions(text) {
 }
 
 /**
+ * @deprecated 使用 extractTclDefinitionsAst 替代。保留用于参考和测试。
  * 从 Tcl 文本中提取用户定义的变量和过程。
  * 覆盖：set varName value, proc name {args} {body}
  * @param {string} text 完整文档文本
@@ -150,6 +152,22 @@ function extractTclDefinitions(text) {
     return defs;
 }
 
+/**
+ * 从 Tcl 文本中通过 AST 提取用户定义的变量和过程。
+ * WASM 解析器未就绪时返回空数组。
+ * @param {string} text 完整文档文本
+ * @returns {{ name: string, line: number, endLine: number, definitionText: string, kind: string }[]}
+ */
+function extractTclDefinitionsAst(text) {
+    const tree = tclAstUtils.parseSafe(text);
+    if (!tree) return [];
+    try {
+        return tclAstUtils.getVariables(tree.rootNode);
+    } finally {
+        tree.delete();
+    }
+}
+
 /** Scheme 语言 ID 集合 */
 const SCHEME_LANGS = new Set(['sde']);
 
@@ -164,7 +182,7 @@ const TCL_LANGS = new Set(['sdevice', 'sprocess', 'emw', 'inspect']);
  */
 function extractDefinitions(text, langId) {
     if (SCHEME_LANGS.has(langId)) return extractSchemeDefinitions(text);
-    if (TCL_LANGS.has(langId)) return extractTclDefinitions(text);
+    if (TCL_LANGS.has(langId)) return extractTclDefinitionsAst(text);
     return [];
 }
 
@@ -199,6 +217,7 @@ module.exports = {
     findBalancedExpression,
     extractSchemeDefinitions,
     extractTclDefinitions,
+    extractTclDefinitionsAst,
     extractDefinitions,
     getDefinitions,
     clearDefinitionCache,
