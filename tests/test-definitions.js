@@ -1,6 +1,6 @@
 // tests/test-definitions.js
 const assert = require('assert');
-const { findBalancedExpression, extractSchemeDefinitions, extractTclDefinitions, extractTclDefinitionsAst, extractDefinitions, getDefinitions, clearDefinitionCache } = require('../src/definitions');
+const { findBalancedExpression, extractSchemeDefinitions, extractTclDefinitionsAst, extractDefinitions, getDefinitions, clearDefinitionCache } = require('../src/definitions');
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -143,63 +143,6 @@ test('跳过字符串中的 define', () => {
     const defs = extractSchemeDefinitions(text);
     assert.strictEqual(defs.length, 1);
     assert.strictEqual(defs[0].name, 'x');
-});
-
-console.log('\nextractTclDefinitions:');
-
-test('提取 set 变量', () => {
-    const defs = extractTclDefinitions('set TboxTest 0.42');
-    assert.strictEqual(defs.length, 1);
-    assert.strictEqual(defs[0].name, 'TboxTest');
-    assert.strictEqual(defs[0].line, 1);
-});
-
-test('提取 set 带花括号值', () => {
-    const defs = extractTclDefinitions('set name "hello"');
-    assert.strictEqual(defs.length, 1);
-    assert.strictEqual(defs[0].name, 'name');
-});
-
-test('跳过 set env()', () => {
-    const defs = extractTclDefinitions('set env(PATH) /usr/bin');
-    assert.strictEqual(defs.length, 0);
-});
-
-test('提取 proc', () => {
-    const defs = extractTclDefinitions('proc myFunc { x y } { return [expr {$x + $y}] }');
-    assert.strictEqual(defs.length, 1);
-    assert.strictEqual(defs[0].name, 'myFunc');
-});
-
-test('提取跨行 proc', () => {
-    const text = 'proc calc { x y } {\n  set z [expr {$x + $y}]\n  return $z\n}';
-    const defs = extractTclDefinitions(text);
-    assert.strictEqual(defs.length, 2); // proc calc + set z
-    assert.strictEqual(defs[0].name, 'calc');
-    assert.strictEqual(defs[0].endLine, 4);
-    assert.strictEqual(defs[1].name, 'z');
-});
-
-test('跳过注释行', () => {
-    const text = '# set commented 1\nset real 2';
-    const defs = extractTclDefinitions(text);
-    assert.strictEqual(defs.length, 1);
-    assert.strictEqual(defs[0].name, 'real');
-});
-
-test('多变量混合', () => {
-    const text = 'set a 1\nset b 2\nproc f { } { return $a }';
-    const defs = extractTclDefinitions(text);
-    assert.strictEqual(defs.length, 3);
-    assert.strictEqual(defs[0].name, 'a');
-    assert.strictEqual(defs[1].name, 'b');
-    assert.strictEqual(defs[2].name, 'f');
-});
-
-test('缩进的 set（循环体内）', () => {
-    const defs = extractTclDefinitions('    set indented 42');
-    assert.strictEqual(defs.length, 1);
-    assert.strictEqual(defs[0].name, 'indented');
 });
 
 console.log('\nextractTclDefinitionsAst:');

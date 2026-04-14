@@ -240,4 +240,4 @@ function parse(text) {
     return { ast, errors };
 }
 
-module.exports = { tokenize, parse, TokenType };
+module.exports = { parse };
