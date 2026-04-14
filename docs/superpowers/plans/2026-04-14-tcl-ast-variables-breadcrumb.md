@@ -38,7 +38,7 @@ tree-sitter-tcl 对 Tcl 命令有专门节点类型：
 - `for` → 节点类型 `command`（非专用），第一个 `simple_word` 是 "for"
 - `while` → 节点类型 `while`，无变量绑定
 
-- [ ] **Step 1: 编写 getVariables 的测试文件**
+- [x] **Step 1: 编写 getVariables 的测试文件**
 
 ```js
 // tests/test-tcl-ast-variables.js
@@ -248,12 +248,12 @@ console.log(`${'='.repeat(40)}\n`);
 process.exit(failed > 0 ? 1 : 0);
 ```
 
-- [ ] **Step 2: 运行测试验证失败**
+- [x] **Step 2: 运行测试验证失败**
 
 Run: `node tests/test-tcl-ast-variables.js`
 Expected: FAIL — `getVariables` 未定义
 
-- [ ] **Step 3: 实现 getVariables()**
+- [x] **Step 3: 实现 getVariables()**
 
 在 `src/lsp/tcl-ast-utils.js` 的 `module.exports` 之前添加：
 
@@ -494,12 +494,12 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 4: 运行测试验证通过**
+- [x] **Step 4: 运行测试验证通过**
 
 Run: `node tests/test-tcl-ast-variables.js`
 Expected: 全部通过
 
-- [ ] **Step 5: 提交**
+- [x] **Step 5: 提交**
 
 ```bash
 git add src/lsp/tcl-ast-utils.js tests/test-tcl-ast-variables.js
@@ -515,7 +515,7 @@ git commit -m "feat(tcl-ast): 新增 AST 级变量提取函数 getVariables()"
 
 从 `all_keywords.json` 提取各工具的 KEYWORD1 作为 section 关键词。
 
-- [ ] **Step 1: 创建配置文件**
+- [x] **Step 1: 创建配置文件**
 
 ```js
 // src/lsp/tcl-symbol-configs.js
@@ -590,7 +590,7 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 2: 提交**
+- [x] **Step 2: 提交**
 
 ```bash
 git add src/lsp/tcl-symbol-configs.js
@@ -612,7 +612,7 @@ DocumentSymbol 的 kind 映射：
 - proc 参数 → `SymbolKind.Field`（📌）
 - foreach/for/while 控制结构块 → `SymbolKind.Namespace`（📁）
 
-- [ ] **Step 1: 编写 DocumentSymbol 测试**
+- [x] **Step 1: 编写 DocumentSymbol 测试**
 
 ```js
 // tests/test-tcl-document-symbol.js
@@ -777,12 +777,12 @@ console.log(`${'='.repeat(40)}\n`);
 process.exit(failed > 0 ? 1 : 0);
 ```
 
-- [ ] **Step 2: 运行测试验证失败**
+- [x] **Step 2: 运行测试验证失败**
 
 Run: `node tests/test-tcl-document-symbol.js`
 Expected: FAIL — `getDocumentSymbols` 未定义
 
-- [ ] **Step 3: 实现 getDocumentSymbols()**
+- [x] **Step 3: 实现 getDocumentSymbols()**
 
 在 `src/lsp/tcl-ast-utils.js` 中添加（在 `getVariables` 之后，`module.exports` 之前）：
 
@@ -1026,12 +1026,12 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 4: 运行测试验证通过**
+- [x] **Step 4: 运行测试验证通过**
 
 Run: `node tests/test-tcl-document-symbol.js`
 Expected: 全部通过
 
-- [ ] **Step 5: 创建 VSCode Provider 封装**
+- [x] **Step 5: 创建 VSCode Provider 封装**
 
 ```js
 // src/lsp/providers/tcl-document-symbol-provider.js
@@ -1082,7 +1082,7 @@ function toVscodeSymbol(raw, document) {
 module.exports = tclDocumentSymbolProvider;
 ```
 
-- [ ] **Step 6: 提交**
+- [x] **Step 6: 提交**
 
 ```bash
 git add src/lsp/tcl-ast-utils.js src/lsp/providers/tcl-document-symbol-provider.js tests/test-tcl-document-symbol.js
@@ -1097,7 +1097,7 @@ git commit -m "feat(tcl): 实现 DocumentSymbolProvider 和面包屑导航"
 - Modify: `src/definitions.js`
 - Modify: `tests/test-definitions.js`
 
-- [ ] **Step 1: 修改 definitions.js**
+- [x] **Step 1: 修改 definitions.js**
 
 将 `extractTclDefinitions` 标记为 deprecated，新增 `extractTclDefinitionsAst`，修改 `getDefinitions` 的 Tcl 路径。
 
@@ -1171,7 +1171,7 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 2: 更新 test-definitions.js**
+- [x] **Step 2: 更新 test-definitions.js**
 
 修改 `extractTclDefinitions` 测试组的预期——Tcl 变量提取现在走 AST 路径，但 `extractTclDefinitions` 函数本身仍保留用于测试。
 
@@ -1216,12 +1216,12 @@ test('Tcl 缓存版本变化重新扫描', () => {
 });
 ```
 
-- [ ] **Step 3: 运行测试验证通过**
+- [x] **Step 3: 运行测试验证通过**
 
 Run: `node tests/test-definitions.js`
 Expected: 全部通过
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```bash
 git add src/definitions.js tests/test-definitions.js
@@ -1235,7 +1235,7 @@ git commit -m "refactor: Tcl 变量提取从正则切换到 AST"
 **Files:**
 - Modify: `src/extension.js`
 
-- [ ] **Step 1: 添加 require**
+- [x] **Step 1: 添加 require**
 
 在 `src/extension.js` 顶部的 require 区域添加（约第 14 行，`tclBracketDiagnostic` 之后）：
 
@@ -1243,7 +1243,7 @@ git commit -m "refactor: Tcl 变量提取从正则切换到 AST"
 const tclDocumentSymbolProvider = require('./lsp/providers/tcl-document-symbol-provider');
 ```
 
-- [ ] **Step 2: 注册 Provider**
+- [x] **Step 2: 注册 Provider**
 
 在 `src/extension.js` 的"括号诊断"注册（约第 357 行 `tclBracketDiagnostic.activate(context);`）之后添加：
 
@@ -1259,7 +1259,7 @@ const tclDocumentSymbolProvider = require('./lsp/providers/tcl-document-symbol-p
     }
 ```
 
-- [ ] **Step 3: 运行所有测试**
+- [x] **Step 3: 运行所有测试**
 
 Run:
 ```bash
@@ -1270,7 +1270,7 @@ node tests/test-definitions.js
 ```
 Expected: 全部通过
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```bash
 git add src/extension.js
