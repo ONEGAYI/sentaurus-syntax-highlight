@@ -4,6 +4,25 @@
 
 ---
 
+## [1.0.0] - 2026-04-14
+
+### 新功能
+
+- **新增第 6 种语言：Sentaurus Visual (svisual)**：完整支持语法高亮、自动补全、悬停提示和跳转定义，文件模式 `*_vis.cmd`，继承 Tcl 共享框架的全部语义功能
+- **Tcl AST 共享框架（web-tree-sitter WASM）**：引入 tree-sitter-tcl WASM 解析器，为 sdevice/sprocess/emw/inspect/svisual 五种 Tcl 方言提供统一的 AST 基础设施
+  - 代码折叠：基于 `braced_word` 节点的命令块折叠
+  - 括号诊断：文本级花括号平衡检查并标红
+  - 面包屑导航：注册 `DocumentSymbolProvider`，根据 section 关键词和命令块自动生成面包屑路径
+- **svisual 函数文档（257 条，中英双语）**：覆盖 138 个 KEYWORD1 顶层命令和 119 个 KEYWORD4 命名空间函数，根据 VSCode 界面语言自动切换
+- **svisual section 关键词配置**：为 43 个块结构命令提供符号层级信息，支持面包屑导航
+- **Tcl 变量提取升级为 AST**：`set`/`proc` 变量提取从正则方案切换到 tree-sitter AST 解析，提升准确性
+
+### 其他改进
+
+- **Hover 和补全预览语法高亮**：将 `formatDoc` 中硬编码的 `'scheme'`/`'tcl'` 改为使用实际语言 ID（sde/sdevice 等），使 VSCode 能匹配本扩展的 TextMate 语法，为签名、示例和用户变量定义提供正确的语法高亮
+
+---
+
 ## [0.8.0] - 2026-04-14
 
 ### 新功能
@@ -288,6 +307,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.0.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.8.0...v1.0.0
 [0.8.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.7.2...v0.8.0
 [0.7.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.7.1...v0.7.2
 [0.7.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.7.0...v0.7.1
