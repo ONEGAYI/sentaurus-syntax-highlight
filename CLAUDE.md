@@ -4,7 +4,7 @@
 
 ## 项目概述
 
-为 Synopsys Sentaurus TCAD 工具链提供语法高亮与自动补全的 VSCode 扩展。由 **TextMate 语法**（声明式 JSON）负责高亮，**纯 JavaScript 模块**（`src/extension.js`）负责关键词自动补全——无 TypeScript、无构建步骤、无原生依赖。
+为 Synopsys Sentaurus TCAD 工具链提供语法高亮与自动补全的 VSCode 扩展。由 **TextMate 语法**（声明式 JSON）负责高亮，**纯 JavaScript 模块**（`src/extension.js`）负责关键词自动补全，**WASM 解析器**（`web-tree-sitter`）提供 AST 级语义功能——无 TypeScript、无构建步骤、无原生二进制依赖（WASM 为纯字节码，跨平台兼容）。
 
 仓库：https://github.com/ONEGAYI/sentaurus-syntax-highlight
 参考：https://github.com/jackyu-b/sentaurus-syntax-highlight
@@ -45,7 +45,7 @@
 
 纯 CommonJS 模块，在任一语言激活时加载。启动时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。关键词按类别分配图标（关键字/函数/常量/类/结构体）并按类别优先级排序。
 
-零原生依赖——运行在 VSCode 自带的 Node.js 上，兼容 GLIBC 2.17（CentOS 7, VSCode 1.85.2-）。
+运行时依赖 `web-tree-sitter`（WASM 字节码，跨平台）。兼容 GLIBC 2.17（CentOS 7, VSCode 1.85.2-）。
 
 ### 用户变量支持（src/definitions.js）
 
@@ -56,7 +56,23 @@
 - **跨行处理**：`findBalancedExpression` 括号匹配算法，跳过字符串和注释内的括号
 - **测试**：`tests/test-definitions.js`，纯 Node.js `assert`，零依赖
 
-### 关键词提取流程
+### Tcl AST 共享框架（4 语言共用）
+
+利用 `web-tree-sitter` 加载 `tree-sitter-tcl` 的 WASM 语法，为 sdevice、sprocess、emw、inspect 四种 Tcl 方言提供统一的 AST 语义功能。SDE (Scheme) 使用独立的手写解析器，不共享此框架。
+
+```
+src/lsp/
+├── tcl-parser-wasm.js                  ← WASM 解析器接口（单例、初始化、调试工具）
+├── tcl-ast-utils.js                    ← AST 遍历/查询/折叠范围提取/括号诊断
+├── providers/
+│   ├── tcl-folding-provider.js         ← 代码折叠（基于 braced_word 节点）
+│   └── tcl-bracket-diagnostic.js       ← 括号诊断（文本级花括号平衡检查）
+```
+
+**注册方式**：4 个语言 ID 统一注册（`for (const langId of TCL_LANGS)`）。
+**内存管理**：所有 `tree` 使用后必须调用 `tree.delete()` 释放 WASM 内存，Provider 层通过 `try/finally` 保证。
+**括号诊断策略**：使用文本级 `{}` 平衡计数而非 AST ERROR 节点，避免 sdevice 特有语法（坐标元组等）被误报。
+- **测试**：`tests/test-tcl-ast-utils.js`，14 个测试，使用 mock 节点（不依赖 WASM 运行时）
 
 1. `scripts/extract_keywords.py` 读取包含 `<KEYWORD1>`..`<KEYWORD4>`、`<LITERAL1>`..`<LITERAL3>`、`<FUNCTION>` 标签的 XML mode 文件
 2. 提取关键词到 `syntaxes/all_keywords.json`（参考/中间文件，同时供自动补全使用）
@@ -130,6 +146,7 @@
 - `*.Identifier` 文件已被 gitignore
 - TextMate 语法模式遵循首匹配胜出规则——兜底模式必须放在最后
 - 使用中文编写文档、提交和发布。
+- 必须考虑插件兼容性: CentOS 7, Vscode v1.85.2, GLIBC 2.17
 
 ## 发布流程
 
@@ -148,28 +165,3 @@
 - **描述风格统一**：CHANGELOG 和 Release notes 的措辞、分类、详略程度需与历史版本保持一致
 - **双平台同步**：每次发布必须同时更新 GitHub Release 和 VS Code Marketplace
 - **完整回顾**：必须从上次 release tag 开始回顾所有提交，确保无遗漏
-
-## 语法简短说明
-
-### SDE scheme
-
-**坐标定义**
-```scheme
-(position x y z)
-```
-
-**向量定义**
-```scheme
-(gvector vx vy vz)
-```
-
-**材料名称**
-`"Silicon"`, `"Oxide"`, `"Nitride"`
-
-> 需要用双引号包裹
-
-**字符串定义**
-```scheme
-; 使用双引号包裹
-"Reg.Silicon"
-```

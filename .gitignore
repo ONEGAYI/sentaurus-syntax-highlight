@@ -4,6 +4,9 @@
 # vscode extension build files
 *.vsix
 
+# npm dependencies
+node_modules/
+
 # claude code local
 .claude/
 
@@ -15,6 +18,7 @@ display_test/
 *.pyd
 build/
 *_b*_enhanced.json
+temp/
 
 references/*
 !references/
