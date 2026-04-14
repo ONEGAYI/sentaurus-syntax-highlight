@@ -4905,15 +4905,15 @@
       {
         "name": "function-name",
         "type": "string",
-        "desc": "用于细化的函数名称"
+        "desc": "MaxLenInt/MaxInterval：函数类型名称。MaxTransDiff/MaxGradient：掺杂变量名（如 \"DopingConcentration\"）"
       },
       {
         "name": "function-args",
         "type": "options",
-        "desc": "函数特定的参数：\n\"MaxLenInt\" mat-reg mat-reg value [factor] [\"DoubleSide\"] [\"UseRegionNames\"] — 用于界面处的最大界面长度；mat-reg 指定定义界面的材料名或区域名\n\"MaxInterval\" \"Variable\" dopant \"Cmin\" cmin \"Cmax\" cmax [\"Scaling\" scaling] [\"TargetLength\" targetLength] [\"Rolloff\"] — 用于基于掺杂变量的最大间距\n\"MaxGradient\" value — 用于最大梯度\n\"MaxTransDiff\" value — 用于最大过渡差"
+        "desc": "函数特定的参数：\n\"MaxLenInt\" mat-reg mat-reg value [factor] [\"DoubleSide\"] [\"UseRegionNames\"] — 用于界面处的最大界面长度；mat-reg 指定定义界面的材料名或区域名\n\"MaxInterval\" \"Variable\" dopant \"Cmin\" cmin \"Cmax\" cmax [\"Scaling\" scaling] [\"TargetLength\" targetLength] [\"Rolloff\"] — 用于基于掺杂变量的最大间距\n\"MaxGradient\" value — 用于最大梯度\n\"MaxTransDiff\" value — 用于最大过渡差\n注意：MaxTransDiff/MaxGradient 需在函数名前指定掺杂变量名（如 \"DopingConcentration\"）"
       }
     ],
-    "signature": "(sdedr:define-refinement-function definition-name function-name {\"MaxLenInt\" mat-reg mat-reg value [factor] [\"DoubleSide\"] [\"UseRegionNames\"] | \"MaxInterval\" \"Variable\" dopant-name \"Cmin\" cmin \"Cmax\" cmax [\"Scaling\" scaling] [\"TargetLength\" targetLength] [\"Rolloff\"] | \"MaxGradient\" value | \"MaxTransDiff\" value})"
+    "signature": "(sdedr:define-refinement-function definition-name {\"MaxLenInt\" mat-reg mat-reg value [factor] [\"DoubleSide\"] [\"UseRegionNames\"] | \"MaxInterval\" \"Variable\" dopant-name \"Cmin\" cmin \"Cmax\" cmax [\"Scaling\" scaling] [\"TargetLength\" targetLength] [\"Rolloff\"] | dopant-name \"MaxGradient\" value | dopant-name \"MaxTransDiff\" value})"
   },
   "sdedr:define-refinement-material": {
     "description": "定义按材料细化的放置信息。",

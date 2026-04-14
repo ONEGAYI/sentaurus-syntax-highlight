@@ -4541,7 +4541,6 @@
             "initialization",
             "function",
             "start-value",
-            "analytical-type",
             "Gauss",
             "lateral-parameter",
             "lateral-value"
@@ -4554,7 +4553,6 @@
             "initialization",
             "function",
             "start-value",
-            "analytical-type",
             "Erf",
             "lateral-parameter",
             "lateral-value"
@@ -4567,7 +4565,6 @@
             "initialization",
             "function",
             "start-value",
-            "analytical-type",
             "Eval",
             "lateral-eval-init",
             "lateral-eval-func"
@@ -5188,7 +5185,7 @@
     }
   },
   "sdedr:define-refinement-function": {
-    "signature": "(sdedr:define-refinement-function definition-name function-name {\"MaxLenInt\" mat-reg mat-reg value [factor] [\"DoubleSide\"] [\"UseRegionNames\"] | \"MaxInterval\" \"Variable\" dopant-name \"Cmin\" cmin \"Cmax\" cmax [\"Scaling\" scaling] [\"TargetLength\" targetLength] [\"Rolloff\"] | \"MaxGradient\" value | \"MaxTransDiff\" value})",
+    "signature": "(sdedr:define-refinement-function definition-name {\"MaxLenInt\" mat-reg mat-reg value [factor] [\"DoubleSide\"] [\"UseRegionNames\"] | \"MaxInterval\" \"Variable\" dopant-name \"Cmin\" cmin \"Cmax\" cmax [\"Scaling\" scaling] [\"TargetLength\" targetLength] [\"Rolloff\"] | dopant-name \"MaxGradient\" value | dopant-name \"MaxTransDiff\" value})",
     "description": "Adds a refinement function to the specified refinement.",
     "parameters": [
       {
@@ -5199,12 +5196,12 @@
       {
         "name": "function-name",
         "type": "string",
-        "desc": "Name of the function to be used for refinement"
+        "desc": "For MaxLenInt/MaxInterval: the function type name. For MaxTransDiff/MaxGradient: the dopant variable name (e.g. \"DopingConcentration\")"
       },
       {
         "name": "function-args",
         "type": "options",
-        "desc": "Function-specific arguments: \"MaxLenInt\" mat-reg mat-reg value [factor] [\"DoubleSide\"] [\"UseRegionNames\"] for maximum length at interface; \"MaxInterval\" \"Variable\" dopant \"Cmin\" cmin \"Cmax\" cmax [\"Scaling\" scaling] [\"TargetLength\" targetLength] [\"Rolloff\"] for maximum interval based on doping variable; \"MaxGradient\" value; \"MaxTransDiff\" value. mat-reg specifies the material name or region name defining the interface"
+        "desc": "Function-specific arguments: \"MaxLenInt\" mat-reg mat-reg value [factor] [\"DoubleSide\"] [\"UseRegionNames\"] for maximum length at interface; \"MaxInterval\" \"Variable\" dopant \"Cmin\" cmin \"Cmax\" cmax [\"Scaling\" scaling] [\"TargetLength\" targetLength] [\"Rolloff\"] for maximum interval based on doping variable; dopant-name \"MaxGradient\" value for maximum gradient; dopant-name \"MaxTransDiff\" value for maximum transition difference. For MaxTransDiff/MaxGradient, a dopant variable name (e.g. \"DopingConcentration\") must precede the function name. mat-reg specifies the material name or region name defining the interface"
       }
     ],
     "example": "(sdedr:define-refinement-function \"ref1\" \"MaxLenInt\" \"Silicon\" \"Oxide\" 0.05 1.5)",
@@ -5214,7 +5211,6 @@
         "MaxLenInt": {
           "params": [
             "definition-name",
-            "function-name",
             "MaxLenInt",
             "mat-reg-1",
             "mat-reg-2",
@@ -5238,7 +5234,6 @@
         "MaxInterval": {
           "params": [
             "definition-name",
-            "function-name",
             "MaxInterval",
             "Variable",
             "dopant-name",
@@ -5269,7 +5264,7 @@
         "MaxGradient": {
           "params": [
             "definition-name",
-            "function-name",
+            "dopant-name",
             "MaxGradient",
             "value"
           ]
@@ -5277,7 +5272,7 @@
         "MaxTransDiff": {
           "params": [
             "definition-name",
-            "function-name",
+            "dopant-name",
             "MaxTransDiff",
             "value"
           ]

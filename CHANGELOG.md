@@ -4,6 +4,16 @@
 
 ---
 
+## [1.0.3] - 2026-04-14
+
+### Bug 修复
+
+- **修复签名帮助 modeDispatch 参数错位**：`sdedr:define-refinement-function` 的 MaxLenInt/MaxInterval 模式 params 数组中 `"function-name"` 与 mode 字面量重复，导致后续参数索引全部向前错位；`sdedr:define-analytical-profile` 的 Gauss/Erf/Eval 模式同理移除冗余 `"analytical-type"`
+- **修复 MaxTransDiff/MaxGradient 签名帮助无法分派**：当 mode 名不在 `argIndex` 指定的固定位置时（如 MaxTransDiff/MaxGradient 在第二个参数前有 dopant-name），`resolveMode` 现在会回退扫描所有参数位置查找有效 mode 名
+- **修正函数文档与官方 SDE 用户指南一致**：MaxTransDiff/MaxGradient 的参数从 `"function-name"` 更正为 `"dopant-name"`，signature 更新为 `dopant-name "MaxGradient" value | dopant-name "MaxTransDiff" value` 格式
+
+---
+
 ## [1.0.2] - 2026-04-14
 
 ### Bug 修复
@@ -348,6 +358,7 @@
 [0.5.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.4.1...v0.5.0
 [0.4.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.3.2...v0.4.0
+[1.0.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.0...v1.0.1
 [0.3.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.3.1...v0.3.2
