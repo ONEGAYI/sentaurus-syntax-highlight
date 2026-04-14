@@ -1,6 +1,6 @@
 // tests/test-definitions.js
 const assert = require('assert');
-const { findBalancedExpression, extractSchemeDefinitions, extractTclDefinitions, extractDefinitions, getDefinitions, clearDefinitionCache } = require('../src/definitions');
+const { findBalancedExpression, extractSchemeDefinitions, extractTclDefinitions, extractTclDefinitionsAst, extractDefinitions, getDefinitions, clearDefinitionCache } = require('../src/definitions');
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -202,6 +202,13 @@ test('缩进的 set（循环体内）', () => {
     assert.strictEqual(defs[0].name, 'indented');
 });
 
+console.log('\nextractTclDefinitionsAst:');
+
+test('AST 未初始化时返回空数组', () => {
+    const defs = extractTclDefinitionsAst('set x 42');
+    assert.strictEqual(defs.length, 0);
+});
+
 console.log('\nextractDefinitions:');
 
 test('sde 语言走 Scheme 提取', () => {
@@ -210,10 +217,9 @@ test('sde 语言走 Scheme 提取', () => {
     assert.strictEqual(defs[0].name, 'x');
 });
 
-test('sprocess 语言走 Tcl 提取', () => {
+test('sprocess 语言走 Tcl AST 提取（WASM 未初始化返回空）', () => {
     const defs = extractDefinitions('set x 1', 'sprocess');
-    assert.strictEqual(defs.length, 1);
-    assert.strictEqual(defs[0].name, 'x');
+    assert.strictEqual(defs.length, 0);
 });
 
 test('未知语言返回空数组', () => {
