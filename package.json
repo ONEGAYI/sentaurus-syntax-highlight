@@ -15,7 +15,8 @@
     "onLanguage:sdevice",
     "onLanguage:sprocess",
     "onLanguage:emw",
-    "onLanguage:inspect"
+    "onLanguage:inspect",
+    "onLanguage:svisual"
   ],
   "engines": {
     "vscode": "^1.60.0"
@@ -64,6 +65,14 @@
         "filenames": [],
         "filenamePatterns": ["*_ins.cmd"],
         "configuration": "./language-configurations/tcl.json"
+      },
+      {
+        "id": "svisual",
+        "aliases": ["Sentaurus Visual", "SVISUAL"],
+        "extensions": [".cmd"],
+        "filenames": [],
+        "filenamePatterns": ["*_vis.cmd"],
+        "configuration": "./language-configurations/tcl.json"
       }
     ],
     "grammars": [
@@ -91,6 +100,11 @@
         "language": "inspect",
         "scopeName": "source.sentaurus.inspect",
         "path": "./syntaxes/inspect.tmLanguage.json"
+      },
+      {
+        "language": "svisual",
+        "scopeName": "source.sentaurus.svisual",
+        "path": "./syntaxes/svisual.tmLanguage.json"
       }
     ],
     "commands": [
@@ -131,6 +145,10 @@
       {
         "language": "inspect",
         "path": "./snippets/inspect.json"
+      },
+      {
+        "language": "svisual",
+        "path": "./snippets/svisual.json"
       }
     ],
     "configuration": [
