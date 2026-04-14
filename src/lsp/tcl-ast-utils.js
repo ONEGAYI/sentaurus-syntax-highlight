@@ -659,14 +659,10 @@ function _symbolSection(node, cmdName, langId, out) {
 }
 
 module.exports = {
-    isTclLanguage,
     parseSafe,
-    walkNodes,
-    findNodesByType,
     getFoldingRanges,
     findMismatchedBraces,
     getVariables,
     getDocumentSymbols,
-    SymbolKind,
     TCL_LANGS,
 };

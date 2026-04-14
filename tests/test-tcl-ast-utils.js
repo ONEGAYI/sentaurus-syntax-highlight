@@ -68,41 +68,8 @@ const ast = require('../src/lsp/tcl-ast-utils');
 
 console.log('\n=== tcl-ast-utils 测试 ===\n');
 
-// ── walkNodes 测试 ──
-console.log('walkNodes:');
-
-test('遍历所有节点', () => {
-    const root = buildSampleAST();
-    const visited = [];
-    ast.walkNodes(root, node => visited.push(node.type));
-    assert(visited.includes('program'), '应包含 program 节点');
-    assert(visited.includes('command'), '应包含 command 节点');
-    assert(visited.includes('braced_word'), '应包含 braced_word 节点');
-});
-
-// ── findNodesByType 测试 ──
-console.log('\nfindNodesByType:');
-
-test('只遍历 braced_word 类型', () => {
-    const root = buildSampleAST();
-    const bracedWords = ast.findNodesByType(root, 'braced_word');
-    assert.strictEqual(bracedWords.length, 3, `应有 3 个 braced_word，实际 ${bracedWords.length}`);
-});
-
-test('查找 command 节点', () => {
-    const root = buildSampleAST();
-    const commands = ast.findNodesByType(root, 'command');
-    assert(commands.length >= 4, `应有至少 4 个 command 节点，实际 ${commands.length}`);
-});
-
-test('查找不存在的类型返回空数组', () => {
-    const root = buildSampleAST();
-    const result = ast.findNodesByType(root, 'nonexistent_type');
-    assert.strictEqual(result.length, 0);
-});
-
 // ── getFoldingRanges 测试 ──
-console.log('\ngetFoldingRanges:');
+console.log('getFoldingRanges:');
 
 test('从 braced_word 提取折叠范围', () => {
     const root = buildSampleAST();
@@ -178,16 +145,17 @@ test('未初始化时返回 null', () => {
     assert.strictEqual(result, null);
 });
 
-// ── isTclLanguage 测试 ──
-console.log('\nisTclLanguage:');
+// ── TCL_LANGS 测试 ──
+console.log('\nTCL_LANGS:');
 
-test('正确识别 Tcl 语言', () => {
-    assert.strictEqual(ast.isTclLanguage('sdevice'), true);
-    assert.strictEqual(ast.isTclLanguage('sprocess'), true);
-    assert.strictEqual(ast.isTclLanguage('emw'), true);
-    assert.strictEqual(ast.isTclLanguage('inspect'), true);
-    assert.strictEqual(ast.isTclLanguage('sde'), false);
-    assert.strictEqual(ast.isTclLanguage('javascript'), false);
+test('包含所有 Tcl 方言语言 ID', () => {
+    assert.strictEqual(ast.TCL_LANGS.has('sdevice'), true);
+    assert.strictEqual(ast.TCL_LANGS.has('sprocess'), true);
+    assert.strictEqual(ast.TCL_LANGS.has('emw'), true);
+    assert.strictEqual(ast.TCL_LANGS.has('inspect'), true);
+    assert.strictEqual(ast.TCL_LANGS.has('svisual'), true);
+    assert.strictEqual(ast.TCL_LANGS.has('sde'), false);
+    assert.strictEqual(ast.TCL_LANGS.has('javascript'), false);
 });
 
 // ── 汇总 ──

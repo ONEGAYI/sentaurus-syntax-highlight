@@ -85,7 +85,5 @@ function isSectionCommand(commandName, langId) {
 }
 
 module.exports = {
-    SECTION_KEYWORDS,
-    getSectionKeywords,
     isSectionCommand,
 };

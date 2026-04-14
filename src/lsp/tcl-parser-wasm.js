@@ -251,5 +251,4 @@ module.exports = {
     parse,
     parseWithDebug,
     isReady,
-    debug,
 };
