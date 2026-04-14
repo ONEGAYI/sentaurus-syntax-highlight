@@ -4,6 +4,15 @@
 
 ---
 
+## [1.0.1] - 2026-04-14
+
+### Bug 修复
+
+- **修复 WASM 自检自动打开输出栏**：移除初始化成功/失败时自动调用 `OutputChannel.show()` 的行为，避免每次打开 VSCode 时输出面板强制弹出。通知消息保留，用户可手动查看 Output 面板了解详情
+- **清理死代码、冗余导出，修复 svisual 变量提取失效**：删除已废弃的正则版 Tcl 解析器（`extractTclDefinitions` 等），统一 `TCL_LANGS` 数据源修复 svisual 语言遗漏，清理 15 个内部函数冗余导出
+
+---
+
 ## [1.0.0] - 2026-04-14
 
 ### 新功能
@@ -307,6 +316,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.0.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.8.0...v1.0.0
 [0.8.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.7.2...v0.8.0
 [0.7.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v0.7.1...v0.7.2
