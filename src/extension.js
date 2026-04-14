@@ -62,9 +62,11 @@ const DOC_LABELS = {
 /**
  * Format a function doc entry into a VSCode MarkdownString.
  */
-function formatDoc(doc) {
+function formatDoc(doc, langId) {
     const lines = [];
-    lines.push(`**${doc.signature}**`);
+    lines.push('```' + langId);
+    lines.push(doc.signature);
+    lines.push('```');
     if (doc.section) {
         lines.push('');
         lines.push(`*${DOC_LABELS.section} ${doc.section}*`);
@@ -81,9 +83,7 @@ function formatDoc(doc) {
     if (doc.example) {
         lines.push('');
         lines.push(DOC_LABELS.example);
-        // sdevice 使用 Tcl 语法，其他语言沿用 scheme
-        const lang = doc.section ? 'tcl' : 'scheme';
-        lines.push('```' + lang);
+        lines.push('```' + langId);
         lines.push(doc.example);
         lines.push('```');
     }
@@ -117,7 +117,7 @@ function loadDocsJson(filename, preferZh) {
  * Build completion items for a single language module.
  * Items are created once at activation and reused on every trigger.
  */
-function buildItems(moduleKeywords, funcDocs) {
+function buildItems(moduleKeywords, funcDocs, langId) {
     const items = [];
     for (const [category, keywords] of Object.entries(moduleKeywords)) {
         const kind = KIND_MAP[category] || vscode.CompletionItemKind.Text;
@@ -130,7 +130,7 @@ function buildItems(moduleKeywords, funcDocs) {
             item.detail = detail;
             item.sortText = prefix + keyword;
             if (funcDocs[keyword]) {
-                item.documentation = formatDoc(funcDocs[keyword]);
+                item.documentation = formatDoc(funcDocs[keyword], langId);
             }
             items.push(item);
         }
@@ -394,7 +394,7 @@ function activate(context) {
         const moduleKeywords = allKeywords[langId];
         if (!moduleKeywords) continue;
 
-        const items = buildItems(moduleKeywords, funcDocs);
+        const items = buildItems(moduleKeywords, funcDocs, langId);
 
         const completionDisposable = vscode.languages.registerCompletionItemProvider(
             { language: langId },
@@ -466,7 +466,7 @@ function activate(context) {
 
                     // 1. 查函数文档（优先）
                     const doc = funcDocs[word] || funcDocs[decodeHtml(word)];
-                    if (doc) return new vscode.Hover(formatDoc(doc), range);
+                    if (doc) return new vscode.Hover(formatDoc(doc, langId), range);
 
                     // 2. 查用户变量定义
                     const userDefs = defs.getDefinitions(document, langId);
@@ -474,7 +474,7 @@ function activate(context) {
                     if (def) {
                         const md = new vscode.MarkdownString();
                         md.appendMarkdown(`**${def.name}** (用户变量, 第 ${def.line} 行)\n\n`);
-                        md.appendCodeblock(def.definitionText, langId === 'sde' ? 'scheme' : 'tcl');
+                        md.appendCodeblock(def.definitionText, langId);
                         return new vscode.Hover(md, range);
                     }
 
