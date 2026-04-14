@@ -172,6 +172,28 @@ sentaurus-syntax-highlight  →  onegayi.sentaurus-tcad-syntax-x.x.x
 
 > VSCode 依赖此命名约定来识别扩展，名称不正确将导致扩展无法加载。
 
+## 便于使用的技巧
+
+### 更改 Sentaurus 的默认编辑器
+
+Sentaurus 默认使用 Jedit 作为代码编辑器，要将其更改为 **VS Code** 非常容易：
+
+1. 打开 Sentaurus Workbench
+2. 按 **F12**，或菜单 **Edit** > **User Preferences**（有些版本是 **Edit** > **Preferences**）
+3. 记得选择 `User` 范围设置（如果不行再尝试 `Global`）
+4. 在 Preferences 对话框中展开 `Binaries`（旧版可能是 `Utilities`）
+5. 找到 `Editor` 项双击
+6. 将值改为 **VS Code** 的路径，例如：`/usr/bin/code`
+7. 点击 **Apply** 保存
+
+---
+
+获取 **VS Code** 路径的方式:
+
+```bash
+which code
+```
+
 ## 致谢
 
 本项目的关键词提取脚本和 TextMate 语法基础参考了 [jackyu-b/sentaurus-syntax-highlight](https://github.com/jackyu-b/sentaurus-syntax-highlight.git)，在此表示感谢。
