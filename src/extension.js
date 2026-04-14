@@ -12,6 +12,7 @@ const tclParserWasm = require('./lsp/tcl-parser-wasm');
 const astUtils = require('./lsp/tcl-ast-utils');
 const tclFoldingProvider = require('./lsp/providers/tcl-folding-provider');
 const tclBracketDiagnostic = require('./lsp/providers/tcl-bracket-diagnostic');
+const tclDocumentSymbolProvider = require('./lsp/providers/tcl-document-symbol-provider');
 
 /** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
 function decodeHtml(str) {
@@ -321,6 +322,12 @@ function activate(context) {
         Object.assign(funcDocs, sdeviceDocs);
     }
 
+    // 加载 svisual 命令文档并合并
+    const svisualDocs = loadDocsJson('svisual_command_docs.json', useZh);
+    if (svisualDocs) {
+        Object.assign(funcDocs, svisualDocs);
+    }
+
     // 构建 modeDispatch 查找表：始终从英文文档提取（结构化元数据，与语言无关）
     const enSdeDocs = loadDocsJson('sde_function_docs.json', false);
     const modeDispatchSource = enSdeDocs || funcDocs;
@@ -355,6 +362,16 @@ function activate(context) {
 
     // 括号诊断
     tclBracketDiagnostic.activate(context);
+
+    // DocumentSymbol / 面包屑导航（4 语言共用）
+    for (const langId of astUtils.TCL_LANGS) {
+        context.subscriptions.push(
+            vscode.languages.registerDocumentSymbolProvider(
+                { language: langId },
+                tclDocumentSymbolProvider
+            )
+        );
+    }
 
     // Signature Help (SDE only)
     const sigHelpDisposable = vscode.languages.registerSignatureHelpProvider(
