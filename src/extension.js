@@ -371,7 +371,7 @@ function activate(context) {
     );
     context.subscriptions.push(sigHelpDisposable);
 
-    const languages = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect'];
+    const languages = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect', 'svisual'];
 
     for (const langId of languages) {
         const moduleKeywords = allKeywords[langId];
