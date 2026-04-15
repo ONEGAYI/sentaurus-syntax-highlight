@@ -7070,5 +7070,22 @@
       }
     ],
     "signature": "(sdesp:restore-state step-name-list)"
+  },
+  "generic:get": {
+    "description": "查询拓扑实体的属性。常用属性包括 \"material\"（返回 DATEX 材料名称）和 \"region\"（返回附加的区域名称）。",
+    "example": "(generic:get BODY \"material\") ; -> \"Silicon\"",
+    "parameters": [
+      {
+        "name": "entity-id",
+        "type": "entity",
+        "desc": "拓扑实体的 ID（body、face、edge、vertex 等）"
+      },
+      {
+        "name": "attribute",
+        "type": "string",
+        "desc": "要查询的属性名称，如 \"material\" 或 \"region\""
+      }
+    ],
+    "signature": "(generic:get entity-id attribute)"
   }
 }

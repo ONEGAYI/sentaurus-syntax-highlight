@@ -1363,7 +1363,8 @@
       "sdeicwb:get-layer-polygon-midpoints",
       "sde:scmwin-set-font-size",
       "sdegeo:set-contact-boundary-edges",
-      "sdegeo:delete-coord-sys"
+      "sdegeo:delete-coord-sys",
+      "generic:get"
     ],
     "KEYWORD2": [
       "transform:rotation",
