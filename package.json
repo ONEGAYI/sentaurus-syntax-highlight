@@ -2,7 +2,7 @@
   "name": "sentaurus-tcad-syntax",
   "displayName": "Sentaurus TCAD Syntax",
   "description": "Syntax highlighting for Sentaurus TCAD files",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "publisher": "onegayi",
   "icon": "icon.png",
   "repository": {
@@ -106,10 +106,17 @@
       },
       {
         "id": "svisual",
-        "aliases": ["Sentaurus Visual", "SVISUAL"],
-        "extensions": [".cmd"],
+        "aliases": [
+          "Sentaurus Visual",
+          "SVISUAL"
+        ],
+        "extensions": [
+          ".cmd"
+        ],
         "filenames": [],
-        "filenamePatterns": ["*_vis.cmd"],
+        "filenamePatterns": [
+          "*_vis.cmd"
+        ],
         "configuration": "./language-configurations/tcl.json"
       }
     ],
