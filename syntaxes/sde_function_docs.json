@@ -7489,5 +7489,22 @@
         "desc": "STRING LIST of all step names in the correct order to restore the boundary-merging sequence"
       }
     ]
+  },
+  "generic:get": {
+    "signature": "(generic:get entity-id attribute)",
+    "description": "Queries the attribute of a topological entity. Commonly used attributes are \"material\" (returns the DATEX material name) and \"region\" (returns the attached region name).",
+    "parameters": [
+      {
+        "name": "entity-id",
+        "type": "entity",
+        "desc": "ID of the topological entity (body, face, edge, vertex, etc.)"
+      },
+      {
+        "name": "attribute",
+        "type": "string",
+        "desc": "Attribute name to query, such as \"material\" or \"region\""
+      }
+    ],
+    "example": "(generic:get BODY \"material\") ; -> \"Silicon\""
   }
 }
