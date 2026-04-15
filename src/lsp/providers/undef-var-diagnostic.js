@@ -168,6 +168,51 @@ function getSchemeKnownNames() {
     return _schemeKnownNames;
 }
 
+const SCOPE_TYPE_LABELS = {
+    global: '全局',
+    function: '函数',
+    let: 'let',
+    lambda: 'lambda',
+};
+
+/**
+ * 检测同一作用域内的重复定义。
+ * @param {object} scopeTree - buildScopeTree 返回的作用域树
+ * @returns {vscode.Diagnostic[]}
+ */
+function checkSchemeDuplicateDefs(scopeTree) {
+    const diagnostics = [];
+
+    function walkScope(scope) {
+        const seen = new Map(); // name → first definition
+        for (const def of scope.definitions) {
+            if (seen.has(def.name)) {
+                const first = seen.get(def.name);
+                const range = new vscode.Range(
+                    def.line - 1, def.start,
+                    def.line - 1, def.end
+                );
+                const scopeLabel = SCOPE_TYPE_LABELS[scope.type] || scope.type;
+                const diagnostic = new vscode.Diagnostic(
+                    range,
+                    `重复定义: '${def.name}' 已在第 ${first.line} 行定义（当前作用域: ${scopeLabel}）`,
+                    vscode.DiagnosticSeverity.Warning
+                );
+                diagnostic.source = 'dup-def';
+                diagnostics.push(diagnostic);
+            } else {
+                seen.set(def.name, def);
+            }
+        }
+        for (const child of scope.children) {
+            walkScope(child);
+        }
+    }
+
+    walkScope(scopeTree);
+    return diagnostics;
+}
+
 /**
  * 检查 Scheme 代码中的未定义变量引用。
  * @param {string} text - 文档文本
@@ -203,7 +248,10 @@ function checkSchemeUndefVars(text) {
         }
     }
 
+    // 检测同作用域内的重复定义
+    diagnostics.push(...checkSchemeDuplicateDefs(scopeTree));
+
     return diagnostics;
 }
 
-module.exports = { activate, checkTclUndefVars, checkSchemeUndefVars, TCL_BUILTIN_VARS, SCHEME_BUILTIN_VARS };
+module.exports = { activate, checkTclUndefVars, checkSchemeUndefVars, checkSchemeDuplicateDefs, TCL_BUILTIN_VARS, SCHEME_BUILTIN_VARS };
