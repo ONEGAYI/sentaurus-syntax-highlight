@@ -92,6 +92,11 @@ function findMismatchedBraces(text) {
 
     for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
         const line = lines[lineIdx];
+
+        // 跳过 * 注释行（Sentaurus Tcl 方言约定：行首 * 为注释）
+        const trimmed = line.trimStart();
+        if (trimmed.length > 0 && trimmed[0] === '*') continue;
+
         let inString = false;
         let inComment = false;
 
