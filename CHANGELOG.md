@@ -4,6 +4,25 @@
 
 ---
 
+## [1.2.0] - 2026-04-15
+
+### 新功能
+
+- **SDE Scheme 重复定义检测**：新增 `checkSchemeDuplicateDefs` 诊断，对同一作用域内重复的 `define`/`let`/`let*`/`letrec`/`lambda` 绑定显示黄色警告，集成到未定义变量诊断 Provider
+- **条件分支过滤**：重复定义检测支持条件分支语义——`if`/`cond`/`case` 的不同分支以及 `#if` 条件编译块内允许同名定义，消除条件逻辑中的误报
+- **定义位置信息**：scope-analyzer 为每个 definition 增加 `line`/`start`/`end` 位置字段，支持更精确的诊断定位
+
+### Bug 修复
+
+- **修复注释导致 signature help 错选外层函数**：当 Scheme 代码中左括号与函数名之间存在注释时（如 `(foo ;comment\n (bar))`），AST 的 `children[0]` 为 Comment 节点而非函数名，导致 `findEnclosingCall` 跳过内层调用。通过 `effectiveChildren()` 辅助函数过滤 Comment 节点，在 4 个关键函数中统一修复
+
+### 测试
+
+- 新增 Scheme 重复定义检测测试（11 个基础用例 + 条件分支过滤用例）
+- 新增 signature help 注释偏移回归测试
+
+---
+
 ## [1.1.1] - 2026-04-15
 
 ### 新功能
@@ -379,6 +398,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.2.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.2...v1.0.3
