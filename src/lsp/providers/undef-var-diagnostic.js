@@ -176,18 +176,78 @@ const SCOPE_TYPE_LABELS = {
 };
 
 /**
+ * 构建预处理指令分支映射。
+ * 分析 #if/#else/#elif/#endif 块，为每个分支分配唯一 ID。
+ * @param {string} text - 文档原始文本
+ * @returns {Map<number, number>} 行号 → 分支 ID
+ */
+function buildPpBranchMap(text) {
+    const map = new Map();
+    const lines = text.split('\n');
+    const stack = []; // { branchId }
+    let nextId = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        const lineNum = i + 1;
+
+        if (/^#(if|ifdef|ifndef)\b/.test(line)) {
+            const id = nextId++;
+            stack.push({ branchId: id });
+        } else if (/^#elif\b/.test(line)) {
+            if (stack.length > 0) {
+                const id = nextId++;
+                stack[stack.length - 1].branchId = id;
+            }
+        } else if (/^#else\b/.test(line)) {
+            if (stack.length > 0) {
+                const id = nextId++;
+                stack[stack.length - 1].branchId = id;
+            }
+        } else if (/^#endif\b/.test(line)) {
+            if (stack.length > 0) stack.pop();
+        }
+
+        if (stack.length > 0) {
+            map.set(lineNum, stack[stack.length - 1].branchId);
+        }
+    }
+
+    return map;
+}
+
+/**
  * 检测同一作用域内的重复定义。
+ * 条件分支（if/cond/case 和 #if/#else/#endif）中的同名定义不视为重复。
  * @param {object} scopeTree - buildScopeTree 返回的作用域树
+ * @param {string} [text] - 文档原始文本（用于 #if 分支分析）
  * @returns {vscode.Diagnostic[]}
  */
-function checkSchemeDuplicateDefs(scopeTree) {
+function checkSchemeDuplicateDefs(scopeTree, text) {
     const diagnostics = [];
+    const ppBranchMap = text ? buildPpBranchMap(text) : null;
+
+    function getBranchKey(def) {
+        const parts = [];
+        if (def.condGroup !== undefined) {
+            parts.push(`c:${def.condGroup}:${def.condBranch}`);
+        }
+        if (ppBranchMap) {
+            const ppBranch = ppBranchMap.get(def.line);
+            if (ppBranch !== undefined) {
+                parts.push(`p:${ppBranch}`);
+            }
+        }
+        return parts.length > 0 ? parts.join('|') : '';
+    }
 
     function walkScope(scope) {
-        const seen = new Map(); // name → first definition
+        const seen = new Map(); // composite key → first definition
         for (const def of scope.definitions) {
-            if (seen.has(def.name)) {
-                const first = seen.get(def.name);
+            const branchKey = getBranchKey(def);
+            const key = `${def.name}@${branchKey}`;
+            if (seen.has(key)) {
+                const first = seen.get(key);
                 const range = new vscode.Range(
                     def.line - 1, def.start,
                     def.line - 1, def.end
@@ -201,7 +261,7 @@ function checkSchemeDuplicateDefs(scopeTree) {
                 diagnostic.source = 'dup-def';
                 diagnostics.push(diagnostic);
             } else {
-                seen.set(def.name, def);
+                seen.set(key, def);
             }
         }
         for (const child of scope.children) {
@@ -249,7 +309,7 @@ function checkSchemeUndefVars(text) {
     }
 
     // 检测同作用域内的重复定义
-    diagnostics.push(...checkSchemeDuplicateDefs(scopeTree));
+    diagnostics.push(...checkSchemeDuplicateDefs(scopeTree, text));
 
     return diagnostics;
 }
