@@ -306,30 +306,31 @@ function activate(context) {
         DOC_LABELS.keywords = '关键词：';
     }
 
-    // Load SDE function docs (try zh-CN first, fallback to en)
-    const funcDocs = loadDocsJson('sde_function_docs.json', useZh) || {};
-
-    // 加载 Scheme 内置函数文档并合并
+    // 按语言加载函数文档（各语言隔离，避免文档泄露）
+    const langFuncDocs = {};
+    const sdeDocs = loadDocsJson('sde_function_docs.json', useZh) || {};
     const schemeDocs = loadDocsJson('scheme_function_docs.json', useZh);
-    if (schemeDocs) {
-        Object.assign(funcDocs, schemeDocs);
-    }
-
-    // 加载 sdevice 命令文档并合并
     const sdeviceDocs = loadDocsJson('sdevice_command_docs.json', useZh);
-    if (sdeviceDocs) {
-        Object.assign(funcDocs, sdeviceDocs);
-    }
-
-    // 加载 svisual 命令文档并合并
     const svisualDocs = loadDocsJson('svisual_command_docs.json', useZh);
-    if (svisualDocs) {
-        Object.assign(funcDocs, svisualDocs);
-    }
+
+    // SDE: SDE API + Scheme 内置函数
+    langFuncDocs.sde = { ...sdeDocs };
+    if (schemeDocs) Object.assign(langFuncDocs.sde, schemeDocs);
+
+    // sdevice: 仅 sdevice 命令文档
+    langFuncDocs.sdevice = sdeviceDocs ? { ...sdeviceDocs } : {};
+
+    // svisual: 仅 svisual 命令文档
+    langFuncDocs.svisual = svisualDocs ? { ...svisualDocs } : {};
+
+    // sprocess/emw/inspect: 无专属文档文件
+    langFuncDocs.sprocess = {};
+    langFuncDocs.emw = {};
+    langFuncDocs.inspect = {};
 
     // 构建 modeDispatch 查找表：始终从英文文档提取（结构化元数据，与语言无关）
     const enSdeDocs = loadDocsJson('sde_function_docs.json', false);
-    const modeDispatchSource = enSdeDocs || funcDocs;
+    const modeDispatchSource = enSdeDocs || sdeDocs;
     const modeDispatchTable = {};
     for (const [fnName, fnDoc] of Object.entries(modeDispatchSource)) {
         if (fnDoc.modeDispatch) {
@@ -382,7 +383,7 @@ function activate(context) {
             provideSignatureHelp(document, position, token) {
                 return signatureProvider.provideSignatureHelp(
                     document, position, token,
-                    modeDispatchTable, funcDocs
+                    modeDispatchTable, langFuncDocs.sde
                 );
             },
         },
@@ -396,7 +397,7 @@ function activate(context) {
         const moduleKeywords = allKeywords[langId];
         if (!moduleKeywords) continue;
 
-        const items = buildItems(moduleKeywords, funcDocs, langId);
+        const items = buildItems(moduleKeywords, langFuncDocs[langId], langId);
 
         const completionDisposable = vscode.languages.registerCompletionItemProvider(
             { language: langId },
@@ -466,8 +467,9 @@ function activate(context) {
                     if (!range) return null;
                     const word = document.getText(range);
 
-                    // 1. 查函数文档（优先）
-                    const doc = funcDocs[word] || funcDocs[decodeHtml(word)];
+                    // 1. 查函数文档（优先，仅限当前语言的文档）
+                    const docs = langFuncDocs[langId] || {};
+                    const doc = docs[word] || docs[decodeHtml(word)];
                     if (doc) return new vscode.Hover(formatDoc(doc, langId), range);
 
                     // 2. 查用户变量定义
