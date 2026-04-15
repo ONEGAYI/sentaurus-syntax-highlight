@@ -76,6 +76,15 @@ function tokenize(text) {
             continue;
         }
 
+        // 预处理指令（#if/#else/#endif/#ifdef/#ifndef/#define/#undef/#include）
+        // 条件行为 Tcl 代码，跳过整行避免 Tcl 标识符被误解析为 Scheme 引用
+        if (ch === '#' && i + 1 < text.length && /[a-zA-Z]/.test(text[i + 1])) {
+            if (/^#(if|else|endif|ifdef|ifndef|define|undef|include)\b/.test(text.slice(i))) {
+                while (i < text.length && text[i] !== '\n') i++;
+                continue;
+            }
+        }
+
         const start = i;
         while (i < text.length && !/[\s()";]/.test(text[i])) i++;
         const raw = text.slice(start, i);

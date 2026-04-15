@@ -18,6 +18,7 @@ const TCL_BUILTIN_VARS = new Set([
 const SCHEME_BUILTIN_VARS = new Set([
     'argc', 'argv',
     'position',   // SDE 内置构造函数，未在 sde_function_docs.json 中收录
+    'PI',         // SDE 预定义数学常量
 ]);
 
 /** Tcl 语言集合 */
@@ -144,22 +145,18 @@ function getSchemeKnownNames() {
 
     _schemeKnownNames = new Set();
 
-    // 从 SDE 函数文档加载内置函数名
+    // 从 all_keywords.json 加载 SDE 所有等级的关键词（KEYWORD1/2、FUNCTION）
+    // 这是普适规则：语法文件中定义的所有关键词均视为已知名称，不会被误报为未定义变量
     try {
-        const sdeDocs = require('../../../syntaxes/sde_function_docs.json');
-        if (sdeDocs) {
-            for (const key of Object.keys(sdeDocs)) {
-                _schemeKnownNames.add(key);
-            }
-        }
-    } catch (e) { /* 文件不存在时忽略 */ }
-
-    // 从 Scheme 标准函数文档加载
-    try {
-        const schemeDocs = require('../../../syntaxes/scheme_function_docs.json');
-        if (schemeDocs) {
-            for (const key of Object.keys(schemeDocs)) {
-                _schemeKnownNames.add(key);
+        const allKw = require('../../../syntaxes/all_keywords.json');
+        const sdeKw = allKw && allKw.sde;
+        if (sdeKw) {
+            for (const cat of ['KEYWORD1', 'KEYWORD2', 'FUNCTION']) {
+                if (sdeKw[cat]) {
+                    for (const name of sdeKw[cat]) {
+                        _schemeKnownNames.add(name);
+                    }
+                }
             }
         }
     } catch (e) { /* 文件不存在时忽略 */ }

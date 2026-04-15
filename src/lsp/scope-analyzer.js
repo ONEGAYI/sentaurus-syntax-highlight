@@ -210,6 +210,10 @@ function _collectRefs(node, refs, excluded) {
 
     if (node.type === 'Identifier') {
         const name = node.value;
+        // 跳过 # 开头的标识符（预处理指令 #if/#else/#endif/#define 等、字符字面量 #\a 等）
+        if (name && name.startsWith('#')) return;
+        // 跳过 SWB 参数替换变量（如 @param@、@previous@、@param:+2@）
+        if (name && /^@[a-zA-Z_][a-zA-Z0-9_.:+-]*@$/.test(name)) return;
         if (name && !excluded.has(name)) {
             refs.push({
                 name,
