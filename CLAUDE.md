@@ -82,7 +82,7 @@ sentaurus-syntax-highlight/
 │   │       ├── folding-provider.js             ← Scheme 代码折叠
 │   │       ├── bracket-diagnostic.js           ← Scheme 括号平衡诊断
 │   │       ├── signature-provider.js           ← Scheme 函数签名提示
-│   │       ├── undef-var-diagnostic.js         ← 未定义变量诊断（Scheme + Tcl 双语言）
+│   │       ├── undef-var-diagnostic.js         ← 未定义/重复定义变量诊断（Scheme + Tcl 双语言）
 │   │       ├── tcl-folding-provider.js         ← Tcl 代码折叠（基于 braced_word）
 │   │       ├── tcl-bracket-diagnostic.js       ← Tcl 括号诊断（文本级 {} 平衡）
 │   │       └── tcl-document-symbol-provider.js ← Tcl 文档大纲（Outline 视图）
@@ -102,6 +102,7 @@ sentaurus-syntax-highlight/
 │   ├── test-semantic-dispatcher.js             ← 语义分发
 │   ├── test-signature-provider.js              ← 签名提示
 │   ├── test-scheme-undef-diagnostic.js         ← Scheme 未定义变量诊断
+│   ├── test-scheme-dup-def-diagnostic.js       ← Scheme 重复定义检测
 │   ├── test-scheme-var-refs.js                 ← Scheme 变量引用
 │   ├── test-snippet-prefixes.js                ← 代码片段前缀
 │   ├── test-tcl-ast-utils.js                   ← Tcl AST 工具（14 测试，mock 节点）
@@ -166,7 +167,7 @@ sentaurus-syntax-highlight/
 - **Tcl（其余 5 种）**：`tree-sitter-tcl` WASM 解析器（`tcl-parser-wasm.js`）→ `tcl-ast-utils.js` 统一 AST 遍历/变量提取/折叠 → `tcl-symbol-configs.js` 配置各工具 section 关键词
 
 共用 Provider（`src/lsp/providers/`）：
-- `undef-var-diagnostic.js` — 跨语言未定义变量诊断（Scheme + Tcl）
+- `undef-var-diagnostic.js` — 跨语言未定义/重复定义变量诊断（Scheme + Tcl）
 - `folding-provider.js` / `tcl-folding-provider.js` — 代码折叠
 - `bracket-diagnostic.js` / `tcl-bracket-diagnostic.js` — 括号平衡诊断
 - `signature-provider.js` — Scheme 函数签名提示
@@ -198,10 +199,11 @@ sentaurus-syntax-highlight/
 ### 步骤
 
 1. **更新 CHANGELOG**：回顾 `git log <上次release-tag>..HEAD --oneline`，将所有提交归纳为 CHANGELOG 条目。新增版本段落置于文件顶部，格式与已有条目保持一致（`### 新功能` / `### Bug 修复` / `### 其他改进`）。同时在底部 `<!-- 变更链接 -->`（建议使用 Grep 快速定位行）添加新版本的 compare 链接
-2. **提交 CHANGELOG**
-3. **打包**：`npx vsce package`
-4. **推送**：`git push origin main`
-5. **双平台发布**：
+2. **更新 CLAUDE.md**: 主要更新文件树和架构的内容。架构的更新需要言简意赅。文件树需要严格对照 git 历史变更，如果已有文件功能发生改变，也需要适当的反映在文件树中。
+3. **提交 CHANGELOG**
+4. **打包**：`npx vsce package`
+5. **推送**：`git push origin main`
+6. **双平台发布**：
    - GitHub Release：`gh release create v<version> sentaurus-tcad-syntax-<version>.vsix --title "v<version>" --notes "..."`，notes 内容直接复用 CHANGELOG 该版本的正文
    - VS Code Marketplace：`npx vsce publish`
 
