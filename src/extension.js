@@ -12,6 +12,7 @@ const tclParserWasm = require('./lsp/tcl-parser-wasm');
 const astUtils = require('./lsp/tcl-ast-utils');
 const tclFoldingProvider = require('./lsp/providers/tcl-folding-provider');
 const tclBracketDiagnostic = require('./lsp/providers/tcl-bracket-diagnostic');
+const undefVarDiagnostic = require('./lsp/providers/undef-var-diagnostic');
 const tclDocumentSymbolProvider = require('./lsp/providers/tcl-document-symbol-provider');
 
 /** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
@@ -360,6 +361,9 @@ function activate(context) {
 
     // 括号诊断
     tclBracketDiagnostic.activate(context);
+
+    // 未定义变量诊断
+    undefVarDiagnostic.activate(context);
 
     // DocumentSymbol / 面包屑导航（4 语言共用）
     for (const langId of astUtils.TCL_LANGS) {
