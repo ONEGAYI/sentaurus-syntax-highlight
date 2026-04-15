@@ -258,15 +258,23 @@ function _collectGlobalDefs(root, scopeMap, maxLine) {
             if (firstChild && firstChild.type === 'simple_word') {
                 const cmdName = firstChild.text;
                 if (cmdName === 'set' || cmdName === 'lappend' || cmdName === 'append') {
-                    for (let j = 1; j < child.childCount; j++) {
-                        const arg = child.child(j);
-                        if (arg && (arg.type === 'id' || arg.type === 'simple_word')) {
+                    const words = _getCommandWords(child);
+                    for (const arg of words) {
+                        if (arg.type === 'id' || arg.type === 'simple_word') {
                             const name = arg.text;
-                            if (!name.startsWith('env(') && !/^\d/.test(name)) {
+                            if (name !== cmdName && !name.startsWith('env(') && !/^\d/.test(name)) {
                                 const defLine = arg.startPosition.row + 1;
                                 _addToScopeFromLine(scopeMap, name, defLine, maxLine);
                                 break;
                             }
+                        }
+                    }
+                }
+                if (cmdName === 'for') {
+                    const words = _getCommandWords(child);
+                    for (const w of words) {
+                        if (w.type === 'braced_word') {
+                            _collectLocalDefs(w, scopeMap, 1, maxLine);
                         }
                     }
                 }
@@ -387,18 +395,21 @@ function _collectLocalDefs(node, scopeMap, scopeStart, scopeEnd) {
                 const cmdName = firstChild.text;
 
                 if (cmdName === 'for') {
-                    const bracedWords = _findChildrenByType(child, 'braced_word');
-                    for (const bw of bracedWords) {
-                        _collectLocalDefs(bw, scopeMap, scopeStart, scopeEnd);
+                    const words = _getCommandWords(child);
+                    for (const w of words) {
+                        if (w.type === 'braced_word') {
+                            _collectLocalDefs(w, scopeMap, scopeStart, scopeEnd);
+                        }
                     }
                 } else if (cmdName === 'lappend' || cmdName === 'append') {
-                    if (child.childCount >= 2) {
-                        const varArg = child.child(1);
-                        if (varArg && (varArg.type === 'id' || varArg.type === 'simple_word')) {
-                            const name = varArg.text;
-                            if (!name.startsWith('env(')) {
-                                const defLine = varArg.startPosition.row + 1;
+                    const words = _getCommandWords(child);
+                    for (const arg of words) {
+                        if (arg.type === 'id' || arg.type === 'simple_word') {
+                            const name = arg.text;
+                            if (name !== cmdName && !name.startsWith('env(')) {
+                                const defLine = arg.startPosition.row + 1;
                                 _addToScopeFromLine(scopeMap, name, defLine, scopeEnd);
+                                break;
                             }
                         }
                     }
@@ -417,6 +428,17 @@ function _processScopeImports(node, scopeMap, root, bodyStart, bodyEnd) {
     if (!node) return;
 
     walkNodes(node, n => {
+        // tree-sitter-tcl 将 'global' 解析为特殊节点类型（不是 command）
+        if (n.type === 'global') {
+            for (let i = 0; i < n.childCount; i++) {
+                const child = n.child(i);
+                if (child && child.type === 'simple_word') {
+                    _addToScopeFromLine(scopeMap, child.text, bodyStart, bodyEnd);
+                }
+            }
+            return;
+        }
+
         if (n.type !== 'command') return;
         const firstChild = n.child(0);
         if (!firstChild || firstChild.type !== 'simple_word') return;
@@ -433,7 +455,7 @@ function _processScopeImports(node, scopeMap, root, bodyStart, bodyEnd) {
         }
 
         if (cmdName === 'upvar') {
-            const words = _findChildrenByType(n, 'simple_word');
+            const words = _getCommandWords(n).filter(w => w.type === 'simple_word');
             if (words.length >= 2) {
                 const localName = words[words.length - 1].text;
                 _addToScopeFromLine(scopeMap, localName, bodyStart, bodyEnd);
@@ -441,7 +463,7 @@ function _processScopeImports(node, scopeMap, root, bodyStart, bodyEnd) {
         }
 
         if (cmdName === 'variable') {
-            const words = _findChildrenByType(n, 'simple_word');
+            const words = _getCommandWords(n).filter(w => w.type === 'simple_word');
             if (words.length >= 2) {
                 const varName = words[1].text;
                 _addToScopeFromLine(scopeMap, varName, bodyStart, bodyEnd);
@@ -670,6 +692,30 @@ function _findChildrenByType(node, type) {
         if (child && child.type === type) result.push(child);
     }
     return result;
+}
+
+/**
+ * 获取命令节点的所有词级子节点，展开 word_list 包装。
+ * tree-sitter-tcl 将多参数命令的参数包装在 word_list 节点中，
+ * 导致 _findChildrenByType 无法直接找到参数。
+ * @param {object} node - command 节点
+ * @returns {object[]} 展开后的子节点列表
+ */
+function _getCommandWords(node) {
+    const words = [];
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (!child) continue;
+        if (child.type === 'word_list') {
+            for (let j = 0; j < child.childCount; j++) {
+                const wc = child.child(j);
+                if (wc) words.push(wc);
+            }
+        } else {
+            words.push(child);
+        }
+    }
+    return words;
 }
 
 // ── DocumentSymbol 支持 ──
