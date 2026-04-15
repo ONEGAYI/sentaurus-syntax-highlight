@@ -17,7 +17,9 @@ function buildScopeTree(ast) {
         children: [],
     };
 
-    function walk(node, parentScope) {
+    let condGroupCounter = 0;
+
+    function walk(node, parentScope, branchCtx) {
         if (node.type === 'List') {
             const children = node.children;
             if (children.length >= 2 && children[0].type === 'Identifier') {
@@ -25,7 +27,7 @@ function buildScopeTree(ast) {
                     // (define (func-name params...) body...)
                     if (children[1].type === 'List' && children[1].children.length >= 1) {
                         const funcName = children[1].children[0].value;
-                        parentScope.definitions.push({ name: funcName, kind: 'variable', line: children[1].children[0].line, start: children[1].children[0].start, end: children[1].children[0].end });
+                        parentScope.definitions.push({ name: funcName, kind: 'variable', line: children[1].children[0].line, start: children[1].children[0].start, end: children[1].children[0].end, ...branchCtx });
 
                         const funcScope = {
                             type: 'function',
@@ -37,19 +39,19 @@ function buildScopeTree(ast) {
                         for (let i = 1; i < children[1].children.length; i++) {
                             const param = children[1].children[i];
                             if (param.type === 'Identifier') {
-                                funcScope.definitions.push({ name: param.value, kind: 'parameter', line: param.line, start: param.start, end: param.end });
+                                funcScope.definitions.push({ name: param.value, kind: 'parameter', line: param.line, start: param.start, end: param.end, ...branchCtx });
                             }
                         }
                         parentScope.children.push(funcScope);
                         for (let i = 2; i < children.length; i++) {
-                            walk(children[i], funcScope);
+                            walk(children[i], funcScope, branchCtx);
                         }
                         return;
                     }
 
                     // (define var val) — simple variable binding
                     if (children[1].type === 'Identifier') {
-                        parentScope.definitions.push({ name: children[1].value, kind: 'variable', line: children[1].line, start: children[1].start, end: children[1].end });
+                        parentScope.definitions.push({ name: children[1].value, kind: 'variable', line: children[1].line, start: children[1].start, end: children[1].end, ...branchCtx });
                         return;
                     }
                 }
@@ -66,17 +68,17 @@ function buildScopeTree(ast) {
                     if (children[1] && children[1].type === 'List') {
                         for (const binding of children[1].children) {
                             if (binding.type === 'List' && binding.children.length >= 1 && binding.children[0].type === 'Identifier') {
-                                letScope.definitions.push({ name: binding.children[0].value, kind: 'variable', line: binding.children[0].line, start: binding.children[0].start, end: binding.children[0].end });
+                                letScope.definitions.push({ name: binding.children[0].value, kind: 'variable', line: binding.children[0].line, start: binding.children[0].start, end: binding.children[0].end, ...branchCtx });
                                 // 遍历绑定值表达式（如 lambda），使参数进入作用域
                                 for (let j = 1; j < binding.children.length; j++) {
-                                    walk(binding.children[j], letScope);
+                                    walk(binding.children[j], letScope, branchCtx);
                                 }
                             }
                         }
                     }
                     parentScope.children.push(letScope);
                     for (let i = 2; i < children.length; i++) {
-                        walk(children[i], letScope);
+                        walk(children[i], letScope, branchCtx);
                     }
                     return;
                 }
@@ -93,22 +95,67 @@ function buildScopeTree(ast) {
                     if (children[1] && children[1].type === 'List') {
                         for (const param of children[1].children) {
                             if (param.type === 'Identifier') {
-                                lambdaScope.definitions.push({ name: param.value, kind: 'parameter', line: param.line, start: param.start, end: param.end });
+                                lambdaScope.definitions.push({ name: param.value, kind: 'parameter', line: param.line, start: param.start, end: param.end, ...branchCtx });
                             }
                         }
                     }
                     parentScope.children.push(lambdaScope);
                     for (let i = 2; i < children.length; i++) {
-                        walk(children[i], lambdaScope);
+                        walk(children[i], lambdaScope, branchCtx);
                     }
                     return;
                 }
             }
+            // (if test consequent [alternative])
+            if (children[0].value === 'if' && children.length >= 3) {
+                walk(children[1], parentScope, branchCtx); // test expression
+                const groupId = condGroupCounter++;
+                walk(children[2], parentScope, { condGroup: groupId, condBranch: 0 }); // consequent
+                if (children.length >= 4) {
+                    walk(children[3], parentScope, { condGroup: groupId, condBranch: 1 }); // alternative
+                }
+                for (let i = 4; i < children.length; i++) {
+                    walk(children[i], parentScope, branchCtx);
+                }
+                return;
+            }
+
+            // (cond (test body...) ... [(else body...)])
+            if (children[0].value === 'cond') {
+                for (let i = 1; i < children.length; i++) {
+                    if (children[i].type === 'List' && children[i].children.length >= 1) {
+                        const clause = children[i];
+                        walk(clause.children[0], parentScope, branchCtx); // test
+                        const groupId = condGroupCounter++;
+                        for (let j = 1; j < clause.children.length; j++) {
+                            walk(clause.children[j], parentScope, { condGroup: groupId, condBranch: i - 1 });
+                        }
+                    }
+                }
+                return;
+            }
+
+            // (case expr ((datum...) body...) ... [(else body...)])
+            if (children[0].value === 'case' && children.length >= 3) {
+                walk(children[1], parentScope, branchCtx); // expression
+                for (let i = 2; i < children.length; i++) {
+                    if (children[i].type === 'List' && children[i].children.length >= 1) {
+                        const clause = children[i];
+                        walk(clause.children[0], parentScope, branchCtx); // datum list
+                        const groupId = condGroupCounter++;
+                        for (let j = 1; j < clause.children.length; j++) {
+                            walk(clause.children[j], parentScope, { condGroup: groupId, condBranch: i - 2 });
+                        }
+                    }
+                }
+                return;
+            }
+
             for (const child of children) {
-                walk(child, parentScope);
+                walk(child, parentScope, branchCtx);
             }
         } else if (node.type === 'Quote') {
-            walk(node.expression, parentScope);
+            walk(node.expression, parentScope, branchCtx);
         }
     }
 
