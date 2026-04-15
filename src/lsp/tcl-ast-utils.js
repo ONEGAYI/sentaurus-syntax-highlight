@@ -150,12 +150,13 @@ function findMismatchedBraces(text) {
  * 支持 set、procedure、foreach、while 和 for（command 节点中首个 simple_word 为 "for"）。
  *
  * @param {object} root - tree-sitter 根节点（program）
+ * @param {string} [sourceText] - 完整源码文本，用于扩展 definitionText 到行尾
  * @returns {Array<{name: string, line: number, endLine: number, definitionText: string, kind: string}>}
  *   line 和 endLine 为 1-indexed。
  */
-function getVariables(root) {
+function getVariables(root, sourceText) {
     const results = [];
-    _collectVariables(root, results);
+    _collectVariables(root, results, sourceText);
     return results;
 }
 
@@ -476,8 +477,9 @@ function _processScopeImports(node, scopeMap, root, bodyStart, bodyEnd) {
  * 递归收集变量定义。
  * @param {object} node - 当前 AST 节点
  * @param {Array} results - 收集结果的数组
+ * @param {string} [sourceText] - 完整源码文本
  */
-function _collectVariables(node, results) {
+function _collectVariables(node, results, sourceText) {
     if (!node || !node.children) return;
 
     for (let i = 0; i < node.childCount; i++) {
@@ -486,29 +488,29 @@ function _collectVariables(node, results) {
 
         switch (child.type) {
             case 'set':
-                _handleSet(child, results);
+                _handleSet(child, results, sourceText);
                 break;
 
             case 'procedure':
-                _handleProcedure(child, results);
+                _handleProcedure(child, results, sourceText);
                 break;
 
             case 'foreach':
-                _handleForeach(child, results);
+                _handleForeach(child, results, sourceText);
                 break;
 
             case 'while':
                 // while 无变量绑定，但需要递归 body
-                _handleWhile(child, results);
+                _handleWhile(child, results, sourceText);
                 break;
 
             case 'command':
-                _handleCommand(child, results);
+                _handleCommand(child, results, sourceText);
                 break;
 
             default:
                 // 其他节点类型递归处理子节点（如 program → command、word_list 等）
-                _collectVariables(child, results);
+                _collectVariables(child, results, sourceText);
                 break;
         }
     }
@@ -519,18 +521,22 @@ function _collectVariables(node, results) {
  * set x 42 → set(关键字) + id(变量名) + 值
  * 跳过 env(...) 变量。
  */
-function _handleSet(node, results) {
+function _handleSet(node, results, sourceText) {
     const idNode = _findChildByType(node, 'id');
     if (!idNode) return;
 
     const name = idNode.text;
     if (name.startsWith('env(')) return;
 
+    const defText = sourceText
+        ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, sourceText)
+        : node.text;
+
     results.push({
         name,
         line: idNode.startPosition.row + 1,
         endLine: idNode.endPosition.row + 1,
-        definitionText: node.text,
+        definitionText: defText,
         kind: 'variable',
     });
 }
@@ -540,7 +546,7 @@ function _handleSet(node, results) {
  * proc myFunc {a b} {body}
  * → procedure: proc + simple_word(名) + arguments(含 argument) + braced_word(body)
  */
-function _handleProcedure(node, results) {
+function _handleProcedure(node, results, sourceText) {
     // 提取函数名：第一个 simple_word（跳过 proc 关键字本身）
     const simpleWords = _findChildrenByType(node, 'simple_word');
     if (simpleWords.length >= 1) {
@@ -553,11 +559,14 @@ function _handleProcedure(node, results) {
             }
         }
         if (funcNameNode) {
+            const defText = sourceText
+                ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, sourceText)
+                : node.text;
             results.push({
                 name: funcNameNode.text,
                 line: funcNameNode.startPosition.row + 1,
                 endLine: funcNameNode.endPosition.row + 1,
-                definitionText: node.text,
+                definitionText: defText,
                 kind: 'function',
             });
         }
@@ -585,7 +594,7 @@ function _handleProcedure(node, results) {
     // 递归 body（braced_word）
     const bodyNode = _findChildByType(node, 'braced_word');
     if (bodyNode) {
-        _collectVariables(bodyNode, results);
+        _collectVariables(bodyNode, results, sourceText);
     }
 }
 
@@ -594,17 +603,20 @@ function _handleProcedure(node, results) {
  * foreach item $list { body }
  * → foreach + arguments(循环变量在第一个子节点) + braced_word(body)
  */
-function _handleForeach(node, results) {
+function _handleForeach(node, results, sourceText) {
     const argsNode = _findChildByType(node, 'arguments');
     if (argsNode && argsNode.childCount > 0) {
         // 第一个子节点是循环变量
         const loopVar = argsNode.child(0);
         if (loopVar && loopVar.text) {
+            const defText = sourceText
+                ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, sourceText)
+                : node.text;
             results.push({
                 name: loopVar.text,
                 line: loopVar.startPosition.row + 1,
                 endLine: loopVar.endPosition.row + 1,
-                definitionText: node.text,
+                definitionText: defText,
                 kind: 'variable',
             });
         }
@@ -613,7 +625,7 @@ function _handleForeach(node, results) {
     // 递归 body
     const bodyNode = _findChildByType(node, 'braced_word');
     if (bodyNode) {
-        _collectVariables(bodyNode, results);
+        _collectVariables(bodyNode, results, sourceText);
     }
 }
 
@@ -621,13 +633,13 @@ function _handleForeach(node, results) {
  * 处理 while 节点，无变量绑定但递归 body。
  * while {cond} { body }
  */
-function _handleWhile(node, results) {
+function _handleWhile(node, results, sourceText) {
     // while 可能有多个 braced_word（条件 + body）
     const bracedWords = _findChildrenByType(node, 'braced_word');
     // 最后一个 braced_word 是 body
     if (bracedWords.length > 0) {
         for (const bw of bracedWords) {
-            _collectVariables(bw, results);
+            _collectVariables(bw, results, sourceText);
         }
     }
 }
@@ -636,23 +648,23 @@ function _handleWhile(node, results) {
  * 处理普通 command 节点。
  * 检查第一个 simple_word 是否为特殊命令（如 "for"），若是则特殊处理。
  */
-function _handleCommand(node, results) {
+function _handleCommand(node, results, sourceText) {
     if (node.childCount === 0) return;
 
     const firstChild = node.child(0);
     if (!firstChild || firstChild.type !== 'simple_word') {
         // 非简单命令，递归所有子节点
-        _collectVariables(node, results);
+        _collectVariables(node, results, sourceText);
         return;
     }
 
     const cmdName = firstChild.text;
 
     if (cmdName === 'for') {
-        _handleFor(node, results);
+        _handleFor(node, results, sourceText);
     } else {
         // 其他 command，递归子节点（可能包含嵌套结构）
-        _collectVariables(node, results);
+        _collectVariables(node, results, sourceText);
     }
 }
 
@@ -661,15 +673,35 @@ function _handleCommand(node, results) {
  * for {init} {cond} {step} {body}
  * → command: simple_word("for") + braced_word(init) + braced_word(cond) + braced_word(step) + braced_word(body)
  */
-function _handleFor(node, results) {
+function _handleFor(node, results, sourceText) {
     // 递归所有 braced_word 子节点（init 中可能有 set，body 中也可能有）
     const bracedWords = _findChildrenByType(node, 'braced_word');
     for (const bw of bracedWords) {
-        _collectVariables(bw, results);
+        _collectVariables(bw, results, sourceText);
     }
 }
 
 // ── 辅助函数 ──
+
+/**
+ * 将 tree-sitter 节点文本扩展到该节点末尾所在行的行尾。
+ * 用于将行末注释包含在 definitionText 中。
+ * @param {string} nodeText tree-sitter 节点的原始文本
+ * @param {number} endRow 节点末尾所在行（0-indexed，来自 endPosition.row）
+ * @param {string} sourceText 完整源码文本
+ * @returns {string} 扩展后的文本
+ */
+function _extendNodeTextToLineEnd(nodeText, endRow, sourceText) {
+    const lines = sourceText.split('\n');
+    if (endRow >= lines.length) return nodeText;
+    const fullLine = lines[endRow];
+    const nodeLines = nodeText.split('\n');
+    const lastNodeLine = nodeLines[nodeLines.length - 1];
+    const idx = fullLine.lastIndexOf(lastNodeLine);
+    if (idx < 0) return nodeText;
+    const tail = fullLine.slice(idx + lastNodeLine.length).trimStart();
+    return tail ? nodeText + tail : nodeText;
+}
 
 /**
  * 查找第一个指定类型的直接子节点。

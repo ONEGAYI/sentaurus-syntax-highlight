@@ -50,7 +50,7 @@ function extractTclDefinitionsAst(text) {
     const tree = tclAstUtils.parseSafe(text);
     if (!tree) return [];
     try {
-        return tclAstUtils.getVariables(tree.rootNode);
+        return tclAstUtils.getVariables(tree.rootNode, text);
     } finally {
         tree.delete();
     }
