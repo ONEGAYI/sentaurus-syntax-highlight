@@ -84,5 +84,44 @@ test('白名单变量不报未定义', () => {
     assert.strictEqual(undefs.length, 0, '白名单变量应被过滤');
 });
 
+test('预定义常量 PI 不报未定义', () => {
+    const code = '(define r 5)\n(define area (* PI r r))';
+    const undefs = findUndefRefs(code, new Set(['*', 'PI']));
+    const piUndefs = undefs.filter(r => r.name === 'PI');
+    assert.strictEqual(piUndefs.length, 0, 'PI 不应出现在未定义列表中');
+});
+
+test('SWB 参数替换变量 @foo@ 不报未定义', () => {
+    const code = '(define x @param@)\n(define y @previous@)\n(define z @param:+2@)';
+    const undefs = findUndefRefs(code, new Set());
+    const swbUndefs = undefs.filter(r => /^@.+@$/.test(r.name));
+    assert.strictEqual(swbUndefs.length, 0, '@...@ SWB 参数不应被检测为未定义变量');
+});
+
+test('预处理指令 #if 条件行被整体跳过', () => {
+    // #if 行内是 Tcl 条件代码（如 string/equal），不应被解析为 Scheme 标识符
+    const code = '#if [string/equal $env(HOME) "/home"]\n(define x 1)\n#endif';
+    const undefs = findUndefRefs(code, new Set());
+    // string/equal 和 $env 不应出现在未定义列表中（整行被跳过）
+    const tclLeaks = undefs.filter(r =>
+        r.name.includes('string') || r.name.includes('env') || r.name.startsWith('#'));
+    assert.strictEqual(tclLeaks.length, 0, 'Tcl 条件代码不应泄露到 Scheme 引用检测中');
+});
+
+test('#if 块内的 Scheme 代码仍被检测', () => {
+    // #if 和 #endif 之间的 Scheme 代码应正常解析
+    const code = '#if 1\n(define x 1)\n#endif\n(+ x 1)';
+    const undefs = findUndefRefs(code, new Set(['+']));
+    const xUndefs = undefs.filter(r => r.name === 'x');
+    assert.strictEqual(xUndefs.length, 0, '#if 块内的 define 仍应生效');
+});
+
+test('KEYWORD2 级别关键词不被误报', () => {
+    const code = '(find-edge-id body face)\n(find-body-id edge)';
+    const undefs = findUndefRefs(code, new Set(['find-edge-id', 'find-body-id']));
+    const kwUndefs = undefs.filter(r => r.name === 'find-edge-id' || r.name === 'find-body-id');
+    assert.strictEqual(kwUndefs.length, 0, 'KEYWORD2 关键词不应被检测为未定义变量');
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 if (failed > 0) process.exit(1);
