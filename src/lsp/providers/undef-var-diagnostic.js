@@ -63,6 +63,14 @@ function activate(context) {
             }
         })
     );
+
+    // 主动扫描已在编辑器中打开的文档（onDidOpenTextDocument 不覆盖激活前已打开的文件）
+    for (const doc of vscode.workspace.textDocuments) {
+        const langId = doc.languageId;
+        if (TCL_LANG_SET.has(langId) || langId === 'sde') {
+            updateDiagnostics(doc);
+        }
+    }
 }
 
 /**
