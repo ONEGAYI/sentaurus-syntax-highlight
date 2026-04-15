@@ -309,6 +309,7 @@ function parseInfix(tokens) {
     return ast;
 }
 
+
 // Recursively collect all operands from a left-associative chain of same-operator binary nodes.
 // e.g. (+ (+ a b) c) → [a, b, c]  with op='+'
 function collectOperands(node, op) {

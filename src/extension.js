@@ -540,10 +540,29 @@ function activate(context) {
     context.subscriptions.push(snippetDisposable);
 
     // ── 表达式转换命令 ──────────────────────────
-    const s2iHistory = [];
-    const i2sHistory = [];
+    const convertHistories = {
+        'sentaurus.scheme2infix': context.globalState.get('convertHistory.s2i', []),
+        'sentaurus.infix2scheme': context.globalState.get('convertHistory.i2s', []),
+    };
 
-    function registerConvertCommand(commandId, convertFn, history, promptText, placeHolder) {
+    async function insertResult(editor, result) {
+        if (editor) {
+            const cursor = editor.selection.active;
+            const success = await editor.edit(builder => {
+                builder.insert(cursor, result);
+            });
+            if (success) {
+                const startPos = cursor;
+                const endPos = cursor.translate(0, result.length);
+                editor.selection = new vscode.Selection(startPos, endPos);
+            }
+        } else {
+            await vscode.env.clipboard.writeText(result);
+            vscode.window.showInformationMessage(`已复制到剪贴板: ${result}`);
+        }
+    }
+
+    function registerConvertCommand(commandId, convertFn, promptText, placeHolder) {
         return vscode.commands.registerCommand(commandId, async () => {
             const editor = vscode.window.activeTextEditor;
             const selection = editor ? editor.selection : null;
@@ -561,39 +580,48 @@ function activate(context) {
                 return;
             }
 
-            const input = await vscode.window.showInputBox({
-                prompt: promptText,
-                placeHolder: placeHolder,
-                history: history,
-            });
-            if (input === undefined) return;
+            const history = convertHistories[commandId];
+            let value;
 
-            const { result, error } = convertFn(input);
+            if (history.length > 0) {
+                // Show QuickPick with history (native ↑/↓ support, compatible with all VSCode versions)
+                const items = history.map(h => ({ label: h }));
+                items.push({ label: '', kind: vscode.QuickPickItemKind.Separator });
+                items.push({ label: '$(edit) 输入新表达式...', alwaysShow: true });
+
+                const picked = await vscode.window.showQuickPick(items, {
+                    placeHolder: placeHolder,
+                    prompt: promptText,
+                });
+                if (!picked) return;
+                if (picked.label.startsWith('$(edit)')) {
+                    value = await vscode.window.showInputBox({ prompt: promptText, placeHolder: placeHolder });
+                    if (!value) return;
+                } else {
+                    value = picked.label;
+                }
+            } else {
+                value = await vscode.window.showInputBox({ prompt: promptText, placeHolder: placeHolder });
+                if (!value) return;
+            }
+
+            const trimmed = value.trim();
+            if (!trimmed) return;
+
+            const { result, error } = convertFn(trimmed);
             if (error) {
                 vscode.window.showErrorMessage(`转换失败: ${error}`);
                 return;
             }
 
-            if (!history.includes(input)) {
-                history.unshift(input);
-                if (history.length > 20) history.pop();
-            }
+            // Save to history (deduplicate)
+            const idx = history.indexOf(trimmed);
+            if (idx !== -1) history.splice(idx, 1);
+            history.unshift(trimmed);
+            if (history.length > 20) history.pop();
+            context.globalState.update('convertHistory.' + (commandId === 'sentaurus.scheme2infix' ? 's2i' : 'i2s'), history);
 
-            if (editor) {
-                const cursor = editor.selection.active;
-                editor.edit(builder => {
-                    builder.insert(cursor, result);
-                }).then(success => {
-                    if (success) {
-                        const startPos = cursor;
-                        const endPos = cursor.translate(0, result.length);
-                        editor.selection = new vscode.Selection(startPos, endPos);
-                    }
-                });
-            } else {
-                vscode.env.clipboard.writeText(result);
-                vscode.window.showInformationMessage(`已复制到剪贴板: ${result}`);
-            }
+            await insertResult(editor, result);
         });
     }
 
@@ -601,14 +629,12 @@ function activate(context) {
         registerConvertCommand(
             'sentaurus.scheme2infix',
             expressionConverter.prefixToInfix,
-            s2iHistory,
             '输入 Scheme 前缀表达式，转换为中缀格式',
             '↑↓ 浏览历史 | 例: (+ (/ W 2) (/ L 2))'
         ),
         registerConvertCommand(
             'sentaurus.infix2scheme',
             expressionConverter.infixToPrefix,
-            i2sHistory,
             '输入中缀表达式，转换为 Scheme 前缀格式',
             '↑↓ 浏览历史 | 例: (W/2 + L/2)'
         ),
