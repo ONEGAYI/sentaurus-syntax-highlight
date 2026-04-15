@@ -110,5 +110,64 @@ test('foreach 循环变量在 body 内可见', () => {
     assert.ok(line1.has('item'), 'foreach 循环变量 item 应可见');
 });
 
+test('upvar 声明引入本地别名', () => {
+    const upvarCmd = makeNode('command', 'upvar 1 outer_var local', [
+        makeNode('simple_word', 'upvar', [], 1, 2, 1, 7),
+        makeNode('simple_word', '1', [], 1, 8, 1, 9),
+        makeNode('simple_word', 'outer_var', [], 1, 10, 1, 19),
+        makeNode('simple_word', 'local', [], 1, 20, 1, 25),
+    ], 1, 2, 1, 25);
+    const procBody = makeNode('braced_word', '{ upvar 1 outer_var local }', [
+        upvarCmd,
+    ], 0, 15, 2, 1);
+    const procArgs = makeNode('arguments', '', [], 0, 12, 0, 14);
+    const procNode = makeNode('procedure', 'proc myProc {} { ... }', [
+        makeNode('simple_word', 'proc', [], 0, 0, 0, 4),
+        makeNode('simple_word', 'myProc', [], 0, 5, 0, 11),
+        procArgs,
+        procBody,
+    ], 0, 0, 2, 1);
+    const root = makeNode('program', '', [procNode], 0, 0, 2, 1);
+
+    const scopeMap = ast.buildScopeMap(root);
+    const bodyLine = scopeMap.get(2);
+    assert.ok(bodyLine, 'body 行应有可见变量集');
+    assert.ok(bodyLine.has('local'), 'upvar 别名 local 应可见');
+});
+
+test('variable 声明引入命名空间变量', () => {
+    const varCmd = makeNode('command', 'variable ns_var', [
+        makeNode('simple_word', 'variable', [], 1, 2, 1, 10),
+        makeNode('simple_word', 'ns_var', [], 1, 11, 1, 17),
+    ], 1, 2, 1, 17);
+    const procBody = makeNode('braced_word', '{ variable ns_var }', [
+        varCmd,
+    ], 0, 15, 2, 1);
+    const procArgs = makeNode('arguments', '', [], 0, 12, 0, 14);
+    const procNode = makeNode('procedure', 'proc myProc {} { ... }', [
+        makeNode('simple_word', 'proc', [], 0, 0, 0, 4),
+        makeNode('simple_word', 'myProc', [], 0, 5, 0, 11),
+        procArgs,
+        procBody,
+    ], 0, 0, 2, 1);
+    const root = makeNode('program', '', [procNode], 0, 0, 2, 1);
+
+    const scopeMap = ast.buildScopeMap(root);
+    const bodyLine = scopeMap.get(2);
+    assert.ok(bodyLine, 'body 行应有可见变量集');
+    assert.ok(bodyLine.has('ns_var'), 'variable 声明的 ns_var 应可见');
+});
+
+test('白名单变量不报未定义', () => {
+    const refNode = makeNode('variable_ref', '$DesName', [], 0, 0, 0, 8);
+    const root = makeNode('program', '', [refNode], 0, 0, 0, 8);
+
+    const refs = ast.getVariableRefs(root);
+    assert.strictEqual(refs.length, 1);
+    assert.strictEqual(refs[0].name, 'DesName');
+    // DesName 在白名单中，诊断模块应跳过
+    // 此测试验证引用收集正确，白名单过滤在诊断模块中处理
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 if (failed > 0) process.exit(1);
