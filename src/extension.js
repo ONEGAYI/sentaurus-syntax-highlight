@@ -14,6 +14,7 @@ const tclFoldingProvider = require('./lsp/providers/tcl-folding-provider');
 const tclBracketDiagnostic = require('./lsp/providers/tcl-bracket-diagnostic');
 const undefVarDiagnostic = require('./lsp/providers/undef-var-diagnostic');
 const tclDocumentSymbolProvider = require('./lsp/providers/tcl-document-symbol-provider');
+const schemeOnEnterProvider = require('./lsp/providers/scheme-on-enter-provider');
 
 /** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
 function decodeHtml(str) {
@@ -348,6 +349,9 @@ function activate(context) {
 
     // Bracket diagnostic (SDE only)
     bracketDiagnostic.activate(context);
+
+    // 括号内回车自动缩进 (SDE only)
+    schemeOnEnterProvider.activate(context);
 
     // ── Tcl Providers（4 语言共用）──────────────────
     // 代码折叠
