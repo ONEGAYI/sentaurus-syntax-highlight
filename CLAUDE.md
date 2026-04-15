@@ -29,7 +29,7 @@
 
 ### 语言注册（`package.json`）
 
-注册了 5 种语言，每种对应一个 TextMate 语法：
+注册了 6 种语言，每种对应一个 TextMate 语法：
 
 | Language ID | Sentaurus 工具 | 文件模式 |
 |-------------|---------------|----------|
@@ -38,6 +38,7 @@
 | `sprocess` | Process Simulator | `*_fps.cmd`, `.fps` |
 | `emw` | EM Wave | `*_eml.cmd`, `*_emw.cmd` |
 | `inspect` | Inspect | `*_ins.cmd` |
+| `svisual` | Sentaurus Visual (SVISUAL) | `*_vis.cmd` |
 
 语言配置按注释符号拆分为两个文件：`language-configurations/sde.json`（行注释 `;`）和 `language-configurations/tcl.json`（行注释 `#`）。括号匹配 `{}` `[]` `()` 两者一致。
 
