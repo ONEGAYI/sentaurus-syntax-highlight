@@ -14,7 +14,35 @@ function test(name, fn) {
 console.log('\n=== Scheme 重复定义检测测试 ===\n');
 
 /**
- * 从 scopeTree 中检测同一作用域内的重复定义。
+ * 构建预处理指令分支映射（与生产代码逻辑一致）。
+ */
+function buildPpBranchMap(text) {
+    const map = new Map();
+    const lines = text.split('\n');
+    const stack = [];
+    let nextId = 0;
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        const lineNum = i + 1;
+
+        if (/^#(if|ifdef|ifndef)\b/.test(line)) {
+            stack.push({ branchId: nextId++ });
+        } else if (/^#(elif|else)\b/.test(line)) {
+            if (stack.length > 0) stack[stack.length - 1].branchId = nextId++;
+        } else if (/^#endif\b/.test(line)) {
+            if (stack.length > 0) stack.pop();
+        }
+
+        if (stack.length > 0) {
+            map.set(lineNum, stack[stack.length - 1].branchId);
+        }
+    }
+    return map;
+}
+
+/**
+ * 从 scopeTree 中检测同一作用域内的重复定义（含条件分支感知）。
  * 返回重复项数组，每项: { name, line, firstLine, scopeType }
  */
 function findDuplicateDefs(code) {
@@ -22,13 +50,30 @@ function findDuplicateDefs(code) {
     if (!ast) return [];
 
     const scopeTree = buildScopeTree(ast);
+    const ppBranchMap = buildPpBranchMap(code);
     const duplicates = [];
 
+    function getBranchKey(def) {
+        const parts = [];
+        if (def.condGroup !== undefined) {
+            parts.push(`c:${def.condGroup}:${def.condBranch}`);
+        }
+        if (ppBranchMap) {
+            const ppBranch = ppBranchMap.get(def.line);
+            if (ppBranch !== undefined) {
+                parts.push(`p:${ppBranch}`);
+            }
+        }
+        return parts.length > 0 ? parts.join('|') : '';
+    }
+
     function walkScope(scope) {
-        const seen = new Map(); // name → first definition
+        const seen = new Map(); // composite key → first definition
         for (const def of scope.definitions) {
-            if (seen.has(def.name)) {
-                const first = seen.get(def.name);
+            const branchKey = getBranchKey(def);
+            const key = `${def.name}@${branchKey}`;
+            if (seen.has(key)) {
+                const first = seen.get(key);
                 duplicates.push({
                     name: def.name,
                     line: def.line,
@@ -36,7 +81,7 @@ function findDuplicateDefs(code) {
                     scopeType: scope.type,
                 });
             } else {
-                seen.set(def.name, def);
+                seen.set(key, def);
             }
         }
         for (const child of scope.children) {
@@ -130,6 +175,53 @@ test('letrec 绑定列表中重复变量被检测', () => {
     const dups = findDuplicateDefs(code);
     assert.strictEqual(dups.length, 1);
     assert.strictEqual(dups[0].name, 'f');
+});
+
+// --- 条件分支测试 ---
+
+test('if 分支内同名 define 不报（consequent/alternative）', () => {
+    const code = '(if cond\n  (begin (define x 1))\n  (begin (define x 2)))';
+    const dups = findDuplicateDefs(code);
+    assert.strictEqual(dups.length, 0, 'if 不同分支中的同名定义不应报重复');
+});
+
+test('if 分支内同一分支重复 define 仍被检测', () => {
+    const code = '(if cond\n  (begin (define x 1) (define x 2))\n  (begin (define x 3)))';
+    const dups = findDuplicateDefs(code);
+    assert.strictEqual(dups.length, 1, '同一分支内的重复定义应被检测');
+    assert.strictEqual(dups[0].name, 'x');
+    assert.strictEqual(dups[0].line, 2, '重复定义在 consequent 分支内');
+});
+
+test('cond 分支内同名 define 不报', () => {
+    const code = '(cond\n  (c1 (define x 1))\n  (c2 (define x 2))\n  (else (define x 3)))';
+    const dups = findDuplicateDefs(code);
+    assert.strictEqual(dups.length, 0, 'cond 不同分支中的同名定义不应报重复');
+});
+
+test('case 分支内同名 define 不报', () => {
+    const code = '(case val\n  ((a) (define x 1))\n  ((b) (define x 2)))';
+    const dups = findDuplicateDefs(code);
+    assert.strictEqual(dups.length, 0, 'case 不同分支中的同名定义不应报重复');
+});
+
+test('#if 块内同名 define 不报', () => {
+    const code = '#if NMOS\n(define x 1)\n#else\n(define x 2)\n#endif';
+    const dups = findDuplicateDefs(code);
+    assert.strictEqual(dups.length, 0, '#if 不同分支中的同名定义不应报重复');
+});
+
+test('#if 嵌套块内同名 define 不报', () => {
+    const code = '#if 0\n  #if COND\n(define x 1)\n  #else\n(define x 2)\n  #endif\n#endif\n(if test\n  (define x 3)\n  (define x 4))';
+    const dups = findDuplicateDefs(code);
+    assert.strictEqual(dups.length, 0, '#if 和 if 混合场景不应报重复');
+});
+
+test('#if 块内同分支重复 define 仍被检测', () => {
+    const code = '#if 1\n(define x 1)\n(define x 2)\n#endif';
+    const dups = findDuplicateDefs(code);
+    assert.strictEqual(dups.length, 1, '#if 同一分支内的重复定义应被检测');
+    assert.strictEqual(dups[0].name, 'x');
 });
 
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
