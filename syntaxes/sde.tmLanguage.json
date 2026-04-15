@@ -43,6 +43,10 @@
       ]
     },
     {
+      "match": "#(?:t(?:rue)?|f(?:alse)?|\\\\(?:newline|space|tab|[a-zA-Z0-9])|[()]|;)",
+      "name": "constant.character.format.placeholder"
+    },
+    {
       "name": "comment.line.hash",
       "match": "^\\s*#.*$"
     },
