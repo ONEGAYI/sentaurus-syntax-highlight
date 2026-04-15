@@ -25,135 +25,179 @@
   ```
   在项目根目录生成 `sentaurus-tcad-syntax-<version>.vsix`。
 
+## 项目结构
+
+```
+sentaurus-syntax-highlight/
+├── package.json                                ← 扩展清单：6 种语言注册、贡献点、命令
+├── CHANGELOG.md                                ← 版本变更日志
+├── README.md                                   ← 项目说明文档
+├── icon.png                                    ← 扩展图标
+├── language-configuration.json                 ← 遗留配置（已被 language-configurations/ 取代）
+├── .vscodeignore                               ← VSIX 打包排除规则
+│
+├── syntaxes/                                   ← TextMate 语法 + 函数文档数据
+│   ├── sde.tmLanguage.json                     ← SDE (Scheme) 语法高亮规则
+│   ├── sdevice.tmLanguage.json                 ← SDEVICE 语法高亮规则
+│   ├── sprocess.tmLanguage.json                ← SPROCESS 语法高亮规则
+│   ├── emw.tmLanguage.json                     ← EMW 语法高亮规则
+│   ├── inspect.tmLanguage.json                 ← Inspect 语法高亮规则
+│   ├── svisual.tmLanguage.json                 ← Svisual 语法高亮规则
+│   ├── all_keywords.json                       ← 全工具关键词数据库（补全 + 语法共用）
+│   ├── tree-sitter-tcl.wasm                    ← tree-sitter-tcl WASM 字节码
+│   ├── sde_function_docs.{json,zh-CN.json}     ← SDE 函数文档（中英文双语，400 API）
+│   ├── scheme_function_docs.{json,zh-CN.json}  ← Scheme 内置函数文档（中英文双语，191 函数）
+│   ├── sdevice_command_docs.{json,zh-CN.json}  ← SDEVICE 命令文档（中英文双语，341 关键词）
+│   └── svisual_command_docs.{json,zh-CN.json}  ← Svisual 命令文档（中英文双语）
+│
+├── language-configurations/                    ← 语言配置（注释符号、括号匹配、缩进）
+│   ├── sde.json                                ← SDE 配置：行注释 `;`
+│   └── tcl.json                                ← 5 种 Tcl 工具共用：行注释 `#`
+│
+├── snippets/                                   ← VSCode snippet JSON（按 language id 隔离）
+│   ├── sde.json                                ← SDE 代码片段
+│   ├── sdevice.json                            ← SDEVICE 代码片段
+│   ├── sprocess.json                           ← SPROCESS 代码片段
+│   ├── emw.json                                ← EMW 代码片段
+│   ├── inspect.json                            ← Inspect 代码片段
+│   └── svisual.json                            ← Svisual 代码片段
+│
+├── src/                                        ← 扩展源码（纯 CommonJS，无构建步骤）
+│   ├── extension.js                            ← 入口：激活、补全、悬停、QuickPick 命令注册
+│   ├── definitions.js                          ← 用户变量补全/悬停/跳转（Scheme + Tcl）
+│   │
+│   ├── commands/                               ← VSCode 命令实现
+│   │   └── expression-converter.js             ← Scheme 前缀 ↔ 中缀表达式双向转换
+│   │
+│   ├── lsp/                                    ← 语义功能核心（AST 解析 + Provider 注册）
+│   │   ├── scheme-parser.js                    ← Scheme 词法分析器 + AST 解析器
+│   │   ├── scheme-analyzer.js                  ← Scheme AST 定义提取 + 折叠范围
+│   │   ├── scope-analyzer.js                   ← Scheme 作用域树构建（词法作用域追踪）
+│   │   ├── semantic-dispatcher.js              ← Scheme 函数调用语义模式分发
+│   │   ├── tcl-parser-wasm.js                  ← Tcl WASM 解析器接口（单例模式）
+│   │   ├── tcl-ast-utils.js                    ← Tcl AST 遍历/查询/折叠/变量提取
+│   │   ├── tcl-symbol-configs.js               ← Tcl 工具 section 关键词配置
+│   │   │
+│   │   └── providers/                          ← VSCode Provider 实现
+│   │       ├── folding-provider.js             ← Scheme 代码折叠
+│   │       ├── bracket-diagnostic.js           ← Scheme 括号平衡诊断
+│   │       ├── signature-provider.js           ← Scheme 函数签名提示
+│   │       ├── undef-var-diagnostic.js         ← 未定义变量诊断（Scheme + Tcl 双语言）
+│   │       ├── tcl-folding-provider.js         ← Tcl 代码折叠（基于 braced_word）
+│   │       ├── tcl-bracket-diagnostic.js       ← Tcl 括号诊断（文本级 {} 平衡）
+│   │       └── tcl-document-symbol-provider.js ← Tcl 文档大纲（Outline 视图）
+│   │
+│   └── snippets/                               ← QuickPick 代码片段数据（JS 模块）
+│       ├── sde.js                              ← SDE 结构编辑器片段
+│       ├── sdevice.js                          ← SDEVICE 器件仿真片段
+│       ├── sprocess.js                         ← SPROCESS 工艺仿真片段
+│       ├── inspect.js                          ← Inspect 数据分析片段
+│       └── mesh.js                             ← 网格生成片段
+│
+├── tests/                                      ← 测试套件（纯 Node.js assert，零外部依赖）
+│   ├── test-definitions.js                     ← 用户变量定义提取
+│   ├── test-expression-converter.js            ← 表达式转换
+│   ├── test-scheme-parser.js                   ← Scheme 解析器
+│   ├── test-scope-analyzer.js                  ← 作用域分析
+│   ├── test-semantic-dispatcher.js             ← 语义分发
+│   ├── test-signature-provider.js              ← 签名提示
+│   ├── test-scheme-undef-diagnostic.js         ← Scheme 未定义变量诊断
+│   ├── test-scheme-var-refs.js                 ← Scheme 变量引用
+│   ├── test-snippet-prefixes.js                ← 代码片段前缀
+│   ├── test-tcl-ast-utils.js                   ← Tcl AST 工具（14 测试，mock 节点）
+│   ├── test-tcl-ast-variables.js               ← Tcl AST 变量提取
+│   ├── test-tcl-document-symbol.js             ← Tcl 文档大纲
+│   ├── test-tcl-scope-map.js                   ← Tcl 作用域映射
+│   ├── test-tcl-var-refs.js                    ← Tcl 变量引用
+│   └── test-undef-var-integration.js           ← 未定义变量诊断集成测试
+│
+├── scripts/                                    ← 开发工具脚本
+│   ├── extract_keywords.py                     ← 从 XML mode 文件提取关键词并生成语法
+│   ├── split_long_matches.py                   ← 拆分超长正则匹配模式（可读性优化）
+│   ├── translate_docs.py                       ← 函数文档机器翻译 + 人工校对流程
+│   ├── validate_i18n.py                        ← 中英文文档一致性校验
+│   ├── merge_i18n.py                           ← 合并翻译结果
+│   ├── fix_examples.py                         ← 修复文档中的代码示例
+│   └── extract_svisual_sections.js             ← 提取 Svisual section 信息
+│
+├── docs/                                       ← 项目文档与术语表
+│   ├── glossary.json                           ← TCAD 术语数据库
+│   ├── 函数文档提取与编写规范.md                 ← 文档编写规范
+│   ├── sde-scopes-and-colors.md               ← SDE scope 与颜色对照
+│   ├── prompts/i18n/                           ← 国际化 prompt 模板
+│   └── superpowers/                            ← 开发 spec/plan 归档
+│
+├── display_test/                               ← 功能展示测试文件
+├── build/                                      ← 批量处理中间产物
+├── assets/pics/                                ← 效果截图与演示 GIF
+└── references/                                 ← Sentaurus 官方手册 PDF/Markdown + jEdit 宏模板
+```
+
 ## 架构
 
-### 语言注册（`package.json`）
+扩展为 Synopsys Sentaurus TCAD 工具链的 6 种语言提供 IDE 支持，采用三层架构：
 
-注册了 6 种语言，每种对应一个 TextMate 语法：
+### 第一层：TextMate 语法高亮
 
-| Language ID | Sentaurus 工具 | 文件模式 |
-|-------------|---------------|----------|
-| `sde` | Structure Editor | `*_dvs.cmd`, `.scm` |
-| `sdevice` | Device Simulator | `*_des.cmd` |
-| `sprocess` | Process Simulator | `*_fps.cmd`, `.fps` |
-| `emw` | EM Wave | `*_eml.cmd`, `*_emw.cmd` |
-| `inspect` | Inspect | `*_ins.cmd` |
-| `svisual` | Sentaurus Visual (SVISUAL) | `*_vis.cmd` |
+由 `syntaxes/*.tmLanguage.json`（声明式 JSON）驱动，`package.json` 注册 6 种语言，每种通过 `filenamePatterns` 匹配文件（非扩展名），共用 `.cmd` 后缀互不冲突。
 
-语言配置按注释符号拆分为两个文件：`language-configurations/sde.json`（行注释 `;`）和 `language-configurations/tcl.json`（行注释 `#`）。括号匹配 `{}` `[]` `()` 两者一致。
+| Language ID | 工具 | 方言 | 文件模式 | 语言配置 |
+|-------------|------|------|----------|----------|
+| `sde` | Structure Editor | **Scheme** | `*_dvs.cmd`, `.scm` | `sde.json`（注释 `;`） |
+| `sdevice` | Device Simulator | Tcl | `*_des.cmd` | `tcl.json`（注释 `#`） |
+| `sprocess` | Process Simulator | Tcl | `*_fps.cmd`, `.fps` | `tcl.json` |
+| `emw` | EM Wave | Tcl | `*_eml.cmd`, `*_emw.cmd` | `tcl.json` |
+| `inspect` | Inspect | Tcl | `*_ins.cmd` | `tcl.json` |
+| `svisual` | Sentaurus Visual | Tcl | `*_vis.cmd` | `tcl.json` |
 
-### 自动补全（`src/extension.js`）
+每个语法文件按首匹配胜出规则依次包含：注释 → 字符串 → 数值 → `@Var@` SWB 参数 → 兜底标识符。关键词从 XML mode 文件提取（`scripts/extract_keywords.py`），XML 标签映射为 TextMate scope（KEYWORD1→`keyword.control`, KEYWORD2→`keyword.other`, KEYWORD3→`entity.name.tag`, KEYWORD4→`support.class`, FUNCTION→`entity.name.function`）。
 
-纯 CommonJS 模块，在任一语言激活时加载。启动时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。关键词按类别分配图标（关键字/函数/常量/类/结构体）并按类别优先级排序。
+### 第二层：关键词补全与文档悬停
 
-运行时依赖 `web-tree-sitter`（WASM 字节码，跨平台）。兼容 GLIBC 2.17（CentOS 7, VSCode 1.85.2-）。
+`src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（400 API）、Scheme 内置（191 函数）、SDEVICE（341 关键词）、Svisual（中英文双语）。
 
-### 用户变量支持（src/definitions.js）
+`src/definitions.js` 独立提供用户自定义变量的补全、悬停和跳转定义，通过 `document.version` 惰性缓存避免重复扫描。
 
-独立模块，零 VSCode API 依赖。提供用户自定义变量的补全、悬停和跳转定义功能。
+### 第三层：AST 语义功能
 
-- **语言覆盖**：Scheme (sde) 的 `define`/`let/let*/letrec` 绑定；Tcl (其他 4 种) 的 `set`/`proc`
-- **缓存**：`document.version` 惰性缓存，同版本不重复扫描
-- **跨行处理**：`findBalancedExpression` 括号匹配算法，跳过字符串和注释内的括号
-- **测试**：`tests/test-definitions.js`，纯 Node.js `assert`，零依赖
+双解析器架构，按语言方言分治：
 
-### Tcl AST 共享框架（4 语言共用）
+- **Scheme（SDE）**：手写解析器（`scheme-parser.js`），生成自定义 AST → `scheme-analyzer.js` 提取定义和折叠范围 → `scope-analyzer.js` 构建词法作用域树 → `semantic-dispatcher.js` 按函数调用模式分发语义
+- **Tcl（其余 5 种）**：`tree-sitter-tcl` WASM 解析器（`tcl-parser-wasm.js`）→ `tcl-ast-utils.js` 统一 AST 遍历/变量提取/折叠 → `tcl-symbol-configs.js` 配置各工具 section 关键词
 
-利用 `web-tree-sitter` 加载 `tree-sitter-tcl` 的 WASM 语法，为 sdevice、sprocess、emw、inspect 四种 Tcl 方言提供统一的 AST 语义功能。SDE (Scheme) 使用独立的手写解析器，不共享此框架。
+共用 Provider（`src/lsp/providers/`）：
+- `undef-var-diagnostic.js` — 跨语言未定义变量诊断（Scheme + Tcl）
+- `folding-provider.js` / `tcl-folding-provider.js` — 代码折叠
+- `bracket-diagnostic.js` / `tcl-bracket-diagnostic.js` — 括号平衡诊断
+- `signature-provider.js` — Scheme 函数签名提示
+- `tcl-document-symbol-provider.js` — Tcl 文档大纲
 
-```
-src/lsp/
-├── tcl-parser-wasm.js                  ← WASM 解析器接口（单例、初始化、调试工具）
-├── tcl-ast-utils.js                    ← AST 遍历/查询/折叠范围提取/括号诊断
-├── providers/
-│   ├── tcl-folding-provider.js         ← 代码折叠（基于 braced_word 节点）
-│   └── tcl-bracket-diagnostic.js       ← 括号诊断（文本级花括号平衡检查）
-```
+**内存管理**：WASM `tree` 对象使用后必须 `tree.delete()` 释放，Provider 层通过 `try/finally` 保证。
 
-**注册方式**：4 个语言 ID 统一注册（`for (const langId of TCL_LANGS)`）。
-**内存管理**：所有 `tree` 使用后必须调用 `tree.delete()` 释放 WASM 内存，Provider 层通过 `try/finally` 保证。
-**括号诊断策略**：使用文本级 `{}` 平衡计数而非 AST ERROR 节点，避免 sdevice 特有语法（坐标元组等）被误报。
-- **测试**：`tests/test-tcl-ast-utils.js`，14 个测试，使用 mock 节点（不依赖 WASM 运行时）
+### 代码片段系统
 
-1. `scripts/extract_keywords.py` 读取包含 `<KEYWORD1>`..`<KEYWORD4>`、`<LITERAL1>`..`<LITERAL3>`、`<FUNCTION>` 标签的 XML mode 文件
-2. 提取关键词到 `syntaxes/all_keywords.json`（参考/中间文件，同时供自动补全使用）
-3. 生成各模块的 `syntaxes/<module>.tmLanguage.json` 文件
+两套机制并行：
+- **VSCode snippets**（`snippets/*.json`）：按 language id 自动隔离，用户可在 Preferences 中自定义
+- **QuickPick 命令**（`src/snippets/*.js` → `sentaurus.insertSnippet`）：多层级菜单，数据定义在 JS 模块中，支持动态生成
 
-### TextMate Scope 映射
+### 表达式转换
 
-脚本将 XML 标签类型映射为 TextMate scope：
-- KEYWORD1 → `keyword.control`，KEYWORD2 → `keyword.other`，KEYWORD3 → `entity.name.tag`，KEYWORD4 → `support.class`
-- LITERAL1 → `constant.numeric`，LITERAL2 → `constant.numeric`，LITERAL3 → `string.quoted`
-- FUNCTION → `entity.name.function`
-
-### 高亮模式（每个语法文件）
-
-每个生成的语法文件按顺序包含：
-1. 注释模式：`#`（所有语言）；`;`（仅 SDE，Scheme 惯例）；`*`（SDevice、EMW、SProcess、Inspect）
-2. 双引号字符串模式（含转义处理）
-3. 数值字面量模式（`constant.numeric`）——整数、浮点数、科学计数法
-4. `@Var@` SWB 参数替换模式（`variable.parameter`）——如 `@previous@`、`@param:+2@`
-5. 兜底标识符模式（`variable.other`）——必须放在最后（首匹配胜出规则）
-
-## 函数文档系统
-
-`src/extension.js` 的 Hover 和 Completion 提供器从 JSON 文件读取函数文档，合并到统一的 `funcDocs` 对象中。
-当前已覆盖：
-
-- **SDE 函数文档**（中英文双语）：`syntaxes/sde_function_docs.json`（400 个 KEYWORD1 API）
-- **Scheme 内置函数文档**（中英文双语）：`syntaxes/scheme_function_docs.json`（191 个 R5RS 标准函数）
-- **sdevice 命令文档**（中英文双语）：`syntaxes/sdevice_command_docs.json`（英文）、`syntaxes/sdevice_command_docs.zh-CN.json`（中文）
-  覆盖全部 341 个 KEYWORD1+KEYWORD2+KEYWORD3 关键词。格式在 SDE 基础上增强，新增 `section`（所属模块）和 `keywords`（子关键词列表）字段。
-
-### 未来工作
-
-#### 完善自动补全
-
-自动识别用户变量并添加到补全，两个路径:
-
-- 只进行 `(define Var Val)` 等关键语法的正则匹配，实时扫描实时添加到补全列表。（当前）
-- 大改架构，引入语言服务器，采用 AST 获取变量及确定的语义，可跨文件 - 工作量巨大。
-
-## 代码片段系统（Snippets & QuickPick）
-
-### Snippets 文件
-
-`snippets/` 目录下按语言存放 VSCode snippet JSON 文件，每种语言独立：
-
-| 文件 | Language ID | 说明 |
-|------|-------------|------|
-| `snippets/sde.json` | `sde` | SDE (Scheme) 代码片段 |
-| `snippets/sdevice.json` | `sdevice` | SDEVICE 代码片段 |
-| `snippets/sprocess.json` | `sprocess` | SPROCESS 代码片段 |
-| `snippets/emw.json` | `emw` | EMW 代码片段 |
-| `snippets/inspect.json` | `inspect` | Inspect 代码片段 |
-
-**语言隔离机制**：多种语言共用 `.cmd` 扩展名，但 VSCode 根据 `filenamePatterns` 匹配到不同的 language id，snippets 跟随 language id 分发，不会冲突。用户自定义 snippets（Preferences → Configure User Snippets）也自动按 language id 隔离。
-
-### 命令面板 QuickPick
-
-注册了命令 `sentaurus.insertSnippet`（`Ctrl+Shift+P` → "Sentaurus: Insert Snippet"），弹出多层级 QuickPick 菜单：
-
-- **顶层分类**：Clipboard、Editing、Emacs、Files、Interface、Java、Misc、Properties、Sentaurus-Device、Sentaurus-Inspect、Sentaurus-Mesh、Sentaurus-Process、Sentaurus-StructEditor、Text
-- **独立操作**：Open Include（与分类之间有分隔线）
-- **子选项**：待填充，选中分类后展示该分类下的具体命令模板
-
-实现位于 `src/extension.js` 的 `activate()` 函数末尾，使用 `vscode.window.showQuickPick()` 链式调用。
+`src/commands/expression-converter.js` 实现 Scheme 前缀表示 ↔ 中缀表示的双向转换（算术运算 + 数学函数）。
 
 ## 关键约束
 
 - 多种语言共用 `.cmd` 扩展名——文件关联完全依赖 `filenamePatterns`，而非 `extensions`
-- 提取脚本中的路径是硬编码的，跨环境使用前必须修改
+- TextMate 语法遵循首匹配胜出规则——兜底模式必须放在最后
+- `scripts/extract_keywords.py` 路径硬编码，跨环境使用前必须修改 `main()` 中的路径
 - `*.Identifier` 文件已被 gitignore
-- TextMate 语法模式遵循首匹配胜出规则——兜底模式必须放在最后
-- 使用中文编写文档、提交和发布。
-- 必须考虑插件兼容性: CentOS 7, Vscode v1.85.2, GLIBC 2.17
+- 使用中文编写文档、提交和发布
+- 兼容性目标：CentOS 7 / VSCode v1.85.2 / GLIBC 2.17（无 TypeScript、无构建步骤、无原生二进制）
 
 ## 发布流程
 
 ### 步骤
 
-1. **更新 CHANGELOG**：回顾 `git log <上次release-tag>..HEAD --oneline`，将所有提交归纳为 CHANGELOG 条目。新增版本段落置于文件顶部，格式与已有条目保持一致（`### 新功能` / `### Bug 修复` / `### 其他改进`）。同时在底部 `<!-- 变更链接 -->` 添加新版本的 compare 链接
+1. **更新 CHANGELOG**：回顾 `git log <上次release-tag>..HEAD --oneline`，将所有提交归纳为 CHANGELOG 条目。新增版本段落置于文件顶部，格式与已有条目保持一致（`### 新功能` / `### Bug 修复` / `### 其他改进`）。同时在底部 `<!-- 变更链接 -->`（建议使用 Grep 快速定位行）添加新版本的 compare 链接
 2. **提交 CHANGELOG**
 3. **打包**：`npx vsce package`
 4. **推送**：`git push origin main`
