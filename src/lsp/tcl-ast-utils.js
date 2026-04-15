@@ -155,6 +155,286 @@ function getVariables(root) {
 }
 
 /**
+ * 收集 AST 中所有变量引用（variable_ref 节点，即 $varName）。
+ * tree-sitter-tcl 不会在注释内生成 variable_ref 节点，无需手动跳过。
+ * 返回字段：name(去除$前缀)、line(1-based)、startCol/endCol(列号)
+ * @param {object} root - AST 根节点
+ * @returns {Array<{name: string, line: number, startCol: number, endCol: number}>}
+ */
+function getVariableRefs(root) {
+    const refs = [];
+    walkNodes(root, node => {
+        if (node.type === 'variable_ref') {
+            const raw = node.text;
+            const name = raw.startsWith('$') ? raw.slice(1) : raw;
+            if (name) {
+                refs.push({
+                    name,
+                    line: node.startPosition.row + 1,
+                    startCol: node.startPosition.column,
+                    endCol: node.endPosition.column,
+                });
+            }
+        }
+    });
+    return refs;
+}
+
+/**
+ * 构建行号 → 可见变量集的作用域映射。
+ * @param {object} root - AST 根节点
+ * @returns {Map<number, Set<string>>} 行号(1-based) → 可见变量名集合
+ */
+function buildScopeMap(root) {
+    const maxLine = _countMaxLine(root) + 1; // +1 确保文件末尾之后仍有可见行
+    const scopeMap = new Map();
+    for (let i = 1; i <= maxLine; i++) {
+        scopeMap.set(i, new Set());
+    }
+
+    // 第一遍：收集全局定义
+    _collectGlobalDefs(root, scopeMap, maxLine);
+
+    // 第二遍：处理 proc 作用域
+    _processProcScopes(root, scopeMap, maxLine);
+
+    return scopeMap;
+}
+
+function _countMaxLine(node) {
+    let maxLine = 0;
+    walkNodes(node, n => {
+        const endRow = n.endPosition.row + 1;
+        if (endRow > maxLine) maxLine = endRow;
+    });
+    return maxLine;
+}
+
+function _collectGlobalDefs(root, scopeMap, maxLine) {
+    for (let i = 0; i < root.childCount; i++) {
+        const child = root.child(i);
+        if (!child) continue;
+
+        if (child.type === 'set') {
+            const idNode = _findChildByType(child, 'id');
+            if (idNode) {
+                const name = idNode.text;
+                if (!name.startsWith('env(')) {
+                    const defLine = idNode.startPosition.row + 1;
+                    _addToScopeFromLine(scopeMap, name, defLine, maxLine);
+                }
+            }
+        }
+
+        if (child.type === 'procedure') {
+            const simpleWords = _findChildrenByType(child, 'simple_word');
+            for (const sw of simpleWords) {
+                if (sw.text !== 'proc') {
+                    const defLine = sw.startPosition.row + 1;
+                    _addToScopeFromLine(scopeMap, sw.text, defLine, maxLine);
+                    break;
+                }
+            }
+        }
+
+        if (child.type === 'command') {
+            const firstChild = child.child(0);
+            if (firstChild && firstChild.type === 'simple_word') {
+                const cmdName = firstChild.text;
+                if (cmdName === 'set' || cmdName === 'lappend' || cmdName === 'append') {
+                    for (let j = 1; j < child.childCount; j++) {
+                        const arg = child.child(j);
+                        if (arg && (arg.type === 'id' || arg.type === 'simple_word')) {
+                            const name = arg.text;
+                            if (!name.startsWith('env(') && !/^\d/.test(name)) {
+                                const defLine = arg.startPosition.row + 1;
+                                _addToScopeFromLine(scopeMap, name, defLine, maxLine);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (child.type === 'foreach') {
+            const argsNode = _findChildByType(child, 'arguments');
+            if (argsNode && argsNode.childCount > 0) {
+                const loopVar = argsNode.child(0);
+                if (loopVar && loopVar.text) {
+                    const defLine = loopVar.startPosition.row + 1;
+                    _addToScopeFromLine(scopeMap, loopVar.text, defLine, maxLine);
+                }
+            }
+        }
+    }
+}
+
+function _addToScopeFromLine(scopeMap, name, fromLine, toLine) {
+    for (let i = fromLine; i <= toLine; i++) {
+        let set = scopeMap.get(i);
+        if (!set) {
+            set = new Set();
+            scopeMap.set(i, set);
+        }
+        set.add(name);
+    }
+}
+
+function _processProcScopes(root, scopeMap, maxLine) {
+    const procedures = [];
+    walkNodes(root, node => {
+        if (node.type === 'procedure') procedures.push(node);
+    });
+
+    for (const proc of procedures) {
+        const bodyNode = _findChildByType(proc, 'braced_word');
+        if (!bodyNode) continue;
+
+        const bodyStart = bodyNode.startPosition.row + 1;
+        const bodyEnd = bodyNode.endPosition.row + 1;
+
+        // 收集全局 proc 名（这些在 proc 内也应可见）
+        const globalDefs = new Set();
+        for (let i = 0; i < root.childCount; i++) {
+            const child = root.child(i);
+            if (child && child.type === 'procedure') {
+                const simpleWords = _findChildrenByType(child, 'simple_word');
+                for (const sw of simpleWords) {
+                    if (sw.text !== 'proc') globalDefs.add(sw.text);
+                }
+            }
+        }
+
+        // 清空 proc body 内的全局变量（proc 有独立作用域）
+        for (let i = bodyStart; i <= bodyEnd; i++) {
+            const lineSet = scopeMap.get(i);
+            if (lineSet) {
+                const toDelete = [];
+                for (const name of lineSet) {
+                    if (!globalDefs.has(name)) toDelete.push(name);
+                }
+                for (const name of toDelete) lineSet.delete(name);
+            }
+        }
+
+        // 添加 proc 参数
+        const argsNode = _findChildByType(proc, 'arguments');
+        if (argsNode) {
+            const argNodes = _findChildrenByType(argsNode, 'argument');
+            for (const arg of argNodes) {
+                const name = arg.text;
+                _addToScopeFromLine(scopeMap, name, bodyStart, bodyEnd);
+            }
+        }
+
+        // 收集 body 内的局部定义
+        _collectLocalDefs(bodyNode, scopeMap, bodyStart, bodyEnd);
+
+        // 处理 global/upvar/variable 声明
+        _processScopeImports(bodyNode, scopeMap, root, bodyStart, bodyEnd);
+    }
+}
+
+function _collectLocalDefs(node, scopeMap, scopeStart, scopeEnd) {
+    if (!node) return;
+
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (!child) continue;
+
+        if (child.type === 'set') {
+            const idNode = _findChildByType(child, 'id');
+            if (idNode) {
+                const name = idNode.text;
+                if (!name.startsWith('env(')) {
+                    const defLine = idNode.startPosition.row + 1;
+                    _addToScopeFromLine(scopeMap, name, defLine, scopeEnd);
+                }
+            }
+        }
+
+        if (child.type === 'foreach') {
+            const argsNode = _findChildByType(child, 'arguments');
+            if (argsNode && argsNode.childCount > 0) {
+                const loopVar = argsNode.child(0);
+                if (loopVar && loopVar.text) {
+                    const defLine = loopVar.startPosition.row + 1;
+                    _addToScopeFromLine(scopeMap, loopVar.text, defLine, scopeEnd);
+                }
+            }
+        }
+
+        if (child.type === 'command') {
+            const firstChild = child.child(0);
+            if (firstChild && firstChild.type === 'simple_word') {
+                const cmdName = firstChild.text;
+
+                if (cmdName === 'for') {
+                    const bracedWords = _findChildrenByType(child, 'braced_word');
+                    for (const bw of bracedWords) {
+                        _collectLocalDefs(bw, scopeMap, scopeStart, scopeEnd);
+                    }
+                } else if (cmdName === 'lappend' || cmdName === 'append') {
+                    if (child.childCount >= 2) {
+                        const varArg = child.child(1);
+                        if (varArg && (varArg.type === 'id' || varArg.type === 'simple_word')) {
+                            const name = varArg.text;
+                            if (!name.startsWith('env(')) {
+                                const defLine = varArg.startPosition.row + 1;
+                                _addToScopeFromLine(scopeMap, name, defLine, scopeEnd);
+                            }
+                        }
+                    }
+                }
+            }
+            _collectLocalDefs(child, scopeMap, scopeStart, scopeEnd);
+        }
+
+        if (child.type === 'braced_word') {
+            _collectLocalDefs(child, scopeMap, scopeStart, scopeEnd);
+        }
+    }
+}
+
+function _processScopeImports(node, scopeMap, root, bodyStart, bodyEnd) {
+    if (!node) return;
+
+    walkNodes(node, n => {
+        if (n.type !== 'command') return;
+        const firstChild = n.child(0);
+        if (!firstChild || firstChild.type !== 'simple_word') return;
+
+        const cmdName = firstChild.text;
+
+        if (cmdName === 'global') {
+            for (let i = 1; i < n.childCount; i++) {
+                const arg = n.child(i);
+                if (arg && arg.type === 'simple_word') {
+                    _addToScopeFromLine(scopeMap, arg.text, bodyStart, bodyEnd);
+                }
+            }
+        }
+
+        if (cmdName === 'upvar') {
+            const words = _findChildrenByType(n, 'simple_word');
+            if (words.length >= 2) {
+                const localName = words[words.length - 1].text;
+                _addToScopeFromLine(scopeMap, localName, bodyStart, bodyEnd);
+            }
+        }
+
+        if (cmdName === 'variable') {
+            const words = _findChildrenByType(n, 'simple_word');
+            if (words.length >= 2) {
+                const varName = words[1].text;
+                _addToScopeFromLine(scopeMap, varName, bodyStart, bodyEnd);
+            }
+        }
+    });
+}
+
+/**
  * 递归收集变量定义。
  * @param {object} node - 当前 AST 节点
  * @param {Array} results - 收集结果的数组
@@ -663,6 +943,8 @@ module.exports = {
     getFoldingRanges,
     findMismatchedBraces,
     getVariables,
+    getVariableRefs,
+    buildScopeMap,
     getDocumentSymbols,
     TCL_LANGS,
 };
