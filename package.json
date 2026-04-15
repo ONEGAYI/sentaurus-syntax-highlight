@@ -286,6 +286,15 @@
             "markdownDescription": "Prefix for **Refinement Placement**.\n\nAffects:\n- `Meshing > Ref-box` → `sdedr:define-refinement-placement`\n- `Meshing > Ref-material` → `sdedr:define-refinement-material`\n- `Meshing > Ref-region` → `sdedr:define-refinement-region`",
             "markdownDescription.zh-CN": "**网格细化放置**的前缀。\n\n影响范围：\n- `Meshing > Ref-box` → `sdedr:define-refinement-placement`\n- `Meshing > Ref-material` → `sdedr:define-refinement-material`\n- `Meshing > Ref-region` → `sdedr:define-refinement-region`",
             "order": 10
+          },
+          "sentaurus.definitionMaxWidth": {
+            "type": "number",
+            "default": 60,
+            "minimum": 20,
+            "maximum": 200,
+            "description": "用户定义变量/函数提示框中每行最大显示字符数",
+            "description.zh-CN": "用户定义变量/函数提示框中每行最大显示字符数",
+            "order": 11
           }
         }
       }
