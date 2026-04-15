@@ -67,12 +67,39 @@ function buildScopeTree(ast) {
                         for (const binding of children[1].children) {
                             if (binding.type === 'List' && binding.children.length >= 1 && binding.children[0].type === 'Identifier') {
                                 letScope.definitions.push({ name: binding.children[0].value, kind: 'variable' });
+                                // 遍历绑定值表达式（如 lambda），使参数进入作用域
+                                for (let j = 1; j < binding.children.length; j++) {
+                                    walk(binding.children[j], letScope);
+                                }
                             }
                         }
                     }
                     parentScope.children.push(letScope);
                     for (let i = 2; i < children.length; i++) {
                         walk(children[i], letScope);
+                    }
+                    return;
+                }
+
+                // (lambda (params...) body...)
+                if (children[0].value === 'lambda') {
+                    const lambdaScope = {
+                        type: 'lambda',
+                        startLine: node.line,
+                        endLine: node.endLine,
+                        definitions: [],
+                        children: [],
+                    };
+                    if (children[1] && children[1].type === 'List') {
+                        for (const param of children[1].children) {
+                            if (param.type === 'Identifier') {
+                                lambdaScope.definitions.push({ name: param.value, kind: 'parameter' });
+                            }
+                        }
+                    }
+                    parentScope.children.push(lambdaScope);
+                    for (let i = 2; i < children.length; i++) {
+                        walk(children[i], lambdaScope);
                     }
                     return;
                 }
@@ -131,11 +158,28 @@ function getVisibleDefinitions(tree, line) {
  * Scheme 特殊形式关键词 — 不作为变量引用
  */
 const SCHEME_SPECIAL_FORMS = new Set([
+    // 特殊形式（语法关键字）
     'define', 'lambda', 'if', 'cond', 'else', 'case', 'and', 'or',
     'let', 'let*', 'letrec', 'letrec*', 'let-values', 'let*-values',
     'set!', 'begin', 'do', 'delay', 'quote', 'quasiquote', 'unquote',
     'unquote-splicing', 'define-syntax', 'syntax-rules', 'when', 'unless',
     'not', 'map', 'for-each', 'apply',
+    // 标准运算符和过程（scheme_function_docs.json 未收录的基础操作）
+    '+', '-', '*', '/', '=', '<', '>', '<=', '>=',
+    'cons', 'car', 'cdr', 'list', 'null?', 'pair?', 'list?', 'length',
+    'append', 'reverse', 'cadr', 'caddr', 'cadddr', 'cddr', 'caar', 'cdar',
+    'number?', 'string?', 'symbol?', 'char?', 'vector?', 'boolean?', 'procedure?',
+    'zero?', 'positive?', 'negative?', 'odd?', 'even?',
+    'modulo', 'remainder', 'quotient', 'abs', 'max', 'min',
+    'sqrt', 'expt', 'exp', 'log', 'sin', 'cos', 'tan', 'atan', 'asin', 'acos',
+    'floor', 'ceiling', 'round', 'truncate',
+    'string-append', 'string-length', 'string-ref', 'substring',
+    'string->number', 'number->string', 'string->symbol', 'symbol->string',
+    'string->list', 'list->string',
+    'char->integer', 'integer->char',
+    'display', 'newline', 'write', 'read', 'print',
+    'equal?', 'eqv?', 'eq?', 'values', 'call-with-values', 'dynamic-wind',
+    'eval', 'error', 'void',
 ]);
 
 /**
@@ -178,9 +222,14 @@ function _collectRefs(node, refs, excluded) {
     }
 
     if (node.type === 'List') {
+        const children = node.children || [];
+        // (quote ...) 列表形式 — 跳过全部内容（等同于 '(...) Quote 节点）
+        if (children.length >= 2 && children[0].type === 'Identifier' &&
+            children[0].value === 'quote') {
+            return;
+        }
         // 特殊处理：列表的第一个元素如果是特殊形式，其名称不作为引用
         // 但子节点仍需递归处理
-        const children = node.children || [];
         for (let i = 0; i < children.length; i++) {
             const child = children[i];
             if (i === 0 && child.type === 'Identifier' &&

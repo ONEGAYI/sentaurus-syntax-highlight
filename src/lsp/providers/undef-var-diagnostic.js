@@ -17,6 +17,7 @@ const TCL_BUILTIN_VARS = new Set([
 /** Scheme (SDE) 隐式变量白名单 */
 const SCHEME_BUILTIN_VARS = new Set([
     'argc', 'argv',
+    'position',   // SDE 内置构造函数，未在 sde_function_docs.json 中收录
 ]);
 
 /** Tcl 语言集合 */
