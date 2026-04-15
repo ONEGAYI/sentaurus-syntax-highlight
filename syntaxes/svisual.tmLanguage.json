@@ -1,59 +1,191 @@
 {
-  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-  "name": "Sentaurus SVISUAL",
-  "patterns": [
-    {
-      "match": "\\b(remove_curves|set_ellipse_prop|set_axis_prop|set_plot_prop|get_axis_prop|set_transformation|set_value_blanking|remove_custom_buttons|remove_plots|render_mode|get_line_prop|draw_rectangle|move_plot|probe_field|select_plots|list_tdr_states|set_window_full|set_best_look|create_projection|add_frame|list_lines|set_region_prop|zoom_plot|set_cutplane_prop|get_field_prop|set_vector_prop|export_curves|list_rectangles|start_movie|reload_files|get_region_prop|link_plots|save_plot_to_script|help|set_curve_prop|get_cutline_prop|get_variable_data|list_fields|create_field|set_camera_prop|get_legend_prop|windows_style|create_surface|load_file|calculate|create_cut_boundary|load_script_file|list_curves|draw_textbox|list_ellipses|get_curve_prop|list_cutlines|extract_streamlines|create_streamline|overlay_plots|remove_textboxes|get_textbox_prop|draw_ellipse|get_rectangle_prop|remove_ellipses|rotate_plot|remove_streamlines|list_plots|create_curve|set_window_size|export_view|get_input_data|get_ruler_prop|stop_movie|extract_path|draw_line|create_cutline|set_deformation|set_material_prop|list_streamlines|set_ruler_prop|remove_rectangles|load_library|get_plot_prop|set_band_diagram|undo|create_variable|remove_cutplanes|add_custom_button|set_legend_prop|get_streamline_prop|list_textboxes|remove_datasets|set_textbox_prop|show_msg|set_streamline_prop|get_material_prop|list_materials|calculate_scalar|find_values|reset_settings|load_file_datasets|list_vertical_lines|export_settings|exit|get_grid_prop|create_cutplane|set_field_prop|echo|integrate_field|set_vertical_lines_prop|version|list_custom_buttons|create_iso|set_cutline_prop|remove_lines|get_camera_prop|get_cutplane_prop|list_regions|list_files|set_grid_prop|remove_cutlines|export_movie|set_tag_prop|set_line_prop|create_cutpolyline|get_curve_data|list_cutplanes|diff_plots|list_datasets|import_settings|list_movie_frames|get_vector_prop|create_plot|reload_datasets|export_variables|probe_curve|get_vertical_lines_prop|get_ellipse_prop|set_rectangle_prop|list_variables|calculate_field_value|unload_file)(?![A-Za-z0-9_:-])",
-      "name": "keyword.control.svisual"
-    },
-    {
-      "match": "\\b(range|scale_font_family|label_font_att|DrudeDampFac|custom_text|axisX|label_font_family|EpsilonInf|nrow|op|noisename|fill_color|xscale|label_format|align|iplists|nofpoints|duplicate|WavelengthDep|title_font_factor|method|Model|parameter|font_color|type|MaxIterations|z2|Material|sort|integ_terminal_speed|minor_ticks_length|format|line1_color|size|port1|list|font_att|box|valueX|axisY|vo|title|points|freqpoint|biaspoint|StartTick|xLog|color_bg|geoms|title_font_family|integ_initial_step|label_font_size|NumberModLorentzPoles|arrow_width|materials|label_font_factor|plots|icon|SimplexMaxFunEvals|label_position|noisesource|nof_minor_ticks|sIFM|dq|origin|ModLorentzAmp|levels|line1_width|head_angle|NumberDebyePoles|line2_width|line_resolution|axisY2|head_shape|line_style|ModLorentzDampFac2|transformation|z|line_color|f|DebyeAmp|material_colors|default|label_font_color|info|anchor_pos|i|vtc_right|tdr_state|alpha|scale_format|v|values|nof_labels|scale_padding|particles_size|start|powergain|width|help|csv|shift|dataset|handles_color|arrow_color|ids|scale|at|ModLorentzDampFac|nbin|weighted|smooth|position|xmax|regions|markers_type|script|vmin|conditions|normal_arrow|CRITableStep|curves|p2|point|LogFile|integ_max_steps|arrow_size|linestyle|DebyeRelaxTime|text|ncond|scale_font_size|LorentzDampFac|biasport|rvs|ref_plot|aoo|xmin|vin|scale_precision|out|SimplexTolX|moments|b|s|linewidth|vout|label|index|focal_point|title_font_att|name|fi|greater|view_angle|arrow_angle|border_color|factor|TickStep|scale_font_factor|datasets|tdr_state_index|label_size|reset|dB|z1|elements|rot_size|angle|biasportsign|scale_factor_uniform|line2_color|orientation|scale_font_color|vmax|LorentzAmp|io|line_pattern|min|padding|sign|rfmatrix|ranges|plot|spacing|frame_width|font_factor|function|constant_arrow|geom|direction|EndTick|x|devicewidth|rotation|font_size|path|color_fg|ResultFile|ss|translucency_level|anchor|rotation_point|coord|view_up|contacts_color|region|occurrence|target|squares|pos2|file|blank|normal|WavelengthRange|SimplexTolFun|files|slopedataset|psi|ModLorentzFreq|vtc_left|gq|pos1|line1_style|scale_factor_grid|rot_width|port2|setup|ncol|cons|color|rot_color|theta|font_family|ratio_xtoy|nrand|aoi|field|line2_style|xShift|xo|yLog|n|location|sifm|sgn|integ_max_propagation|plane|ParameterFile|npar|link|scale_font_att|title_font_size|rseed|desc|filename|segments|SimplexMaxIterations|value|pos|xaxis|border_width|title_font_color|special|frames|arrow_style|m|phi|style|p1|semdataset|y|label_pos|markers_size|axis|color_map|ydd|resolution|deriv|line_width|minor_ticks_position|nsam|frame_duration|arrow_step|rfparameter|dim|margins|NumberLorentzPoles|weights|CRITableFile|yShift|LorentzFreq|NumberDrudePoles|id|valueY|material|rsig|max|less|head_size|end|DrudeFreq|yScale|r|eps|xScale|path_depth|precision|window|log10|FinalPlot|custom_levels|dss|WeightImagEps|ticks_position)(?![A-Za-z0-9_:-])",
-      "name": "keyword.other.svisual"
-    },
-    {
-      "match": "\\b(hide_field|hide_bands|warning|scale_font_factor|range|max_fixed|font_family|off|scale_font_family|ratio_xtoy|show_curve_markers|tdr_state_index|enable_path_limit|label_size|label_font_att|not_selected|overwrite|aspect_ratio_on|aspect_ratio_off|reset|label_font_color|info|line2_style|not_axes_interchanged|inverted|hide_background|anchor_pos|xShift|hide_vector|hide_scale|axisX|hide_bulk|show_major_ticks|hide_cube_axes|label_font_family|integ|rot_size|hide_axes|hide_markers|show_path|location|error|tdr_state|scale_factor_uniform|not_keep_aspect_ratio|scale_format|manual_padding|yesno|show_legend|values|constant_heads|nof_labels|auto_precision|line2_color|hide_rotation_point|orientation|hide_handles|scale_font_color|particles_size|scale_padding|fill_color|hide_ticks|width|hide_border|show_anchor|intersection|alldata|inspect|label_format|fullpath|align|snap_on|handles_color|show_line|hide_path|arrow_color|title_font_factor|show_vector|manual_precision|scale_font_att|line_pattern|title_font_size|show_axes_scale|scale|font_color|at|returndomain|on|min|position|type|hide_label|label_normal|padding|reverse|dolly_zoom_on|markers_type|show_title|double|pos|hide_curve_lines|spacing|interpolated_values|frame_width|min_auto|border_width|font_factor|function|title_font_color|translucency_on|minor_ticks_length|hide_max_marker|line1_color|show_mesh|show_min_marker|constant_arrow|show_bulk|p2|material_colors|show_bands|arrow_style|size|list|show_ticks|font_att|arrow_size|p1|show_handles|rotation|absolute|axisY|text|label_pos|markers_size|min_fixed|font_size|unlink|positive_direction|title|axis|show_scale|color_map|scale_font_size|color_fg|max_auto|show_grid|deriv|hide_minor_ticks|hide_title|string|surface|snap|show_arrows|translucency_level|line_width|minor_ticks_position|anchor|show_minor_lines|hide_axes_scale|hide_axes_title|label_op|show_max_marker|arrow_step|auto_spacing|color_bg|major_ticks_length|rotation_point|hide_major_ticks|margins|show_rotation_point|title_font_family|hide_mesh|show_axes_title|show_cube_axes|hide_line|yShift|label_font_size|view_up|not_inverted|1d|show_all|disable_path_limit|scale_precision|show_background|arrow_width|pos2|file|max|parts|negative_direction|scalar|label_font_factor|normal|show_field|hide_minor_lines|label_position|auto_padding|variables|nof_minor_ticks|selected|axes_interchanged|head_size|show_axes|origin|pos1|hide_all|snap_off|extrapolate|translucency_off|line1_style|hide_legend|levels|display|show|show_label|scale_factor_grid|hide_min_marker|primary_values|yScale|line1_width|hide_arrows|xScale|head_angle|int|label|normalized|rot_width|hide_curve_markers|line2_width|line_resolution|show_markers|focal_point|path_depth|head_shape|line_style|all|hide_grid|modify|title_font_att|transformation|setup|show_border|line_color|precision|normal_heads|custom_levels|show_minor_ticks|hide_anchor|manual_spacing|view_angle|ticks_position|hide|arrow_angle|border_color|union|new_plot|color|rot_color|show_curve_lines|separator|keep_aspect_ratio)(?![A-Za-z0-9_:-])",
-      "name": "entity.name.tag.svisual"
-    },
-    {
-      "match": "\\b(rfx::Cart2Polar_v|rfx::Conj_v|const::MagneticFluxQuantum|const::MolarVolume|ext::FindExtrema|rfx::GetFt|const::FaradayConstant|const::BoltzmannConstant|ext::SubLists|ifm::ReadCSV|rfx::GetFmax|ext::ExtractVglog|const::FineStructureConstant|emw::fit::Run|rfx::Phase_v|ext::ExtractGm|rfx::CreateDataset|rfx::Export|rfx::Sub_c|ext::ExtractVglin|ext::ExtractVdlin|const::BohrMagneton|emw::fit::Graph|ext::DiffForwardList|rfx::Y2S|ifm::GetsIFMStdDev|ext::ExtractRsh|ifm::ReadsIFM|rfx::Load|ifm::GetNoiseStdDev|emw::fit::Globals|ext::AbsList|ext::ExtractValue|rfx::Abs_v|rfx::Y2H|ifm::GetSNM|const::Permittivity|rfx::Mulsc_c|ifm::GetHistogram|rfx::Phase_c|ext::ExtractBVv|ext::ExtractVtsat|const::ElementaryCharge|rfx::Add_v|rfx::Abs_c|ext::LinFit|emw::fit::ComplexRefractiveIndex|const::SpeedOfLight|ifm::WriteCSV|ext::ExtractVdlog|rfx::Div_c|const::Permeability|rfx::Mul_v|ext::FindVals|const::PlanckConstant|const::AtomicMassConstant|ifm::GetMoments|emw::fit::Plot|rfx::PolarBackdrop|rfx::PowerGain|const::AvogadroConstant|rfx::Y2Z|ifm::GetGaussian|ext::ExtractVti|rfx::GetNoiseFigure|ext::Linspace|rfx::SmithBackdrop|rfx::Polar2Cart_v|rfx::GetNearestIndex|ext::ExtractRdiff|ext::ExtractExtremum|rfx::Im_c|ifm::GetMOSWeights|ext::RemoveZeros|ext::DiffList|rfx::NoiseFigure|emw::fit::Clear|rfx::GetFK1|rfx::Sign|rfx::GetParsAtPoint|ext::Log10List|rfx::Add_c|ifm::GetDataQuantiles|ifm::GetMOSIVs|rfx::Abs2_c|ext::RemoveDuplicates|ifm::GetQQ|rfx::Mul_c|rfx::Cart2Polar_c|rfx::Re_c|ext::ExtractVtgm|ext::LinTransList|rfx::Polar2Cart_c|const::ElectronMass|const::StefanBoltzmannConstant|const::RydbergConstant|rfx::GetPowerGain|ext::ExtractBVi|emw::fit::DispersiveMedia|ext::ExtractEarlyV|rfx::Sub_v|const::Pi|const::ElectronVolt|const::kT300|ifm::Gauss|ext::FilterTable|ext::ExtractSS|emw::fit::Fitting|const::ProtonMass|rfx::Conj_c|ext::ExtractIoff|rfx::RFCList|ext::ExtractSsub|rfx::Div_v|lib::SetInfoDef|rfx::Abs2_v|ifm::GetSRAMVTC|const::GravitationConstant|const::FreeSpaceImpedance)(?![A-Za-z0-9_:-])",
-      "name": "support.class.svisual"
-    },
-    {
-      "match": "\\b(diamond|strikeout|vertical|map|xz|default|plus|inter|top_left|down|y2|yellow|right|darkMagenta|square|up|yz|xy|linear|arrow_solid|blue|dash|ioff|both|magenta|cyan|darkGreen|ron|scientific|csv|cross|down_right|head_closed|top_right|logabs|center|left|courier|min|arrow|green|rout|custom|darkGray|bottom_right|vivid|white|diamondf|circle|red|fixed|solid|times|black|olive|x|any|list|right_down|darkRed|y|head_solid|forward|circlef|arial|lightGray|grayscale|idsat|dot|fmmax|gray|vth|darkCyan|grid|free|constant|italic|plx|max|in|classic|darkBlue|normal|backward|bold|asinh|underline|squaref|log|horizontal|all|dashdotdot|engineering|z|bottom_left|dashdot|head)(?![A-Za-z0-9_:-])",
-      "name": "string.quoted.svisual"
-    },
-    {
-      "name": "comment.line.hash",
-      "match": "#.*$"
-    },
-    {
-      "name": "comment.line.asterisk",
-      "match": "\\*.*$"
-    },
-    {
-      "name": "string.quoted.double",
-      "begin": "\"",
-      "end": "\"",
-      "patterns": [
+    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+    "name": "Sentaurus SVISUAL",
+    "patterns": [
         {
-          "name": "constant.character.escape",
-          "match": "\\\\."
+            "patterns": [
+                {
+                    "match": "\\b(remove_curves|set_ellipse_prop|set_axis_prop|set_plot_prop|get_axis_prop|set_transformation|set_value_blanking|remove_custom_buttons|remove_plots|render_mode|get_line_prop|draw_rectangle|move_plot|probe_field|select_plots|list_tdr_states|set_window_full|set_best_look|create_projection|add_frame|list_lines|set_region_prop|zoom_plot|set_cutplane_prop|get_field_prop|set_vector_prop|export_curves|list_rectangles|start_movie|reload_files)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.control.svisual"
+                },
+                {
+                    "match": "\\b(get_region_prop|link_plots|save_plot_to_script|help|set_curve_prop|get_cutline_prop|get_variable_data|list_fields|create_field|set_camera_prop|get_legend_prop|windows_style|create_surface|load_file|calculate|create_cut_boundary|load_script_file|list_curves|draw_textbox|list_ellipses|get_curve_prop|list_cutlines|extract_streamlines|create_streamline|overlay_plots|remove_textboxes|get_textbox_prop|draw_ellipse|get_rectangle_prop|remove_ellipses)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.control.svisual"
+                },
+                {
+                    "match": "\\b(rotate_plot|remove_streamlines|list_plots|create_curve|set_window_size|export_view|get_input_data|get_ruler_prop|stop_movie|extract_path|draw_line|create_cutline|set_deformation|set_material_prop|list_streamlines|set_ruler_prop|remove_rectangles|load_library|get_plot_prop|set_band_diagram|undo|create_variable|remove_cutplanes|add_custom_button|set_legend_prop|get_streamline_prop|list_textboxes|remove_datasets|set_textbox_prop|show_msg)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.control.svisual"
+                },
+                {
+                    "match": "\\b(set_streamline_prop|get_material_prop|list_materials|calculate_scalar|find_values|reset_settings|load_file_datasets|list_vertical_lines|export_settings|exit|get_grid_prop|create_cutplane|set_field_prop|echo|integrate_field|set_vertical_lines_prop|version|list_custom_buttons|create_iso|set_cutline_prop|remove_lines|get_camera_prop|get_cutplane_prop|list_regions|list_files|set_grid_prop|remove_cutlines|export_movie|set_tag_prop|set_line_prop)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.control.svisual"
+                },
+                {
+                    "match": "\\b(create_cutpolyline|get_curve_data|list_cutplanes|diff_plots|list_datasets|import_settings|list_movie_frames|get_vector_prop|create_plot|reload_datasets|export_variables|probe_curve|get_vertical_lines_prop|get_ellipse_prop|set_rectangle_prop|list_variables|calculate_field_value|unload_file)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.control.svisual"
+                }
+            ]
+        },
+        {
+            "patterns": [
+                {
+                    "match": "\\b(range|scale_font_family|label_font_att|DrudeDampFac|custom_text|axisX|label_font_family|EpsilonInf|nrow|op|noisename|fill_color|xscale|label_format|align|iplists|nofpoints|duplicate|WavelengthDep|title_font_factor|method|Model|parameter|font_color|type|MaxIterations|z2|Material|sort|integ_terminal_speed)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.other.svisual"
+                },
+                {
+                    "match": "\\b(minor_ticks_length|format|line1_color|size|port1|list|font_att|box|valueX|axisY|vo|title|points|freqpoint|biaspoint|StartTick|xLog|color_bg|geoms|title_font_family|integ_initial_step|label_font_size|NumberModLorentzPoles|arrow_width|materials|label_font_factor|plots|icon|SimplexMaxFunEvals|label_position)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.other.svisual"
+                },
+                {
+                    "match": "\\b(noisesource|nof_minor_ticks|sIFM|dq|origin|ModLorentzAmp|levels|line1_width|head_angle|NumberDebyePoles|line2_width|line_resolution|axisY2|head_shape|line_style|ModLorentzDampFac2|transformation|z|line_color|f|DebyeAmp|material_colors|default|label_font_color|info|anchor_pos|i|vtc_right|tdr_state|alpha)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.other.svisual"
+                },
+                {
+                    "match": "\\b(scale_format|v|values|nof_labels|scale_padding|particles_size|start|powergain|width|help|csv|shift|dataset|handles_color|arrow_color|ids|scale|at|ModLorentzDampFac|nbin|weighted|smooth|position|xmax|regions|markers_type|script|vmin|conditions|normal_arrow)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.other.svisual"
+                },
+                {
+                    "match": "\\b(CRITableStep|curves|p2|point|LogFile|integ_max_steps|arrow_size|linestyle|DebyeRelaxTime|text|ncond|scale_font_size|LorentzDampFac|biasport|rvs|ref_plot|aoo|xmin|vin|scale_precision|out|SimplexTolX|moments|b|s|linewidth|vout|label|index|focal_point)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.other.svisual"
+                },
+                {
+                    "match": "\\b(title_font_att|name|fi|greater|view_angle|arrow_angle|border_color|factor|TickStep|scale_font_factor|datasets|tdr_state_index|label_size|reset|dB|z1|elements|rot_size|angle|biasportsign|scale_factor_uniform|line2_color|orientation|scale_font_color|vmax|LorentzAmp|io|line_pattern|min|padding)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.other.svisual"
+                },
+                {
+                    "match": "\\b(sign|rfmatrix|ranges|plot|spacing|frame_width|font_factor|function|constant_arrow|geom|direction|EndTick|x|devicewidth|rotation|font_size|path|color_fg|ResultFile|ss|translucency_level|anchor|rotation_point|coord|view_up|contacts_color|region|occurrence|target|squares)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.other.svisual"
+                },
+                {
+                    "match": "\\b(pos2|file|blank|normal|WavelengthRange|SimplexTolFun|files|slopedataset|psi|ModLorentzFreq|vtc_left|gq|pos1|line1_style|scale_factor_grid|rot_width|port2|setup|ncol|cons|color|rot_color|theta|font_family|ratio_xtoy|nrand|aoi|field|line2_style|xShift)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.other.svisual"
+                },
+                {
+                    "match": "\\b(xo|yLog|n|location|sifm|sgn|integ_max_propagation|plane|ParameterFile|npar|link|scale_font_att|title_font_size|rseed|desc|filename|segments|SimplexMaxIterations|value|pos|xaxis|border_width|title_font_color|special|frames|arrow_style|m|phi|style|p1)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.other.svisual"
+                },
+                {
+                    "match": "\\b(semdataset|y|label_pos|markers_size|axis|color_map|ydd|resolution|deriv|line_width|minor_ticks_position|nsam|frame_duration|arrow_step|rfparameter|dim|margins|NumberLorentzPoles|weights|CRITableFile|yShift|LorentzFreq|NumberDrudePoles|id|valueY|material|rsig|max|less|head_size)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.other.svisual"
+                },
+                {
+                    "match": "\\b(end|DrudeFreq|yScale|r|eps|xScale|path_depth|precision|window|log10|FinalPlot|custom_levels|dss|WeightImagEps|ticks_position)(?![A-Za-z0-9_:-])",
+                    "name": "keyword.other.svisual"
+                }
+            ]
+        },
+        {
+            "patterns": [
+                {
+                    "match": "\\b(hide_field|hide_bands|warning|scale_font_factor|range|max_fixed|font_family|off|scale_font_family|ratio_xtoy|show_curve_markers|tdr_state_index|enable_path_limit|label_size|label_font_att|not_selected|overwrite|aspect_ratio_on|aspect_ratio_off|reset|label_font_color|info|line2_style|not_axes_interchanged|inverted|hide_background|anchor_pos|xShift|hide_vector|hide_scale)(?![A-Za-z0-9_:-])",
+                    "name": "entity.name.tag.svisual"
+                },
+                {
+                    "match": "\\b(axisX|hide_bulk|show_major_ticks|hide_cube_axes|label_font_family|integ|rot_size|hide_axes|hide_markers|show_path|location|error|tdr_state|scale_factor_uniform|not_keep_aspect_ratio|scale_format|manual_padding|yesno|show_legend|values|constant_heads|nof_labels|auto_precision|line2_color|hide_rotation_point|orientation|hide_handles|scale_font_color|particles_size|scale_padding)(?![A-Za-z0-9_:-])",
+                    "name": "entity.name.tag.svisual"
+                },
+                {
+                    "match": "\\b(fill_color|hide_ticks|width|hide_border|show_anchor|intersection|alldata|inspect|label_format|fullpath|align|snap_on|handles_color|show_line|hide_path|arrow_color|title_font_factor|show_vector|manual_precision|scale_font_att|line_pattern|title_font_size|show_axes_scale|scale|font_color|at|returndomain|on|min|position)(?![A-Za-z0-9_:-])",
+                    "name": "entity.name.tag.svisual"
+                },
+                {
+                    "match": "\\b(type|hide_label|label_normal|padding|reverse|dolly_zoom_on|markers_type|show_title|double|pos|hide_curve_lines|spacing|interpolated_values|frame_width|min_auto|border_width|font_factor|function|title_font_color|translucency_on|minor_ticks_length|hide_max_marker|line1_color|show_mesh|show_min_marker|constant_arrow|show_bulk|p2|material_colors|show_bands)(?![A-Za-z0-9_:-])",
+                    "name": "entity.name.tag.svisual"
+                },
+                {
+                    "match": "\\b(arrow_style|size|list|show_ticks|font_att|arrow_size|p1|show_handles|rotation|absolute|axisY|text|label_pos|markers_size|min_fixed|font_size|unlink|positive_direction|title|axis|show_scale|color_map|scale_font_size|color_fg|max_auto|show_grid|deriv|hide_minor_ticks|hide_title|string)(?![A-Za-z0-9_:-])",
+                    "name": "entity.name.tag.svisual"
+                },
+                {
+                    "match": "\\b(surface|snap|show_arrows|translucency_level|line_width|minor_ticks_position|anchor|show_minor_lines|hide_axes_scale|hide_axes_title|label_op|show_max_marker|arrow_step|auto_spacing|color_bg|major_ticks_length|rotation_point|hide_major_ticks|margins|show_rotation_point|title_font_family|hide_mesh|show_axes_title|show_cube_axes|hide_line|yShift|label_font_size|view_up|not_inverted|1d)(?![A-Za-z0-9_:-])",
+                    "name": "entity.name.tag.svisual"
+                },
+                {
+                    "match": "\\b(show_all|disable_path_limit|scale_precision|show_background|arrow_width|pos2|file|max|parts|negative_direction|scalar|label_font_factor|normal|show_field|hide_minor_lines|label_position|auto_padding|variables|nof_minor_ticks|selected|axes_interchanged|head_size|show_axes|origin|pos1|hide_all|snap_off|extrapolate|translucency_off|line1_style)(?![A-Za-z0-9_:-])",
+                    "name": "entity.name.tag.svisual"
+                },
+                {
+                    "match": "\\b(hide_legend|levels|display|show|show_label|scale_factor_grid|hide_min_marker|primary_values|yScale|line1_width|hide_arrows|xScale|head_angle|int|label|normalized|rot_width|hide_curve_markers|line2_width|line_resolution|show_markers|focal_point|path_depth|head_shape|line_style|all|hide_grid|modify|title_font_att|transformation)(?![A-Za-z0-9_:-])",
+                    "name": "entity.name.tag.svisual"
+                },
+                {
+                    "match": "\\b(setup|show_border|line_color|precision|normal_heads|custom_levels|show_minor_ticks|hide_anchor|manual_spacing|view_angle|ticks_position|hide|arrow_angle|border_color|union|new_plot|color|rot_color|show_curve_lines|separator|keep_aspect_ratio)(?![A-Za-z0-9_:-])",
+                    "name": "entity.name.tag.svisual"
+                }
+            ]
+        },
+        {
+            "patterns": [
+                {
+                    "match": "\\b(rfx::Cart2Polar_v|rfx::Conj_v|const::MagneticFluxQuantum|const::MolarVolume|ext::FindExtrema|rfx::GetFt|const::FaradayConstant|const::BoltzmannConstant|ext::SubLists|ifm::ReadCSV|rfx::GetFmax|ext::ExtractVglog|const::FineStructureConstant|emw::fit::Run|rfx::Phase_v|ext::ExtractGm|rfx::CreateDataset|rfx::Export|rfx::Sub_c|ext::ExtractVglin|ext::ExtractVdlin|const::BohrMagneton|emw::fit::Graph|ext::DiffForwardList|rfx::Y2S|ifm::GetsIFMStdDev|ext::ExtractRsh|ifm::ReadsIFM|rfx::Load|ifm::GetNoiseStdDev)(?![A-Za-z0-9_:-])",
+                    "name": "support.class.svisual"
+                },
+                {
+                    "match": "\\b(emw::fit::Globals|ext::AbsList|ext::ExtractValue|rfx::Abs_v|rfx::Y2H|ifm::GetSNM|const::Permittivity|rfx::Mulsc_c|ifm::GetHistogram|rfx::Phase_c|ext::ExtractBVv|ext::ExtractVtsat|const::ElementaryCharge|rfx::Add_v|rfx::Abs_c|ext::LinFit|emw::fit::ComplexRefractiveIndex|const::SpeedOfLight|ifm::WriteCSV|ext::ExtractVdlog|rfx::Div_c|const::Permeability|rfx::Mul_v|ext::FindVals|const::PlanckConstant|const::AtomicMassConstant|ifm::GetMoments|emw::fit::Plot|rfx::PolarBackdrop|rfx::PowerGain)(?![A-Za-z0-9_:-])",
+                    "name": "support.class.svisual"
+                },
+                {
+                    "match": "\\b(const::AvogadroConstant|rfx::Y2Z|ifm::GetGaussian|ext::ExtractVti|rfx::GetNoiseFigure|ext::Linspace|rfx::SmithBackdrop|rfx::Polar2Cart_v|rfx::GetNearestIndex|ext::ExtractRdiff|ext::ExtractExtremum|rfx::Im_c|ifm::GetMOSWeights|ext::RemoveZeros|ext::DiffList|rfx::NoiseFigure|emw::fit::Clear|rfx::GetFK1|rfx::Sign|rfx::GetParsAtPoint|ext::Log10List|rfx::Add_c|ifm::GetDataQuantiles|ifm::GetMOSIVs|rfx::Abs2_c|ext::RemoveDuplicates|ifm::GetQQ|rfx::Mul_c|rfx::Cart2Polar_c|rfx::Re_c)(?![A-Za-z0-9_:-])",
+                    "name": "support.class.svisual"
+                },
+                {
+                    "match": "\\b(ext::ExtractVtgm|ext::LinTransList|rfx::Polar2Cart_c|const::ElectronMass|const::StefanBoltzmannConstant|const::RydbergConstant|rfx::GetPowerGain|ext::ExtractBVi|emw::fit::DispersiveMedia|ext::ExtractEarlyV|rfx::Sub_v|const::Pi|const::ElectronVolt|const::kT300|ifm::Gauss|ext::FilterTable|ext::ExtractSS|emw::fit::Fitting|const::ProtonMass|rfx::Conj_c|ext::ExtractIoff|rfx::RFCList|ext::ExtractSsub|rfx::Div_v|lib::SetInfoDef|rfx::Abs2_v|ifm::GetSRAMVTC|const::GravitationConstant|const::FreeSpaceImpedance)(?![A-Za-z0-9_:-])",
+                    "name": "support.class.svisual"
+                }
+            ]
+        },
+        {
+            "patterns": [
+                {
+                    "match": "\\b(diamond|strikeout|vertical|map|xz|default|plus|inter|top_left|down|y2|yellow|right|darkMagenta|square|up|yz|xy|linear|arrow_solid|blue|dash|ioff|both|magenta|cyan|darkGreen|ron|scientific|csv)(?![A-Za-z0-9_:-])",
+                    "name": "string.quoted.svisual"
+                },
+                {
+                    "match": "\\b(cross|down_right|head_closed|top_right|logabs|center|left|courier|min|arrow|green|rout|custom|darkGray|bottom_right|vivid|white|diamondf|circle|red|fixed|solid|times|black|olive|x|any|list|right_down|darkRed)(?![A-Za-z0-9_:-])",
+                    "name": "string.quoted.svisual"
+                },
+                {
+                    "match": "\\b(y|head_solid|forward|circlef|arial|lightGray|grayscale|idsat|dot|fmmax|gray|vth|darkCyan|grid|free|constant|italic|plx|max|in|classic|darkBlue|normal|backward|bold|asinh|underline|squaref|log|horizontal)(?![A-Za-z0-9_:-])",
+                    "name": "string.quoted.svisual"
+                },
+                {
+                    "match": "\\b(all|dashdotdot|engineering|z|bottom_left|dashdot|head)(?![A-Za-z0-9_:-])",
+                    "name": "string.quoted.svisual"
+                }
+            ]
+        },
+        {
+            "name": "comment.line.hash",
+            "match": "#.*$"
+        },
+        {
+            "name": "comment.line.asterisk",
+            "match": "\\*.*$"
+        },
+        {
+            "name": "string.quoted.double",
+            "begin": "\"",
+            "end": "\"",
+            "patterns": [
+                {
+                    "name": "constant.character.escape",
+                    "match": "\\\\."
+                }
+            ]
+        },
+        {
+            "match": "\\b(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?\\b",
+            "name": "constant.numeric"
+        },
+        {
+            "match": "@[a-zA-Z_<][^@]*@",
+            "name": "variable.parameter"
+        },
+        {
+            "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
+            "name": "variable.other"
         }
-      ]
-    },
-    {
-      "match": "\\b(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?\\b",
-      "name": "constant.numeric"
-    },
-    {
-      "match": "@[a-zA-Z_<][^@]*@",
-      "name": "variable.parameter"
-    },
-    {
-      "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
-      "name": "variable.other"
-    }
-  ],
-  "repository": {},
-  "scopeName": "source.sentaurus.svisual"
+    ],
+    "repository": {},
+    "scopeName": "source.sentaurus.svisual"
 }
