@@ -272,6 +272,63 @@ test('复杂嵌套表达式', () => {
     assert.ok(r.result.startsWith('(/ '));
 });
 
+// ─── infixToPrefix 同级运算符展平 ───────────
+console.log('\ninfixToPrefix - 同级运算符展平:');
+
+test('三个加法展平', () => {
+    const r = infixToPrefix('a + b + c');
+    assert.strictEqual(r.result, '(+ a b c)');
+});
+
+test('四个加法展平', () => {
+    const r = infixToPrefix('a + b + c + d');
+    assert.strictEqual(r.result, '(+ a b c d)');
+});
+
+test('三个乘法展平', () => {
+    const r = infixToPrefix('a * b * c');
+    assert.strictEqual(r.result, '(* a b c)');
+});
+
+test('三个减法展平', () => {
+    const r = infixToPrefix('a - b - c');
+    assert.strictEqual(r.result, '(- a b c)');
+});
+
+test('三个除法展平', () => {
+    const r = infixToPrefix('a / b / c');
+    assert.strictEqual(r.result, '(/ a b c)');
+});
+
+test('不同优先级不展平: 加法和乘法', () => {
+    const r = infixToPrefix('a + b * c + d');
+    assert.strictEqual(r.result, '(+ a (* b c) d)');
+});
+
+test('乘法与加法混合展平', () => {
+    const r = infixToPrefix('a * b + c + d');
+    assert.strictEqual(r.result, '(+ (* a b) c d)');
+});
+
+test('用户场景: Lgate + Wspacer + Lsd', () => {
+    const r = infixToPrefix('Lgate + Wspacer + Lsd');
+    assert.strictEqual(r.result, '(+ Lgate Wspacer Lsd)');
+});
+
+test('展平后往返: 多参数加法', () => {
+    const original = 'a + b + c';
+    const prefix = infixToPrefix(original).result;
+    const back = prefixToInfix(prefix).result;
+    assert.strictEqual(back, original);
+});
+
+test('展平后往返: 多参数乘法', () => {
+    const original = 'a * b * c';
+    const prefix = infixToPrefix(original).result;
+    const back = prefixToInfix(prefix).result;
+    assert.strictEqual(back, original);
+});
+
 // ─── 往返一致性 ─────────────────────────────
 console.log('\n往返一致性测试:');
 
