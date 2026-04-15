@@ -422,6 +422,7 @@ function activate(context) {
                         filteredDefs = filteredDefs.filter(d => visibleNames.has(d.name));
                     }
 
+                    const maxWidth = vscode.workspace.getConfiguration('sentaurus').get('definitionMaxWidth', 60);
                     const userItems = filteredDefs.map(d => {
                         let itemKind = vscode.CompletionItemKind.Variable;
                         let detail = 'User Variable';
@@ -432,7 +433,7 @@ function activate(context) {
                         const item = new vscode.CompletionItem(d.name, itemKind);
                         item.detail = detail;
                         item.sortText = '4' + d.name;
-                        item.documentation = new vscode.MarkdownString('```scheme\n' + d.definitionText + '\n```');
+                        item.documentation = new vscode.MarkdownString('```scheme\n' + defs.truncateDefinitionText(d.definitionText, maxWidth) + '\n```');
                         return item;
                     });
 
@@ -476,9 +477,10 @@ function activate(context) {
                     const userDefs = defs.getDefinitions(document, langId);
                     const def = userDefs.find(d => d.name === word);
                     if (def) {
+                        const hoverMaxWidth = vscode.workspace.getConfiguration('sentaurus').get('definitionMaxWidth', 60);
                         const md = new vscode.MarkdownString();
                         md.appendMarkdown(`**${def.name}** (用户变量, 第 ${def.line} 行)\n\n`);
-                        md.appendCodeblock(def.definitionText, langId);
+                        md.appendCodeblock(defs.truncateDefinitionText(def.definitionText, hoverMaxWidth), langId);
                         return new vscode.Hover(md, range);
                     }
 
