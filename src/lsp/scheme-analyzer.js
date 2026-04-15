@@ -2,17 +2,33 @@
 'use strict';
 
 /**
+ * 将节点文本扩展到该节点末尾所在行的行尾。
+ * 用于将行末注释包含在 definitionText 中。
+ * @param {string} nodeText AST 节点的原始文本
+ * @param {number} endOffset 节点在源码中的结束偏移量（0-indexed）
+ * @param {string} sourceText 完整源码文本
+ * @returns {string} 扩展后的文本
+ */
+function _extendToLineEnd(nodeText, endOffset, sourceText) {
+    let i = endOffset;
+    while (i < sourceText.length && sourceText[i] !== '\n') i++;
+    const tail = sourceText.slice(endOffset, i).trimStart();
+    return tail ? nodeText + tail : nodeText;
+}
+
+/**
  * Walk AST and extract definitions + folding ranges.
  * @param {object} ast Parser-produced AST root node (Program)
+ * @param {string} [sourceText] 完整源码文本，传入时 definitionText 会扩展到行尾
  * @returns {{ definitions: object[], foldingRanges: object[] }}
  */
-function analyze(ast) {
+function analyze(ast, sourceText) {
     const definitions = [];
     const foldingRanges = [];
 
     function walk(node) {
         if (node.type === 'List') {
-            extractDefinitionsFromList(node, definitions);
+            extractDefinitionsFromList(node, definitions, sourceText);
             extractFoldingRange(node, foldingRanges);
             for (const child of node.children) walk(child);
         } else if (node.type === 'Quote') {
@@ -27,8 +43,11 @@ function analyze(ast) {
     return { definitions, foldingRanges };
 }
 
-function extractDefinitionsFromList(listNode, definitions) {
+function extractDefinitionsFromList(listNode, definitions, sourceText) {
     const children = listNode.children;
+    const defText = sourceText
+        ? _extendToLineEnd(listNode.text, listNode.end, sourceText)
+        : listNode.text;
     if (children.length === 0) return;
 
     const first = children[0];
@@ -41,7 +60,7 @@ function extractDefinitionsFromList(listNode, definitions) {
                 name: children[1].value,
                 line: listNode.line,
                 endLine: listNode.endLine,
-                definitionText: listNode.text,
+                definitionText: defText,
                 kind: 'variable',
             });
         } else if (children[1].type === 'List' && children[1].children.length >= 1) {
@@ -49,7 +68,7 @@ function extractDefinitionsFromList(listNode, definitions) {
                 name: children[1].children[0].value,
                 line: listNode.line,
                 endLine: listNode.endLine,
-                definitionText: listNode.text,
+                definitionText: defText,
                 kind: 'function',
             });
             // 提取函数参数
@@ -60,7 +79,7 @@ function extractDefinitionsFromList(listNode, definitions) {
                         name: param.value,
                         line: listNode.line,
                         endLine: listNode.endLine,
-                        definitionText: listNode.text,
+                        definitionText: defText,
                         kind: 'parameter',
                     });
                 }
@@ -78,7 +97,7 @@ function extractDefinitionsFromList(listNode, definitions) {
                         name: binding.children[0].value,
                         line: listNode.line,
                         endLine: listNode.endLine,
-                        definitionText: listNode.text,
+                        definitionText: defText,
                         kind: 'variable',
                     });
                 }
