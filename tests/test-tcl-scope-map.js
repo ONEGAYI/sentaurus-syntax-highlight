@@ -94,7 +94,7 @@ test('global 声明引入全局变量到 proc 作用域', () => {
 test('foreach 循环变量在 body 内可见', () => {
     const argsNode = makeNode('arguments', 'item $list', [
         makeNode('argument', 'item', [], 0, 8, 0, 12),
-        makeNode('variable_ref', '$list', [], 0, 13, 0, 18),
+        makeNode('variable_substitution', '$list', [], 0, 13, 0, 18),
     ], 0, 8, 0, 18);
     const bodyNode = makeNode('braced_word', '{ puts $item }', [], 0, 19, 0, 33);
     const foreachNode = makeNode('foreach', 'foreach item $list { ... }', [
@@ -159,7 +159,7 @@ test('variable 声明引入命名空间变量', () => {
 });
 
 test('白名单变量不报未定义', () => {
-    const refNode = makeNode('variable_ref', '$DesName', [], 0, 0, 0, 8);
+    const refNode = makeNode('variable_substitution', '$DesName', [], 0, 0, 0, 8);
     const root = makeNode('program', '', [refNode], 0, 0, 0, 8);
 
     const refs = ast.getVariableRefs(root);

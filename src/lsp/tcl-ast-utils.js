@@ -155,18 +155,29 @@ function getVariables(root) {
 }
 
 /**
- * 收集 AST 中所有变量引用（variable_ref 节点，即 $varName）。
- * tree-sitter-tcl 不会在注释内生成 variable_ref 节点，无需手动跳过。
- * 返回字段：name(去除$前缀)、line(1-based)、startCol/endCol(列号)
+ * 收集 AST 中所有变量引用（variable_substitution 节点，即 $varName）。
+ * tree-sitter-tcl 将 $var 解析为 variable_substitution 类型节点。
+ * 返回字段：name(去除$前缀和数组索引)、line(1-based)、startCol/endCol(列号)
  * @param {object} root - AST 根节点
  * @returns {Array<{name: string, line: number, startCol: number, endCol: number}>}
  */
 function getVariableRefs(root) {
     const refs = [];
     walkNodes(root, node => {
-        if (node.type === 'variable_ref') {
+        if (node.type === 'variable_substitution') {
             const raw = node.text;
-            const name = raw.startsWith('$') ? raw.slice(1) : raw;
+            let name = raw;
+            // 处理 ${varName} 形式
+            if (name.startsWith('${') && name.endsWith('}')) {
+                name = name.slice(2, -1);
+            } else if (name.startsWith('$')) {
+                name = name.slice(1);
+            }
+            // 去除数组索引 $var(index) → var
+            const parenIdx = name.indexOf('(');
+            if (parenIdx > 0) {
+                name = name.slice(0, parenIdx);
+            }
             if (name) {
                 refs.push({
                     name,

@@ -26,7 +26,7 @@ const ast = require('../src/lsp/tcl-ast-utils');
 console.log('\n=== getVariableRefs 测试 ===\n');
 
 test('收集单个 $var 引用', () => {
-    const refNode = makeNode('variable_ref', '$x', [], 0, 6, 0, 8);
+    const refNode = makeNode('variable_substitution', '$x', [], 0, 6, 0, 8);
     const cmdNode = makeNode('command', 'puts $x', [
         makeNode('simple_word', 'puts', [], 0, 0, 0, 4),
         refNode,
@@ -41,8 +41,8 @@ test('收集单个 $var 引用', () => {
 });
 
 test('收集多个 $var 引用', () => {
-    const ref1 = makeNode('variable_ref', '$a', [], 0, 0, 0, 2);
-    const ref2 = makeNode('variable_ref', '$b', [], 0, 3, 0, 5);
+    const ref1 = makeNode('variable_substitution', '$a', [], 0, 0, 0, 2);
+    const ref2 = makeNode('variable_substitution', '$b', [], 0, 3, 0, 5);
     const root = makeNode('program', '', [ref1, ref2], 0, 0, 0, 5);
 
     const refs = ast.getVariableRefs(root);
@@ -53,7 +53,7 @@ test('收集多个 $var 引用', () => {
 
 test('跳过注释中的引用', () => {
     const commentNode = makeNode('comment', '# puts $x', [], 0, 0, 0, 10);
-    const refNode = makeNode('variable_ref', '$y', [], 1, 0, 1, 2);
+    const refNode = makeNode('variable_substitution', '$y', [], 1, 0, 1, 2);
     const root = makeNode('program', '', [commentNode, refNode], 0, 0, 1, 2);
 
     const refs = ast.getVariableRefs(root);
@@ -67,8 +67,8 @@ test('空 AST 返回空数组', () => {
     assert.strictEqual(refs.length, 0);
 });
 
-test('variable_ref 嵌套在 braced_word 中', () => {
-    const ref = makeNode('variable_ref', '$val', [], 0, 2, 0, 6);
+test('variable_substitution 嵌套在 braced_word 中', () => {
+    const ref = makeNode('variable_substitution', '$val', [], 0, 2, 0, 6);
     const braced = makeNode('braced_word', '{expr $val}', [ref], 0, 0, 0, 11);
     const root = makeNode('program', '', [braced], 0, 0, 0, 11);
 
