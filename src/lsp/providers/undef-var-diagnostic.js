@@ -3,6 +3,8 @@
 
 const vscode = require('vscode');
 const astUtils = require('../tcl-ast-utils');
+const scopeAnalyzer = require('../scope-analyzer');
+const schemeParser = require('../scheme-parser');
 
 const DEBOUNCE_MS = 500;
 
@@ -10,6 +12,11 @@ const DEBOUNCE_MS = 500;
 const TCL_BUILTIN_VARS = new Set([
     'DesName', 'Pwd', 'Pd', 'ProjDir', 'Tooldir', 'env',
     'TOOLS_PRE', 'TOOLS_POST',
+]);
+
+/** Scheme (SDE) 隐式变量白名单 */
+const SCHEME_BUILTIN_VARS = new Set([
+    'argc', 'argv',
 ]);
 
 /** Tcl 语言集合 */
@@ -31,7 +38,8 @@ function activate(context) {
     context.subscriptions.push(
         vscode.workspace.onDidChangeTextDocument(event => {
             const doc = event.document;
-            if (!TCL_LANG_SET.has(doc.languageId)) return;
+            const langId = doc.languageId;
+            if (!TCL_LANG_SET.has(langId) && langId !== 'sde') return;
 
             if (debounceTimer) clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => updateDiagnostics(doc), DEBOUNCE_MS);
@@ -40,14 +48,16 @@ function activate(context) {
 
     context.subscriptions.push(
         vscode.workspace.onDidOpenTextDocument(doc => {
-            if (!TCL_LANG_SET.has(doc.languageId)) return;
+            const langId = doc.languageId;
+            if (!TCL_LANG_SET.has(langId) && langId !== 'sde') return;
             updateDiagnostics(doc);
         })
     );
 
     context.subscriptions.push(
         vscode.workspace.onDidCloseTextDocument(doc => {
-            if (TCL_LANG_SET.has(doc.languageId)) {
+            const langId = doc.languageId;
+            if (TCL_LANG_SET.has(langId) || langId === 'sde') {
                 diagnosticCollection.delete(doc.uri);
             }
         })
@@ -60,7 +70,14 @@ function activate(context) {
  */
 function updateDiagnostics(doc) {
     const text = doc.getText();
-    const diagnostics = checkTclUndefVars(text);
+    const langId = doc.languageId;
+
+    let diagnostics;
+    if (langId === 'sde') {
+        diagnostics = checkSchemeUndefVars(text);
+    } else {
+        diagnostics = checkTclUndefVars(text);
+    }
 
     diagnosticCollection.set(doc.uri, diagnostics);
 }
@@ -107,4 +124,81 @@ function checkTclUndefVars(text) {
     }
 }
 
-module.exports = { activate, checkTclUndefVars, TCL_BUILTIN_VARS };
+/**
+ * 加载 Scheme 已知名称集合（SDE 内置函数 + Scheme 标准函数）。
+ * 惰性加载，只初始化一次。
+ * @returns {Set<string>}
+ */
+let _schemeKnownNames = null;
+function getSchemeKnownNames() {
+    if (_schemeKnownNames) return _schemeKnownNames;
+
+    _schemeKnownNames = new Set();
+
+    // 从 SDE 函数文档加载内置函数名
+    try {
+        const sdeDocs = require('../../syntaxes/sde_function_docs.json');
+        if (sdeDocs) {
+            for (const key of Object.keys(sdeDocs)) {
+                _schemeKnownNames.add(key);
+            }
+        }
+    } catch (e) { /* 文件不存在时忽略 */ }
+
+    // 从 Scheme 标准函数文档加载
+    try {
+        const schemeDocs = require('../../syntaxes/scheme_function_docs.json');
+        if (schemeDocs) {
+            for (const key of Object.keys(schemeDocs)) {
+                _schemeKnownNames.add(key);
+            }
+        }
+    } catch (e) { /* 文件不存在时忽略 */ }
+
+    // 添加白名单变量
+    for (const name of SCHEME_BUILTIN_VARS) {
+        _schemeKnownNames.add(name);
+    }
+
+    return _schemeKnownNames;
+}
+
+/**
+ * 检查 Scheme 代码中的未定义变量引用。
+ * @param {string} text - 文档文本
+ * @returns {vscode.Diagnostic[]}
+ */
+function checkSchemeUndefVars(text) {
+    const { ast } = schemeParser.parse(text);
+    if (!ast) return [];
+
+    const scopeTree = scopeAnalyzer.buildScopeTree(ast);
+    const knownNames = getSchemeKnownNames();
+    const refs = scopeAnalyzer.getSchemeRefs(ast, knownNames);
+
+    const diagnostics = [];
+    for (const ref of refs) {
+        // 跳过已知名称（内置函数等已在 getSchemeRefs 中过滤）
+        // 这里额外检查作用域内可见性
+        const visible = scopeAnalyzer.getVisibleDefinitions(scopeTree, ref.line);
+        const isVisible = visible.some(d => d.name === ref.name);
+
+        if (!isVisible) {
+            const range = new vscode.Range(
+                ref.line - 1, ref.start,
+                ref.line - 1, ref.end
+            );
+            const diagnostic = new vscode.Diagnostic(
+                range,
+                `未定义的变量: ${ref.name}`,
+                vscode.DiagnosticSeverity.Warning
+            );
+            diagnostic.source = 'undef-var';
+            diagnostics.push(diagnostic);
+        }
+    }
+
+    return diagnostics;
+}
+
+module.exports = { activate, checkTclUndefVars, checkSchemeUndefVars, TCL_BUILTIN_VARS, SCHEME_BUILTIN_VARS };
