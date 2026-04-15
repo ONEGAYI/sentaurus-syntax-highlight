@@ -1,6 +1,6 @@
 // tests/test-definitions.js
 const assert = require('assert');
-const { findBalancedExpression, extractSchemeDefinitions, extractTclDefinitionsAst, extractDefinitions, getDefinitions, clearDefinitionCache } = require('../src/definitions');
+const { findBalancedExpression, extractSchemeDefinitions, extractTclDefinitionsAst, extractDefinitions, getDefinitions, clearDefinitionCache, truncateDefinitionText } = require('../src/definitions');
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -145,6 +145,13 @@ test('跳过字符串中的 define', () => {
     assert.strictEqual(defs[0].name, 'x');
 });
 
+test('definitionText 包含行末注释', () => {
+    const text = '(define Lgate 0.01) ; length of gate';
+    const defs = extractSchemeDefinitions(text);
+    assert.strictEqual(defs.length, 1);
+    assert.ok(defs[0].definitionText.includes('; length of gate'));
+});
+
 console.log('\nextractTclDefinitionsAst:');
 
 test('AST 未初始化时返回空数组', () => {
@@ -168,6 +175,37 @@ test('sprocess 语言走 Tcl AST 提取（WASM 未初始化返回空）', () => 
 test('未知语言返回空数组', () => {
     const defs = extractDefinitions('x = 1', 'python');
     assert.strictEqual(defs.length, 0);
+});
+
+console.log('\ntruncateDefinitionText:');
+
+test('短行不截断', () => {
+    assert.strictEqual(truncateDefinitionText('(define x 1)', 60), '(define x 1)');
+});
+
+test('长行截断并加省略号', () => {
+    const longLine = '(define very-long-variable-name-that-exceeds-max-width 0.01)';
+    const result = truncateDefinitionText(longLine, 40);
+    assert.strictEqual(result.length, 40);
+    assert.ok(result.endsWith('\u2026'));
+});
+
+test('多行只截断超长行', () => {
+    const text = '(define x\n  12345678901234567890123456789012345678901234567890)';
+    const result = truncateDefinitionText(text, 30);
+    const lines = result.split('\n');
+    assert.strictEqual(lines[0], '(define x'); // 短行不变
+    assert.ok(lines[1].endsWith('\u2026'));     // 长行截断
+    assert.ok(lines[1].length <= 30);
+});
+
+test('maxWidth=0 返回原文', () => {
+    assert.strictEqual(truncateDefinitionText('abc', 0), 'abc');
+});
+
+test('null/undefined 返回原值', () => {
+    assert.strictEqual(truncateDefinitionText(null, 60), null);
+    assert.strictEqual(truncateDefinitionText(undefined, 60), undefined);
 });
 
 console.log('\ngetDefinitions (缓存):');

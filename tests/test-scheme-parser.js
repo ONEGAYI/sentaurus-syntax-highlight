@@ -103,6 +103,14 @@ test('definitionText 字段', () => {
     assert.strictEqual(list.text, '(define x 42)');
 });
 
+test('definitionText 包含行末注释', () => {
+    const text = '(define Lgate 0.01) ; length of gate';
+    const { ast } = parse(text);
+    const result = analyze(ast, text);
+    assert.strictEqual(result.definitions.length, 1);
+    assert.ok(result.definitions[0].definitionText.includes('; length of gate'));
+});
+
 console.log('\nanalyze — definitions:');
 
 test('从 AST 提取 define 变量', () => {
