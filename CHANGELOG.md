@@ -4,6 +4,30 @@
 
 ---
 
+## [1.1.0] - 2026-04-15
+
+### 新功能
+
+- **未定义变量检测诊断（SDE Scheme + Tcl 方言）**：新增跨语言未定义变量检测功能，对未定义的标识符显示黄波浪线警告。SDE (Scheme) 通过手写解析器收集 `define`/`let`/`let*`/`letrec`/`lambda` 绑定；Tcl 方言通过 tree-sitter AST 构建 `set`/`proc`/`upvar`/`variable` 作用域映射。内置函数和标准运算符自动排除
+- **SDE Scheme 特殊常量高亮**：新增 `#t`/`#f`（布尔）、`#\char`（字符）等 Scheme 特殊字面量的语法高亮规则
+
+### Bug 修复
+
+- **修复未定义变量检测多项误报**：修正 tree-sitter-tcl 节点类型名、处理 `word_list` 包装和 `global` 特殊节点、修复 Scheme 端 quote 表达式和 letrec lambda 参数作用域
+- **修复函数文档跨语言泄露**：按语言 ID 隔离文档数据，防止 SDE 函数文档出现在其他语言中
+- **修正 Scheme 函数文档 JSON 的 require 路径**：修复模块加载路径错误
+- **修复括号诊断误报**：跳过 `*` 注释行，消除 Sentaurus Tcl 方言中注释块的误报
+- **修复扩展激活时不触发诊断**：扩展启动时主动扫描所有已打开文档，确保首次打开即显示诊断信息（括号匹配和未定义变量检测均受益）
+- **修复表达式转换历史记录功能**：改用 QuickPick + globalState 持久化替代之前失效的实现
+- **修复 infix→scheme 同级运算符转换**：展平为可变参数形式，避免生成冗余嵌套
+
+### 其他改进
+
+- **补充测试覆盖**：新增 Scheme 未定义变量检测集成测试，补充 Tcl `upvar`/`variable`/白名单测试用例
+- **文档归档**：已完成的设计文档移至 archived 目录
+
+---
+
 ## [1.0.3] - 2026-04-14
 
 ### Bug 修复
@@ -338,6 +362,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.1.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.0...v1.0.1
