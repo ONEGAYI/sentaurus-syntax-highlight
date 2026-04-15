@@ -141,5 +141,82 @@ test('自动补全右括号：括号内无参数时仍返回签名', () => {
     assert.ok(result.signatures[0].label.includes('sdegeo'));
 });
 
+// === 注释在函数名前导致 children 偏移的 bug 修复测试 ===
+console.log('\n注释偏移 bug 修复:');
+
+test('注释在函数名前：应选择内层函数而非外层 define', () => {
+    const doc = {
+        getText: () => '(define BodyID_LOCOS_1 ( ; LOCOS 薄的部分\n    sdegeo:create-rectangle\n        (position 0 0 0) (position Wleft Tox_locos 0) "Oxide" "R.LOCOS_thin"))',
+    };
+    // 光标在 "R.LOCOS_thin" 之后，仍在内层 create-rectangle 调用中
+    const pos = { line: 2, character: 70 };
+    const funcDocs = {
+        'sdegeo:create-rectangle': {
+            signature: '(sdegeo:create-rectangle point1 point2 region-material region-name)',
+            parameters: [
+                { name: 'point1', desc: 'First corner' },
+                { name: 'point2', desc: 'Second corner' },
+                { name: 'region-material', desc: 'Material name' },
+                { name: 'region-name', desc: 'Region name' },
+            ],
+        },
+        'define': {
+            signature: '(define name value)',
+            parameters: [
+                { name: 'name', desc: 'Variable name' },
+                { name: 'value', desc: 'Value expression' },
+            ],
+        },
+    };
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs);
+    assert.ok(result, '应返回签名结果');
+    assert.ok(result.signatures[0].label.includes('sdegeo:create-rectangle'),
+        `期望 create-rectangle 但得到: ${result.signatures[0].label}`);
+});
+
+test('多个注释在函数名前：仍应正确选择内层函数', () => {
+    const doc = {
+        getText: () => '(define x ( ; comment1\n ; comment2\n  sdegeo:create-circle (position 0 0 0) 5 "Si" "R"))',
+    };
+    // 光标在 "R" 字符串之后
+    const pos = { line: 2, character: 50 };
+    const funcDocs = {
+        'sdegeo:create-circle': {
+            signature: '(sdegeo:create-circle center radius material region)',
+            parameters: [
+                { name: 'center', desc: 'Center position' },
+                { name: 'radius', desc: 'Radius' },
+                { name: 'material', desc: 'Material' },
+                { name: 'region', desc: 'Region name' },
+            ],
+        },
+    };
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs);
+    assert.ok(result, '应返回签名结果');
+    assert.ok(result.signatures[0].label.includes('sdegeo:create-circle'),
+        `期望 create-circle 但得到: ${result.signatures[0].label}`);
+});
+
+test('无注释情况不受影响：正常函数调用', () => {
+    const doc = {
+        getText: () => '(sdegeo:create-circle (position 0 0 0) 5 "Si" "R")',
+    };
+    const pos = { line: 0, character: 10 };
+    const funcDocs = {
+        'sdegeo:create-circle': {
+            signature: '(sdegeo:create-circle center radius material region)',
+            parameters: [
+                { name: 'center', desc: 'Center position' },
+                { name: 'radius', desc: 'Radius' },
+                { name: 'material', desc: 'Material' },
+                { name: 'region', desc: 'Region name' },
+            ],
+        },
+    };
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs);
+    assert.ok(result);
+    assert.ok(result.signatures[0].label.includes('sdegeo:create-circle'));
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);

@@ -28,8 +28,19 @@ function toCol(absOffset, line, lineStarts) {
 }
 
 /**
+ * 获取 List 节点中跳过 Comment 后的有效子节点。
+ * Scheme 代码中 `( ; comment\n  func args)` 的 children[0] 是 Comment，
+ * 而实际函数名在 children[1]。此辅助函数统一过滤 Comment 节点。
+ * @param {object} listNode - List 类型的 AST 节点
+ * @returns {object[]} 过滤 Comment 后的子节点数组
+ */
+function effectiveChildren(listNode) {
+    return listNode.children.filter(c => c.type !== 'Comment');
+}
+
+/**
  * 在 AST 中查找包含光标位置的最内层函数调用。
- * 函数调用 = List 节点且 children[0] 是 Identifier。
+ * 函数调用 = List 节点且有效子节点（跳过 Comment）的首个是 Identifier。
  * @param {object} ast - Parser 产出的 AST 根节点
  * @param {number} line - 光标所在行（1-based）
  * @param {number} column - 光标所在列（0-based, 行内偏移）
@@ -41,12 +52,13 @@ function findEnclosingCall(ast, line, column, lineStarts) {
 
     function walk(node) {
         if (node.type === 'List') {
+            const ec = effectiveChildren(node);
             const inRange = line >= node.line && line <= node.endLine;
             // 单行表达式：使用行内列位置比较（而非绝对偏移）
             const nodeCol = toCol(node.start, node.line, lineStarts);
             const nodeEndCol = toCol(node.end, node.endLine, lineStarts);
             const inColumn = node.line !== node.endLine || column >= nodeCol && column <= nodeEndCol;
-            if (inRange && inColumn && node.children.length >= 1 && node.children[0].type === 'Identifier') {
+            if (inRange && inColumn && ec.length >= 1 && ec[0].type === 'Identifier') {
                 // 内层调用覆盖外层
                 if (!best || (node.line >= best.line && node.endLine <= best.endLine)) {
                     best = node;
@@ -74,9 +86,10 @@ function findEnclosingCall(ast, line, column, lineStarts) {
  */
 function resolveMode(callNode, modeDispatch) {
     const { argIndex, modes } = modeDispatch;
+    const ec = effectiveChildren(callNode);
 
     const getModeFromChild = (childIdx) => {
-        const argNode = callNode.children[childIdx];
+        const argNode = ec[childIdx];
         if (!argNode) return null;
         let modeValue = null;
         if (argNode.type === 'String') modeValue = argNode.value;
@@ -91,7 +104,7 @@ function resolveMode(callNode, modeDispatch) {
     // Fallback: scan all argument children for a valid mode name.
     // Handles cases where the mode is not at the expected position
     // (e.g., MaxTransDiff/MaxGradient have dopant-name before the mode).
-    for (let i = 1; i < callNode.children.length; i++) {
+    for (let i = 1; i < ec.length; i++) {
         if (i === argIndex + 1) continue;
         const result = getModeFromChild(i);
         if (result) return result;
@@ -111,9 +124,10 @@ function resolveMode(callNode, modeDispatch) {
 function resolveActiveParam(callNode, line, column, lineStarts) {
     let activeParam = -1;
     const isMultiLine = callNode.line !== callNode.endLine;
+    const ec = effectiveChildren(callNode);
 
-    for (let i = 1; i < callNode.children.length; i++) {
-        const arg = callNode.children[i];
+    for (let i = 1; i < ec.length; i++) {
+        const arg = ec[i];
         const argStartLine = arg.line;
         const argEndLine = arg.endLine;
 
@@ -152,7 +166,7 @@ function dispatch(ast, line, column, modeDispatchTable, lineStarts) {
     const callNode = findEnclosingCall(ast, line, column, lineStarts);
     if (!callNode) return null;
 
-    const functionName = callNode.children[0].value;
+    const functionName = effectiveChildren(callNode)[0].value;
     const dispatchMeta = modeDispatchTable[functionName];
     if (!dispatchMeta) {
         return {
