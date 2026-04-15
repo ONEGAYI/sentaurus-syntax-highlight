@@ -25,7 +25,7 @@ function buildScopeTree(ast) {
                     // (define (func-name params...) body...)
                     if (children[1].type === 'List' && children[1].children.length >= 1) {
                         const funcName = children[1].children[0].value;
-                        parentScope.definitions.push({ name: funcName, kind: 'variable' });
+                        parentScope.definitions.push({ name: funcName, kind: 'variable', line: children[1].children[0].line, start: children[1].children[0].start, end: children[1].children[0].end });
 
                         const funcScope = {
                             type: 'function',
@@ -37,7 +37,7 @@ function buildScopeTree(ast) {
                         for (let i = 1; i < children[1].children.length; i++) {
                             const param = children[1].children[i];
                             if (param.type === 'Identifier') {
-                                funcScope.definitions.push({ name: param.value, kind: 'parameter' });
+                                funcScope.definitions.push({ name: param.value, kind: 'parameter', line: param.line, start: param.start, end: param.end });
                             }
                         }
                         parentScope.children.push(funcScope);
@@ -49,7 +49,7 @@ function buildScopeTree(ast) {
 
                     // (define var val) — simple variable binding
                     if (children[1].type === 'Identifier') {
-                        parentScope.definitions.push({ name: children[1].value, kind: 'variable' });
+                        parentScope.definitions.push({ name: children[1].value, kind: 'variable', line: children[1].line, start: children[1].start, end: children[1].end });
                         return;
                     }
                 }
@@ -66,7 +66,7 @@ function buildScopeTree(ast) {
                     if (children[1] && children[1].type === 'List') {
                         for (const binding of children[1].children) {
                             if (binding.type === 'List' && binding.children.length >= 1 && binding.children[0].type === 'Identifier') {
-                                letScope.definitions.push({ name: binding.children[0].value, kind: 'variable' });
+                                letScope.definitions.push({ name: binding.children[0].value, kind: 'variable', line: binding.children[0].line, start: binding.children[0].start, end: binding.children[0].end });
                                 // 遍历绑定值表达式（如 lambda），使参数进入作用域
                                 for (let j = 1; j < binding.children.length; j++) {
                                     walk(binding.children[j], letScope);
@@ -93,7 +93,7 @@ function buildScopeTree(ast) {
                     if (children[1] && children[1].type === 'List') {
                         for (const param of children[1].children) {
                             if (param.type === 'Identifier') {
-                                lambdaScope.definitions.push({ name: param.value, kind: 'parameter' });
+                                lambdaScope.definitions.push({ name: param.value, kind: 'parameter', line: param.line, start: param.start, end: param.end });
                             }
                         }
                     }
