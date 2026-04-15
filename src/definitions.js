@@ -101,6 +101,20 @@ function clearDefinitionCache() {
     _defCache.clear();
 }
 
+/**
+ * 截断定义文本中过长的行。
+ * @param {string} text 定义文本
+ * @param {number} maxWidth 每行最大字符数
+ * @returns {string} 截断后的文本
+ */
+function truncateDefinitionText(text, maxWidth) {
+    if (!text || maxWidth <= 0) return text;
+    return text.split('\n').map(line => {
+        if (line.length <= maxWidth) return line;
+        return line.slice(0, maxWidth - 1) + '\u2026';
+    }).join('\n');
+}
+
 module.exports = {
     findBalancedExpression,
     extractSchemeDefinitions,
@@ -108,4 +122,5 @@ module.exports = {
     extractDefinitions,
     getDefinitions,
     clearDefinitionCache,
+    truncateDefinitionText,
 };
