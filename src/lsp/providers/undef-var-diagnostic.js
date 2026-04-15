@@ -138,7 +138,7 @@ function getSchemeKnownNames() {
 
     // 从 SDE 函数文档加载内置函数名
     try {
-        const sdeDocs = require('../../syntaxes/sde_function_docs.json');
+        const sdeDocs = require('../../../syntaxes/sde_function_docs.json');
         if (sdeDocs) {
             for (const key of Object.keys(sdeDocs)) {
                 _schemeKnownNames.add(key);
@@ -148,7 +148,7 @@ function getSchemeKnownNames() {
 
     // 从 Scheme 标准函数文档加载
     try {
-        const schemeDocs = require('../../syntaxes/scheme_function_docs.json');
+        const schemeDocs = require('../../../syntaxes/scheme_function_docs.json');
         if (schemeDocs) {
             for (const key of Object.keys(schemeDocs)) {
                 _schemeKnownNames.add(key);
