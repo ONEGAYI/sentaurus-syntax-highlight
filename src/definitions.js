@@ -36,7 +36,7 @@ function findBalancedExpression(text, startPos, openChar = '(', closeChar = ')')
 
 function extractSchemeDefinitions(text) {
     const { ast } = parse(text);
-    const { definitions } = analyze(ast);
+    const { definitions } = analyze(ast, text);
     return definitions;
 }
 
