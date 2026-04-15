@@ -37,6 +37,13 @@ function activate(context) {
             diagnosticCollection.delete(doc.uri);
         })
     );
+
+    // 主动扫描已在编辑器中打开的文档
+    for (const doc of vscode.workspace.textDocuments) {
+        if (TCL_LANG_SET.has(doc.languageId)) {
+            updateDiagnostics(doc);
+        }
+    }
 }
 
 /**
