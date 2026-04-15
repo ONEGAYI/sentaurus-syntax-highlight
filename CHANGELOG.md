@@ -4,6 +4,23 @@
 
 ---
 
+## [1.1.1] - 2026-04-15
+
+### 新功能
+
+- **新增 `generic:get` 函数支持**：将 `generic:get` 添加到 SDE 关键词表、语法高亮规则和中英文函数文档
+
+### Bug 修复
+
+- **修复未定义变量检测的多项误报**：Scheme 解析器新增预处理指令识别（`#if`/`#else`/`#endif` 等），跳过整行避免 Tcl 标识符被误解析；作用域分析器跳过 `#` 开头标识符和 `@Var@` SWB 参数变量；移除已失效的 `position` 硬编码白名单（改由关键词等级匹配覆盖）
+
+### 其他改进
+
+- **重构语法高亮正则表达式**：将 6 个语法文件中的超长 `match` 正则拆分为多个子 pattern，最长行长度减少 80-98%，显著提升可读性和可维护性
+- **清理仓库**：删除 `references/` 中不需要的 PDF 提取图片资源
+
+---
+
 ## [1.1.0] - 2026-04-15
 
 ### 新功能
@@ -362,6 +379,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.1.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.1...v1.0.2
