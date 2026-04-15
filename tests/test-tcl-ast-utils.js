@@ -112,10 +112,30 @@ test('检测到未闭合的 {', () => {
     assert(errors[0].message.includes('未闭合'), `消息应包含"未闭合"，实际: ${errors[0].message}`);
 });
 
-test('忽略注释中的花括号', () => {
+test('忽略 # 注释中的花括号', () => {
     const text = 'set x 42 # { this is a comment';
     const errors = ast.findMismatchedBraces(text);
-    assert.strictEqual(errors.length, 0, '注释中的花括号不应报错');
+    assert.strictEqual(errors.length, 0, '# 注释中的花括号不应报错');
+});
+
+test('忽略 * 注释行中的花括号', () => {
+    const text = `* { this comment has only open brace
+Device { Physics { Mobility() } }`;
+    const errors = ast.findMismatchedBraces(text);
+    assert.strictEqual(errors.length, 0, '* 注释行中的花括号不应报错');
+});
+
+test('* 不在行首时不应被视为注释', () => {
+    const text = 'set x *{';
+    const errors = ast.findMismatchedBraces(text);
+    assert.strictEqual(errors.length, 1, '行中的 * 后的花括号应正常检测');
+});
+
+test('忽略缩进 * 注释行中的多余花括号', () => {
+    const text = `  * }} extra close braces in comment
+Device { Physics { Mobility() } }`;
+    const errors = ast.findMismatchedBraces(text);
+    assert.strictEqual(errors.length, 0, '缩进 * 注释行中的花括号不应报错');
 });
 
 test('忽略字符串中的花括号', () => {
