@@ -4,6 +4,20 @@
 
 ---
 
+## [1.3.0] - 2026-04-15
+
+### 新功能
+
+- **SDE Scheme 括号内回车自动缩进**：在 `)` 前回车时自动将 `)` 移到新行并正确缩进。采用两层架构：`sde.json` 的 `onEnterRules` 覆盖基础场景（单层括号、空括号排除），`scheme-on-enter-provider.js` 处理嵌套括号内的多级缩进场景。两者协同工作，互不冲突
+- **定义提示框显示改进**：definitionText 扩展到行尾，包含行末注释内容，提供更完整的上下文信息。新增 `truncateDefinitionText` 截断工具函数，补全和悬停提示统一应用截断逻辑，避免过长文本溢出
+- **新增 `sentaurus.definitionMaxWidth` 用户设置项**：允许用户自定义定义提示文本的最大显示宽度
+
+### 测试
+
+- 新增 definitionText 行末注释和截断逻辑测试
+
+---
+
 ## [1.2.0] - 2026-04-15
 
 ### 新功能
@@ -398,6 +412,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.3.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.0.3...v1.1.0

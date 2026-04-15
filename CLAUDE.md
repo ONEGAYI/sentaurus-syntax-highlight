@@ -83,6 +83,7 @@ sentaurus-syntax-highlight/
 │   │       ├── bracket-diagnostic.js           ← Scheme 括号平衡诊断
 │   │       ├── signature-provider.js           ← Scheme 函数签名提示
 │   │       ├── undef-var-diagnostic.js         ← 未定义/重复定义变量诊断（Scheme + Tcl 双语言）
+│   │       ├── scheme-on-enter-provider.js     ← Scheme 括号内回车多级自动缩进
 │   │       ├── tcl-folding-provider.js         ← Tcl 代码折叠（基于 braced_word）
 │   │       ├── tcl-bracket-diagnostic.js       ← Tcl 括号诊断（文本级 {} 平衡）
 │   │       └── tcl-document-symbol-provider.js ← Tcl 文档大纲（Outline 视图）
@@ -157,7 +158,7 @@ sentaurus-syntax-highlight/
 
 `src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（400 API）、Scheme 内置（191 函数）、SDEVICE（341 关键词）、Svisual（中英文双语）。
 
-`src/definitions.js` 独立提供用户自定义变量的补全、悬停和跳转定义，通过 `document.version` 惰性缓存避免重复扫描。
+`src/definitions.js` 独立提供用户自定义变量的补全、悬停和跳转定义，通过 `document.version` 惰性缓存避免重复扫描。definitionText 扩展到行尾包含行末注释，并通过 `truncateDefinitionText` 工具函数按 `sentaurus.definitionMaxWidth` 设置截断过长文本。
 
 ### 第三层：AST 语义功能
 
@@ -171,6 +172,7 @@ sentaurus-syntax-highlight/
 - `folding-provider.js` / `tcl-folding-provider.js` — 代码折叠
 - `bracket-diagnostic.js` / `tcl-bracket-diagnostic.js` — 括号平衡诊断
 - `signature-provider.js` — Scheme 函数签名提示
+- `scheme-on-enter-provider.js` — Scheme 括号内回车多级自动缩进（与 `sde.json` onEnterRules 协同）
 - `tcl-document-symbol-provider.js` — Tcl 文档大纲
 
 **内存管理**：WASM `tree` 对象使用后必须 `tree.delete()` 释放，Provider 层通过 `try/finally` 保证。
