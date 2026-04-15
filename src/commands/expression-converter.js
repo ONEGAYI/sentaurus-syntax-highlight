@@ -309,6 +309,15 @@ function parseInfix(tokens) {
     return ast;
 }
 
+// Recursively collect all operands from a left-associative chain of same-operator binary nodes.
+// e.g. (+ (+ a b) c) → [a, b, c]  with op='+'
+function collectOperands(node, op) {
+    if (node.type === 'binary' && node.op === op) {
+        return [...collectOperands(node.left, op), ...collectOperands(node.right, op)];
+    }
+    return [node];
+}
+
 function astToPrefix(node) {
     if (node.type === 'number') return node.value;
     if (node.type === 'ident') return node.value;
@@ -324,9 +333,10 @@ function astToPrefix(node) {
     if (node.type === 'binary') {
         const mapping = INFIX_TO_PREFIX[node.op];
         const schemeOp = mapping ? mapping.scheme : node.op;
-        const left = astToPrefix(node.left);
-        const right = astToPrefix(node.right);
-        return `(${schemeOp} ${left} ${right})`;
+        // Flatten same-operator chains: a + b + c → (+ a b c)
+        const operands = collectOperands(node, node.op);
+        const parts = operands.map(o => astToPrefix(o));
+        return `(${schemeOp} ${parts.join(' ')})`;
     }
 
     if (node.type === 'call') {
