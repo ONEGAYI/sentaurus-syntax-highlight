@@ -237,9 +237,10 @@ const SCHEME_SPECIAL_FORMS = new Set([
  */
 function getSchemeRefs(ast, knownNames) {
     const refs = [];
-    // 合并排除集合 — 不修改原始 SCHEME_SPECIAL_FORMS
-    const excluded = new Set(SCHEME_SPECIAL_FORMS);
+    // 无额外名称时直接复用常量 Set，避免 60+ 元素的复制
+    let excluded = SCHEME_SPECIAL_FORMS;
     if (knownNames) {
+        excluded = new Set(SCHEME_SPECIAL_FORMS);
         for (const name of knownNames) {
             excluded.add(name);
         }

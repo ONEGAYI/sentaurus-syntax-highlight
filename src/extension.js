@@ -250,6 +250,13 @@ function activate(context) {
         vscode.window.showWarningMessage(`Sentaurus: Tcl WASM 初始化失败 - ${err.message}`);
     });
 
+    // ── 文件关闭时清理缓存 ──────────────────────────
+    context.subscriptions.push(
+        vscode.workspace.onDidCloseTextDocument(doc => {
+            defs.invalidateDefinitionCache(doc.uri.toString());
+        })
+    );
+
     // 注册测试命令：解析当前文档
     context.subscriptions.push(
         vscode.commands.registerCommand('sentaurus.testTclWasm', async () => {
@@ -410,12 +417,13 @@ function activate(context) {
                     const userDefs = defs.getDefinitions(document, langId);
                     if (userDefs.length === 0) return items;
 
-                    // 去重：跳过与静态关键词同名的用户变量
-                    const staticNames = new Set(items.map(it => it.label));
-                    let filteredDefs = userDefs
-                        .filter(d => !staticNames.has(d.name))
-                        // 同名变量可能在多处定义，去重
-                        .filter((d, i, arr) => arr.findIndex(x => x.name === d.name) === i);
+                    // 单次遍历去重：同时排除静态关键词和重复用户变量
+                    const seenNames = new Set(items.map(it => it.label));
+                    let filteredDefs = userDefs.filter(d => {
+                        if (seenNames.has(d.name)) return false;
+                        seenNames.add(d.name);
+                        return true;
+                    });
 
                     // SDE (Scheme): 作用域感知过滤
                     if (langId === 'sde') {
@@ -699,6 +707,9 @@ function activate(context) {
     context.subscriptions.push(helpDisposable);
 }
 
-function deactivate() {}
+function deactivate() {
+    defs.clearDefinitionCache();
+    tclParserWasm.dispose();
+}
 
 module.exports = { activate, deactivate };

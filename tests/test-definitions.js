@@ -1,6 +1,6 @@
 // tests/test-definitions.js
 const assert = require('assert');
-const { findBalancedExpression, extractSchemeDefinitions, extractTclDefinitionsAst, extractDefinitions, getDefinitions, clearDefinitionCache, truncateDefinitionText } = require('../src/definitions');
+const { findBalancedExpression, extractSchemeDefinitions, extractTclDefinitionsAst, extractDefinitions, getDefinitions, clearDefinitionCache, invalidateDefinitionCache, truncateDefinitionText } = require('../src/definitions');
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -245,6 +245,37 @@ test('版本变化重新扫描', () => {
     assert.strictEqual(d1.length, 1);
     assert.strictEqual(d2.length, 2);
     assert.notStrictEqual(d1, d2);
+});
+
+console.log('\ninvalidateDefinitionCache:');
+
+test('删除指定 URI 缓存条目', () => {
+    clearDefinitionCache();
+    const doc1 = mockDoc('(define x 1)', 1, 'file:///test-inv-a.sde');
+    const doc2 = mockDoc('(define y 2)', 1, 'file:///test-inv-b.sde');
+
+    const d1 = getDefinitions(doc1, 'sde');
+    const d2 = getDefinitions(doc2, 'sde');
+
+    invalidateDefinitionCache('file:///test-inv-a.sde');
+
+    // doc2 应该仍命中缓存（同一引用）
+    const d2Again = getDefinitions(doc2, 'sde');
+    assert.strictEqual(d2, d2Again, 'doc2 应返回同一缓存对象');
+
+    // doc1 应重新解析（新对象）
+    const d1Again = getDefinitions(doc1, 'sde');
+    assert.notStrictEqual(d1, d1Again, 'doc1 在 invalidation 后应重新解析');
+
+    clearDefinitionCache();
+});
+
+test('删除不存在的 URI 不报错', () => {
+    clearDefinitionCache();
+    assert.doesNotThrow(() => {
+        invalidateDefinitionCache('file:///nonexistent.sde');
+    });
+    clearDefinitionCache();
 });
 
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);

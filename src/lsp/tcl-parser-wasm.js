@@ -246,9 +246,23 @@ function isReady() {
     return _parser !== null && _tclLanguage !== null;
 }
 
+/**
+ * 释放 WASM 解析器资源（扩展 deactivate 时调用）。
+ */
+function dispose() {
+    if (_outputChannel) {
+        _outputChannel.dispose();
+        _outputChannel = null;
+    }
+    _parser = null;
+    _tclLanguage = null;
+    _initPromise = null;
+}
+
 module.exports = {
     init,
     parse,
     parseWithDebug,
     isReady,
+    dispose,
 };
