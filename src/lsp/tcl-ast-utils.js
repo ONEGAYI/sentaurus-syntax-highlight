@@ -156,7 +156,8 @@ function findMismatchedBraces(text) {
  */
 function getVariables(root, sourceText) {
     const results = [];
-    _collectVariables(root, results, sourceText);
+    const lines = sourceText ? sourceText.split('\n') : null;
+    _collectVariables(root, results, sourceText, lines);
     return results;
 }
 
@@ -788,8 +789,9 @@ function _processScopeImports(node, scopeMap, root, bodyStart, bodyEnd) {
  * @param {object} node - 当前 AST 节点
  * @param {Array} results - 收集结果的数组
  * @param {string} [sourceText] - 完整源码文本
+ * @param {string[]} [lines] - 预分割的行数组
  */
-function _collectVariables(node, results, sourceText) {
+function _collectVariables(node, results, sourceText, lines) {
     if (!node || !node.children) return;
 
     for (let i = 0; i < node.childCount; i++) {
@@ -798,29 +800,29 @@ function _collectVariables(node, results, sourceText) {
 
         switch (child.type) {
             case 'set':
-                _handleSet(child, results, sourceText);
+                _handleSet(child, results, lines);
                 break;
 
             case 'procedure':
-                _handleProcedure(child, results, sourceText);
+                _handleProcedure(child, results, sourceText, lines);
                 break;
 
             case 'foreach':
-                _handleForeach(child, results, sourceText);
+                _handleForeach(child, results, sourceText, lines);
                 break;
 
             case 'while':
                 // while 无变量绑定，但需要递归 body
-                _handleWhile(child, results, sourceText);
+                _handleWhile(child, results, sourceText, lines);
                 break;
 
             case 'command':
-                _handleCommand(child, results, sourceText);
+                _handleCommand(child, results, sourceText, lines);
                 break;
 
             default:
                 // 其他节点类型递归处理子节点（如 program → command、word_list 等）
-                _collectVariables(child, results, sourceText);
+                _collectVariables(child, results, sourceText, lines);
                 break;
         }
     }
@@ -831,15 +833,15 @@ function _collectVariables(node, results, sourceText) {
  * set x 42 → set(关键字) + id(变量名) + 值
  * 跳过 env(...) 变量。
  */
-function _handleSet(node, results, sourceText) {
+function _handleSet(node, results, lines) {
     const idNode = _findChildByType(node, 'id');
     if (!idNode) return;
 
     const name = idNode.text;
     if (name.startsWith('env(')) return;
 
-    const defText = sourceText
-        ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, sourceText)
+    const defText = lines
+        ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
         : node.text;
 
     results.push({
@@ -856,7 +858,7 @@ function _handleSet(node, results, sourceText) {
  * proc myFunc {a b} {body}
  * → procedure: proc + simple_word(名) + arguments(含 argument) + braced_word(body)
  */
-function _handleProcedure(node, results, sourceText) {
+function _handleProcedure(node, results, sourceText, lines) {
     // 提取函数名：第一个 simple_word（跳过 proc 关键字本身）
     const simpleWords = _findChildrenByType(node, 'simple_word');
     if (simpleWords.length >= 1) {
@@ -869,8 +871,8 @@ function _handleProcedure(node, results, sourceText) {
             }
         }
         if (funcNameNode) {
-            const defText = sourceText
-                ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, sourceText)
+            const defText = lines
+                ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
                 : node.text;
             results.push({
                 name: funcNameNode.text,
@@ -904,7 +906,7 @@ function _handleProcedure(node, results, sourceText) {
     // 递归 body（braced_word）
     const bodyNode = _findChildByType(node, 'braced_word');
     if (bodyNode) {
-        _collectVariables(bodyNode, results, sourceText);
+        _collectVariables(bodyNode, results, sourceText, lines);
     }
 }
 
@@ -913,14 +915,14 @@ function _handleProcedure(node, results, sourceText) {
  * foreach item $list { body }
  * → foreach + arguments(循环变量在第一个子节点) + braced_word(body)
  */
-function _handleForeach(node, results, sourceText) {
+function _handleForeach(node, results, sourceText, lines) {
     const argsNode = _findChildByType(node, 'arguments');
     if (argsNode && argsNode.childCount > 0) {
         // 第一个子节点是循环变量
         const loopVar = argsNode.child(0);
         if (loopVar && loopVar.text) {
-            const defText = sourceText
-                ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, sourceText)
+            const defText = lines
+                ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
                 : node.text;
             results.push({
                 name: loopVar.text,
@@ -935,7 +937,7 @@ function _handleForeach(node, results, sourceText) {
     // 递归 body
     const bodyNode = _findChildByType(node, 'braced_word');
     if (bodyNode) {
-        _collectVariables(bodyNode, results, sourceText);
+        _collectVariables(bodyNode, results, sourceText, lines);
     }
 }
 
@@ -943,13 +945,13 @@ function _handleForeach(node, results, sourceText) {
  * 处理 while 节点，无变量绑定但递归 body。
  * while {cond} { body }
  */
-function _handleWhile(node, results, sourceText) {
+function _handleWhile(node, results, sourceText, lines) {
     // while 可能有多个 braced_word（条件 + body）
     const bracedWords = _findChildrenByType(node, 'braced_word');
     // 最后一个 braced_word 是 body
     if (bracedWords.length > 0) {
         for (const bw of bracedWords) {
-            _collectVariables(bw, results, sourceText);
+            _collectVariables(bw, results, sourceText, lines);
         }
     }
 }
@@ -958,23 +960,23 @@ function _handleWhile(node, results, sourceText) {
  * 处理普通 command 节点。
  * 检查第一个 simple_word 是否为特殊命令（如 "for"），若是则特殊处理。
  */
-function _handleCommand(node, results, sourceText) {
+function _handleCommand(node, results, sourceText, lines) {
     if (node.childCount === 0) return;
 
     const firstChild = node.child(0);
     if (!firstChild || firstChild.type !== 'simple_word') {
         // 非简单命令，递归所有子节点
-        _collectVariables(node, results, sourceText);
+        _collectVariables(node, results, sourceText, lines);
         return;
     }
 
     const cmdName = firstChild.text;
 
     if (cmdName === 'for') {
-        _handleFor(node, results, sourceText);
+        _handleFor(node, results, sourceText, lines);
     } else {
         // 其他 command，递归子节点（可能包含嵌套结构）
-        _collectVariables(node, results, sourceText);
+        _collectVariables(node, results, sourceText, lines);
     }
 }
 
@@ -983,11 +985,11 @@ function _handleCommand(node, results, sourceText) {
  * for {init} {cond} {step} {body}
  * → command: simple_word("for") + braced_word(init) + braced_word(cond) + braced_word(step) + braced_word(body)
  */
-function _handleFor(node, results, sourceText) {
+function _handleFor(node, results, sourceText, lines) {
     // 递归所有 braced_word 子节点（init 中可能有 set，body 中也可能有）
     const bracedWords = _findChildrenByType(node, 'braced_word');
     for (const bw of bracedWords) {
-        _collectVariables(bw, results, sourceText);
+        _collectVariables(bw, results, sourceText, lines);
     }
 }
 
@@ -998,12 +1000,11 @@ function _handleFor(node, results, sourceText) {
  * 用于将行末注释包含在 definitionText 中。
  * @param {string} nodeText tree-sitter 节点的原始文本
  * @param {number} endRow 节点末尾所在行（0-indexed，来自 endPosition.row）
- * @param {string} sourceText 完整源码文本
+ * @param {string[]} lines 预分割的行数组
  * @returns {string} 扩展后的文本
  */
-function _extendNodeTextToLineEnd(nodeText, endRow, sourceText) {
-    const lines = sourceText.split('\n');
-    if (endRow >= lines.length) return nodeText;
+function _extendNodeTextToLineEnd(nodeText, endRow, lines) {
+    if (!lines || endRow >= lines.length) return nodeText;
     const fullLine = lines[endRow];
     const nodeLines = nodeText.split('\n');
     const lastNodeLine = nodeLines[nodeLines.length - 1];
