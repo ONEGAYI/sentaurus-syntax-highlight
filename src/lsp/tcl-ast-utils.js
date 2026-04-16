@@ -198,23 +198,333 @@ function getVariableRefs(root) {
 }
 
 /**
+ * ScopeIndex — 按需查询的作用域索引。
+ * 用单遍 AST 遍历预构建数据结构，查询时按需计算可见变量集，
+ * 替代 buildScopeMap 的 O(p×n×m) 全量预计算。
+ */
+class ScopeIndex {
+    /**
+     * @param {Array<{name: string, defLine: number, isProc: boolean}>} globalDefs
+     * @param {Array<{name: string, startLine: number, endLine: number, params: string[], localDefs: Array<{name: string, defLine: number}>, scopeImports: string[]}>} procScopes
+     */
+    constructor(globalDefs, procScopes) {
+        this._globalDefs = globalDefs;
+        this._globalProcNames = new Map();
+        for (const def of globalDefs) {
+            if (def.isProc) {
+                this._globalProcNames.set(def.name, def.defLine);
+            }
+        }
+        this._procScopes = procScopes.slice().sort((a, b) => a.startLine - b.startLine);
+    }
+
+    /**
+     * 查询指定行号（1-based）的可见变量集。
+     * @param {number} line - 1-based 行号
+     * @returns {Set<string>} 可见变量名集合
+     */
+    getVisibleAt(line) {
+        const visible = new Set();
+
+        // 1. 添加 defLine <= line 的全局变量
+        for (const def of this._globalDefs) {
+            if (def.defLine <= line) {
+                visible.add(def.name);
+            }
+        }
+
+        // 2. 检查是否在 proc body 内
+        for (const proc of this._procScopes) {
+            if (line < proc.startLine || line > proc.endLine) continue;
+
+            // 在 proc 内：移除非 proc 名的全局变量
+            for (const def of this._globalDefs) {
+                if (!def.isProc) {
+                    visible.delete(def.name);
+                }
+            }
+
+            // 添加 proc 参数
+            for (const p of proc.params) {
+                visible.add(p);
+            }
+
+            // 添加 body 内的局部定义（defLine <= line）
+            for (const local of proc.localDefs) {
+                if (local.defLine <= line) {
+                    visible.add(local.name);
+                }
+            }
+
+            // 添加 scope imports（global/upvar/variable）
+            for (const imp of proc.scopeImports) {
+                visible.add(imp);
+            }
+
+            break; // 最多在一个 proc 内
+        }
+
+        return visible;
+    }
+}
+
+/**
+ * 单遍 AST 遍历，构建 ScopeIndex。
+ * @param {object} root - AST 根节点
+ * @returns {ScopeIndex}
+ */
+function buildScopeIndex(root) {
+    const globalDefs = [];
+    const procScopes = [];
+
+    for (let i = 0; i < root.childCount; i++) {
+        const child = root.child(i);
+        if (!child) continue;
+
+        if (child.type === 'set') {
+            const idNode = _findChildByType(child, 'id');
+            if (idNode) {
+                const name = idNode.text;
+                if (!name.startsWith('env(')) {
+                    globalDefs.push({
+                        name,
+                        defLine: idNode.startPosition.row + 1,
+                        isProc: false,
+                    });
+                }
+            }
+        }
+
+        if (child.type === 'procedure') {
+            // 收集 proc 名作为全局定义
+            const simpleWords = _findChildrenByType(child, 'simple_word');
+            let procName = null;
+            for (const sw of simpleWords) {
+                if (sw.text !== 'proc') {
+                    procName = sw.text;
+                    const defLine = sw.startPosition.row + 1;
+                    globalDefs.push({ name: procName, defLine, isProc: true });
+                    break;
+                }
+            }
+
+            // 构建 proc scope
+            const bodyNode = _findChildByType(child, 'braced_word');
+            if (bodyNode) {
+                const bodyStart = bodyNode.startPosition.row + 1;
+                const bodyEnd = bodyNode.endPosition.row + 1;
+
+                const params = [];
+                const argsNode = _findChildByType(child, 'arguments');
+                if (argsNode) {
+                    const argNodes = _findChildrenByType(argsNode, 'argument');
+                    for (const arg of argNodes) {
+                        if (arg.text) params.push(arg.text);
+                    }
+                }
+
+                const localDefs = [];
+                _collectLocalDefsForIndex(bodyNode, localDefs, bodyStart, bodyEnd);
+
+                const scopeImports = [];
+                _collectScopeImportsForIndex(bodyNode, scopeImports);
+
+                procScopes.push({
+                    name: procName || '',
+                    startLine: bodyStart,
+                    endLine: bodyEnd,
+                    params,
+                    localDefs,
+                    scopeImports,
+                });
+            }
+        }
+
+        if (child.type === 'command') {
+            const firstChild = child.child(0);
+            if (firstChild && firstChild.type === 'simple_word') {
+                const cmdName = firstChild.text;
+                if (cmdName === 'set' || cmdName === 'lappend' || cmdName === 'append') {
+                    const words = _getCommandWords(child);
+                    for (const arg of words) {
+                        if (arg.type === 'id' || arg.type === 'simple_word') {
+                            const name = arg.text;
+                            if (name !== cmdName && !name.startsWith('env(') && !/^\d/.test(name)) {
+                                globalDefs.push({
+                                    name,
+                                    defLine: arg.startPosition.row + 1,
+                                    isProc: false,
+                                });
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (cmdName === 'for') {
+                    const words = _getCommandWords(child);
+                    for (const w of words) {
+                        if (w.type === 'braced_word') {
+                            _collectLocalDefsForIndex(w, globalDefs.map(d => ({ name: d.name, defLine: d.defLine })), 1, _countMaxLine(root) + 1);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (child.type === 'foreach') {
+            const argsNode = _findChildByType(child, 'arguments');
+            if (argsNode && argsNode.childCount > 0) {
+                const loopVar = argsNode.child(0);
+                if (loopVar && loopVar.text) {
+                    globalDefs.push({
+                        name: loopVar.text,
+                        defLine: loopVar.startPosition.row + 1,
+                        isProc: false,
+                    });
+                }
+            }
+        }
+    }
+
+    return new ScopeIndex(globalDefs, procScopes);
+}
+
+/**
+ * 收集节点内的局部变量定义，推入 defs 数组。
+ * 与 _collectLocalDefs 逻辑相同，但推入数组而非操作 scopeMap。
+ * @param {object} node - AST 节点
+ * @param {Array<{name: string, defLine: number}>} defs - 输出数组
+ * @param {number} scopeStart - 作用域起始行（1-based，用于过滤）
+ * @param {number} scopeEnd - 作用域结束行（1-based）
+ */
+function _collectLocalDefsForIndex(node, defs, scopeStart, scopeEnd) {
+    if (!node) return;
+
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (!child) continue;
+
+        if (child.type === 'set') {
+            const idNode = _findChildByType(child, 'id');
+            if (idNode) {
+                const name = idNode.text;
+                if (!name.startsWith('env(')) {
+                    const defLine = idNode.startPosition.row + 1;
+                    defs.push({ name, defLine });
+                }
+            }
+        }
+
+        if (child.type === 'foreach') {
+            const argsNode = _findChildByType(child, 'arguments');
+            if (argsNode && argsNode.childCount > 0) {
+                const loopVar = argsNode.child(0);
+                if (loopVar && loopVar.text) {
+                    const defLine = loopVar.startPosition.row + 1;
+                    defs.push({ name: loopVar.text, defLine });
+                }
+            }
+        }
+
+        if (child.type === 'command') {
+            const firstChild = child.child(0);
+            if (firstChild && firstChild.type === 'simple_word') {
+                const cmdName = firstChild.text;
+
+                if (cmdName === 'for') {
+                    const words = _getCommandWords(child);
+                    for (const w of words) {
+                        if (w.type === 'braced_word') {
+                            _collectLocalDefsForIndex(w, defs, scopeStart, scopeEnd);
+                        }
+                    }
+                } else if (cmdName === 'lappend' || cmdName === 'append') {
+                    const words = _getCommandWords(child);
+                    for (const arg of words) {
+                        if (arg.type === 'id' || arg.type === 'simple_word') {
+                            const name = arg.text;
+                            if (name !== cmdName && !name.startsWith('env(')) {
+                                const defLine = arg.startPosition.row + 1;
+                                defs.push({ name, defLine });
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            _collectLocalDefsForIndex(child, defs, scopeStart, scopeEnd);
+        }
+
+        if (child.type === 'braced_word') {
+            _collectLocalDefsForIndex(child, defs, scopeStart, scopeEnd);
+        }
+    }
+}
+
+/**
+ * 收集节点内的 scope imports（global/upvar/variable 声明的变量名）。
+ * 与 _processScopeImports 逻辑相同，但只收集变量名到数组。
+ * @param {object} node - AST 节点
+ * @param {string[]} imports - 输出数组
+ */
+function _collectScopeImportsForIndex(node, imports) {
+    if (!node) return;
+
+    walkNodes(node, n => {
+        // tree-sitter-tcl 将 'global' 解析为特殊节点类型（不是 command）
+        if (n.type === 'global') {
+            for (let i = 0; i < n.childCount; i++) {
+                const child = n.child(i);
+                if (child && child.type === 'simple_word') {
+                    imports.push(child.text);
+                }
+            }
+            return;
+        }
+
+        if (n.type !== 'command') return;
+        const firstChild = n.child(0);
+        if (!firstChild || firstChild.type !== 'simple_word') return;
+
+        const cmdName = firstChild.text;
+
+        if (cmdName === 'global') {
+            for (let i = 1; i < n.childCount; i++) {
+                const arg = n.child(i);
+                if (arg && arg.type === 'simple_word') {
+                    imports.push(arg.text);
+                }
+            }
+        }
+
+        if (cmdName === 'upvar') {
+            const words = _getCommandWords(n).filter(w => w.type === 'simple_word');
+            if (words.length >= 2) {
+                imports.push(words[words.length - 1].text);
+            }
+        }
+
+        if (cmdName === 'variable') {
+            const words = _getCommandWords(n).filter(w => w.type === 'simple_word');
+            if (words.length >= 2) {
+                imports.push(words[1].text);
+            }
+        }
+    });
+}
+
+/**
  * 构建行号 → 可见变量集的作用域映射。
  * @param {object} root - AST 根节点
  * @returns {Map<number, Set<string>>} 行号(1-based) → 可见变量名集合
  */
 function buildScopeMap(root) {
-    const maxLine = _countMaxLine(root) + 1; // +1 确保文件末尾之后仍有可见行
+    const index = buildScopeIndex(root);
+    const maxLine = _countMaxLine(root) + 1;
     const scopeMap = new Map();
     for (let i = 1; i <= maxLine; i++) {
-        scopeMap.set(i, new Set());
+        scopeMap.set(i, index.getVisibleAt(i));
     }
-
-    // 第一遍：收集全局定义
-    _collectGlobalDefs(root, scopeMap, maxLine);
-
-    // 第二遍：处理 proc 作用域
-    _processProcScopes(root, scopeMap, maxLine);
-
     return scopeMap;
 }
 
@@ -1039,6 +1349,8 @@ module.exports = {
     getVariables,
     getVariableRefs,
     buildScopeMap,
+    buildScopeIndex,
+    ScopeIndex,
     getDocumentSymbols,
     SymbolKind,
     TCL_LANGS,
