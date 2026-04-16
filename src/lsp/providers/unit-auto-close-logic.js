@@ -3,13 +3,12 @@
  * 纯函数，无外部依赖，可直接单元测试。
  *
  * @param {{ text: string, rangeLength: number } | null | undefined} change
- * @param {string[] | null | undefined} scopes - '<' 前一位置的 TextMate scopes
+ * @param {string | null | undefined} prevChar - '<' 前一个字符
  * @returns {boolean}
  */
-function shouldTrigger(change, scopes) {
+function shouldTrigger(change, prevChar) {
     if (!change || change.text !== '<') return false;
-    if (!scopes || scopes.length === 0) return false;
-    return scopes.some(s => s === 'constant.numeric' || s.startsWith('constant.numeric.'));
+    return /[0-9]/.test(prevChar || '');
 }
 
 module.exports = { shouldTrigger };
