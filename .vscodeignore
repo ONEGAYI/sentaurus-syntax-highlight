@@ -16,6 +16,7 @@ display_test/**
 references/**
 docs/**
 
+benchmarks/**
 tests/**
 build/**
 temp/**

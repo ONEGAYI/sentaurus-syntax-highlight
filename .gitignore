@@ -12,6 +12,7 @@ node_modules/
 
 # display test files
 display_test/
+benchmarks/
 
 # cache files
 *.pyc
