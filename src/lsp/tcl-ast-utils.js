@@ -87,50 +87,87 @@ function getFoldingRanges(root) {
  */
 function findMismatchedBraces(text) {
     const errors = [];
-    const braceStack = []; // { line, col, char }
-    const lines = text.split('\n');
+    const braceStack = [];
+    const len = text.length;
+    let lineIdx = 0;
+    let col = 0;
+    let inString = false;
+    let lineIsStarComment = false;
+    let foundFirstNonSpace = false;
 
-    for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
-        const line = lines[lineIdx];
+    for (let i = 0; i < len; i++) {
+        const ch = text[i];
 
-        // 跳过 * 注释行（Sentaurus Tcl 方言约定：行首 * 为注释）
-        const trimmed = line.trimStart();
-        if (trimmed.length > 0 && trimmed[0] === '*') continue;
+        // 换行符：重置行状态
+        if (ch === '\n') {
+            lineIdx++;
+            col = 0;
+            inString = false;
+            lineIsStarComment = false;
+            foundFirstNonSpace = false;
+            continue;
+        }
 
-        let inString = false;
-        let inComment = false;
+        // 检测 * 注释行（行首第一个非空白字符为 *）
+        if (!foundFirstNonSpace) {
+            if (ch === ' ' || ch === '\t') {
+                col++;
+                continue;
+            }
+            foundFirstNonSpace = true;
+            if (ch === '*') {
+                lineIsStarComment = true;
+                col++;
+                continue;
+            }
+        }
 
-        for (let col = 0; col < line.length; col++) {
-            const ch = line[col];
+        // 跳过 * 注释行的剩余内容
+        if (lineIsStarComment) {
+            col++;
+            continue;
+        }
 
-            // 跳过注释
-            if (!inString && ch === '#') { inComment = true; break; }
-            if (inComment) break;
+        // # 注释：跳过本行剩余内容
+        if (!inString && ch === '#') {
+            const nlPos = text.indexOf('\n', i);
+            if (nlPos < 0) break;
+            i = nlPos - 1;
+            continue;
+        }
 
-            // 跳过转义字符
-            if (ch === '\\' && inString) { col++; continue; }
+        // 跳过转义字符（仅在字符串内）
+        if (ch === '\\' && inString) {
+            i++;
+            col += 2;
+            continue;
+        }
 
-            // 字符串边界
-            if (ch === '"') { inString = !inString; continue; }
+        // 字符串边界
+        if (ch === '"') {
+            inString = !inString;
+            col++;
+            continue;
+        }
 
-            // 花括号匹配（字符串外）
-            if (!inString) {
-                if (ch === '{') {
-                    braceStack.push({ line: lineIdx, col, char: '{' });
-                } else if (ch === '}') {
-                    if (braceStack.length === 0) {
-                        // 多余的 }
-                        errors.push({
-                            startLine: lineIdx, startCol: col,
-                            endLine: lineIdx, endCol: col + 1,
-                            message: '多余的 `}`，没有匹配的 `{`',
-                        });
-                    } else {
-                        braceStack.pop();
-                    }
+        // 花括号匹配（字符串外）
+        if (!inString) {
+            if (ch === '{') {
+                braceStack.push({ line: lineIdx, col, char: '{' });
+            } else if (ch === '}') {
+                if (braceStack.length === 0) {
+                    errors.push({
+                        startLine: lineIdx, startCol: col,
+                        endLine: lineIdx, endCol: col + 1,
+                        message: '多余的 `}`，没有匹配的 `{`',
+                    });
+                } else {
+                    braceStack.pop();
                 }
             }
         }
+
+        col++;
     }
 
     // 未闭合的 {
