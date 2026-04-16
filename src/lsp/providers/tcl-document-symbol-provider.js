@@ -5,27 +5,26 @@ const vscode = require('vscode');
 const astUtils = require('../tcl-ast-utils');
 
 /**
- * VSCode DocumentSymbolProvider for Tcl-based Sentaurus languages.
- * 为 sdevice, sprocess, emw, inspect 提供面包屑导航和 Outline 视图。
+ * 创建 VSCode DocumentSymbolProvider for Tcl-based Sentaurus languages.
+ * 使用 TclParseCache 管理解析缓存，Provider 不再自行调用 parseSafe / tree.delete。
+ * @param {import('../parse-cache').TclParseCache} tclCache
+ * @returns {object}
  */
-const tclDocumentSymbolProvider = {
-    /**
-     * @param {vscode.TextDocument} document
-     * @returns {vscode.DocumentSymbol[]}
-     */
-    provideDocumentSymbols(document) {
-        const text = document.getText();
-        const tree = astUtils.parseSafe(text);
-        if (!tree) return [];
+function createTclDocumentSymbolProvider(tclCache) {
+    return {
+        /**
+         * @param {vscode.TextDocument} document
+         * @returns {vscode.DocumentSymbol[]}
+         */
+        provideDocumentSymbols(document) {
+            const entry = tclCache.get(document);
+            if (!entry) return [];
 
-        try {
-            const rawSymbols = astUtils.getDocumentSymbols(tree.rootNode, document.languageId);
+            const rawSymbols = astUtils.getDocumentSymbols(entry.tree.rootNode, document.languageId);
             return rawSymbols.map(s => toVscodeSymbol(s, document));
-        } finally {
-            tree.delete();
-        }
-    },
-};
+        },
+    };
+}
 
 /**
  * 将原始 symbol 转换为 vscode.DocumentSymbol。
@@ -42,4 +41,4 @@ function toVscodeSymbol(raw, document) {
     return new vscode.DocumentSymbol(raw.name, '', raw.kind, range, range);
 }
 
-module.exports = tclDocumentSymbolProvider;
+module.exports = { createTclDocumentSymbolProvider };

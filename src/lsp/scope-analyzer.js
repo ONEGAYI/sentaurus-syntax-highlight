@@ -181,7 +181,10 @@ function getVisibleDefinitions(tree, line) {
         if (line >= node.startLine && line <= node.endLine) {
             chain.push(node);
             for (const child of node.children) {
-                findChain(child);
+                if (line >= child.startLine && line <= child.endLine) {
+                    findChain(child);
+                    break; // 一行最多在一个同级作用域内，找到后不再检查兄弟
+                }
             }
         }
     }

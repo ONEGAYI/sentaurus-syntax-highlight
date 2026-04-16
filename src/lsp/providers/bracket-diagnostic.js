@@ -2,20 +2,23 @@
 'use strict';
 
 const vscode = require('vscode');
-const { parse } = require('../scheme-parser');
 
 /** @type {vscode.DiagnosticCollection} */
 let diagnosticCollection;
 /** @type {NodeJS.Timeout} */
 let debounceTimer;
+/** @type {import('../parse-cache').SchemeParseCache} */
+let schemeCache;
 
 const DEBOUNCE_MS = 500;
 
 /**
  * Activate bracket diagnostics.
  * @param {vscode.ExtensionContext} context
+ * @param {import('../parse-cache').SchemeParseCache} cache
  */
-function activate(context) {
+function activate(context, cache) {
+    schemeCache = cache;
     diagnosticCollection = vscode.languages.createDiagnosticCollection('sde-brackets');
     context.subscriptions.push(diagnosticCollection);
 
@@ -41,8 +44,7 @@ function activate(context) {
  * @param {vscode.TextDocument} doc
  */
 function updateDiagnostics(doc) {
-    const text = doc.getText();
-    const { errors } = parse(text);
+    const { errors } = schemeCache.get(doc);
 
     const diagnostics = errors.map(err => {
         const range = new vscode.Range(

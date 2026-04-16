@@ -5,26 +5,25 @@ const vscode = require('vscode');
 const astUtils = require('../tcl-ast-utils');
 
 /**
- * VSCode FoldingRangeProvider for Tcl-based Sentaurus languages.
- * 共用于 sdevice, sprocess, emw, inspect 四种语言。
+ * 创建 VSCode FoldingRangeProvider for Tcl-based Sentaurus languages.
+ * 使用 TclParseCache 管理解析缓存，Provider 不再自行调用 parseSafe / tree.delete。
+ * @param {import('../parse-cache').TclParseCache} tclCache
+ * @returns {object}
  */
-const tclFoldingProvider = {
-    /**
-     * @param {vscode.TextDocument} document
-     * @returns {vscode.FoldingRange[]}
-     */
-    provideFoldingRanges(document) {
-        const text = document.getText();
-        const tree = astUtils.parseSafe(text);
-        if (!tree) return [];
+function createTclFoldingProvider(tclCache) {
+    return {
+        /**
+         * @param {vscode.TextDocument} document
+         * @returns {vscode.FoldingRange[]}
+         */
+        provideFoldingRanges(document) {
+            const entry = tclCache.get(document);
+            if (!entry) return [];
 
-        try {
-            const ranges = astUtils.getFoldingRanges(tree.rootNode);
+            const ranges = astUtils.getFoldingRanges(entry.tree.rootNode);
             return ranges.map(r => new vscode.FoldingRange(r.startLine, r.endLine));
-        } finally {
-            tree.delete();
-        }
-    },
-};
+        },
+    };
+}
 
-module.exports = tclFoldingProvider;
+module.exports = { createTclFoldingProvider };

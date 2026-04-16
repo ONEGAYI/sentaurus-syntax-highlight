@@ -2,19 +2,24 @@ const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
 const defs = require('./definitions');
-const foldingProvider = require('./lsp/providers/folding-provider');
+const foldingProviderMod = require('./lsp/providers/folding-provider');
 const bracketDiagnostic = require('./lsp/providers/bracket-diagnostic');
 const scopeAnalyzer = require('./lsp/scope-analyzer');
-const schemeParser = require('./lsp/scheme-parser');
 const signatureProvider = require('./lsp/providers/signature-provider');
 const expressionConverter = require('./commands/expression-converter');
 const tclParserWasm = require('./lsp/tcl-parser-wasm');
 const astUtils = require('./lsp/tcl-ast-utils');
-const tclFoldingProvider = require('./lsp/providers/tcl-folding-provider');
+const tclFoldingMod = require('./lsp/providers/tcl-folding-provider');
 const tclBracketDiagnostic = require('./lsp/providers/tcl-bracket-diagnostic');
 const undefVarDiagnostic = require('./lsp/providers/undef-var-diagnostic');
-const tclDocumentSymbolProvider = require('./lsp/providers/tcl-document-symbol-provider');
+const tclDocSymbolMod = require('./lsp/providers/tcl-document-symbol-provider');
 const schemeOnEnterProvider = require('./lsp/providers/scheme-on-enter-provider');
+const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
+
+/** @type {SchemeParseCache} */
+let schemeCache;
+/** @type {TclParseCache} */
+let tclCache;
 
 /** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
 function decodeHtml(str) {
@@ -241,6 +246,10 @@ function activate(context) {
         return;
     }
 
+    // ── 解析缓存初始化 ──────────────────────────
+    schemeCache = new SchemeParseCache();
+    tclCache = new TclParseCache();
+
     // ── Tcl WASM 解析器初始化 ─────────────────────
     const tclWasmChannel = vscode.window.createOutputChannel('Sentaurus Tcl WASM');
     tclParserWasm.init(context, tclWasmChannel).then(() => {
@@ -253,7 +262,10 @@ function activate(context) {
     // ── 文件关闭时清理缓存 ──────────────────────────
     context.subscriptions.push(
         vscode.workspace.onDidCloseTextDocument(doc => {
-            defs.invalidateDefinitionCache(doc.uri.toString());
+            const uri = doc.uri.toString();
+            defs.invalidateDefinitionCache(uri);
+            schemeCache.invalidate(uri);
+            tclCache.invalidate(uri);
         })
     );
 
@@ -347,6 +359,7 @@ function activate(context) {
     }
 
     // FoldingRangeProvider (SDE only)
+    const foldingProvider = foldingProviderMod.createFoldingProvider(schemeCache);
     context.subscriptions.push(
         vscode.languages.registerFoldingRangeProvider(
             { language: 'sde' },
@@ -355,13 +368,14 @@ function activate(context) {
     );
 
     // Bracket diagnostic (SDE only)
-    bracketDiagnostic.activate(context);
+    bracketDiagnostic.activate(context, schemeCache);
 
     // 括号内回车自动缩进 (SDE only)
     schemeOnEnterProvider.activate(context);
 
     // ── Tcl Providers（4 语言共用）──────────────────
     // 代码折叠
+    const tclFoldingProvider = tclFoldingMod.createTclFoldingProvider(tclCache);
     for (const langId of astUtils.TCL_LANGS) {
         context.subscriptions.push(
             vscode.languages.registerFoldingRangeProvider(
@@ -375,9 +389,10 @@ function activate(context) {
     tclBracketDiagnostic.activate(context);
 
     // 未定义变量诊断
-    undefVarDiagnostic.activate(context);
+    undefVarDiagnostic.activate(context, schemeCache, tclCache);
 
     // DocumentSymbol / 面包屑导航（4 语言共用）
+    const tclDocumentSymbolProvider = tclDocSymbolMod.createTclDocumentSymbolProvider(tclCache);
     for (const langId of astUtils.TCL_LANGS) {
         context.subscriptions.push(
             vscode.languages.registerDocumentSymbolProvider(
@@ -394,7 +409,8 @@ function activate(context) {
             provideSignatureHelp(document, position, token) {
                 return signatureProvider.provideSignatureHelp(
                     document, position, token,
-                    modeDispatchTable, langFuncDocs.sde
+                    modeDispatchTable, langFuncDocs.sde,
+                    schemeCache
                 );
             },
         },
@@ -427,8 +443,7 @@ function activate(context) {
 
                     // SDE (Scheme): 作用域感知过滤
                     if (langId === 'sde') {
-                        const { ast } = schemeParser.parse(document.getText());
-                        const scopeTree = scopeAnalyzer.buildScopeTree(ast);
+                        const { scopeTree } = schemeCache.get(document);
                         const visible = scopeAnalyzer.getVisibleDefinitions(scopeTree, position.line + 1);
                         const visibleNames = new Set(visible.map(v => v.name));
                         filteredDefs = filteredDefs.filter(d => visibleNames.has(d.name));
@@ -708,6 +723,8 @@ function activate(context) {
 }
 
 function deactivate() {
+    schemeCache.dispose();
+    tclCache.dispose();
     defs.clearDefinitionCache();
     tclParserWasm.dispose();
 }

@@ -2,7 +2,33 @@
 'use strict';
 
 const assert = require('assert');
+const { parse } = require('../src/lsp/scheme-parser');
+const { analyze } = require('../src/lsp/scheme-analyzer');
+const scopeAnalyzer = require('../src/lsp/scope-analyzer');
 const sigProvider = require('../src/lsp/providers/signature-provider');
+
+/**
+ * 为测试创建一个轻量 mock cache，模拟 SchemeParseCache.get(document) 的行为。
+ * 每次调用都会重新解析文本（测试不需要缓存）。
+ */
+function createMockCache() {
+    return {
+        get(doc) {
+            const text = typeof doc === 'string' ? doc : doc.getText();
+            const { ast, errors } = parse(text);
+            const { foldingRanges } = analyze(ast);
+            const scopeTree = scopeAnalyzer.buildScopeTree(ast);
+
+            // 计算行首偏移表
+            const lineStarts = [0];
+            for (let i = 0; i < text.length; i++) {
+                if (text[i] === '\n') lineStarts.push(i + 1);
+            }
+
+            return { version: 1, ast, errors, analysis: { foldingRanges }, scopeTree, text, lineStarts };
+        },
+    };
+}
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -71,6 +97,8 @@ test('无 funcDoc 时参数列表无文档', () => {
 
 console.log('\nprovideSignatureHelp (mock document):');
 
+const mockCache = createMockCache();
+
 test('模式分派函数返回正确签名', () => {
     const doc = {
         getText: () => '(sdedr:define-refinement-function "ref1" "MaxGradient" 0.1)',
@@ -89,7 +117,7 @@ test('模式分派函数返回正确签名', () => {
             description: 'Defines a refinement function.',
         },
     };
-    const result = sigProvider.provideSignatureHelp(doc, pos, null, table, funcDocs);
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, table, funcDocs, mockCache);
     assert.ok(result);
     assert.strictEqual(result.activeSignature, 0);
     assert.strictEqual(result.signatures[0].parameters.length, 4);
@@ -111,7 +139,7 @@ test('非模式分派函数返回基本签名', () => {
             ],
         },
     };
-    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs);
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs, mockCache);
     assert.ok(result);
     assert.ok(result.signatures[0].label.includes('sdegeo:create-circle'));
 });
@@ -119,7 +147,7 @@ test('非模式分派函数返回基本签名', () => {
 test('光标不在函数调用上返回 null', () => {
     const doc = { getText: () => '(define x 42)\n' };
     const pos = { line: 0, character: 3 };
-    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, {});
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, {}, mockCache);
     assert.strictEqual(result, null);
 });
 
@@ -135,7 +163,7 @@ test('自动补全右括号：括号内无参数时仍返回签名', () => {
             ],
         },
     };
-    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs);
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs, mockCache);
     assert.ok(result);
     assert.strictEqual(result.activeParameter, 0);
     assert.ok(result.signatures[0].label.includes('sdegeo'));
@@ -168,7 +196,7 @@ test('注释在函数名前：应选择内层函数而非外层 define', () => {
             ],
         },
     };
-    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs);
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs, mockCache);
     assert.ok(result, '应返回签名结果');
     assert.ok(result.signatures[0].label.includes('sdegeo:create-rectangle'),
         `期望 create-rectangle 但得到: ${result.signatures[0].label}`);
@@ -191,7 +219,7 @@ test('多个注释在函数名前：仍应正确选择内层函数', () => {
             ],
         },
     };
-    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs);
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs, mockCache);
     assert.ok(result, '应返回签名结果');
     assert.ok(result.signatures[0].label.includes('sdegeo:create-circle'),
         `期望 create-circle 但得到: ${result.signatures[0].label}`);
@@ -213,7 +241,7 @@ test('无注释情况不受影响：正常函数调用', () => {
             ],
         },
     };
-    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs);
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs, mockCache);
     assert.ok(result);
     assert.ok(result.signatures[0].label.includes('sdegeo:create-circle'));
 });
