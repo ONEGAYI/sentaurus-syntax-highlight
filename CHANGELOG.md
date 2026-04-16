@@ -4,6 +4,19 @@
 
 ---
 
+## [1.4.1] - 2026-04-16
+
+### 新功能
+
+- **SPROCESS `<Unit>` 物理单位语法高亮**：为 SPROCESS 的 `<nm>`、`<um>`、`<cm-2>` 等物理单位语法添加 TextMate 高亮规则（`support.constant.unit`），并提供暗色（`#CE9178`）/ 亮色（`#D73A49`）主题默认配色
+- **Unit 尖括号自动配对与删除**：在数字后输入 `<` 时自动补全 `>` 并将光标置于中间（如 `10<nm>`、`0.5<um>`、`1e15<cm-2>`），退格删除 `<` 时自动连带删除配对的 `>`。仅匹配独立数值常量（整数/小数/科学计数法），不影响变量名和 Tcl 比较运算符
+
+### 测试
+
+- 新增 `test-unit-auto-close.js`（Unit 自动配对 + 删除配对测试，含参数校验、数字/非数字场景、语法边界用例）
+
+---
+
 ## [1.4.0] - 2026-04-16
 
 ### 新功能
@@ -444,6 +457,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.4.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.1.1...v1.2.0
