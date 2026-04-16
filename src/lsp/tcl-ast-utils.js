@@ -1040,5 +1040,6 @@ module.exports = {
     getVariableRefs,
     buildScopeMap,
     getDocumentSymbols,
+    SymbolKind,
     TCL_LANGS,
 };

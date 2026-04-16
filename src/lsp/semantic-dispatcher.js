@@ -191,4 +191,4 @@ function dispatch(ast, line, column, modeDispatchTable, lineStarts) {
     };
 }
 
-module.exports = { dispatch };
+module.exports = { dispatch, findEnclosingCall, resolveMode, resolveActiveParam };

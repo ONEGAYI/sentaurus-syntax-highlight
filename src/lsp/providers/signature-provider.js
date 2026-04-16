@@ -118,4 +118,6 @@ function provideSignatureHelp(document, position, token, modeDispatchTable, func
 
 module.exports = {
     provideSignatureHelp,
+    buildSignatureLabel,
+    buildParams,
 };
