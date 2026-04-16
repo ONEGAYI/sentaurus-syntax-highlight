@@ -148,6 +148,8 @@ function getSchemeKnownNames() {
 
     // 从 all_keywords.json 加载 SDE 所有等级的关键词（KEYWORD1/2、FUNCTION）
     // 这是普适规则：语法文件中定义的所有关键词均视为已知名称，不会被误报为未定义变量
+    // XML 提取时 <, >, & 被转义为 HTML 实体，此处统一解码以匹配源码中的原始标识符
+    const _decodeHtmlEntities = (s) => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
     try {
         const allKw = require('../../../syntaxes/all_keywords.json');
         const sdeKw = allKw && allKw.sde;
@@ -155,7 +157,7 @@ function getSchemeKnownNames() {
             for (const cat of ['KEYWORD1', 'KEYWORD2', 'FUNCTION']) {
                 if (sdeKw[cat]) {
                     for (const name of sdeKw[cat]) {
-                        _schemeKnownNames.add(name);
+                        _schemeKnownNames.add(_decodeHtmlEntities(name));
                     }
                 }
             }
