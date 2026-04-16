@@ -52,14 +52,14 @@ function findEnclosingCall(ast, line, column, lineStarts) {
 
     function walk(node) {
         if (node.type === 'List') {
+            // 剪枝：节点范围不含光标行，跳过整个子树
+            if (node.endLine < line || node.line > line) return;
+
             const ec = effectiveChildren(node);
-            const inRange = line >= node.line && line <= node.endLine;
-            // 单行表达式：使用行内列位置比较（而非绝对偏移）
             const nodeCol = toCol(node.start, node.line, lineStarts);
             const nodeEndCol = toCol(node.end, node.endLine, lineStarts);
             const inColumn = node.line !== node.endLine || column >= nodeCol && column <= nodeEndCol;
-            if (inRange && inColumn && ec.length >= 1 && ec[0].type === 'Identifier') {
-                // 内层调用覆盖外层
+            if (inColumn && ec.length >= 1 && ec[0].type === 'Identifier') {
                 if (!best || (node.line >= best.line && node.endLine <= best.endLine)) {
                     best = node;
                 }
@@ -68,9 +68,16 @@ function findEnclosingCall(ast, line, column, lineStarts) {
                 walk(child);
             }
         } else if (node.type === 'Quote') {
+            // Quote 节点也有 line/endLine，剪枝
+            if (node.endLine < line || node.line > line) return;
             walk(node.expression);
         } else if (node.type === 'Program') {
-            for (const child of node.body) walk(child);
+            for (const child of node.body) {
+                // Program 子节点（顶层表达式）也可剪枝
+                if (child.endLine >= line && child.line <= line) {
+                    walk(child);
+                }
+            }
         }
     }
 
