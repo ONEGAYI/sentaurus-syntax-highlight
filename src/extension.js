@@ -14,6 +14,7 @@ const tclBracketDiagnostic = require('./lsp/providers/tcl-bracket-diagnostic');
 const undefVarDiagnostic = require('./lsp/providers/undef-var-diagnostic');
 const tclDocSymbolMod = require('./lsp/providers/tcl-document-symbol-provider');
 const schemeOnEnterProvider = require('./lsp/providers/scheme-on-enter-provider');
+const unitAutoClose = require('./lsp/providers/unit-auto-close-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
 
 /** @type {SchemeParseCache} */
@@ -384,6 +385,9 @@ function activate(context) {
 
     // 括号内回车自动缩进 (SDE only)
     schemeOnEnterProvider.activate(context);
+
+    // Unit 自动配对（SPROCESS only）
+    unitAutoClose.activate(context);
 
     // ── Tcl Providers（4 语言共用）──────────────────
     // 代码折叠
