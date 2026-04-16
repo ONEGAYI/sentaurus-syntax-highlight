@@ -48,7 +48,8 @@ sentaurus-syntax-highlight/
 │   ├── sde_function_docs.{json,zh-CN.json}     ← SDE 函数文档（中英文双语，400 API）
 │   ├── scheme_function_docs.{json,zh-CN.json}  ← Scheme 内置函数文档（中英文双语，191 函数）
 │   ├── sdevice_command_docs.{json,zh-CN.json}  ← SDEVICE 命令文档（中英文双语，341 关键词）
-│   └── svisual_command_docs.{json,zh-CN.json}  ← Svisual 命令文档（中英文双语）
+│   ├── svisual_command_docs.{json,zh-CN.json}  ← Svisual 命令文档（中英文双语）
+│   └── tcl_command_docs.{json,zh-CN.json}      ← Tcl 核心命令文档（中英文双语，43 命令）
 │
 ├── language-configurations/                    ← 语言配置（注释符号、括号匹配、缩进）
 │   ├── sde.json                                ← SDE 配置：行注释 `;`
@@ -77,6 +78,7 @@ sentaurus-syntax-highlight/
 │   │   ├── tcl-parser-wasm.js                  ← Tcl WASM 解析器接口（单例模式）
 │   │   ├── tcl-ast-utils.js                    ← Tcl AST 遍历/查询/折叠/变量提取
 │   │   ├── tcl-symbol-configs.js               ← Tcl 工具 section 关键词配置
+│   │   ├── parse-cache.js                      ← 统一解析缓存层（SchemeParseCache + TclParseCache）
 │   │   │
 │   │   └── providers/                          ← VSCode Provider 实现
 │   │       ├── folding-provider.js             ← Scheme 代码折叠
@@ -111,7 +113,10 @@ sentaurus-syntax-highlight/
 │   ├── test-tcl-document-symbol.js             ← Tcl 文档大纲
 │   ├── test-tcl-scope-map.js                   ← Tcl 作用域映射
 │   ├── test-tcl-var-refs.js                    ← Tcl 变量引用
-│   └── test-undef-var-integration.js           ← 未定义变量诊断集成测试
+│   ├── test-parse-cache.js                     ← 解析缓存层测试
+│   ├── test-tcl-scope-index.js                 ← ScopeIndex 作用域查询测试
+│   ├── test-undef-var-integration.js           ← 未定义变量诊断集成测试
+│   └── benchmark.js                            ← 性能基准测试工具
 │
 ├── scripts/                                    ← 开发工具脚本
 │   ├── extract_keywords.py                     ← 从 XML mode 文件提取关键词并生成语法
@@ -125,7 +130,7 @@ sentaurus-syntax-highlight/
 ├── docs/                                       ← 项目文档与术语表
 │   ├── glossary.json                           ← TCAD 术语数据库
 │   ├── 函数文档提取与编写规范.md                 ← 文档编写规范
-│   ├── sde-scopes-and-colors.md               ← SDE scope 与颜色对照
+│   ├── sde-scopes-and-colors.md                ← SDE scope 与颜色对照
 │   ├── prompts/i18n/                           ← 国际化 prompt 模板
 │   └── superpowers/                            ← 开发 spec/plan 归档
 │
@@ -156,7 +161,7 @@ sentaurus-syntax-highlight/
 
 ### 第二层：关键词补全与文档悬停
 
-`src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（400 API）、Scheme 内置（191 函数）、SDEVICE（341 关键词）、Svisual（中英文双语）。
+`src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（400 API）、Scheme 内置（191 函数）、SDEVICE（341 关键词）、Tcl 核心命令（43 命令）、Svisual（中英文双语）。文档 JSON 按语言懒加载，激活时仅加载当前语言所需文档。
 
 `src/definitions.js` 独立提供用户自定义变量的补全、悬停和跳转定义，通过 `document.version` 惰性缓存避免重复扫描。definitionText 扩展到行尾包含行末注释，并通过 `truncateDefinitionText` 工具函数按 `sentaurus.definitionMaxWidth` 设置截断过长文本。
 
@@ -175,7 +180,14 @@ sentaurus-syntax-highlight/
 - `scheme-on-enter-provider.js` — Scheme 括号内回车多级自动缩进（与 `sde.json` onEnterRules 协同）
 - `tcl-document-symbol-provider.js` — Tcl 文档大纲
 
-**内存管理**：WASM `tree` 对象使用后必须 `tree.delete()` 释放，Provider 层通过 `try/finally` 保证。
+**内存管理**：WASM `tree` 对象使用后必须 `tree.delete()` 释放，由 `parse-cache.js` 的 `TclParseCache` 统一管理生命周期。
+
+### 解析缓存层
+
+`src/lsp/parse-cache.js` 提供 `SchemeParseCache` 和 `TclParseCache`，为所有 Provider 消除冗余解析：
+- 缓存键为 `{uri + version}`，文档变更自动失效
+- 缓存条目上限 20（LRU/FIFO 淘汰），文件关闭时清理
+- 单次击键触发解析次数从 5-6 次降至 1 次
 
 ### 代码片段系统
 

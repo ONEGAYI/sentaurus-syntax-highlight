@@ -4,6 +4,38 @@
 
 ---
 
+## [1.4.0] - 2026-04-16
+
+### 新功能
+
+- **TCL 核心命令语法高亮与悬停文档**：为 5 种 Tcl 语言（SDEVICE/SPROCESS/EMW/Inspect/Svisual）添加核心命令的三级语法高亮（`keyword.control` / `keyword.other` / `support.function`），新增 `tcl_command_docs.json` 中英文双语文档（43 条命令），悬停时显示命令说明
+- **统一解析缓存层**：新增 `parse-cache.js`，为 Scheme 和 Tcl 建立双缓存架构（SchemeParseCache + TclParseCache），消除每次击键触发 5-6 次冗余解析。迁移 9 个 Provider 到缓存层，缓存条目上限 20（LRU/FIFO 淘汰），文件关闭时自动清理
+- **ScopeIndex 按需查询**：引入 ScopeIndex 类替代 `Map<line, Set>` 全量预计算，Tcl 作用域查询复杂度从 O(p×n×m) 降至 O(n)，支持 `for`/`foreach`/`while`/`procedure` 等全部作用域类型
+
+### Bug 修复
+
+- **修复 Scheme 函数名 HTML 实体导致 undef-var 误报**：`all_keywords.json` 中 27 个函数名含 XML 提取残留的 HTML 实体（如 `string-&gt;list`），在 `getSchemeKnownNames()` 入口统一解码
+- **修复 for 循环变量未被 ScopeIndex 收集**：`_collectLocalDefsForIndex` 传入临时数组导致 `for {set i 0}` 中的 `i` 变量定义丢失
+- **修复 3 个历史遗留测试套件**：补全 `findEnclosingCall`/`buildSignatureLabel`/`SymbolKind` 等缺失的模块导出，修正测试参数和断言列位置，29 项测试全部通过
+
+### 性能优化
+
+- **Phase 1 Quick Wins**：统一诊断去抖为 500ms；补全去重从 O(n²) 优化为 O(n)；新增 `deactivate()` 释放定义缓存和 WASM 解析器资源
+- **Phase 2 缓存架构**：单次击键解析次数从 5-6 次降至 1 次；Scheme full pipeline 降低 26%；WASM tree 生命周期由缓存层统一管理
+- **Phase 3 算法与加载**：文档 JSON 按语言懒加载，激活时 I/O 从 ~1.46MB 降至 ~452KB；复用 tokenizer 行号追踪消除 `countLinesUpTo` 重复扫描
+- **Phase 4 细节打磨**：`findMismatchedBraces` 改为逐字符扫描替代 `text.split`；`findEnclosingCall` 添加行范围剪枝跳过无关 AST 子树；预分割 `sourceText` 为 `lines` 数组消除 `_extendNodeTextToLineEnd` 重复 `split`
+- **综合效果**（1000 行 Tcl 文件）：全管线从 74.90ms 降至 26.58ms（降低 65%），首次跌破 30ms 大关
+
+### 测试
+
+- 新增 `test-parse-cache.js`（解析缓存层测试）
+- 新增 `test-tcl-scope-index.js`（ScopeIndex 作用域查询测试）
+- 新增 `tests/benchmark.js`（性能基准测试工具）
+- 修复 3 个历史遗留测试套件（29 项测试恢复通过）
+- 全部 18 个测试套件、297 项测试通过
+
+---
+
 ## [1.3.0] - 2026-04-15
 
 ### 新功能
@@ -412,6 +444,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.4.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.1.1...v1.2.0
 [1.1.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.1.0...v1.1.1
