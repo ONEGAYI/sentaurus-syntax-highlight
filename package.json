@@ -305,7 +305,31 @@
           }
         }
       }
-    ]
+    ],
+    "configurationDefaults": {
+      "editor.tokenColorCustomizations": {
+        "[*Dark*]": {
+          "textMateRules": [
+            {
+              "scope": "support.constant.unit",
+              "settings": {
+                "foreground": "#CE9178"
+              }
+            }
+          ]
+        },
+        "[*Light*]": {
+          "textMateRules": [
+            {
+              "scope": "support.constant.unit",
+              "settings": {
+                "foreground": "#D73A49"
+              }
+            }
+          ]
+        }
+      }
+    }
   },
   "dependencies": {
     "web-tree-sitter": "^0.22.6"
