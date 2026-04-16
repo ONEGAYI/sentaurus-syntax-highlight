@@ -1,5 +1,5 @@
 const vscode = require('vscode');
-const { shouldTrigger } = require('./unit-auto-close-logic');
+const { shouldTrigger, shouldDelete } = require('./unit-auto-close-logic');
 
 /**
  * SPROCESS Unit 自动配对。
@@ -24,28 +24,46 @@ function onDocumentChange(event) {
     if (event.document.languageId !== 'sprocess') return;
 
     const change = event.contentChanges[0];
-    if (!change || change.text !== '<') return;
+    if (!change) return;
 
     const pos = change.range.start;
-    if (pos.character === 0) return;
-
-    // 获取 '<' 前面到行首的文本，用于正则匹配数字模式
     const line = event.document.lineAt(pos.line).text;
-    const linePrefix = line.substring(0, pos.character);
 
-    if (!shouldTrigger(change, linePrefix)) return;
+    if (change.text === '<' && change.rangeLength === 0) {
+        // 自动补全：数字后输入 < → 插入 >
+        if (pos.character === 0) return;
+        const linePrefix = line.substring(0, pos.character);
 
-    const editor = vscode.window.activeTextEditor;
-    if (!editor || editor.document !== event.document) return;
+        if (!shouldTrigger(change, linePrefix)) return;
 
-    // 在 '<' 之后插入 '>'，光标在中间（$0）
-    const insertPos = new vscode.Position(pos.line, pos.character + 1);
-    _applying = true;
-    editor.insertSnippet(new vscode.SnippetString('$0>'), insertPos).then(() => {
-        _applying = false;
-    }, () => {
-        _applying = false;
-    });
+        const editor = vscode.window.activeTextEditor;
+        if (!editor || editor.document !== event.document) return;
+
+        const insertPos = new vscode.Position(pos.line, pos.character + 1);
+        _applying = true;
+        editor.insertSnippet(new vscode.SnippetString('$0>'), insertPos).then(() => {
+            _applying = false;
+        }, () => {
+            _applying = false;
+        });
+    } else if (change.text === '' && change.rangeLength === 1) {
+        // 删除配对：数字后空 <> 中退格删除 < → 连带删除 >
+        const linePrefix = line.substring(0, pos.character);
+        const charAfter = line.charAt(pos.character);
+
+        if (!shouldDelete(change, linePrefix, charAfter)) return;
+
+        const editor = vscode.window.activeTextEditor;
+        if (!editor || editor.document !== event.document) return;
+
+        const deleteRange = new vscode.Range(pos, new vscode.Position(pos.line, pos.character + 1));
+        _applying = true;
+        editor.edit(builder => builder.delete(deleteRange)).then(() => {
+            _applying = false;
+        }, () => {
+            _applying = false;
+        });
+    }
 }
 
 module.exports = { activate };
