@@ -1,0 +1,898 @@
+{
+  "set": {
+    "signature": "set varName ?value?",
+    "description": "读取或写入变量的值。指定 value 时，将变量设为该值并返回；否则返回变量当前值。这是 Tcl 中创建或修改变量的主要方式。",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "要读取或设置的变量名。"
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "可选。赋给变量的值。省略时返回当前值。"
+      }
+    ],
+    "example": "set voltage 1.2\nset current $voltage\nputs $current  ;# prints: 1.2"
+  },
+  "incr": {
+    "signature": "incr varName ?increment?",
+    "description": "将变量的值增加指定数量。变量必须包含整数字符串。省略 increment 时默认为 1。使用负数可递减。",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "持有整数值的变量名。"
+      },
+      {
+        "name": "increment",
+        "type": "int",
+        "desc": "可选。要增加的数量（默认 1）。可为负数。"
+      }
+    ],
+    "example": "set count 0\nincr count       ;# count is now 1\nincr count 5     ;# count is now 6\nincr count -2    ;# count is now 4"
+  },
+  "append": {
+    "signature": "append varName value ?value ...?",
+    "description": "将所有 value 参数追加到 varName 所指变量的当前值末尾。若变量不存在则自动创建。适合逐步构建长字符串。",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "要追加内容的变量名。不存在时自动创建。"
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "desc": "一个或多个要追加到变量末尾的字符串值。"
+      }
+    ],
+    "example": "set result \"Mesh: \"\nappend result \"region1\" \" \" \"region2\"\nputs $result  ;# prints: Mesh: region1 region2"
+  },
+  "lappend": {
+    "signature": "lappend varName value ?value ...?",
+    "description": "将每个 value 参数作为独立的 list 元素追加到 varName 所指变量。若变量不存在则创建为 list。将变量当前值视为 list。",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "要追加 list 元素的变量名。不存在时自动创建。"
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "一个或多个值，作为独立的 list 元素追加。"
+      }
+    ],
+    "example": "set layers {}\nlappend layers \"Silicon\" \"Oxide\" \"Metal\"\nputs $layers  ;# prints: Silicon Oxide Metal"
+  },
+  "variable": {
+    "signature": "variable ?name value ...?",
+    "description": "创建并可选地设置一个或多个命名空间变量。通常在 namespace eval 块内使用，定义属于该命名空间的变量。每个 name-value 对设置变量；仅有 name 无 value 则声明但不初始化。",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "要在当前命名空间中创建或设置的变量名。"
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "可选。赋给变量的值。"
+      }
+    ],
+    "example": "namespace eval Device {\n  variable thickness 0.1\n  variable material \"Silicon\"\n}\nputs $Device::thickness  ;# prints: 0.1"
+  },
+  "unset": {
+    "signature": "unset ?-nocomplain? varName ?varName ...?",
+    "description": "删除一个或多个变量。默认情况下，变量不存在时报错。使用 -nocomplain 可抑制不存在变量的错误。",
+    "parameters": [
+      {
+        "name": "-nocomplain",
+        "type": "flag",
+        "desc": "可选。指定时，变量不存在不报错。"
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "一个或多个要删除的变量名。"
+      }
+    ],
+    "example": "set temp 42\nunset temp\nunset -nocomplain nonexistent_var"
+  },
+  "proc": {
+    "signature": "proc name args body",
+    "description": "定义新的 Tcl 过程（函数）。可通过名称和指定参数调用。args 定义参数列表，body 为调用时执行的脚本。",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "要定义的过程名称。"
+      },
+      {
+        "name": "args",
+        "type": "list",
+        "desc": "参数列表。可包含默认值（如 {x {y 0}}）。最后一个参数使用 'args' 可捕获可变长度参数。"
+      },
+      {
+        "name": "body",
+        "type": "script",
+        "desc": "过程被调用时执行的 Tcl 脚本。"
+      }
+    ],
+    "example": "proc calc_resistance {voltage {current 1.0}} {\n  return [expr {$voltage / $current}]\n}\nputs [calc_resistance 5.0 0.5]  ;# prints: 10.0"
+  },
+  "rename": {
+    "signature": "rename oldName newName",
+    "description": "将命令从 oldName 重命名为 newName。若 newName 为空字符串，则删除该命令。可用于包装已有命令以添加自定义逻辑。",
+    "parameters": [
+      {
+        "name": "oldName",
+        "type": "string",
+        "desc": "要重命名的命令当前名称。"
+      },
+      {
+        "name": "newName",
+        "type": "string",
+        "desc": "命令的新名称。使用空字符串可删除命令。"
+      }
+    ],
+    "example": "proc my_puts {args} {\n  puts \"LOG: $args\"\n}\nrename puts original_puts\nrename my_puts puts"
+  },
+  "global": {
+    "signature": "global varName ?varName ...?",
+    "description": "在过程作用域内使一个或多个全局变量可访问。不使用此命令时，过程拥有独立的局部作用域，无法直接访问全局变量。",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "一个或多个要在过程内访问的全局变量名。"
+      }
+    ],
+    "example": "set device_name \"NMOS\"\nproc get_device {} {\n  global device_name\n  return $device_name\n}\nputs [get_device]  ;# prints: NMOS"
+  },
+  "upvar": {
+    "signature": "upvar ?level? otherVar myVar ?otherVar myVar ...?",
+    "description": "创建一个局部变量（myVar），链接到另一作用域中的变量（otherVar）。允许过程修改调用者作用域中的变量，类似其他语言的引用传递。",
+    "parameters": [
+      {
+        "name": "level",
+        "type": "string",
+        "desc": "可选。作用域层级（默认 1，即调用者作用域）。使用 #0 表示全局作用域。"
+      },
+      {
+        "name": "otherVar",
+        "type": "string",
+        "desc": "目标作用域中要链接的变量名。"
+      },
+      {
+        "name": "myVar",
+        "type": "string",
+        "desc": "将链接到 otherVar 的局部变量名。"
+      }
+    ],
+    "example": "proc double_value {varName} {\n  upvar 1 $varName var\n  set var [expr {$var * 2}]\n}\nset x 5\ndouble_value x\nputs $x  ;# prints: 10"
+  },
+  "uplevel": {
+    "signature": "uplevel ?level? script ?script ...?",
+    "description": "在不同的作用域层级执行脚本。所有参数拼接后在指定层级上下文中求值。适用于编写需要在调用者作用域中运行代码的控制结构。",
+    "parameters": [
+      {
+        "name": "level",
+        "type": "string",
+        "desc": "可选。作用域层级（默认 1）。使用 #0 表示全局作用域。"
+      },
+      {
+        "name": "script",
+        "type": "script",
+        "desc": "一个或多个脚本片段，拼接后在目标作用域中求值。"
+      }
+    ],
+    "example": "proc do_in_global {script} {\n  uplevel #0 $script\n}\nset result 0\ndo_in_global {set result 42}\nputs $result  ;# prints: 42"
+  },
+  "catch": {
+    "signature": "catch script ?resultVarName? ?optionsVarName?",
+    "description": "捕获脚本执行中的异常。脚本正常完成返回 0，出错返回 1（或其他错误码）。可选地将结果或错误信息及错误选项存入指定变量。",
+    "parameters": [
+      {
+        "name": "script",
+        "type": "script",
+        "desc": "要执行并监控错误的 Tcl 脚本。"
+      },
+      {
+        "name": "resultVarName",
+        "type": "string",
+        "desc": "可选。存储脚本返回值或错误消息的变量名。"
+      },
+      {
+        "name": "optionsVarName",
+        "type": "string",
+        "desc": "可选。存储错误选项字典的变量名（错误码、堆栈跟踪等）。"
+      }
+    ],
+    "example": "if {[catch {open \"data.txt\" r} fid]} {\n  puts \"Error opening file: $fid\"\n} else {\n  puts [read $fid]\n  close $fid\n}"
+  },
+  "error": {
+    "signature": "error message ?info? ?code?",
+    "description": "生成带有指定消息的错误异常。可选提供额外的堆栈跟踪信息和错误码。常用于过程中标记无效输入或异常条件。",
+    "parameters": [
+      {
+        "name": "message",
+        "type": "string",
+        "desc": "要显示的错误消息字符串。"
+      },
+      {
+        "name": "info",
+        "type": "string",
+        "desc": "可选。追加到错误堆栈跟踪的附加信息。"
+      },
+      {
+        "name": "code",
+        "type": "string",
+        "desc": "可选。机器可读的错误码（如 ARITH DIVZERO）。"
+      }
+    ],
+    "example": "proc check_voltage {v} {\n  if {$v < 0} {\n    error \"Voltage must be non-negative, got $v\"\n  }\n  return $v\n}"
+  },
+  "try": {
+    "signature": "try script ?catch pattern body ...? ?finally body?",
+    "description": "提供结构化异常处理（Tcl 8.6+）。先执行 try 块，出错时按顺序测试 catch 处理器。finally 块若存在，无论是否出错都会执行。",
+    "parameters": [
+      {
+        "name": "script",
+        "type": "script",
+        "desc": "在 try 块中执行的脚本。"
+      },
+      {
+        "name": "catch pattern body",
+        "type": "script",
+        "desc": "可选。一个或多个 catch 子句。pattern 匹配错误字典，匹配时执行 body。"
+      },
+      {
+        "name": "finally body",
+        "type": "script",
+        "desc": "可选。无论是否出错都执行的脚本。适合清理操作。"
+      }
+    ],
+    "example": "try {\n  set fid [open \"result.dat\" r]\n  set data [read $fid]\n} catch {POSIX EACCES} {\n  puts \"Permission denied\"\n} finally {\n  if {[info exists fid]} { close $fid }\n}"
+  },
+  "throw": {
+    "signature": "throw type message",
+    "description": "抛出带有类型和消息的类型化异常（Tcl 8.6+）。这是生成可被类型特定 catch 处理器捕获的结构化错误的便捷命令。",
+    "parameters": [
+      {
+        "name": "type",
+        "type": "string",
+        "desc": "错误类型标识符（如 ARITH、POSIX 或自定义类型）。"
+      },
+      {
+        "name": "message",
+        "type": "string",
+        "desc": "人类可读的错误消息。"
+      }
+    ],
+    "example": "proc simulate {bias} {\n  if {$bias > 100} {\n    throw SIMULATION \"Bias $bias exceeds safe limit (100V)\"\n  }\n}"
+  },
+  "expr": {
+    "signature": "expr arg ?arg ...?",
+    "description": "求值数学或逻辑表达式。所有参数拼接为单个表达式字符串后求值。支持算术（+、-、*、/、%）、比较（==、!=、<、>）、逻辑（&&、||、!）、位运算（&、|、^）和数学函数（sin、cos、sqrt、pow 等）。始终用花括号包裹表达式以确保正确性和性能。",
+    "parameters": [
+      {
+        "name": "arg",
+        "type": "string",
+        "desc": "一个或多个表达式片段，拼接后作为单个表达式求值。"
+      }
+    ],
+    "example": "set x 3.0\nset y [expr {$x * $x + 2*$x + 1}]  ;# y = 16.0\nset angle [expr {3.14159 / 4}]\nset sine [expr {sin($angle)}]"
+  },
+  "subst": {
+    "signature": "subst ?-nobackslashes? ?-nocommands? ?-novariables? string",
+    "description": "对给定字符串执行命令替换、变量替换和反斜杠替换。各标志可选择性地禁用特定替换类型。与双引号不同，subst 在调用时立即执行替换。",
+    "parameters": [
+      {
+        "name": "-nobackslashes",
+        "type": "flag",
+        "desc": "可选。禁用反斜杠替换。"
+      },
+      {
+        "name": "-nocommands",
+        "type": "flag",
+        "desc": "可选。禁用命令替换（[...]）。"
+      },
+      {
+        "name": "-novariables",
+        "type": "flag",
+        "desc": "可选。禁用变量替换（$var）。"
+      },
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "要执行替换的字符串。"
+      }
+    ],
+    "example": "set name \"World\"\nset result [subst {Hello $name, 2+2=[expr {2+2}]}]\nputs $result  ;# prints: Hello World, 2+2=4"
+  },
+  "string": {
+    "signature": "string option arg ?arg ...?",
+    "description": "执行字符串操作。常用选项：length、index、range、replace、tolower、toupper、trim、match、compare、first、last、is、repeat、reverse 和 map。这是 Tcl 中最常用的文本处理命令之一。",
+    "parameters": [
+      {
+        "name": "option",
+        "type": "string",
+        "desc": "要执行的字符串操作（如 length、index、range、replace、match、compare、tolower、toupper、trim）。"
+      },
+      {
+        "name": "arg",
+        "type": "string",
+        "desc": "根据所选选项提供的参数。"
+      }
+    ],
+    "example": "string length \"Silicon\"      ;# returns 7\nstring toupper \"nmos\"          ;# returns NMOS\nstring range \"0.00123\" 2 end    ;# returns 00123\nstring match \"*.cmd\" \"test_des.cmd\"  ;# returns 1"
+  },
+  "format": {
+    "signature": "format formatString ?arg ...?",
+    "description": "使用 C 风格 sprintf 格式化字符串。formatString 包含格式说明符（%d、%f、%s、%e、%x 等），由对应的参数值替换。",
+    "parameters": [
+      {
+        "name": "formatString",
+        "type": "string",
+        "desc": "含 C 风格说明符的格式字符串：%d（整数）、%f（浮点数）、%e（科学计数法）、%s（字符串）、%x（十六进制）等。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "要替换到格式说明符中的值。"
+      }
+    ],
+    "example": "set v 1.234\nset i 42\nputs [format \"Voltage = %.3f V, Step = %d\" $v $i]\n;# prints: Voltage = 1.234 V, Step = 42"
+  },
+  "scan": {
+    "signature": "scan string formatString ?varName ...?",
+    "description": "根据格式字符串解析输入（类似 C 的 sscanf）。从输入字符串中提取值，可选地存入指定变量。返回成功匹配的项目数。",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "要解析的输入字符串。"
+      },
+      {
+        "name": "formatString",
+        "type": "string",
+        "desc": "描述预期输入格式的 C 风格格式说明符（%d、%f、%s 等）。"
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "可选。存储解析结果的变量名。"
+      }
+    ],
+    "example": "scan \"Vg=1.2 Vd=0.5\" \"Vg=%f Vd=%f\" vg vd\nputs \"Gate: $vg, Drain: $vd\"  ;# prints: Gate: 1.2, Drain: 0.5"
+  },
+  "regexp": {
+    "signature": "regexp ?-nocase? ?-all? ?-inline? ?-line? ?--? exp string ?matchVar? ?subMatchVar ...?",
+    "description": "将正则表达式与字符串进行匹配。匹配返回 1，否则返回 0。若指定了匹配变量，则设置为匹配文本及捕获的子表达式。支持标准正则表达式语法。",
+    "parameters": [
+      {
+        "name": "-nocase",
+        "type": "flag",
+        "desc": "可选。不区分大小写匹配。"
+      },
+      {
+        "name": "-all",
+        "type": "flag",
+        "desc": "可选。尽可能多地匹配。"
+      },
+      {
+        "name": "-inline",
+        "type": "flag",
+        "desc": "可选。以 list 形式返回匹配数据，而非设置变量。"
+      },
+      {
+        "name": "-line",
+        "type": "flag",
+        "desc": "可选。使 ^ 和 $ 匹配每行的开头和结尾，而非整个字符串。"
+      },
+      {
+        "name": "exp",
+        "type": "string",
+        "desc": "正则表达式模式。"
+      },
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "要搜索的字符串。"
+      },
+      {
+        "name": "matchVar",
+        "type": "string",
+        "desc": "可选。存储完整匹配的变量。"
+      },
+      {
+        "name": "subMatchVar",
+        "type": "string",
+        "desc": "可选。存储捕获的子表达式匹配的变量。"
+      }
+    ],
+    "example": "set line \"Id = 1.23e-3 A/V\"\nif {[regexp {Id\\s*=\\s*([\\d.e+-]+)} $line -> id_val]} {\n  puts \"Current: $id_val\"  ;# prints: Current: 1.23e-3\n}"
+  },
+  "regsub": {
+    "signature": "regsub ?-all? ?-nocase? ?--? exp string subSpec ?varName?",
+    "description": "对字符串执行正则表达式替换。将模式的第一个（或使用 -all 时的所有）匹配替换为指定内容。返回匹配数量。",
+    "parameters": [
+      {
+        "name": "-all",
+        "type": "flag",
+        "desc": "可选。替换所有匹配项，而非仅第一个。"
+      },
+      {
+        "name": "-nocase",
+        "type": "flag",
+        "desc": "可选。不区分大小写匹配。"
+      },
+      {
+        "name": "exp",
+        "type": "string",
+        "desc": "要匹配的正则表达式模式。"
+      },
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "要处理的输入字符串。"
+      },
+      {
+        "name": "subSpec",
+        "type": "string",
+        "desc": "替换字符串。使用 & 表示匹配文本，\\1-\\9 表示子匹配。"
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "可选。存储结果的变量。省略时直接返回结果。"
+      }
+    ],
+    "example": "set path \"/home/user/sim/run1_des.cmd\"\nregsub -all {/} $path \"\\\\\" winpath\nputs $winpath  ;# prints: \\home\\user\\sim\\run1_des.cmd"
+  },
+  "list": {
+    "signature": "list ?arg ...?",
+    "description": "从参数创建 list。每个参数成为 list 的独立元素。这是创建格式正确 list 的标准方式，能正确处理包含空格或特殊字符的元素。",
+    "parameters": [
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "零个或多个值作为 list 元素。无参数时返回空 list。"
+      }
+    ],
+    "example": "set materials [list Silicon Oxide \"Aluminum (99.99%)\"]\nputs $materials  ;# prints: Silicon Oxide {Aluminum (99.99%)}"
+  },
+  "llength": {
+    "signature": "llength list",
+    "description": "返回 list 中的元素数量。",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "要计算元素数量的 list。"
+      }
+    ],
+    "example": "set layers [list SiO2 Si Al]\nputs [llength $layers]  ;# prints: 3"
+  },
+  "lindex": {
+    "signature": "lindex list ?index ...?",
+    "description": "通过索引返回 list 中的元素。索引从 0 开始。支持嵌套 list 的多级索引。使用 end 表示最后一个元素，end-N 表示从末尾偏移。",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "要索引的 list。"
+      },
+      {
+        "name": "index",
+        "type": "int|string",
+        "desc": "从 0 开始的索引。使用 'end' 表示最后一个元素，'end-N' 表示从末尾偏移。"
+      }
+    ],
+    "example": "set dims {1e-4 5e-6 1e-4}\nputs [lindex $dims 0]   ;# prints: 1e-4 (length)\nputs [lindex $dims end] ;# prints: 1e-4 (depth)"
+  },
+  "linsert": {
+    "signature": "linsert list index element ?element ...?",
+    "description": "返回在指定索引位置插入元素后的新 list。原 list 不被修改。索引之前的元素保持不变，新元素出现在索引位置。",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "原始 list。"
+      },
+      {
+        "name": "index",
+        "type": "int",
+        "desc": "插入位置。使用 0 插入开头，end 表示末尾追加。"
+      },
+      {
+        "name": "element",
+        "type": "any",
+        "desc": "一个或多个要在指定索引处插入的元素。"
+      }
+    ],
+    "example": "set mats [list Si Al]\nset result [linsert $mats 1 Oxide]\nputs $result  ;# prints: Si Oxide Al"
+  },
+  "lrange": {
+    "signature": "lrange list first last",
+    "description": "返回从 first 到 last 索引（含）的子 list。使用 0 表示第一个元素，end 表示最后一个元素。",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "源 list。"
+      },
+      {
+        "name": "first",
+        "type": "int|string",
+        "desc": "要包含的第一个元素的索引（从 0 开始）。使用 'end' 表示最后一个。"
+      },
+      {
+        "name": "last",
+        "type": "int|string",
+        "desc": "要包含的最后一个元素的索引。使用 'end' 表示最后一个。"
+      }
+    ],
+    "example": "set vals {10 20 30 40 50}\nputs [lrange $vals 1 3]   ;# prints: 20 30 40\nputs [lrange $vals 2 end] ;# prints: 30 40 50"
+  },
+  "lreplace": {
+    "signature": "lreplace list first last ?element ...?",
+    "description": "返回将 first 到 last 位置的元素替换为指定元素后的新 list。若未指定替换元素，则删除该范围。原 list 不被修改。",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "原始 list。"
+      },
+      {
+        "name": "first",
+        "type": "int",
+        "desc": "要替换的第一个元素的索引。"
+      },
+      {
+        "name": "last",
+        "type": "int",
+        "desc": "要替换的最后一个元素的索引。"
+      },
+      {
+        "name": "element",
+        "type": "any",
+        "desc": "可选。替换元素。省略时删除指定范围。"
+      }
+    ],
+    "example": "set bias {0.0 0.5 1.0 1.5}\nset new_bias [lreplace $bias 2 2 1.2]\nputs $new_bias  ;# prints: 0.0 0.5 1.2 1.5"
+  },
+  "lsearch": {
+    "signature": "lsearch ?-exact? ?-glob? ?-regexp? ?-all? ?-inline? ?-not? list pattern",
+    "description": "在 list 中搜索匹配模式的元素。返回第一个匹配的索引（未找到返回 -1）。匹配模式可为 -exact（字符串相等）、-glob（通配符，默认）或 -regexp（正则表达式）。",
+    "parameters": [
+      {
+        "name": "-exact",
+        "type": "flag",
+        "desc": "可选。按精确字符串比较匹配。"
+      },
+      {
+        "name": "-glob",
+        "type": "flag",
+        "desc": "可选。使用 glob 模式匹配（默认）。"
+      },
+      {
+        "name": "-regexp",
+        "type": "flag",
+        "desc": "可选。使用正则表达式匹配。"
+      },
+      {
+        "name": "-all",
+        "type": "flag",
+        "desc": "可选。返回所有匹配索引的 list。"
+      },
+      {
+        "name": "-inline",
+        "type": "flag",
+        "desc": "可选。返回匹配值而非索引。"
+      },
+      {
+        "name": "-not",
+        "type": "flag",
+        "desc": "可选。反转匹配（返回不匹配的元素）。"
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "要搜索的 list。"
+      },
+      {
+        "name": "pattern",
+        "type": "string",
+        "desc": "要与 list 元素匹配的模式。"
+      }
+    ],
+    "example": "set mats {Silicon Oxide Aluminum Copper}\nputs [lsearch -exact $mats Oxide]     ;# prints: 1\nputs [lsearch -inline $mats Al*]       ;# prints: Aluminum"
+  },
+  "lsort": {
+    "signature": "lsort ?-ascii? ?-dictionary? ?-integer? ?-real? ?-increasing? ?-decreasing? ?-command cmd? list",
+    "description": "对 list 排序并返回新的已排序 list。支持多种排序模式：ASCII（默认）、字典序（不区分大小写）、整数和实数。原 list 不被修改。",
+    "parameters": [
+      {
+        "name": "-ascii",
+        "type": "flag",
+        "desc": "可选。按 ASCII 顺序排序（默认）。"
+      },
+      {
+        "name": "-dictionary",
+        "type": "flag",
+        "desc": "可选。不区分大小写的字典序排序。"
+      },
+      {
+        "name": "-integer",
+        "type": "flag",
+        "desc": "可选。按整数值排序。"
+      },
+      {
+        "name": "-real",
+        "type": "flag",
+        "desc": "可选。按浮点数值排序。"
+      },
+      {
+        "name": "-increasing",
+        "type": "flag",
+        "desc": "可选。升序排序（默认）。"
+      },
+      {
+        "name": "-decreasing",
+        "type": "flag",
+        "desc": "可选。降序排序。"
+      },
+      {
+        "name": "-command cmd",
+        "type": "string",
+        "desc": "可选。使用自定义比较命令进行排序。"
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "要排序的 list。"
+      }
+    ],
+    "example": "set vals {3.14 1.0 2.71 0.5}\nputs [lsort -real $vals]          ;# prints: 0.5 1.0 2.71 3.14\nputs [lsort -real -decreasing $vals] ;# prints: 3.14 2.71 1.0 0.5"
+  },
+  "split": {
+    "signature": "split string ?splitChars?",
+    "description": "使用指定的分割字符将字符串拆分为子字符串 list。splitChars 中的每个字符都被视为独立的分隔符。省略 splitChars 时默认以空白字符为分隔符。",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "要拆分的字符串。"
+      },
+      {
+        "name": "splitChars",
+        "type": "string",
+        "desc": "可选。用作分隔符的字符（每个字符为独立分隔符）。默认为空白字符。"
+      }
+    ],
+    "example": "set line \"x=1.0 y=2.0 z=3.0\"\nset parts [split $line \" \"]\nputs [llength $parts]  ;# prints: 3\nputs [split \"a,b,c\" \",\"]  ;# prints: a b c"
+  },
+  "join": {
+    "signature": "join list ?joinString?",
+    "description": "将 list 的元素连接为单个字符串，元素之间用 joinString 分隔。省略 joinString 时使用单个空格。这是 split 命令的逆操作。",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "要连接的 list。"
+      },
+      {
+        "name": "joinString",
+        "type": "string",
+        "desc": "可选。元素之间的分隔字符串。默认为单个空格。"
+      }
+    ],
+    "example": "set parts {Silicon Oxide Metal}\nputs [join $parts \" -> \"]  ;# prints: Silicon -> Oxide -> Metal\nputs [join $parts \"/\"]     ;# prints: Silicon/Oxide/Metal"
+  },
+  "open": {
+    "signature": "open fileName ?access? ?permissions?",
+    "description": "打开文件或命令管道并返回 channel 标识符。访问模式控制读写：r（读）、w（写）、a（追加）、r+（读写）等。使用 '|' 前缀打开管道。",
+    "parameters": [
+      {
+        "name": "fileName",
+        "type": "string",
+        "desc": "要打开的文件路径。使用 '|' 前缀打开命令管道。"
+      },
+      {
+        "name": "access",
+        "type": "string",
+        "desc": "可选。访问模式：r（读，默认）、w（写）、a（追加）、r+（读写）、w+（读写截断）。"
+      },
+      {
+        "name": "permissions",
+        "type": "int",
+        "desc": "可选。新创建文件的 POSIX 权限位（如 0644）。"
+      }
+    ],
+    "example": "set fid [open \"output.dat\" w]\nputs $fid \"Simulation results\"\nclose $fid\n\nset fid [open \"input.dat\" r]\nset data [read $fid]\nclose $fid"
+  },
+  "close": {
+    "signature": "close channelId",
+    "description": "关闭已打开的 channel（文件、管道或套接字）。完成后务必关闭 channel 以释放资源和刷新缓冲区。对于管道 channel，会等待子进程完成。",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "string",
+        "desc": "由 open 或 socket 返回的 channel 标识符。"
+      }
+    ],
+    "example": "set fid [open \"data.txt\" r]\nset content [read $fid]\nclose $fid"
+  },
+  "read": {
+    "signature": "read channelId ?numChars?",
+    "description": "从 channel 读取数据。指定 numChars 时读取恰好该数量的字符；否则读取所有剩余数据直到文件末尾。使用 -nonewline 标志可去除末尾换行符。",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "string",
+        "desc": "要读取的 channel。"
+      },
+      {
+        "name": "numChars",
+        "type": "int",
+        "desc": "可选。要读取的字符数。省略时读取所有剩余数据。"
+      }
+    ],
+    "example": "set fid [open \"params.txt\" r]\nset content [read $fid]\nclose $fid\n\n;# Read first 100 characters\nset fid [open \"log.txt\" r]\nset header [read $fid 100]\nclose $fid"
+  },
+  "puts": {
+    "signature": "puts ?-nonewline? ?channelId? string",
+    "description": "将字符串写入 channel，后跟换行符（除非指定 -nonewline）。省略 channelId 时写入 stdout。这是 Tcl 中主要的输出命令。",
+    "parameters": [
+      {
+        "name": "-nonewline",
+        "type": "flag",
+        "desc": "可选。抑制末尾换行符。"
+      },
+      {
+        "name": "channelId",
+        "type": "string",
+        "desc": "可选。要写入的 channel（默认：stdout）。使用文件 channel ID 进行文件输出。"
+      },
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "要写入的字符串。"
+      }
+    ],
+    "example": "puts \"Simulation complete\"          ;# to stdout\nputs -nonewline \"Enter value: \"\nset fid [open \"log.txt\" a]\nputs $fid \"Step 1: converged\"\nclose $fid"
+  },
+  "gets": {
+    "signature": "gets channelId ?varName?",
+    "description": "从 channel 读取一行。指定 varName 时，将行内容存入该变量并返回读取的字符数（文件末尾返回 -1）。省略 varName 时直接返回行内容。",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "string",
+        "desc": "要读取的 channel。"
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "可选。存储行内容的变量名。返回字符数而非行内容本身。"
+      }
+    ],
+    "example": "set fid [open \"data.csv\" r]\nwhile {[gets $fid line] >= 0} {\n  puts $line\n}\nclose $fid"
+  },
+  "flush": {
+    "signature": "flush channelId",
+    "description": "刷新 channel 的输出缓冲区，强制将缓冲数据写入。在向文件或管道写入数据后需要立即持久化时使用。",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "string",
+        "desc": "要刷新输出缓冲区的 channel。"
+      }
+    ],
+    "example": "set fid [open \"progress.log\" w]\nputs $fid \"Starting simulation...\"\nflush $fid  ;# ensure it's written immediately"
+  },
+  "file": {
+    "signature": "file option name ?arg ...?",
+    "description": "执行文件和目录操作。常用选项：exists（检查存在性）、readable/writable（检查权限）、size（文件大小）、dirname/basename/tail/rootname/extension（路径组成部分）、mkdir/delete/rename/copy（文件操作）、isdirectory/isfile（类型判断）、join（路径拼接）。",
+    "parameters": [
+      {
+        "name": "option",
+        "type": "string",
+        "desc": "文件操作：exists、readable、writable、size、dirname、basename、tail、extension、mkdir、delete、rename、copy、isdirectory、isfile、join、nativename 等。"
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "文件或目录路径。"
+      },
+      {
+        "name": "arg",
+        "type": "string",
+        "desc": "根据所选选项提供的附加参数。"
+      }
+    ],
+    "example": "if {[file exists \"result.dat\"]} {\n  set size [file size \"result.dat\"]\n  puts \"File exists, size: $size bytes\"\n}\nfile mkdir \"output\"\nset ext [file extension \"run_des.cmd\"]  ;# returns .cmd"
+  },
+  "glob": {
+    "signature": "glob ?-nocomplain? ?-directory dir? ?-types typeList? ?--? pattern ?pattern ...?",
+    "description": "返回匹配给定 glob 模式的文件名 list。支持通配符：*（任意字符串）、?（单个字符）、[abc]（字符集）。使用 -directory 指定搜索目录，-types 按文件类型过滤（f 为文件，d 为目录）。",
+    "parameters": [
+      {
+        "name": "-nocomplain",
+        "type": "flag",
+        "desc": "可选。无匹配文件时返回空 list 而非报错。"
+      },
+      {
+        "name": "-directory dir",
+        "type": "string",
+        "desc": "可选。在指定目录中搜索。"
+      },
+      {
+        "name": "-types typeList",
+        "type": "list",
+        "desc": "可选。按类型过滤：f（文件）、d（目录）、l（符号链接）。"
+      },
+      {
+        "name": "pattern",
+        "type": "string",
+        "desc": "一个或多个 glob 模式（如 *.cmd、*_des.cmd）。"
+      }
+    ],
+    "example": "set cmd_files [glob -nocomplain *_des.cmd]\nforeach f $cmd_files {\n  puts \"Found: $f\"\n}\nset all_dirs [glob -types d *]"
+  },
+  "source": {
+    "signature": "source fileName",
+    "description": "读取并执行文件中的 Tcl 脚本。文件内容在当前作用域中作为 Tcl 脚本执行。常用于加载配置文件、库或共享过程。",
+    "parameters": [
+      {
+        "name": "fileName",
+        "type": "string",
+        "desc": "要执行的 Tcl 脚本文件路径。"
+      }
+    ],
+    "example": "source \"common_procs.tcl\"\nsource \"device_params.tcl\""
+  },
+  "info": {
+    "signature": "info option ?arg arg ...?",
+    "description": "返回 Tcl 解释器状态信息。常用选项：exists（变量是否存在）、level（过程调用栈）、procs（过程列表）、body/args（过程详情）、commands（命令列表）、vars（变量名）、hostname、patchlevel（Tcl 版本）。",
+    "parameters": [
+      {
+        "name": "option",
+        "type": "string",
+        "desc": "信息选项：exists、level、procs、body、args、commands、vars、hostname、patchlevel、script 等。"
+      },
+      {
+        "name": "arg",
+        "type": "string",
+        "desc": "根据所选选项提供的参数。"
+      }
+    ],
+    "example": "if {[info exists env(HOME)]} {\n  puts \"Home: $env(HOME)\"\n}\nputs [info procs]     ;# list all procedures\nputs [info patchlevel] ;# e.g., 8.6.12"
+  },
+  "array": {
+    "signature": "array option arrayName ?arg ...?",
+    "description": "对 Tcl 数组（键值映射）执行操作。常用选项：exists（检查数组是否存在）、get（返回键值对）、names（返回键名）、set（从 list 初始化）、size（元素数量）、unset（删除数组）、startsearch/nextelement/anymore/donesearch（迭代器）。",
+    "parameters": [
+      {
+        "name": "option",
+        "type": "string",
+        "desc": "数组操作：exists、get、names、set、size、unset、startsearch、nextelement、anymore、donesearch。"
+      },
+      {
+        "name": "arrayName",
+        "type": "string",
+        "desc": "要操作的数组名。"
+      },
+      {
+        "name": "arg",
+        "type": "string",
+        "desc": "根据所选选项提供的参数。"
+      }
+    ],
+    "example": "array set params {temp 300 bias 1.2 model \"Boltzmann\"}\nputs [array size params]          ;# prints: 3\nputs [array names params]          ;# prints: temp bias model\nforeach key [array names params] {\n  puts \"$key = $params($key)\"\n}"
+  }
+}

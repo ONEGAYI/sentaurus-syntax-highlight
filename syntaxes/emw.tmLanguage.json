@@ -1,103 +1,115 @@
 {
-    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-    "name": "Sentaurus EMW",
-    "patterns": [
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Sentaurus EMW",
+  "patterns": [
+    {
+      "match": "\\b(CodeVExcitation|PECMedia|Detector|RTA|Acceleware|Monitor|Plot|DFT|TruncatedPlaneWaveExcitation|Sensor|Farfield|Globals|PMCMedia|Save|GaussianBeamExcitation|Extractor|DispersiveMedia|PlaneWaveExcitation|ComplexRefractiveIndex|Boundary)(?![A-Za-z0-9_:-])",
+      "name": "keyword.control.emw"
+    },
+    {
+      "patterns": [
         {
-            "match": "\\b(CodeVExcitation|PECMedia|Detector|RTA|Acceleware|Monitor|Plot|DFT|TruncatedPlaneWaveExcitation|Sensor|Farfield|Globals|PMCMedia|Save|GaussianBeamExcitation|Extractor|DispersiveMedia|PlaneWaveExcitation|ComplexRefractiveIndex|Boundary)(?![A-Za-z0-9_:-])",
-            "name": "keyword.control.emw"
+          "match": "\\b(SigmaMax|PolarCutRange|Tolerance|BeamPower|Polarization|Model|DeltaK|EllipticalPolarizationMagnitude|PhaseShift|OrderKappa|DownSampling|GridFile|NumericalAperture|PolarizationAngle|Location|TemperatureDep|BreakOnError|Sides|FailureOnUnreachedTolerance|LogFilePrefix|Sensors|NumberOfThreads|PlaneX|BoxCorner2|WavelengthPrecision|FieldDataFile|Mode|EndTick|PolarRange|ResultFile)\\b",
+          "name": "constant.numeric.emw"
         },
         {
-            "patterns": [
-                {
-                    "match": "\\b(SigmaMax|PolarCutRange|Tolerance|BeamPower|Polarization|Model|DeltaK|EllipticalPolarizationMagnitude|PhaseShift|OrderKappa|DownSampling|GridFile|NumericalAperture|PolarizationAngle|Location|TemperatureDep|BreakOnError|Sides|FailureOnUnreachedTolerance|LogFilePrefix|Sensors|NumberOfThreads|PlaneX|BoxCorner2|WavelengthPrecision|FieldDataFile|Mode|EndTick|PolarRange|ResultFile)\\b",
-                    "name": "constant.numeric.emw"
-                },
-                {
-                    "match": "\\b(StepZ|StartTick|InterfaceAveraging|AlphaProfile|OrderAlpha|ExcludeMaterial|ScatteredFieldOnly|Frequency|ParameterFile|PlaneZ|OverSampling|KappaMax|AlphaMax|CRIModel|Log|PlaneY|Extrapolate|MinWavelength|Amplitude|Axis|ExcludeRegion|EllipticalPolarizationPhase|ModelParameters|Field|StepY|AzimuthalCutList|BoxCorner1|Phase|AnchorPoint1|NumberOfPlaneWaves)\\b",
-                    "name": "constant.numeric.emw"
-                },
-                {
-                    "match": "\\b(InputDataFile|TickStep|StartTime|Theta|UnavailableLicenseAction|Thickness|Direction|DomainDecomposition|Name|Phi|AmplitudeScaling|BeamCenter|WavelengthList|LoadFile|RotationAngles|SigmaProfile|TotalSimulationTime|Delay|Signal|Domain|Region|LibraryPath|Radius|Intensity|Psi|Material|MaxWavelength|FinalPlot|Temperature|EndTime)\\b",
-                    "name": "constant.numeric.emw"
-                },
-                {
-                    "match": "\\b(BeamRadius|GainDep|AzimuthalCutRange|AnchorPoint2|PolarCutList|IgnoreMaterials|TimeStep|WriteBehavior|ParallelLicenses|LogFile|StepX|IntegrationRange|CompressTDR|BoxDimensions|BoxCenter|Domains|KappaProfile|NRise|Quantity|WavelengthDep|OrderSigma|WavelengthRange|OutputFilePrefix|TdrNativeTensorGridUnit|LogLevel|CarrierDep|AzimuthalRange|PartialCoherenceFactor|CoordinateTransformation|TotalTimeSteps)\\b",
-                    "name": "constant.numeric.emw"
-                },
-                {
-                    "match": "\\b(Sigma|Type|Interpolation|CRIMIPath|LogPrecision|ArraySize|NumberOfWavelengths|Wavelength)\\b",
-                    "name": "constant.numeric.emw"
-                }
-            ]
+          "match": "\\b(StepZ|StartTick|InterfaceAveraging|AlphaProfile|OrderAlpha|ExcludeMaterial|ScatteredFieldOnly|Frequency|ParameterFile|PlaneZ|OverSampling|KappaMax|AlphaMax|CRIModel|Log|PlaneY|Extrapolate|MinWavelength|Amplitude|Axis|ExcludeRegion|EllipticalPolarizationPhase|ModelParameters|Field|StepY|AzimuthalCutList|BoxCorner1|Phase|AnchorPoint1|NumberOfPlaneWaves)\\b",
+          "name": "constant.numeric.emw"
         },
         {
-            "patterns": [
-                {
-                    "match": "\\b(ImagMagneticFieldZ|ImagElectricFieldZ|Dfgeo|PeriodicOblique|Homogeneous|SingleDipoleDrude|Numbered|AbsElectricDisplacement|um|ImagElectricFieldY|MixedElement|TFSF|IncoherentImagEy|Local|Auto|m|Mur|RelativePermittivityYY|serial|Intersecting|Hybrid|CplxMagneticField|SingleDipoleDebye|IncoherentImagEz|OverwriteAndNumbered|ElectricConductivityZZ|TM|ElectricConductivityYY|DrudeModLorentz|RealLin)\\b",
-                    "name": "string.quoted.emw"
-                },
-                {
-                    "match": "\\b(Higdon|TE|reduce|IncoherentRealEz|Decayed|CplxElectricField|PMC|No|CplxEMField|SMP|RelativePermeabilityZZ|RelativePermittivityZZ|Harmonic|ElectricFieldIntensity|all|Synopsys|RealElectricFieldZ|RelativePermeabilityYY|Separate|RealElectricFieldY|DrudeLorentz|AbsorbedPhotonDensity|IncoherentRealHx|ASCII|Gauss|Z|cplxRefIndex|All|global|maxcomp)\\b",
-                    "name": "string.quoted.emw"
-                },
-                {
-                    "match": "\\b(RealMagneticField|MagneticConductivityZZ|AbsElectricField|AbsMagneticInduction|United|CplxExtCoeffXX|AbsMagneticField|PEC|IncoherentRealEy|Zmin|Inhomogeneous|E|IncoherentRealHz|MagneticConductivityYY|CPML|max|Automatic|PlaneWave|UserDefined|Real|Integrate|ijk|RelativePermeabilityXX|IncoherentImagHy|PhotonFluxDensity|l2scaled|Xmax|Acceleware|Tnorm|CodeV)\\b",
-                    "name": "string.quoted.emw"
-                },
-                {
-                    "match": "\\b(Volume|IncoherentOpticalGeneration|Debye|ConductionCurrentDensity|IncoherentImagEx|IncoherentRealHy|Y|Hard|CplxRefIndexZZ|cplxExtCoeff|Yes|Xmin|Lorentz|ImagElectricFieldX|IncoherentImagHx|ComputeFromComplexRefractiveIndex|Software|CplxRefIndexXX|Unified|UseCRI|Target|ImagMagneticFieldX|Anorm|MPI|Region|Global|ImagMagneticFieldY|CplxExtCoeffZZ|IncoherentRealEx|H)\\b",
-                    "name": "string.quoted.emw"
-                },
-                {
-                    "match": "\\b(GaussianBeam|Transient|IncoherentIntensity|Tensor|Ymin|none|RealMagneticFieldY|RelativePermittivityXX|Zmax|PointSource|Rnorm|Simple|RaiseError|RealElectricFieldX|BackwardCompatibility|Average|TimeAveraged|Default|PoyntingVectorSurfaceIntegral|fromTop|Ymax|min|AbsorbedPowerDensity|ImagMagneticField|Binary|Bulk|RTA|ModLorentz|maxmag|xyz)\\b",
-                    "name": "string.quoted.emw"
-                },
-                {
-                    "match": "\\b(fromBottom|RealMagneticFieldZ|T|IncoherentAbsorbedPhotonDensity|Overwrite|l2|abort|FromFile|RealLog|PowerFluxDensity|Maximum|Source|MagneticConductivityXX|IncoherentImagHz|RealElectricField|RealMagneticFieldX|ImagElectricField|X|CplxExtCoeffYY|A|Periodic|OpticalGeneration|wait|R|ElectricConductivityXX|Imag|CplxRefIndexYY|Conservative|Hardware|Surface)\\b",
-                    "name": "string.quoted.emw"
-                },
-                {
-                    "match": "\\b(Standard|TruncatedPlaneWave|Profile|Dfise|Drude)\\b",
-                    "name": "string.quoted.emw"
-                }
-            ]
+          "match": "\\b(InputDataFile|TickStep|StartTime|Theta|UnavailableLicenseAction|Thickness|Direction|DomainDecomposition|Name|Phi|AmplitudeScaling|BeamCenter|WavelengthList|LoadFile|RotationAngles|SigmaProfile|TotalSimulationTime|Delay|Signal|Domain|Region|LibraryPath|Radius|Intensity|Psi|Material|MaxWavelength|FinalPlot|Temperature|EndTime)\\b",
+          "name": "constant.numeric.emw"
         },
         {
-            "name": "comment.line.hash",
-            "match": "#.*$"
+          "match": "\\b(BeamRadius|GainDep|AzimuthalCutRange|AnchorPoint2|PolarCutList|IgnoreMaterials|TimeStep|WriteBehavior|ParallelLicenses|LogFile|StepX|IntegrationRange|CompressTDR|BoxDimensions|BoxCenter|Domains|KappaProfile|NRise|Quantity|WavelengthDep|OrderSigma|WavelengthRange|OutputFilePrefix|TdrNativeTensorGridUnit|LogLevel|CarrierDep|AzimuthalRange|PartialCoherenceFactor|CoordinateTransformation|TotalTimeSteps)\\b",
+          "name": "constant.numeric.emw"
         },
         {
-            "name": "comment.line.asterisk",
-            "match": "\\*.*$"
-        },
-        {
-            "name": "string.quoted.double",
-            "begin": "\"",
-            "end": "\"",
-            "patterns": [
-                {
-                    "name": "constant.character.escape",
-                    "match": "\\\\."
-                },
-                {
-                    "match": "@[a-zA-Z_<][^@]*@",
-                    "name": "constant.character.format.placeholder"
-                }
-            ]
-        },
-        {
-            "match": "\\b(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?\\b",
-            "name": "constant.numeric"
-        },
-        {
-            "match": "@[a-zA-Z_<][^@]*@",
-            "name": "constant.character.format.placeholder"
-        },
-        {
-            "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
-            "name": "variable.other"
+          "match": "\\b(Sigma|Type|Interpolation|CRIMIPath|LogPrecision|ArraySize|NumberOfWavelengths|Wavelength)\\b",
+          "name": "constant.numeric.emw"
         }
-    ],
-    "repository": {},
-    "scopeName": "source.sentaurus.emw"
+      ]
+    },
+    {
+      "patterns": [
+        {
+          "match": "\\b(ImagMagneticFieldZ|ImagElectricFieldZ|Dfgeo|PeriodicOblique|Homogeneous|SingleDipoleDrude|Numbered|AbsElectricDisplacement|um|ImagElectricFieldY|MixedElement|TFSF|IncoherentImagEy|Local|Auto|m|Mur|RelativePermittivityYY|serial|Intersecting|Hybrid|CplxMagneticField|SingleDipoleDebye|IncoherentImagEz|OverwriteAndNumbered|ElectricConductivityZZ|TM|ElectricConductivityYY|DrudeModLorentz|RealLin)\\b",
+          "name": "string.quoted.emw"
+        },
+        {
+          "match": "\\b(Higdon|TE|reduce|IncoherentRealEz|Decayed|CplxElectricField|PMC|No|CplxEMField|SMP|RelativePermeabilityZZ|RelativePermittivityZZ|Harmonic|ElectricFieldIntensity|all|Synopsys|RealElectricFieldZ|RelativePermeabilityYY|Separate|RealElectricFieldY|DrudeLorentz|AbsorbedPhotonDensity|IncoherentRealHx|ASCII|Gauss|Z|cplxRefIndex|All|global|maxcomp)\\b",
+          "name": "string.quoted.emw"
+        },
+        {
+          "match": "\\b(RealMagneticField|MagneticConductivityZZ|AbsElectricField|AbsMagneticInduction|United|CplxExtCoeffXX|AbsMagneticField|PEC|IncoherentRealEy|Zmin|Inhomogeneous|E|IncoherentRealHz|MagneticConductivityYY|CPML|max|Automatic|PlaneWave|UserDefined|Real|Integrate|ijk|RelativePermeabilityXX|IncoherentImagHy|PhotonFluxDensity|l2scaled|Xmax|Acceleware|Tnorm|CodeV)\\b",
+          "name": "string.quoted.emw"
+        },
+        {
+          "match": "\\b(Volume|IncoherentOpticalGeneration|Debye|ConductionCurrentDensity|IncoherentImagEx|IncoherentRealHy|Y|Hard|CplxRefIndexZZ|cplxExtCoeff|Yes|Xmin|Lorentz|ImagElectricFieldX|IncoherentImagHx|ComputeFromComplexRefractiveIndex|Software|CplxRefIndexXX|Unified|UseCRI|Target|ImagMagneticFieldX|Anorm|MPI|Region|Global|ImagMagneticFieldY|CplxExtCoeffZZ|IncoherentRealEx|H)\\b",
+          "name": "string.quoted.emw"
+        },
+        {
+          "match": "\\b(GaussianBeam|Transient|IncoherentIntensity|Tensor|Ymin|none|RealMagneticFieldY|RelativePermittivityXX|Zmax|PointSource|Rnorm|Simple|RaiseError|RealElectricFieldX|BackwardCompatibility|Average|TimeAveraged|Default|PoyntingVectorSurfaceIntegral|fromTop|Ymax|min|AbsorbedPowerDensity|ImagMagneticField|Binary|Bulk|RTA|ModLorentz|maxmag|xyz)\\b",
+          "name": "string.quoted.emw"
+        },
+        {
+          "match": "\\b(fromBottom|RealMagneticFieldZ|T|IncoherentAbsorbedPhotonDensity|Overwrite|l2|abort|FromFile|RealLog|PowerFluxDensity|Maximum|Source|MagneticConductivityXX|IncoherentImagHz|RealElectricField|RealMagneticFieldX|ImagElectricField|X|CplxExtCoeffYY|A|Periodic|OpticalGeneration|wait|R|ElectricConductivityXX|Imag|CplxRefIndexYY|Conservative|Hardware|Surface)\\b",
+          "name": "string.quoted.emw"
+        },
+        {
+          "match": "\\b(Standard|TruncatedPlaneWave|Profile|Dfise|Drude)\\b",
+          "name": "string.quoted.emw"
+        }
+      ]
+    },
+    {
+      "name": "comment.line.hash",
+      "match": "#.*$"
+    },
+    {
+      "name": "comment.line.asterisk",
+      "match": "\\*.*$"
+    },
+    {
+      "name": "string.quoted.double",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape",
+          "match": "\\\\."
+        },
+        {
+          "match": "@[a-zA-Z_<][^@]*@",
+          "name": "constant.character.format.placeholder"
+        }
+      ]
+    },
+    {
+      "match": "\\b(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?\\b",
+      "name": "constant.numeric"
+    },
+    {
+      "match": "@[a-zA-Z_<][^@]*@",
+      "name": "constant.character.format.placeholder"
+    },
+    {
+      "match": "\\b(if|else|elseif|for|foreach|while|switch|break|continue|return)\\b",
+      "name": "keyword.control.emw"
+    },
+    {
+      "match": "\\b(proc|try|throw)\\b",
+      "name": "keyword.other.emw"
+    },
+    {
+      "match": "\\b(after|append|array|catch|close|concat|error|eval|expr|file|format|gets|glob|global|incr|info|join|lappend|lindex|linsert|list|llength|lrange|lreplace|lsearch|lsort|open|puts|read|regsub|rename|scan|set|source|split|string|subst|unset|uplevel|upvar|variable|vwait)\\b",
+      "name": "support.function.emw"
+    },
+    {
+      "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
+      "name": "variable.other"
+    }
+  ],
+  "repository": {},
+  "scopeName": "source.sentaurus.emw"
 }

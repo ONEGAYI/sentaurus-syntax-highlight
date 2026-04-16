@@ -315,4 +315,17 @@ function checkSchemeUndefVars(document) {
     return diagnostics;
 }
 
-module.exports = { activate, checkTclUndefVars, checkSchemeUndefVars, checkSchemeDuplicateDefs, TCL_BUILTIN_VARS, SCHEME_BUILTIN_VARS };
+/**
+ * 重新扫描所有已打开的文档。
+ * 用于 WASM 解析器异步初始化完成后，补充初始扫描遗漏的 Tcl 文档。
+ */
+function refreshAll() {
+    for (const doc of vscode.workspace.textDocuments) {
+        const langId = doc.languageId;
+        if (TCL_LANG_SET.has(langId) || langId === 'sde') {
+            updateDiagnostics(doc);
+        }
+    }
+}
+
+module.exports = { activate, refreshAll, checkTclUndefVars, checkSchemeUndefVars, checkSchemeDuplicateDefs, TCL_BUILTIN_VARS, SCHEME_BUILTIN_VARS };
