@@ -11,9 +11,23 @@ function test(name, fn) {
     catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
 }
 
-function parseAndFind(code, line, column) {
+function computeLineStarts(text) {
+    const starts = [0];
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === '\n') starts.push(i + 1);
+    }
+    return starts;
+}
+
+function parseCode(code) {
     const { ast } = parse(code);
-    return dispatcher.findEnclosingCall(ast, line, column);
+    const lineStarts = computeLineStarts(code);
+    return { ast, lineStarts };
+}
+
+function parseAndFind(code, line, column) {
+    const { ast, lineStarts } = parseCode(code);
+    return dispatcher.findEnclosingCall(ast, line, column, lineStarts);
 }
 
 console.log('\nfindEnclosingCall:');
@@ -53,7 +67,7 @@ test('跨行函数调用', () => {
 
 test('多行嵌套返回最内层', () => {
     const code = '(define (f x)\n  (let ((y 1))\n    (+ x y)))';
-    const call = parseAndFind(code, 3, 35);
+    const call = parseAndFind(code, 3, 5);
     assert.ok(call);
     assert.strictEqual(call.children[0].value, '+');
 });
@@ -61,8 +75,8 @@ test('多行嵌套返回最内层', () => {
 console.log('\nresolveMode:');
 
 test('从字符串参数识别模式', () => {
-    const { ast } = parse('(sdedr:define-refinement-function "ref1" "MaxGradient" 0.1)');
-    const call = dispatcher.findEnclosingCall(ast, 1, 5);
+    const { ast, lineStarts } = parseCode('(sdedr:define-refinement-function "ref1" "MaxGradient" 0.1)');
+    const call = dispatcher.findEnclosingCall(ast, 1, 5, lineStarts);
     const modeDispatch = {
         argIndex: 1,
         modes: {
@@ -75,16 +89,16 @@ test('从字符串参数识别模式', () => {
 });
 
 test('未写入模式参数时返回 null', () => {
-    const { ast } = parse('(sdedr:define-refinement-function "ref1")');
-    const call = dispatcher.findEnclosingCall(ast, 1, 5);
+    const { ast, lineStarts } = parseCode('(sdedr:define-refinement-function "ref1")');
+    const call = dispatcher.findEnclosingCall(ast, 1, 5, lineStarts);
     const modeDispatch = { argIndex: 2, modes: { MaxGradient: { params: [] } } };
     const mode = dispatcher.resolveMode(call, modeDispatch);
     assert.strictEqual(mode, null);
 });
 
 test('无效模式名返回 null', () => {
-    const { ast } = parse('(sdedr:define-refinement-function "ref1" "UnknownMode" 0.1)');
-    const call = dispatcher.findEnclosingCall(ast, 1, 5);
+    const { ast, lineStarts } = parseCode('(sdedr:define-refinement-function "ref1" "UnknownMode" 0.1)');
+    const call = dispatcher.findEnclosingCall(ast, 1, 5, lineStarts);
     const modeDispatch = { argIndex: 2, modes: { MaxGradient: { params: [] } } };
     const mode = dispatcher.resolveMode(call, modeDispatch);
     assert.strictEqual(mode, null);
@@ -93,40 +107,40 @@ test('无效模式名返回 null', () => {
 console.log('\nresolveActiveParam:');
 
 test('单行调用：光标在第 1 个参数', () => {
-    const { ast } = parse('(foo 1 2 3)');
-    const call = dispatcher.findEnclosingCall(ast, 1, 6);
-    const param = dispatcher.resolveActiveParam(call, 1, 6);
+    const { ast, lineStarts } = parseCode('(foo 1 2 3)');
+    const call = dispatcher.findEnclosingCall(ast, 1, 6, lineStarts);
+    const param = dispatcher.resolveActiveParam(call, 1, 6, lineStarts);
     assert.strictEqual(param, 0);
 });
 
 test('单行调用：光标在第 3 个参数', () => {
-    const { ast } = parse('(foo 1 2 3)');
-    const call = dispatcher.findEnclosingCall(ast, 1, 10);
-    const param = dispatcher.resolveActiveParam(call, 1, 10);
+    const { ast, lineStarts } = parseCode('(foo 1 2 3)');
+    const call = dispatcher.findEnclosingCall(ast, 1, 10, lineStarts);
+    const param = dispatcher.resolveActiveParam(call, 1, 10, lineStarts);
     assert.strictEqual(param, 2);
 });
 
 test('跨行调用：光标在第 2 行对应参数索引', () => {
     const code = '(foo "arg1"\n  "arg2"\n  "arg3")';
-    const { ast } = parse(code);
-    const call = dispatcher.findEnclosingCall(ast, 2, 5);
-    const param = dispatcher.resolveActiveParam(call, 2, 5);
+    const { ast, lineStarts } = parseCode(code);
+    const call = dispatcher.findEnclosingCall(ast, 2, 5, lineStarts);
+    const param = dispatcher.resolveActiveParam(call, 2, 5, lineStarts);
     assert.strictEqual(param, 1);
 });
 
 test('闭合括号内无参数时 activeParam 为 0（自动补全右括号场景）', () => {
-    const { ast } = parse('(sdegeo )');
-    const call = dispatcher.findEnclosingCall(ast, 1, 8);
+    const { ast, lineStarts } = parseCode('(sdegeo )');
+    const call = dispatcher.findEnclosingCall(ast, 1, 8, lineStarts);
     assert.ok(call);
-    const param = dispatcher.resolveActiveParam(call, 1, 8);
+    const param = dispatcher.resolveActiveParam(call, 1, 8, lineStarts);
     assert.strictEqual(param, 0);
 });
 
 test('未闭合括号内无参数时 activeParam 为 0', () => {
-    const { ast } = parse('(sdegeo ');
-    const call = dispatcher.findEnclosingCall(ast, 1, 8);
+    const { ast, lineStarts } = parseCode('(sdegeo ');
+    const call = dispatcher.findEnclosingCall(ast, 1, 8, lineStarts);
     assert.ok(call);
-    const param = dispatcher.resolveActiveParam(call, 1, 8);
+    const param = dispatcher.resolveActiveParam(call, 1, 8, lineStarts);
     assert.strictEqual(param, 0);
 });
 
@@ -134,7 +148,7 @@ console.log('\ndispatch (integration):');
 
 test('完整分派：识别模式和参数位置', () => {
     const code = '(sdedr:define-refinement-function "ref1" "MaxGradient" 0.1)';
-    const { ast } = parse(code);
+    const { ast } = parseCode(code);
     const table = {
         'sdedr:define-refinement-function': {
             argIndex: 1,
@@ -152,7 +166,7 @@ test('完整分派：识别模式和参数位置', () => {
 
 test('非模式分派函数返回 mode=null', () => {
     const code = '(sdegeo:create-circle (position 0 0 0) 10 "Si" "R")';
-    const { ast } = parse(code);
+    const { ast } = parseCode(code);
     const result = dispatcher.dispatch(ast, 1, 5, {});
     assert.ok(result);
     assert.strictEqual(result.functionName, 'sdegeo:create-circle');
