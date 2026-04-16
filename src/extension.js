@@ -328,28 +328,41 @@ function activate(context) {
         DOC_LABELS.keywords = '关键词：';
     }
 
-    // 按语言加载函数文档（各语言隔离，避免文档泄露）
+    // 按语言懒加载函数文档（首次使用时才加载，减少激活 I/O）
     const langFuncDocs = {};
-    const sdeDocs = loadDocsJson('sde_function_docs.json', useZh) || {};
-    const schemeDocs = loadDocsJson('scheme_function_docs.json', useZh);
-    const sdeviceDocs = loadDocsJson('sdevice_command_docs.json', useZh);
-    const svisualDocs = loadDocsJson('svisual_command_docs.json', useZh);
-    const tclDocs = loadDocsJson('tcl_command_docs.json', useZh);
+    const _docsCache = {};
+    function getDocs(langId) {
+        if (langFuncDocs[langId]) return langFuncDocs[langId];
 
-    // SDE: SDE API + Scheme 内置函数
-    langFuncDocs.sde = { ...sdeDocs };
-    if (schemeDocs) Object.assign(langFuncDocs.sde, schemeDocs);
-
-    // Tcl 方言语言：各自专属文档 + 共享的 Tcl 核心命令文档
-    langFuncDocs.sdevice = { ...(sdeviceDocs || {}), ...(tclDocs || {}) };
-    langFuncDocs.svisual = { ...(svisualDocs || {}), ...(tclDocs || {}) };
-    langFuncDocs.sprocess = { ...(tclDocs || {}) };
-    langFuncDocs.emw = { ...(tclDocs || {}) };
-    langFuncDocs.inspect = { ...(tclDocs || {}) };
+        if (langId === 'sde') {
+            if (!_docsCache.sde) {
+                const sdeDocs = loadDocsJson('sde_function_docs.json', useZh) || {};
+                const schemeDocs = loadDocsJson('scheme_function_docs.json', useZh);
+                _docsCache.sde = { ...sdeDocs };
+                if (schemeDocs) Object.assign(_docsCache.sde, schemeDocs);
+            }
+            langFuncDocs.sde = _docsCache.sde;
+        } else {
+            // Tcl 方言语言
+            if (!_docsCache.tcl) {
+                _docsCache.tcl = loadDocsJson('tcl_command_docs.json', useZh) || {};
+            }
+            if (!_docsCache[langId]) {
+                const langSpecificDocs = (() => {
+                    if (langId === 'sdevice') return loadDocsJson('sdevice_command_docs.json', useZh) || {};
+                    if (langId === 'svisual') return loadDocsJson('svisual_command_docs.json', useZh) || {};
+                    return {};
+                })();
+                _docsCache[langId] = { ...langSpecificDocs, ..._docsCache.tcl };
+            }
+            langFuncDocs[langId] = _docsCache[langId];
+        }
+        return langFuncDocs[langId];
+    }
 
     // 构建 modeDispatch 查找表：始终从英文文档提取（结构化元数据，与语言无关）
     const enSdeDocs = loadDocsJson('sde_function_docs.json', false);
-    const modeDispatchSource = enSdeDocs || sdeDocs;
+    const modeDispatchSource = enSdeDocs || {};
     const modeDispatchTable = {};
     for (const [fnName, fnDoc] of Object.entries(modeDispatchSource)) {
         if (fnDoc.modeDispatch) {
@@ -423,7 +436,7 @@ function activate(context) {
         const moduleKeywords = allKeywords[langId];
         if (!moduleKeywords) continue;
 
-        const items = buildItems(moduleKeywords, langFuncDocs[langId], langId);
+        const items = buildItems(moduleKeywords, getDocs(langId), langId);
 
         const completionDisposable = vscode.languages.registerCompletionItemProvider(
             { language: langId },
@@ -495,7 +508,7 @@ function activate(context) {
                     const word = document.getText(range);
 
                     // 1. 查函数文档（优先，仅限当前语言的文档）
-                    const docs = langFuncDocs[langId] || {};
+                    const docs = getDocs(langId) || {};
                     const doc = docs[word] || docs[decodeHtml(word)];
                     if (doc) return new vscode.Hover(formatDoc(doc, langId), range);
 
