@@ -29,12 +29,11 @@ function onDocumentChange(event) {
     const pos = change.range.start;
     if (pos.character === 0) return;
 
-    // 获取 '<' 前一个字符
-    const prevChar = event.document.getText(
-        new vscode.Range(pos.translate(0, -1), pos)
-    );
+    // 获取 '<' 前面到行首的文本，用于正则匹配数字模式
+    const line = event.document.lineAt(pos.line).text;
+    const linePrefix = line.substring(0, pos.character);
 
-    if (!shouldTrigger(change, prevChar)) return;
+    if (!shouldTrigger(change, linePrefix)) return;
 
     const editor = vscode.window.activeTextEditor;
     if (!editor || editor.document !== event.document) return;
