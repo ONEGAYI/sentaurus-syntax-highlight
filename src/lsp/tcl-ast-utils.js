@@ -364,7 +364,7 @@ function buildScopeIndex(root) {
                     const words = _getCommandWords(child);
                     for (const w of words) {
                         if (w.type === 'braced_word') {
-                            _collectLocalDefsForIndex(w, globalDefs.map(d => ({ name: d.name, defLine: d.defLine })), 1, _countMaxLine(root) + 1);
+                            _collectLocalDefsForIndex(w, globalDefs, 1, _countMaxLine(root) + 1);
                         }
                     }
                 }
