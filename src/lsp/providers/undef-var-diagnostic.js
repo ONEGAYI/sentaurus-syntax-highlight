@@ -108,7 +108,7 @@ function checkTclUndefVars(document) {
 
     const root = entry.tree.rootNode;
     const refs = astUtils.getVariableRefs(root);
-    const scopeMap = astUtils.buildScopeMap(root);
+    const scopeIndex = astUtils.buildScopeIndex(root);
 
     const diagnostics = [];
     for (const ref of refs) {
@@ -116,7 +116,7 @@ function checkTclUndefVars(document) {
         if (TCL_BUILTIN_VARS.has(ref.name)) continue;
 
         // 检查引用行是否可见该变量
-        const visibleAtLine = scopeMap.get(ref.line);
+        const visibleAtLine = scopeIndex.getVisibleAt(ref.line);
         if (!visibleAtLine || !visibleAtLine.has(ref.name)) {
             const range = new vscode.Range(
                 ref.line - 1, ref.startCol,
