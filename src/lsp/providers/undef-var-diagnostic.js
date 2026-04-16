@@ -4,9 +4,13 @@
 const vscode = require('vscode');
 const astUtils = require('../tcl-ast-utils');
 const scopeAnalyzer = require('../scope-analyzer');
-const schemeParser = require('../scheme-parser');
 
 const DEBOUNCE_MS = 500;
+
+/** @type {import('../parse-cache').SchemeParseCache} */
+let schemeCache;
+/** @type {import('../parse-cache').TclParseCache} */
+let tclCache;
 
 /** Sentaurus 工具链隐式注入的变量白名单 */
 const TCL_BUILTIN_VARS = new Set([
@@ -32,7 +36,9 @@ let debounceTimer;
  * 注册未定义变量诊断（Tcl 方言部分）。
  * @param {vscode.ExtensionContext} context
  */
-function activate(context) {
+function activate(context, schemeCacheInstance, tclCacheInstance) {
+    schemeCache = schemeCacheInstance;
+    tclCache = tclCacheInstance;
     diagnosticCollection = vscode.languages.createDiagnosticCollection('undef-var-tcl');
     context.subscriptions.push(diagnosticCollection);
 
@@ -78,14 +84,13 @@ function activate(context) {
  * @param {vscode.TextDocument} doc
  */
 function updateDiagnostics(doc) {
-    const text = doc.getText();
     const langId = doc.languageId;
 
     let diagnostics;
     if (langId === 'sde') {
-        diagnostics = checkSchemeUndefVars(text);
+        diagnostics = checkSchemeUndefVars(doc);
     } else {
-        diagnostics = checkTclUndefVars(text);
+        diagnostics = checkTclUndefVars(doc);
     }
 
     diagnosticCollection.set(doc.uri, diagnostics);
@@ -93,44 +98,41 @@ function updateDiagnostics(doc) {
 
 /**
  * 检查 Tcl 代码中的未定义变量引用。
- * @param {string} text - 文档文本
+ * 使用 TclParseCache 管理 tree 生命周期，不再调用 tree.delete()。
+ * @param {vscode.TextDocument} document
  * @returns {vscode.Diagnostic[]}
  */
-function checkTclUndefVars(text) {
-    const tree = astUtils.parseSafe(text);
-    if (!tree) return [];
+function checkTclUndefVars(document) {
+    const entry = tclCache.get(document);
+    if (!entry) return [];
 
-    try {
-        const root = tree.rootNode;
-        const refs = astUtils.getVariableRefs(root);
-        const scopeMap = astUtils.buildScopeMap(root);
+    const root = entry.tree.rootNode;
+    const refs = astUtils.getVariableRefs(root);
+    const scopeMap = astUtils.buildScopeMap(root);
 
-        const diagnostics = [];
-        for (const ref of refs) {
-            // 跳过白名单变量
-            if (TCL_BUILTIN_VARS.has(ref.name)) continue;
+    const diagnostics = [];
+    for (const ref of refs) {
+        // 跳过白名单变量
+        if (TCL_BUILTIN_VARS.has(ref.name)) continue;
 
-            // 检查引用行是否可见该变量
-            const visibleAtLine = scopeMap.get(ref.line);
-            if (!visibleAtLine || !visibleAtLine.has(ref.name)) {
-                const range = new vscode.Range(
-                    ref.line - 1, ref.startCol,
-                    ref.line - 1, ref.endCol
-                );
-                const diagnostic = new vscode.Diagnostic(
-                    range,
-                    `未定义的变量: ${ref.name}`,
-                    vscode.DiagnosticSeverity.Warning
-                );
-                diagnostic.source = 'undef-var';
-                diagnostics.push(diagnostic);
-            }
+        // 检查引用行是否可见该变量
+        const visibleAtLine = scopeMap.get(ref.line);
+        if (!visibleAtLine || !visibleAtLine.has(ref.name)) {
+            const range = new vscode.Range(
+                ref.line - 1, ref.startCol,
+                ref.line - 1, ref.endCol
+            );
+            const diagnostic = new vscode.Diagnostic(
+                range,
+                `未定义的变量: ${ref.name}`,
+                vscode.DiagnosticSeverity.Warning
+            );
+            diagnostic.source = 'undef-var';
+            diagnostics.push(diagnostic);
         }
-
-        return diagnostics;
-    } finally {
-        tree.delete();
     }
+
+    return diagnostics;
 }
 
 /**
@@ -275,14 +277,13 @@ function checkSchemeDuplicateDefs(scopeTree, text) {
 
 /**
  * 检查 Scheme 代码中的未定义变量引用。
- * @param {string} text - 文档文本
+ * @param {vscode.TextDocument} document
  * @returns {vscode.Diagnostic[]}
  */
-function checkSchemeUndefVars(text) {
-    const { ast } = schemeParser.parse(text);
+function checkSchemeUndefVars(document) {
+    const { ast, scopeTree, text } = schemeCache.get(document);
     if (!ast) return [];
 
-    const scopeTree = scopeAnalyzer.buildScopeTree(ast);
     const knownNames = getSchemeKnownNames();
     const refs = scopeAnalyzer.getSchemeRefs(ast, knownNames);
 

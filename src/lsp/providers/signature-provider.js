@@ -1,7 +1,6 @@
 // src/lsp/providers/signature-provider.js
 'use strict';
 
-const schemeParser = require('../scheme-parser');
 const dispatcher = require('../semantic-dispatcher');
 
 /**
@@ -72,16 +71,8 @@ function buildParams(modeData, funcDoc) {
  * @param {object} funcDocs - 函数名 → 文档 的完整映射
  * @returns {object|null} VSCode SignatureHelp 结构（纯对象，不依赖 vscode 模块）
  */
-function provideSignatureHelp(document, position, token, modeDispatchTable, funcDocs) {
-    const text = document.getText();
-    const { ast } = schemeParser.parse(text);
-
-    // 计算行首偏移表，用于将绝对偏移转换为行内列位置
-    const lineStarts = [0]; // lineStarts[0]=0 即第1行首偏移
-    for (let i = 0; i < text.length; i++) {
-        if (text[i] === '\n') lineStarts.push(i + 1);
-    }
-
+function provideSignatureHelp(document, position, token, modeDispatchTable, funcDocs, schemeCache) {
+    const { ast, lineStarts } = schemeCache.get(document);
     const line = position.line + 1;
     const column = position.character;
 

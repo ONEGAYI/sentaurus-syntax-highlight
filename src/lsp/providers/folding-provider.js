@@ -2,23 +2,21 @@
 'use strict';
 
 const vscode = require('vscode');
-const { parse } = require('../scheme-parser');
-const { analyze } = require('../scheme-analyzer');
 
 /**
- * VSCode FoldingRangeProvider for SDE (Scheme).
+ * Create a FoldingRangeProvider backed by the shared Scheme parse cache.
+ * @param {import('../parse-cache').SchemeParseCache} schemeCache
  */
-const foldingProvider = {
-    provideFoldingRanges(document) {
-        const text = document.getText();
-        const { ast } = parse(text);
-        const { foldingRanges } = analyze(ast);
+function createFoldingProvider(schemeCache) {
+    return {
+        provideFoldingRanges(document) {
+            const { analysis } = schemeCache.get(document);
+            return analysis.foldingRanges.map(range => new vscode.FoldingRange(
+                range.startLine,
+                range.endLine
+            ));
+        },
+    };
+}
 
-        return foldingRanges.map(range => new vscode.FoldingRange(
-            range.startLine,
-            range.endLine
-        ));
-    },
-};
-
-module.exports = foldingProvider;
+module.exports = { createFoldingProvider };
