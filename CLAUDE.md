@@ -88,7 +88,9 @@ sentaurus-syntax-highlight/
 │   │       ├── scheme-on-enter-provider.js     ← Scheme 括号内回车多级自动缩进
 │   │       ├── tcl-folding-provider.js         ← Tcl 代码折叠（基于 braced_word）
 │   │       ├── tcl-bracket-diagnostic.js       ← Tcl 括号诊断（文本级 {} 平衡）
-│   │       └── tcl-document-symbol-provider.js ← Tcl 文档大纲（Outline 视图）
+│   │       ├── tcl-document-symbol-provider.js ← Tcl 文档大纲（Outline 视图）
+│   │       ├── unit-auto-close-logic.js        ← SPROCESS Unit 括号自动配对判断逻辑
+│   │       └── unit-auto-close-provider.js     ← SPROCESS Unit 括号自动配对 Provider
 │   │
 │   └── snippets/                               ← QuickPick 代码片段数据（JS 模块）
 │       ├── sde.js                              ← SDE 结构编辑器片段
@@ -116,6 +118,7 @@ sentaurus-syntax-highlight/
 │   ├── test-parse-cache.js                     ← 解析缓存层测试
 │   ├── test-tcl-scope-index.js                 ← ScopeIndex 作用域查询测试
 │   ├── test-undef-var-integration.js           ← 未定义变量诊断集成测试
+│   ├── test-unit-auto-close.js                 ← Unit 括号自动配对测试
 │   └── benchmark.js                            ← 性能基准测试工具
 │
 ├── scripts/                                    ← 开发工具脚本
@@ -133,7 +136,10 @@ sentaurus-syntax-highlight/
 │   ├── sde-scopes-and-colors.md                ← SDE scope 与颜色对照
 │   ├── prompts/i18n/                           ← 国际化 prompt 模板
 │   └── superpowers/                            ← 开发 spec/plan 归档
+│       ├── plans/                              ← 实现计划文档（含 archived/）
+│       └── specs/                              ← 设计规范文档（含 archived/）
 │
+├── benchmarks/                                 ← 性能基准测试输出（JSON）
 ├── display_test/                               ← 功能展示测试文件
 ├── build/                                      ← 批量处理中间产物
 ├── assets/pics/                                ← 效果截图与演示 GIF
@@ -179,6 +185,7 @@ sentaurus-syntax-highlight/
 - `signature-provider.js` — Scheme 函数签名提示
 - `scheme-on-enter-provider.js` — Scheme 括号内回车多级自动缩进（与 `sde.json` onEnterRules 协同）
 - `tcl-document-symbol-provider.js` — Tcl 文档大纲
+- `unit-auto-close-provider.js` — SPROCESS Unit 括号自动配对（含 logic 层判断逻辑）
 
 **内存管理**：WASM `tree` 对象使用后必须 `tree.delete()` 释放，由 `parse-cache.js` 的 `TclParseCache` 统一管理生命周期。
 
