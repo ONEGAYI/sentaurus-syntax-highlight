@@ -97,7 +97,7 @@ function tokenize(text) {
     }
 
     tokens.push({ type: TokenType.EOF, value: null, start: i, end: i, line });
-    return tokens;
+    return { tokens, maxLine: line };
 }
 
 /**
@@ -106,20 +106,12 @@ function tokenize(text) {
  * @returns {{ ast: object, errors: object[] }}
  */
 function parse(text) {
-    const tokens = tokenize(text);
+    const { tokens, maxLine: tokenizedMaxLine } = tokenize(text);
     const errors = [];
     let pos = 0;
 
     function current() { return tokens[pos]; }
     function advance() { return tokens[pos++]; }
-
-    function countLinesUpTo(offset) {
-        let count = 1;
-        for (let j = 0; j < offset; j++) {
-            if (text[j] === '\n') count++;
-        }
-        return count;
-    }
 
     function parseExpr() {
         const tok = current();
@@ -243,7 +235,7 @@ function parse(text) {
         start: 0,
         end: text.length,
         line: 1,
-        endLine: countLinesUpTo(text.length),
+        endLine: tokenizedMaxLine,
     };
 
     return { ast, errors };
