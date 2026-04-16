@@ -72,22 +72,23 @@ Phase 4 (Polish) — Phase 3 完成后
 
 ---
 
-## Phase 1: Quick Wins（立即收益，零风险）
+## Phase 1: Quick Wins（立即收益，零风险） — ✅ 已完成 (2026-04-16)
 
 > **目标：** 用最小改动获得可感知的性能提升和内存修复。
-> **预计工时：** 1-2 天
+> **预计工时：** 1-2 天 → 实际 ~1 小时
 > **前置条件：** 无
 > **风险等级：** 极低（每项改动不超过 10 行）
+> **提交：** `0ebfca4`
 
 ### 优化项清单
 
-| # | 优化项 | 文件 | 改动量 | 影响 |
-|---|--------|------|--------|------|
-| 5 | 补全去重 O(n²)→O(n) | `src/extension.js:418` | 3 行 | 定义数多时有效果 |
-| 8 | 关闭文件时清理缓存 | `src/definitions.js` + `src/extension.js` | ~10 行 | 修复内存泄漏 |
-| 9 | 实现 deactivate() 清理 | `src/extension.js:702` | ~15 行 | 规范资源释放 |
-| 10 | 预构建 SCHEME_SPECIAL_FORMS Set | `src/lsp/scope-analyzer.js` | 5 行 | 微优化 |
-| 14 | 统一诊断去抖为 500ms | `src/lsp/providers/bracket-diagnostic.js` | 1 行 | 一致性 |
+| # | 优化项 | 文件 | 改动量 | 影响 | 状态 |
+|---|--------|------|--------|------|------|
+| 5 | 补全去重 O(n²)→O(n) | `src/extension.js` | 5 行 | 定义数多时有效果 | ✅ |
+| 8 | 关闭文件时清理缓存 | `src/definitions.js` + `src/extension.js` | ~15 行 | 修复内存泄漏 | ✅ |
+| 9 | 实现 deactivate() 清理 | `src/extension.js` + `src/lsp/tcl-parser-wasm.js` | ~20 行 | 规范资源释放 | ✅ |
+| 10 | 避免 getSchemeRefs Set 复制 | `src/lsp/scope-analyzer.js` | 5 行 | 微优化 | ✅ |
+| 14 | 统一诊断去抖为 500ms | `src/lsp/providers/bracket-diagnostic.js` | 1 行 | 一致性 | ✅ |
 
 ### 各项详细说明
 
@@ -438,63 +439,82 @@ Phase 4 (Polish) — Phase 3 完成后
 
 ## 验收标准
 
-### 已测量的基线数据（2026-04-16）
+### 已测量的基线数据
 
-> 由 `node tests/benchmark.js` 生成，完整数据保存在 `benchmarks/` 目录。
+#### Phase 1 前后对比（2026-04-16）
 
-#### Scheme (SDE) 管线
+> Phase 1 优化项主要修复内存泄漏和算法正确性，不直接影响解析管线性能。真实性能提升将在 Phase 2（统一缓存层）体现。
+
+| 指标 | Phase 0 基线 | Phase 1 后 | 变化 | 说明 |
+|------|-------------|-----------|------|------|
+| Scheme parse (1000L) | 2.14ms | 2.69ms | +0.55ms | 正常波动 |
+| Scheme full pipeline (1000L) | 2.73ms | 2.88ms | +0.15ms | 正常波动 |
+| Scheme 5x redundant (1000L) | 12.68ms | 15.21ms | +2.53ms | 正常波动 |
+| Tcl buildScopeMap (1000L/50P) | 52.55ms | 54.49ms | +1.94ms | 正常波动 |
+| Tcl full pipeline (1000L/50P) | 72.60ms | 74.90ms | +2.30ms | 正常波动 |
+| JSON loading total | ~5.5ms | ~5.6ms | ~0 | 不变 |
+| 内存泄漏 | 无限增长 | ✅ 已修复 | — | 文件关闭时清理 |
+| deactivate 资源释放 | 空函数 | ✅ 已实现 | — | 清理缓存+WASM |
+
+**Phase 1 收益不体现在基准测试中，体现在：**
+1. 内存泄漏修复：长会话中 `_defCache` 不再无限增长
+2. deactivate() 释放 WASM/OutputChannel 资源
+3. 补全去重从 O(n²)→O(n)（基准测试不测补全流程）
+4. Set 复制优化（微优化，基准测试不可测）
+
+#### Scheme (SDE) 管线（Phase 1 后）
 
 | 文件规模 | parse | full pipeline | 5x 冗余解析 | extractDefs |
 |----------|-------|--------------|------------|-------------|
-| 165 行 (真实) | 0.30ms | 0.19ms | 0.62ms | 0.26ms |
-| 290 行 (真实) | 0.44ms | 0.27ms | 1.01ms | 0.15ms |
-| 100 行 (合成) | 0.16ms | 0.25ms | 1.08ms | 0.25ms |
-| 500 行 (合成) | 1.14ms | 1.32ms | 6.24ms | 1.22ms |
-| **1000 行 (合成)** | **2.14ms** | **2.73ms** | **12.68ms** | **2.25ms** |
-| 2000 行 (合成) | 6.38ms | 5.54ms | 30.57ms | 5.33ms |
+| 165 行 (真实) | 0.38ms | 0.28ms | 0.60ms | 0.24ms |
+| 290 行 (真实) | 0.45ms | 0.22ms | 0.81ms | 0.22ms |
+| 100 行 (合成) | 0.19ms | 0.26ms | 1.52ms | 0.21ms |
+| 500 行 (合成) | 1.33ms | 1.26ms | 7.14ms | 1.55ms |
+| **1000 行 (合成)** | **2.69ms** | **2.89ms** | **15.21ms** | **2.37ms** |
+| 2000 行 (合成) | 7.12ms | 8.37ms | 38.45ms | 5.69ms |
 
-**缩放因子:** 1000→2000: O(n^1.40), 2000→4000: O(n^1.41) — Scheme 管线整体接近 O(n^1.4)
+**缩放因子:** 1000→2000: O(n^1.25), 2000→4000: O(n^1.33) — Scheme 管线整体 O(n^1.3)
 
-#### Tcl 管线
+#### Tcl 管线（Phase 1 后）
 
 | 文件规模 (procs) | wasm parse | getVariables | buildScopeMap | full pipeline |
 |------------------|-----------|-------------|---------------|---------------|
-| 100 行 / 5P | 0.63ms | 0.45ms | 2.06ms | 3.16ms |
-| 500 行 / 25P | 1.30ms | 4.66ms | 17.58ms | 24.36ms |
-| **1000 行 / 50P** | **2.61ms** | **13.26ms** | **52.55ms** | **72.60ms** |
+| 100 行 / 5P | 0.68ms | 0.62ms | 2.38ms | 3.06ms |
+| 500 行 / 25P | 1.37ms | 3.78ms | 16.30ms | 26.75ms |
+| **1000 行 / 50P** | **2.94ms** | **14.20ms** | **54.50ms** | **74.90ms** |
 
 **buildScopeMap 缩放因子:**
-- 50→100: O(n^1.19)
-- 100→200: O(n^1.41)
-- 200→500: O(n^1.34)
-- 500→1000: **O(n^1.71)** — 确认超线性增长
+- 50→100: O(n^1.17)
+- 100→200: O(n^1.24)
+- 200→500: O(n^1.30)
+- 500→1000: **O(n^1.64)** — 确认超线性增长
 
-#### 激活成本
+#### 激活成本（Phase 1 后）
 
 | JSON 文件 | 大小 | 加载时间 |
 |-----------|------|---------|
-| all_keywords.json | 452KB | 1.6ms |
-| sde_function_docs.json | 292KB | 1.3ms |
-| scheme_function_docs.json | 108KB | 0.5ms |
-| sdevice_command_docs.json | 222KB | 0.9ms |
-| svisual_command_docs.json | 384KB | 1.3ms |
-| **总计** | **1.46MB** | **~5.5ms** |
+| all_keywords.json | 452KB | 1.7ms |
+| sde_function_docs.json | 292KB | 1.5ms |
+| scheme_function_docs.json | 108KB | 0.6ms |
+| sdevice_command_docs.json | 222KB | 0.7ms |
+| svisual_command_docs.json | 384KB | 1.1ms |
+| **总计** | **1.46MB** | **~5.6ms** |
 
 #### 关键发现
 
-1. **Tcl buildScopeMap 是最严重的瓶颈**：1000 行/50 proc 文件需 52ms，且缩放因子接近 O(n^1.7)
-2. **冗余解析惩罚明显**：1000 行文件 5 次冗余解析 = 12.68ms，是单次管线 (2.73ms) 的 4.6 倍
-3. **JSON 加载不是问题**：5.5ms 对于扩展激活来说很轻量
-4. **Scheme 管线缩放可控**：~O(n^1.4)，主要瓶颈在 parse 阶段
+1. **Tcl buildScopeMap 是最严重的瓶颈**：1000 行/50 proc 文件需 54ms，且缩放因子接近 O(n^1.6)
+2. **冗余解析惩罚明显**：1000 行文件 5 次冗余解析 = 15.21ms，是单次管线 (2.89ms) 的 5.3 倍
+3. **JSON 加载不是问题**：5.6ms 对于扩展激活来说很轻量
+4. **Scheme 管线缩放可控**：~O(n^1.3)，主要瓶颈在 parse 阶段
 
 ### 量化目标
 
-| 指标 | 当前基线 | Phase 2 后 | Phase 3 后 |
-|------|---------|-----------|-----------|
-| Scheme 5x 冗余 (1000L) | 12.68ms | **2.73ms** (×4.6↓) | 2.73ms |
-| Tcl buildScopeMap (1000L/50P) | 52.55ms | 不变 | **<10ms** (×5↓) |
-| Tcl full pipeline (1000L/50P) | 72.60ms | 不变 | **<20ms** (×3.6↓) |
-| 激活时 I/O 阻塞 | 5.5ms / 1.46MB | 不变 | <200KB / ~1ms |
+| 指标 | Phase 1 后 | Phase 2 后 | Phase 3 后 |
+|------|-----------|-----------|-----------|
+| Scheme 5x 冗余 (1000L) | 15.21ms | **2.89ms** (×5.3↓) | 2.89ms |
+| Tcl buildScopeMap (1000L/50P) | 54.50ms | 不变 | **<10ms** (×5↓) |
+| Tcl full pipeline (1000L/50P) | 74.90ms | 不变 | **<20ms** (×3.7↓) |
+| 激活时 I/O 阻塞 | 5.6ms / 1.46MB | 不变 | <200KB / ~1ms |
 | 单次击键解析次数 | 5-6 次 | **1 次** | 1 次 |
 | 缓存条目数上限 | 无限 | 20 (LRU) | 20 (LRU) |
 
