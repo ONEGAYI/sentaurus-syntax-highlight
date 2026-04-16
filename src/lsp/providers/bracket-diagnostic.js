@@ -9,7 +9,7 @@ let diagnosticCollection;
 /** @type {NodeJS.Timeout} */
 let debounceTimer;
 
-const DEBOUNCE_MS = 300;
+const DEBOUNCE_MS = 500;
 
 /**
  * Activate bracket diagnostics.

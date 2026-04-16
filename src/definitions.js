@@ -101,6 +101,11 @@ function clearDefinitionCache() {
     _defCache.clear();
 }
 
+/** 删除指定 URI 的缓存条目（文件关闭时调用）。 */
+function invalidateDefinitionCache(uri) {
+    _defCache.delete(uri);
+}
+
 /**
  * 截断定义文本中过长的行。
  * @param {string} text 定义文本
@@ -122,5 +127,6 @@ module.exports = {
     extractDefinitions,
     getDefinitions,
     clearDefinitionCache,
+    invalidateDefinitionCache,
     truncateDefinitionText,
 };
