@@ -338,6 +338,10 @@
       "name": "constant.character.format.placeholder"
     },
     {
+      "match": "<[A-Za-z][A-Za-z0-9_/*\\-+.^]*>",
+      "name": "support.constant.unit"
+    },
+    {
       "match": "\\b(if|else|elseif|for|foreach|while|switch|break|continue|return)\\b",
       "name": "keyword.control.sprocess"
     },
