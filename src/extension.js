@@ -15,6 +15,7 @@ const undefVarDiagnostic = require('./lsp/providers/undef-var-diagnostic');
 const tclDocSymbolMod = require('./lsp/providers/tcl-document-symbol-provider');
 const schemeOnEnterProvider = require('./lsp/providers/scheme-on-enter-provider');
 const unitAutoClose = require('./lsp/providers/unit-auto-close-provider');
+const quoteAutoDelete = require('./lsp/providers/quote-auto-delete-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
 
 /** @type {SchemeParseCache} */
@@ -388,6 +389,9 @@ function activate(context) {
 
     // Unit 自动配对（SPROCESS only）
     unitAutoClose.activate(context);
+
+    // 空引号对自动删除（所有语言）
+    quoteAutoDelete.activate(context);
 
     // ── Tcl Providers（4 语言共用）──────────────────
     // 代码折叠
