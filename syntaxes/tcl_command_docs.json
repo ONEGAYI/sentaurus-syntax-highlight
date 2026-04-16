@@ -1,0 +1,898 @@
+{
+  "set": {
+    "signature": "set varName ?value?",
+    "description": "Reads or writes the value of a variable. If value is specified, sets the variable to that value and returns it; otherwise returns the variable's current value. This is the primary way to create or modify variables in Tcl.",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Name of the variable to read or set."
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "Optional. The value to assign to the variable. If omitted, the current value is returned."
+      }
+    ],
+    "example": "set voltage 1.2\nset current $voltage\nputs $current  ;# prints: 1.2"
+  },
+  "incr": {
+    "signature": "incr varName ?increment?",
+    "description": "Increments the value of a variable by the given amount. The variable must contain an integer string. If increment is omitted, it defaults to 1. Use a negative increment to decrement.",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Name of the variable holding an integer value."
+      },
+      {
+        "name": "increment",
+        "type": "int",
+        "desc": "Optional. The amount to add (default 1). Can be negative."
+      }
+    ],
+    "example": "set count 0\nincr count       ;# count is now 1\nincr count 5     ;# count is now 6\nincr count -2    ;# count is now 4"
+  },
+  "append": {
+    "signature": "append varName value ?value ...?",
+    "description": "Appends all of the value arguments to the current value of the variable named by varName. If the variable does not exist, it is created. This is efficient for building large strings incrementally.",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Name of the variable to append to. Created if it does not exist."
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "desc": "One or more string values to append to the variable."
+      }
+    ],
+    "example": "set result \"Mesh: \"\nappend result \"region1\" \" \" \"region2\"\nputs $result  ;# prints: Mesh: region1 region2"
+  },
+  "lappend": {
+    "signature": "lappend varName value ?value ...?",
+    "description": "Appends each value argument as a separate list element to the variable named by varName. If the variable does not exist, it is created as a list. Treats the variable's current value as a list.",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Name of the variable to append list elements to. Created if it does not exist."
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "One or more values to append as individual list elements."
+      }
+    ],
+    "example": "set layers {}\nlappend layers \"Silicon\" \"Oxide\" \"Metal\"\nputs $layers  ;# prints: Silicon Oxide Metal"
+  },
+  "variable": {
+    "signature": "variable ?name value ...?",
+    "description": "Creates and optionally sets one or more namespace variables. Typically used inside a namespace eval block to define variables that belong to that namespace. Each name-value pair sets the variable; a name without a value declares it without initialization.",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "Variable name to create or set within the current namespace."
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "Optional. Value to assign to the variable."
+      }
+    ],
+    "example": "namespace eval Device {\n  variable thickness 0.1\n  variable material \"Silicon\"\n}\nputs $Device::thickness  ;# prints: 0.1"
+  },
+  "unset": {
+    "signature": "unset ?-nocomplain? varName ?varName ...?",
+    "description": "Deletes one or more variables. By default, an error is raised if a variable does not exist. Use -nocomplain to suppress errors for missing variables.",
+    "parameters": [
+      {
+        "name": "-nocomplain",
+        "type": "flag",
+        "desc": "Optional. If specified, no error is raised when a variable does not exist."
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "One or more variable names to delete."
+      }
+    ],
+    "example": "set temp 42\nunset temp\nunset -nocomplain nonexistent_var"
+  },
+  "proc": {
+    "signature": "proc name args body",
+    "description": "Defines a new Tcl procedure (function). The procedure can be called by name with the specified arguments. The args parameter defines the parameter list, and body is the script to execute when the procedure is called.",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "Name of the procedure to define."
+      },
+      {
+        "name": "args",
+        "type": "list",
+        "desc": "Parameter list. Can include default values (e.g., {x {y 0}}). Use 'args' as the last parameter to capture variable-length arguments."
+      },
+      {
+        "name": "body",
+        "type": "script",
+        "desc": "The Tcl script to execute when the procedure is called."
+      }
+    ],
+    "example": "proc calc_resistance {voltage {current 1.0}} {\n  return [expr {$voltage / $current}]\n}\nputs [calc_resistance 5.0 0.5]  ;# prints: 10.0"
+  },
+  "rename": {
+    "signature": "rename oldName newName",
+    "description": "Renames a command from oldName to newName. If newName is an empty string, the command is deleted. Useful for wrapping existing commands with custom logic.",
+    "parameters": [
+      {
+        "name": "oldName",
+        "type": "string",
+        "desc": "The current name of the command to rename."
+      },
+      {
+        "name": "newName",
+        "type": "string",
+        "desc": "The new name for the command. Use an empty string to delete the command."
+      }
+    ],
+    "example": "proc my_puts {args} {\n  puts \"LOG: $args\"\n}\nrename puts original_puts\nrename my_puts puts"
+  },
+  "global": {
+    "signature": "global varName ?varName ...?",
+    "description": "Makes one or more global variables accessible within a procedure scope. Without this command, procedures have their own local scope and cannot directly access global variables.",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "One or more global variable names to access inside a procedure."
+      }
+    ],
+    "example": "set device_name \"NMOS\"\nproc get_device {} {\n  global device_name\n  return $device_name\n}\nputs [get_device]  ;# prints: NMOS"
+  },
+  "upvar": {
+    "signature": "upvar ?level? otherVar myVar ?otherVar myVar ...?",
+    "description": "Creates a local variable (myVar) that is linked to a variable in a different scope (otherVar). This allows procedures to modify variables in the caller's scope, similar to pass-by-reference in other languages.",
+    "parameters": [
+      {
+        "name": "level",
+        "type": "string",
+        "desc": "Optional. The scope level (default 1, meaning the caller's scope). Use #0 for global scope."
+      },
+      {
+        "name": "otherVar",
+        "type": "string",
+        "desc": "The variable name in the target scope to link to."
+      },
+      {
+        "name": "myVar",
+        "type": "string",
+        "desc": "The local variable name that will be linked to otherVar."
+      }
+    ],
+    "example": "proc double_value {varName} {\n  upvar 1 $varName var\n  set var [expr {$var * 2}]\n}\nset x 5\ndouble_value x\nputs $x  ;# prints: 10"
+  },
+  "uplevel": {
+    "signature": "uplevel ?level? script ?script ...?",
+    "description": "Executes a script in a different scope level. All arguments are concatenated and evaluated in the context of the given level. Useful for writing control structures that need to run code in the caller's scope.",
+    "parameters": [
+      {
+        "name": "level",
+        "type": "string",
+        "desc": "Optional. The scope level (default 1). Use #0 for global scope."
+      },
+      {
+        "name": "script",
+        "type": "script",
+        "desc": "One or more script fragments to concatenate and evaluate in the target scope."
+      }
+    ],
+    "example": "proc do_in_global {script} {\n  uplevel #0 $script\n}\nset result 0\ndo_in_global {set result 42}\nputs $result  ;# prints: 42"
+  },
+  "catch": {
+    "signature": "catch script ?resultVarName? ?optionsVarName?",
+    "description": "Catches exceptions from the script. Returns 0 if the script completes normally, or 1 (or other error codes) if an error occurred. Optionally stores the result or error message and error options in the named variables.",
+    "parameters": [
+      {
+        "name": "script",
+        "type": "script",
+        "desc": "The Tcl script to execute and monitor for errors."
+      },
+      {
+        "name": "resultVarName",
+        "type": "string",
+        "desc": "Optional. Variable name to store the script's return value or error message."
+      },
+      {
+        "name": "optionsVarName",
+        "type": "string",
+        "desc": "Optional. Variable name to store the error options dictionary (error code, stack trace, etc.)."
+      }
+    ],
+    "example": "if {[catch {open \"data.txt\" r} fid]} {\n  puts \"Error opening file: $fid\"\n} else {\n  puts [read $fid]\n  close $fid\n}"
+  },
+  "error": {
+    "signature": "error message ?info? ?code?",
+    "description": "Generates an error exception with the given message. Optionally provides additional stack trace info and an error code. Commonly used in procedures to signal invalid input or unexpected conditions.",
+    "parameters": [
+      {
+        "name": "message",
+        "type": "string",
+        "desc": "The error message string to display."
+      },
+      {
+        "name": "info",
+        "type": "string",
+        "desc": "Optional. Additional information appended to the error stack trace."
+      },
+      {
+        "name": "code",
+        "type": "string",
+        "desc": "Optional. Machine-readable error code (e.g., ARITH DIVZERO)."
+      }
+    ],
+    "example": "proc check_voltage {v} {\n  if {$v < 0} {\n    error \"Voltage must be non-negative, got $v\"\n  }\n  return $v\n}"
+  },
+  "try": {
+    "signature": "try script ?catch pattern body ...? ?finally body?",
+    "description": "Provides structured exception handling (Tcl 8.6+). The try block is executed first. If an error occurs, the catch handlers are tested in order. The finally block, if present, is always executed regardless of errors.",
+    "parameters": [
+      {
+        "name": "script",
+        "type": "script",
+        "desc": "The script to execute in the try block."
+      },
+      {
+        "name": "catch pattern body",
+        "type": "script",
+        "desc": "Optional. One or more catch clauses. pattern matches against the error dictionary; body runs on match."
+      },
+      {
+        "name": "finally body",
+        "type": "script",
+        "desc": "Optional. Script that always executes, whether an error occurred or not. Useful for cleanup."
+      }
+    ],
+    "example": "try {\n  set fid [open \"result.dat\" r]\n  set data [read $fid]\n} catch {POSIX EACCES} {\n  puts \"Permission denied\"\n} finally {\n  if {[info exists fid]} { close $fid }\n}"
+  },
+  "throw": {
+    "signature": "throw type message",
+    "description": "Throws a typed exception with the given type and message (Tcl 8.6+). This is a convenience command for generating structured errors that can be caught by type-specific catch handlers.",
+    "parameters": [
+      {
+        "name": "type",
+        "type": "string",
+        "desc": "The error type identifier (e.g., ARITH, POSIX, or a custom type)."
+      },
+      {
+        "name": "message",
+        "type": "string",
+        "desc": "Human-readable error message."
+      }
+    ],
+    "example": "proc simulate {bias} {\n  if {$bias > 100} {\n    throw SIMULATION \"Bias $bias exceeds safe limit (100V)\"\n  }\n}"
+  },
+  "expr": {
+    "signature": "expr arg ?arg ...?",
+    "description": "Evaluates a mathematical or logical expression. All arguments are concatenated into a single expression string and evaluated. Supports arithmetic (+, -, *, /, %), comparison (==, !=, <, >), logical (&&, ||, !), bitwise (&, |, ^), and math functions (sin, cos, sqrt, pow, etc.). Always brace expressions for correctness and performance.",
+    "parameters": [
+      {
+        "name": "arg",
+        "type": "string",
+        "desc": "One or more expression fragments that are concatenated and evaluated as a single expression."
+      }
+    ],
+    "example": "set x 3.0\nset y [expr {$x * $x + 2*$x + 1}]  ;# y = 16.0\nset angle [expr {3.14159 / 4}]\nset sine [expr {sin($angle)}]"
+  },
+  "subst": {
+    "signature": "subst ?-nobackslashes? ?-nocommands? ?-novariables? string",
+    "description": "Performs command, variable, and backslash substitutions on the given string. Flags can selectively disable specific substitution types. Unlike double-quoting, subst performs substitutions at the time it is called.",
+    "parameters": [
+      {
+        "name": "-nobackslashes",
+        "type": "flag",
+        "desc": "Optional. Disable backslash substitutions."
+      },
+      {
+        "name": "-nocommands",
+        "type": "flag",
+        "desc": "Optional. Disable command substitutions ([...])."
+      },
+      {
+        "name": "-novariables",
+        "type": "flag",
+        "desc": "Optional. Disable variable substitutions ($var)."
+      },
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "The string on which to perform substitutions."
+      }
+    ],
+    "example": "set name \"World\"\nset result [subst {Hello $name, 2+2=[expr {2+2}]}]\nputs $result  ;# prints: Hello World, 2+2=4"
+  },
+  "string": {
+    "signature": "string option arg ?arg ...?",
+    "description": "Performs string operations. Common options include: length, index, range, replace, tolower, toupper, trim, match, compare, first, last, is, repeat, reverse, and map. This is one of the most frequently used Tcl commands for text processing.",
+    "parameters": [
+      {
+        "name": "option",
+        "type": "string",
+        "desc": "The string operation to perform (e.g., length, index, range, replace, match, compare, tolower, toupper, trim)."
+      },
+      {
+        "name": "arg",
+        "type": "string",
+        "desc": "Arguments specific to the chosen option."
+      }
+    ],
+    "example": "string length \"Silicon\"      ;# returns 7\nstring toupper \"nmos\"          ;# returns NMOS\nstring range \"0.00123\" 2 end    ;# returns 00123\nstring match \"*.cmd\" \"test_des.cmd\"  ;# returns 1"
+  },
+  "format": {
+    "signature": "format formatString ?arg ...?",
+    "description": "Formats strings using C-style sprintf formatting. The formatString contains format specifiers (%d, %f, %s, %e, %x, etc.) that are replaced by the corresponding argument values.",
+    "parameters": [
+      {
+        "name": "formatString",
+        "type": "string",
+        "desc": "A format string with C-style specifiers: %d (integer), %f (float), %e (scientific), %s (string), %x (hex), etc."
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "Values to substitute into the format specifiers."
+      }
+    ],
+    "example": "set v 1.234\nset i 42\nputs [format \"Voltage = %.3f V, Step = %d\" $v $i]\n;# prints: Voltage = 1.234 V, Step = 42"
+  },
+  "scan": {
+    "signature": "scan string formatString ?varName ...?",
+    "description": "Parses a string according to a format string (like C sscanf). Extracts values from the input string and optionally stores them in the named variables. Returns the number of successfully matched items.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "The input string to parse."
+      },
+      {
+        "name": "formatString",
+        "type": "string",
+        "desc": "C-style format specifiers (%d, %f, %s, etc.) describing the expected input format."
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Optional. Variable names to store the parsed values."
+      }
+    ],
+    "example": "scan \"Vg=1.2 Vd=0.5\" \"Vg=%f Vd=%f\" vg vd\nputs \"Gate: $vg, Drain: $vd\"  ;# prints: Gate: 1.2, Drain: 0.5"
+  },
+  "regexp": {
+    "signature": "regexp ?-nocase? ?-all? ?-inline? ?-line? ?--? exp string ?matchVar? ?subMatchVar ...?",
+    "description": "Matches a regular expression against a string. Returns 1 if a match is found, 0 otherwise. If match variables are specified, they are set to the matched text and any captured subexpressions. Supports standard regex syntax.",
+    "parameters": [
+      {
+        "name": "-nocase",
+        "type": "flag",
+        "desc": "Optional. Case-insensitive matching."
+      },
+      {
+        "name": "-all",
+        "type": "flag",
+        "desc": "Optional. Match as many times as possible."
+      },
+      {
+        "name": "-inline",
+        "type": "flag",
+        "desc": "Optional. Return the match data as a list instead of setting variables."
+      },
+      {
+        "name": "-line",
+        "type": "flag",
+        "desc": "Optional. Make ^ and $ match beginning/end of each line, not the whole string."
+      },
+      {
+        "name": "exp",
+        "type": "string",
+        "desc": "The regular expression pattern."
+      },
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "The string to search."
+      },
+      {
+        "name": "matchVar",
+        "type": "string",
+        "desc": "Optional. Variable to store the full match."
+      },
+      {
+        "name": "subMatchVar",
+        "type": "string",
+        "desc": "Optional. Variables to store captured subexpression matches."
+      }
+    ],
+    "example": "set line \"Id = 1.23e-3 A/V\"\nif {[regexp {Id\\s*=\\s*([\\d.e+-]+)} $line -> id_val]} {\n  puts \"Current: $id_val\"  ;# prints: Current: 1.23e-3\n}"
+  },
+  "regsub": {
+    "signature": "regsub ?-all? ?-nocase? ?--? exp string subSpec ?varName?",
+    "description": "Performs regular expression substitution on a string. Replaces the first (or all with -all) match of the pattern with the substitution specification. Returns the number of matches found.",
+    "parameters": [
+      {
+        "name": "-all",
+        "type": "flag",
+        "desc": "Optional. Replace all occurrences, not just the first."
+      },
+      {
+        "name": "-nocase",
+        "type": "flag",
+        "desc": "Optional. Case-insensitive matching."
+      },
+      {
+        "name": "exp",
+        "type": "string",
+        "desc": "The regular expression pattern to match."
+      },
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "The input string to process."
+      },
+      {
+        "name": "subSpec",
+        "type": "string",
+        "desc": "The replacement string. Use & for the matched text, \\1-\\9 for submatches."
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Optional. Variable to store the result. If omitted, the result is returned."
+      }
+    ],
+    "example": "set path \"/home/user/sim/run1_des.cmd\"\nregsub -all {/} $path \"\\\\\" winpath\nputs $winpath  ;# prints: \\home\\user\\sim\\run1_des.cmd"
+  },
+  "list": {
+    "signature": "list ?arg ...?",
+    "description": "Creates a list from its arguments. Each argument becomes a separate element of the list. This is the canonical way to create well-formed lists, as it handles elements containing spaces or special characters correctly.",
+    "parameters": [
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "Zero or more values to become list elements. If no arguments, returns an empty list."
+      }
+    ],
+    "example": "set materials [list Silicon Oxide \"Aluminum (99.99%)\"]\nputs $materials  ;# prints: Silicon Oxide {Aluminum (99.99%)}"
+  },
+  "llength": {
+    "signature": "llength list",
+    "description": "Returns the number of elements in a list.",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "The list whose element count to return."
+      }
+    ],
+    "example": "set layers [list SiO2 Si Al]\nputs [llength $layers]  ;# prints: 3"
+  },
+  "lindex": {
+    "signature": "lindex list ?index ...?",
+    "description": "Returns an element from a list by its index. Indices are zero-based. Supports multi-level indexing for nested lists. Use end for the last element, end-N for offsets from the end.",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "The list to index into."
+      },
+      {
+        "name": "index",
+        "type": "int|string",
+        "desc": "Zero-based index. Use 'end' for the last element, 'end-N' for offset from end."
+      }
+    ],
+    "example": "set dims {1e-4 5e-6 1e-4}\nputs [lindex $dims 0]   ;# prints: 1e-4 (length)\nputs [lindex $dims end] ;# prints: 1e-4 (depth)"
+  },
+  "linsert": {
+    "signature": "linsert list index element ?element ...?",
+    "description": "Returns a new list with the specified elements inserted at the given index position. The original list is not modified. Elements before index remain in place; new elements appear at position index.",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "The original list."
+      },
+      {
+        "name": "index",
+        "type": "int",
+        "desc": "The position at which to insert. Use 0 for the beginning, end for appending."
+      },
+      {
+        "name": "element",
+        "type": "any",
+        "desc": "One or more elements to insert at the specified index."
+      }
+    ],
+    "example": "set mats [list Si Al]\nset result [linsert $mats 1 Oxide]\nputs $result  ;# prints: Si Oxide Al"
+  },
+  "lrange": {
+    "signature": "lrange list first last",
+    "description": "Returns a sublist consisting of elements from first to last index (inclusive). Use 0 for the first element and end for the last.",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "The source list."
+      },
+      {
+        "name": "first",
+        "type": "int|string",
+        "desc": "Index of the first element to include (0-based). Use 'end' for the last."
+      },
+      {
+        "name": "last",
+        "type": "int|string",
+        "desc": "Index of the last element to include. Use 'end' for the last."
+      }
+    ],
+    "example": "set vals {10 20 30 40 50}\nputs [lrange $vals 1 3]   ;# prints: 20 30 40\nputs [lrange $vals 2 end] ;# prints: 30 40 50"
+  },
+  "lreplace": {
+    "signature": "lreplace list first last ?element ...?",
+    "description": "Returns a new list with elements from first to last replaced by the given elements. If no replacement elements are specified, the range is deleted. The original list is not modified.",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "The original list."
+      },
+      {
+        "name": "first",
+        "type": "int",
+        "desc": "Index of the first element to replace."
+      },
+      {
+        "name": "last",
+        "type": "int",
+        "desc": "Index of the last element to replace."
+      },
+      {
+        "name": "element",
+        "type": "any",
+        "desc": "Optional. Replacement elements. If omitted, the specified range is deleted."
+      }
+    ],
+    "example": "set bias {0.0 0.5 1.0 1.5}\nset new_bias [lreplace $bias 2 2 1.2]\nputs $new_bias  ;# prints: 0.0 0.5 1.2 1.5"
+  },
+  "lsearch": {
+    "signature": "lsearch ?-exact? ?-glob? ?-regexp? ?-all? ?-inline? ?-not? list pattern",
+    "description": "Searches a list for an element matching the pattern. Returns the index of the first match (-1 if not found). The matching mode can be -exact (string equality), -glob (wildcard patterns, default), or -regexp (regular expressions).",
+    "parameters": [
+      {
+        "name": "-exact",
+        "type": "flag",
+        "desc": "Optional. Match by exact string comparison."
+      },
+      {
+        "name": "-glob",
+        "type": "flag",
+        "desc": "Optional. Match using glob patterns (default)."
+      },
+      {
+        "name": "-regexp",
+        "type": "flag",
+        "desc": "Optional. Match using regular expressions."
+      },
+      {
+        "name": "-all",
+        "type": "flag",
+        "desc": "Optional. Return a list of all matching indices."
+      },
+      {
+        "name": "-inline",
+        "type": "flag",
+        "desc": "Optional. Return the matching values instead of indices."
+      },
+      {
+        "name": "-not",
+        "type": "flag",
+        "desc": "Optional. Invert the match (return non-matching elements)."
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "The list to search."
+      },
+      {
+        "name": "pattern",
+        "type": "string",
+        "desc": "The pattern to match against list elements."
+      }
+    ],
+    "example": "set mats {Silicon Oxide Aluminum Copper}\nputs [lsearch -exact $mats Oxide]     ;# prints: 1\nputs [lsearch -inline $mats Al*]       ;# prints: Aluminum"
+  },
+  "lsort": {
+    "signature": "lsort ?-ascii? ?-dictionary? ?-integer? ?-real? ?-increasing? ?-decreasing? ?-command cmd? list",
+    "description": "Sorts a list and returns a new sorted list. Supports multiple sorting modes: ASCII (default), dictionary (case-insensitive), integer, and real numeric. The original list is not modified.",
+    "parameters": [
+      {
+        "name": "-ascii",
+        "type": "flag",
+        "desc": "Optional. Sort using ASCII order (default)."
+      },
+      {
+        "name": "-dictionary",
+        "type": "flag",
+        "desc": "Optional. Case-insensitive dictionary sort."
+      },
+      {
+        "name": "-integer",
+        "type": "flag",
+        "desc": "Optional. Sort by integer value."
+      },
+      {
+        "name": "-real",
+        "type": "flag",
+        "desc": "Optional. Sort by floating-point value."
+      },
+      {
+        "name": "-increasing",
+        "type": "flag",
+        "desc": "Optional. Sort in ascending order (default)."
+      },
+      {
+        "name": "-decreasing",
+        "type": "flag",
+        "desc": "Optional. Sort in descending order."
+      },
+      {
+        "name": "-command cmd",
+        "type": "string",
+        "desc": "Optional. Use a custom comparison command for sorting."
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "The list to sort."
+      }
+    ],
+    "example": "set vals {3.14 1.0 2.71 0.5}\nputs [lsort -real $vals]          ;# prints: 0.5 1.0 2.71 3.14\nputs [lsort -real -decreasing $vals] ;# prints: 3.14 2.71 1.0 0.5"
+  },
+  "split": {
+    "signature": "split string ?splitChars?",
+    "description": "Splits a string into a list of substrings using the specified split characters. Each character in splitChars is treated as a separate delimiter. If splitChars is omitted, whitespace is used as the default delimiter.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "The string to split."
+      },
+      {
+        "name": "splitChars",
+        "type": "string",
+        "desc": "Optional. Characters used as delimiters (each character is a separate delimiter). Default is whitespace."
+      }
+    ],
+    "example": "set line \"x=1.0 y=2.0 z=3.0\"\nset parts [split $line \" \"]\nputs [llength $parts]  ;# prints: 3\nputs [split \"a,b,c\" \",\"]  ;# prints: a b c"
+  },
+  "join": {
+    "signature": "join list ?joinString?",
+    "description": "Joins the elements of a list into a single string, with each element separated by the join string. If joinString is omitted, a single space is used. This is the inverse of the split command.",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "The list whose elements to join."
+      },
+      {
+        "name": "joinString",
+        "type": "string",
+        "desc": "Optional. The separator string placed between elements. Default is a single space."
+      }
+    ],
+    "example": "set parts {Silicon Oxide Metal}\nputs [join $parts \" -> \"]  ;# prints: Silicon -> Oxide -> Metal\nputs [join $parts \"/\"]     ;# prints: Silicon/Oxide/Metal"
+  },
+  "open": {
+    "signature": "open fileName ?access? ?permissions?",
+    "description": "Opens a file or command pipeline and returns a channel identifier. The access mode controls reading/writing: r (read), w (write), a (append), r+ (read-write), etc. Use '|' prefix to open a pipeline.",
+    "parameters": [
+      {
+        "name": "fileName",
+        "type": "string",
+        "desc": "The file path to open. Prefix with '|' to open a command pipeline."
+      },
+      {
+        "name": "access",
+        "type": "string",
+        "desc": "Optional. Access mode: r (read, default), w (write), a (append), r+ (read-write), w+ (read-write truncate)."
+      },
+      {
+        "name": "permissions",
+        "type": "int",
+        "desc": "Optional. POSIX permission bits (e.g., 0644) for newly created files."
+      }
+    ],
+    "example": "set fid [open \"output.dat\" w]\nputs $fid \"Simulation results\"\nclose $fid\n\nset fid [open \"input.dat\" r]\nset data [read $fid]\nclose $fid"
+  },
+  "close": {
+    "signature": "close channelId",
+    "description": "Closes an open channel (file, pipe, or socket). Always close channels when done to free resources and flush buffers. For pipeline channels, waits for the subprocess to complete.",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "string",
+        "desc": "The channel identifier returned by open or socket."
+      }
+    ],
+    "example": "set fid [open \"data.txt\" r]\nset content [read $fid]\nclose $fid"
+  },
+  "read": {
+    "signature": "read channelId ?numChars?",
+    "description": "Reads data from a channel. If numChars is specified, reads exactly that many characters; otherwise reads all remaining data until end-of-file. Use -nonewline flag to strip the trailing newline.",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "string",
+        "desc": "The channel to read from."
+      },
+      {
+        "name": "numChars",
+        "type": "int",
+        "desc": "Optional. Number of characters to read. If omitted, reads all remaining data."
+      }
+    ],
+    "example": "set fid [open \"params.txt\" r]\nset content [read $fid]\nclose $fid\n\n;# Read first 100 characters\nset fid [open \"log.txt\" r]\nset header [read $fid 100]\nclose $fid"
+  },
+  "puts": {
+    "signature": "puts ?-nonewline? ?channelId? string",
+    "description": "Writes a string to a channel, followed by a newline (unless -nonewline is specified). If channelId is omitted, writes to stdout. This is the primary output command in Tcl.",
+    "parameters": [
+      {
+        "name": "-nonewline",
+        "type": "flag",
+        "desc": "Optional. Suppress the trailing newline."
+      },
+      {
+        "name": "channelId",
+        "type": "string",
+        "desc": "Optional. The channel to write to (default: stdout). Use a file channel ID for file output."
+      },
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "The string to write."
+      }
+    ],
+    "example": "puts \"Simulation complete\"          ;# to stdout\nputs -nonewline \"Enter value: \"\nset fid [open \"log.txt\" a]\nputs $fid \"Step 1: converged\"\nclose $fid"
+  },
+  "gets": {
+    "signature": "gets channelId ?varName?",
+    "description": "Reads a single line from a channel. If varName is specified, stores the line in that variable and returns the number of characters read (-1 at end-of-file). If varName is omitted, returns the line itself.",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "string",
+        "desc": "The channel to read from."
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Optional. Variable name to store the line. Returns character count instead of the line itself."
+      }
+    ],
+    "example": "set fid [open \"data.csv\" r]\nwhile {[gets $fid line] >= 0} {\n  puts $line\n}\nclose $fid"
+  },
+  "flush": {
+    "signature": "flush channelId",
+    "description": "Flushes the output buffer of a channel, forcing any buffered data to be written. Useful when writing to files or pipes and you need to ensure data is persisted immediately.",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "string",
+        "desc": "The channel whose output buffer to flush."
+      }
+    ],
+    "example": "set fid [open \"progress.log\" w]\nputs $fid \"Starting simulation...\"\nflush $fid  ;# ensure it's written immediately"
+  },
+  "file": {
+    "signature": "file option name ?arg ...?",
+    "description": "Performs file and directory operations. Common options: exists (check existence), readable/writable (check permissions), size (file size), dirname/basename/tail/rootname/extension (path parts), mkdir/delete/rename/copy (file operations), isdirectory/isfile (type checks), join (path construction).",
+    "parameters": [
+      {
+        "name": "option",
+        "type": "string",
+        "desc": "The file operation: exists, readable, writable, size, dirname, basename, tail, extension, mkdir, delete, rename, copy, isdirectory, isfile, join, nativename, etc."
+      },
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "File or directory path."
+      },
+      {
+        "name": "arg",
+        "type": "string",
+        "desc": "Additional arguments specific to the chosen option."
+      }
+    ],
+    "example": "if {[file exists \"result.dat\"]} {\n  set size [file size \"result.dat\"]\n  puts \"File exists, size: $size bytes\"\n}\nfile mkdir \"output\"\nset ext [file extension \"run_des.cmd\"]  ;# returns .cmd"
+  },
+  "glob": {
+    "signature": "glob ?-nocomplain? ?-directory dir? ?-types typeList? ?--? pattern ?pattern ...?",
+    "description": "Returns a list of file names matching the given glob patterns. Supports wildcards: * (any string), ? (single char), [abc] (character set). Use -directory to search in a specific directory, -types to filter by file type (f for files, d for directories).",
+    "parameters": [
+      {
+        "name": "-nocomplain",
+        "type": "flag",
+        "desc": "Optional. Return empty list instead of error when no files match."
+      },
+      {
+        "name": "-directory dir",
+        "type": "string",
+        "desc": "Optional. Search in the specified directory."
+      },
+      {
+        "name": "-types typeList",
+        "type": "list",
+        "desc": "Optional. Filter by type: f (file), d (directory), l (symlink)."
+      },
+      {
+        "name": "pattern",
+        "type": "string",
+        "desc": "One or more glob patterns (e.g., *.cmd, *_des.cmd)."
+      }
+    ],
+    "example": "set cmd_files [glob -nocomplain *_des.cmd]\nforeach f $cmd_files {\n  puts \"Found: $f\"\n}\nset all_dirs [glob -types d *]"
+  },
+  "source": {
+    "signature": "source fileName",
+    "description": "Reads and evaluates a Tcl script from a file. The file's contents are executed as a Tcl script in the current scope. Commonly used to load configuration files, libraries, or shared procedures.",
+    "parameters": [
+      {
+        "name": "fileName",
+        "type": "string",
+        "desc": "Path to the Tcl script file to evaluate."
+      }
+    ],
+    "example": "source \"common_procs.tcl\"\nsource \"device_params.tcl\""
+  },
+  "info": {
+    "signature": "info option ?arg arg ...?",
+    "description": "Returns information about the Tcl interpreter state. Common options: exists (variable existence), level (procedure call stack), procs (list of procedures), body/args (procedure details), commands (list of commands), vars (variable names), hostname, patchlevel (Tcl version).",
+    "parameters": [
+      {
+        "name": "option",
+        "type": "string",
+        "desc": "The information option: exists, level, procs, body, args, commands, vars, hostname, patchlevel, script, etc."
+      },
+      {
+        "name": "arg",
+        "type": "string",
+        "desc": "Arguments specific to the chosen option."
+      }
+    ],
+    "example": "if {[info exists env(HOME)]} {\n  puts \"Home: $env(HOME)\"\n}\nputs [info procs]     ;# list all procedures\nputs [info patchlevel] ;# e.g., 8.6.12"
+  },
+  "array": {
+    "signature": "array option arrayName ?arg ...?",
+    "description": "Performs operations on Tcl arrays (key-value maps). Common options: exists (check if array exists), get (return key-value pairs), names (return key names), set (initialize from a list), size (number of elements), unset (delete array), startsearch/nextelement/anymore/donesearch (iterators).",
+    "parameters": [
+      {
+        "name": "option",
+        "type": "string",
+        "desc": "The array operation: exists, get, names, set, size, unset, startsearch, nextelement, anymore, donesearch."
+      },
+      {
+        "name": "arrayName",
+        "type": "string",
+        "desc": "Name of the array to operate on."
+      },
+      {
+        "name": "arg",
+        "type": "string",
+        "desc": "Arguments specific to the chosen option."
+      }
+    ],
+    "example": "array set params {temp 300 bias 1.2 model \"Boltzmann\"}\nputs [array size params]          ;# prints: 3\nputs [array names params]          ;# prints: temp bias model\nforeach key [array names params] {\n  puts \"$key = $params($key)\"\n}"
+  }
+}

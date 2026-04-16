@@ -1,363 +1,375 @@
 {
-    "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
-    "name": "Sentaurus SDEVICE",
-    "patterns": [
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Sentaurus SDEVICE",
+  "patterns": [
+    {
+      "match": "\\b(BandstructurePlot|CurrentPlot|Device|Electrode|FarFieldPlot|File|GainPlot|HydrogenBoundary|Math|MonteCarlo|NoisePlot|NonlocalPlot|OpticalDevice|Physics|Plot|PlotGainPara|RayTraceBC|Solve|System|TensorPlot|Thermode|TrappedCarDistrPlot|VCSELNearFieldPlot|eSHEDistributionPlot|hSHEDistributionPlot)(?![A-Za-z0-9_:-])",
+      "name": "keyword.control.sdevice"
+    },
+    {
+      "match": "\\b(ACCoupled|BreakCriteria|CCVS_pset|Capacitor_pset|Continuation|CoordinateSystem|Coupled|CurrentPlot|Diode_pset|DopingWell|Extraction|Goal|HB|HBCoupled|Isource_pset|Plot|PlotBandstructure|PlotFarField|PlotGain|PlotLEDRadiation|Plugin|QuasiStationary|Resistor_pset|SaveOptField|SolveSpectrum|SpectralPlot|Transient|VCCS_pset|VCVS_pset|Vsource_pset|Window)(?![A-Za-z0-9_:-])",
+      "name": "keyword.other.sdevice"
+    },
+    {
+      "patterns": [
         {
-            "match": "\\b(BandstructurePlot|CurrentPlot|Device|Electrode|FarFieldPlot|File|GainPlot|HydrogenBoundary|Math|MonteCarlo|NoisePlot|NonlocalPlot|OpticalDevice|Physics|Plot|PlotGainPara|RayTraceBC|Solve|System|TensorPlot|Thermode|TrappedCarDistrPlot|VCSELNearFieldPlot|eSHEDistributionPlot|hSHEDistributionPlot)(?![A-Za-z0-9_:-])",
-            "name": "keyword.control.sdevice"
+          "match": "\\b(Absorption|AcceptorConcentration|ACCompute|ACPlot|ActiveVertex|Add2TotalDoping|Affinity|Angular|Aniso|Auger|AvaHomotopy|Average|AxisAligned2d|AxisAligned3d|BalMob|Band2Band|BandEdgeShift|BandGap|BandgapNarrowing|Bandstructure|Barrier|BarrierTunneling|BarrierType|BE|Bidirectional|Blocked|Boundary|Box|BPM|Broadening)(?![A-Za-z0-9_:-])",
+          "name": "entity.name.tag.sdevice"
         },
         {
-            "match": "\\b(ACCoupled|BreakCriteria|CCVS_pset|Capacitor_pset|Continuation|CoordinateSystem|Coupled|CurrentPlot|Diode_pset|DopingWell|Extraction|Goal|HB|HBCoupled|Isource_pset|Plot|PlotBandstructure|PlotFarField|PlotGain|PlotLEDRadiation|Plugin|QuasiStationary|Resistor_pset|SaveOptField|SolveSpectrum|SpectralPlot|Transient|VCCS_pset|VCVS_pset|Vsource_pset|Window)(?![A-Za-z0-9_:-])",
-            "name": "keyword.other.sdevice"
+          "match": "\\b(BroadeningIntegration|CEModel|Charge|Circle|Circuit|ClusterActive|ComplexRefractiveIndex|Condition|Constant|ConstantCarrierGeneration|ConstantMobility|Criterion|Current|CurrentDensity|CurrentPlot|DebugLEDRadiation|Deformation|Degradation|Delaunizer2d|Delaunizer3d|DensityIntegral|DeterministicProblem|DeterministicVariation|DevicePower|DFB|DiffusionNoise|Dipole|DisplacementCurrent|DonorConcentration|Doping)(?![A-Za-z0-9_:-])",
+          "name": "entity.name.tag.sdevice"
         },
         {
-            "patterns": [
-                {
-                    "match": "\\b(Absorption|AcceptorConcentration|ACCompute|ACPlot|ActiveVertex|Add2TotalDoping|Affinity|Angular|Aniso|Auger|AvaHomotopy|Average|AxisAligned2d|AxisAligned3d|BalMob|Band2Band|BandEdgeShift|BandGap|BandgapNarrowing|Bandstructure|Barrier|BarrierTunneling|BarrierType|BE|Bidirectional|Blocked|Boundary|Box|BPM|Broadening)(?![A-Za-z0-9_:-])",
-                    "name": "entity.name.tag.sdevice"
-                },
-                {
-                    "match": "\\b(BroadeningIntegration|CEModel|Charge|Circle|Circuit|ClusterActive|ComplexRefractiveIndex|Condition|Constant|ConstantCarrierGeneration|ConstantMobility|Criterion|Current|CurrentDensity|CurrentPlot|DebugLEDRadiation|Deformation|Degradation|Delaunizer2d|Delaunizer3d|DensityIntegral|DeterministicProblem|DeterministicVariation|DevicePower|DFB|DiffusionNoise|Dipole|DisplacementCurrent|DonorConcentration|Doping)(?![A-Za-z0-9_:-])",
-                    "name": "entity.name.tag.sdevice"
-                },
-                {
-                    "match": "\\b(DopingDependence|DopingVariation|DopingWells|DOS|DualGridInterpolation|eAvalanche|eBandEdgeShift|eBarrierTunneling|eCurrent|eCurrentDensity|eDensity|EffectiveIndex|EffectiveIntrinsicDensity|eHCSDegradation|eHighFieldSaturation|ElectricField|Electron|ElementLimit|ElementSize|EmissionType|eMobility|eMultiValley|EnergyRelaxationTime|eNMP|EnormalInterface|eQuantumPotential|eQuasiFermi|EquilibriumSolution|Error|ErrRef)(?![A-Za-z0-9_:-])",
-                    "name": "entity.name.tag.sdevice"
-                },
-                {
-                    "match": "\\b(eSHEDistribution|eSubband|eTemperature|eVelocity|Excitation|Exclude|ExcludeHorizontalSource|ExternalBoltzmannSolver|Extrapolate|FarField|FDTD|Fermi|FEScalar|FEVectorial|FowlerNordheim|freq|FromElementGrid|FromFile|Gamma|GateCurrent|Gaussian|GaussianQuadrature|GeometricVariation|GMRES|Grading|GridAdaptation|h|hAvalanche|hBandEdgeShift|hBarrierTunneling)(?![A-Za-z0-9_:-])",
-                    "name": "entity.name.tag.sdevice"
-                },
-                {
-                    "match": "\\b(HBPlot|hCurrent|hCurrentDensity|hDensity|HeatSource|hHCSDegradation|hHighFieldSaturation|HighFieldSaturation|hMobility|hMultiValley|Hole|hQuantumPotential|hQuasiFermi|hSHEDistribution|hSubband|hTemperature|hVelocity|HydrogenAtom|HydrogenIon|HydrogenMolecule|HydrogenReaction|i|IALMob|ILS|ImportDomain|IncompleteNewton|InnerDevicePower|Integrate|IntensityDistribution|Laser)(?![A-Za-z0-9_:-])",
-                    "name": "entity.name.tag.sdevice"
-                },
-                {
-                    "match": "\\b(LatticeTemperature|LayerStackExtraction|LayerStructure|LayerThickness|LED|LEDRadiationPara|LEDSpectrum|LHSCoef|Line|MATH|Maximum|Mechanics|Medium|MeshDomain|Meshing|MetalTEPower|MetalWorkfunction|Minimum|MLDAbox|Mobility|Model|MoleFraction|MSConfig|MSConfigs|MultiValley|MVMLDAcontrols|Newton|NewtonPlot|Node|Noise)(?![A-Za-z0-9_:-])",
-                    "name": "entity.name.tag.sdevice"
-                },
-                {
-                    "match": "\\b(NonLocal|NonLocalPath|ObservationNode|OptBeam|Optical|OpticalGeneration|OpticalSolver|Optics|OpticsFromFile|OuterDevicePower|OutputLightToolsFarfieldRays|OutputLightToolsRays|OutputT2TPaths|p|ParallelLicence|ParameterVariation|ParDiSo|PeriodicBC|Piezo|Piezoelectric_Polarization|Plot|PMIModel|Poisson|Polygon|PostProcess|Potential|Print|PrintORArays|PrintRayInfo|PrintSourceVertices)(?![A-Za-z0-9_:-])",
-                    "name": "entity.name.tag.sdevice"
-                },
-                {
-                    "match": "\\b(QWLocal|Radiation|Radiative|RandomField|Randomize|RandomizedVariation|RayDistribution|RaysRandomOffset|Raytrace|RayTraceBC|RayTracing|RecBoxIntegr|RecGenHeat|Recombination|Rectangle|RectangularWindow|RefractiveIndex|Regexp|Reservoirs|RHSCoef|Scattering|Schroedinger|Sensor|SensorSweep|Set|SetConstant|SimStats|SingletExciton|Skip|SourcePosition)(?![A-Za-z0-9_:-])",
-                    "name": "entity.name.tag.sdevice"
-                },
-                {
-                    "match": "\\b(SourceRaysFromFile|SpaceCharge|Split|SponEmissionIntegration|SRH|State|StepFunction|StimEmissionCoeff|Strain|Stress|Stripe|Surface|SurfaceSRH|Sweep|System|t|TE|TempDependence|TEPower|Thermal|ThermalConductivity|Thermodynamic|ThinLayer|Time|time|TimeDependence|TMM|TMM1D|Tone|TotalCurrent)(?![A-Za-z0-9_:-])",
-                    "name": "entity.name.tag.sdevice"
-                },
-                {
-                    "match": "\\b(TraceSource|TransientError|TransientErrRef|Transition|TrapConcentration|Traps|TRBDF|Tunneling|TurningPoints|UCS|Unset|UserWindow|v|VCSEL|Voltage|Volume|Weights|When|WidthExtraction|Window)(?![A-Za-z0-9_:-])",
-                    "name": "entity.name.tag.sdevice"
-                }
-            ]
+          "match": "\\b(DopingDependence|DopingVariation|DopingWells|DOS|DualGridInterpolation|eAvalanche|eBandEdgeShift|eBarrierTunneling|eCurrent|eCurrentDensity|eDensity|EffectiveIndex|EffectiveIntrinsicDensity|eHCSDegradation|eHighFieldSaturation|ElectricField|Electron|ElementLimit|ElementSize|EmissionType|eMobility|eMultiValley|EnergyRelaxationTime|eNMP|EnormalInterface|eQuantumPotential|eQuasiFermi|EquilibriumSolution|Error|ErrRef)(?![A-Za-z0-9_:-])",
+          "name": "entity.name.tag.sdevice"
         },
         {
-            "match": "\\b(Insert)(?![A-Za-z0-9_:-])",
-            "name": "support.class.sdevice"
+          "match": "\\b(eSHEDistribution|eSubband|eTemperature|eVelocity|Excitation|Exclude|ExcludeHorizontalSource|ExternalBoltzmannSolver|Extrapolate|FarField|FDTD|Fermi|FEScalar|FEVectorial|FowlerNordheim|freq|FromElementGrid|FromFile|Gamma|GateCurrent|Gaussian|GaussianQuadrature|GeometricVariation|GMRES|Grading|GridAdaptation|h|hAvalanche|hBandEdgeShift|hBarrierTunneling)(?![A-Za-z0-9_:-])",
+          "name": "entity.name.tag.sdevice"
         },
         {
-            "patterns": [
-                {
-                    "match": "\\b(AbsEmit|AbsError|AbsVal|Accuracy|ACExtract|ACMethod|ACPlot|ACSubMethod|ActEnergy|activation|af|Algorithm|AllowLayerThickness|Alpha|Amplitude|Amplitude_Abs|Amplitude_Chi|Amplitude_Eg|Amplitude_Iso|AngularDiscretization|AnisoAxes|AnisoSG_DerivativeMinDen|AnisoSG_MinDen|Area|AreaFactor|ASE|AutoCNPMinStepFactor|AutoNPMinStepFactor|AutoOrientation|AutoOrientationSmoothingDistance)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(AvalFlatElementExclusion|AveDistanceFactor|AverageGrainSize|AzimuthalExpansion|Bandstructure|Barrier|BarrierTunnelingEnhan|binary|BlockSize|BondConc|BondConcSFactor|Boundary|BoundaryCondition|bv|capacitance|Carriers|CavityLength|CBRate|CDensityMin|CenterGauss|ChannelDirection|Charge|Chi2Eg|ChiComponent|ChordWeight|cj0|cjo|ClusterQuantity|CMIPath|command)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(ComplexRefractiveIndexThreshold|ComputeGradQuasiFermiAtContacts|Conc|Condition|ConstRefPot|Contact|ContactName|control|Coordinates|CoplanarityAngle|CoplanarityDistance|CoreWidth|corner1|corner2|corner3|CorrelationFunction|Coupled|CritConc|CrystalType|cT_Range|Current|CurrentEnhan|Cutoff|Damping|DampingLength|DataName|Dataset|DatasetName|Datasetname|dc)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Decrement|DelaunayTolerance|delta|DensityCorrection|DensityTail|DensLowLimit|DePassCoef|DephasingRates|DepthLimit|Derivative|DestinationBoxCorner1|DestinationBoxCorner2|DestinationRegions|DevFields|Device|DevicePath|DevName|DFBPeriod|Difference|DiffusionEnhan|Diffusivity|Digits|Direction|direction|DirectTunnelingEnhan|Discretization|DistResist|DistResistance|DOE_prefix|Dopants)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Doping|DopingThreshold|DopingWell|Dose|DoseRate|DoseTime|DoseTSigma|Dt|DtFall|DtFallEnd|DtFallStart|DtPlateau|DtPlateauEnd|DtPlateauStart|DtRise|DtRiseEnd|DtRiseStart|dx|Dx|dy|Dy|dz|eConstEmissionRate|EdgeProximity|eDrForceRefDens|eg|EgComponent|eGfactor|eJfactor|Electrode)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(ElementEdgeCurrent|eMinorityFactor|EmissionTable|eMobilityAveraging|eMobilityFactor|EMWgrid|EMWinput|EndFrequency|Endpoint|Energy|EnergyInterval|EnergyMid|EnergyResolution|EnergyShift|EnergySig|EqOhmic|eQuantumPotential|EquationType|eQWMobility|eRecVelocity|Error|eSaturationFactor|eSHEDistribution|exp|eXSection|ExternalMaterialCRIFile|ExtinctionCoefficient|Extraction|FaceProximity|Factor)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(fc|FGCap|FieldEnhan|FieldFromMaterial|FieldFromRegion|Filename|FilePrefix|FinalTime|Finish|Formula|ForwardReactionCoef|ForwardReactionEnergy|ForwardReactionFieldCoef|FowlerNordheimEnhan|Fraction|Frequency|Fresnel|From|FullPhotonRecycle|Function|Gain|gain|GainShift|Gamma|GateName|GeometricAccuracy|GrainChi|GrainConductivity|GrainEg|GrainEpsilon)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(GrainProbability|GrainWorkfunction|GrDistance|Grid|GridNodes|GroupRefractiveIndex|hConstEmissionRate|hDrForceRefDens|hGfactor|hJfactor|hMinorityFactor|hMobilityAveraging|hMobilityFactor|hQuantumPotential|hQWMobility|hRecVelocity|hSaturationFactor|hSHEDistribution|HuangRhys|hXSection|Hydrogen|HydrogenAtom|HydrogenIon|HydrogenMolecule|Iadapt|ibv|ic|IdentifyingParameter|Ignore|IlluminationSpectrum)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(ILS|ILSrc|Increment|Index|inductance|Init|initial_structure|InitializationMethod|Initialize|InitialStep|InitialTime|InitialVstep|InitialWavelength|InjectionRegion|IntegrationUnit|Intensity|IntensityPattern|Interrupt|Intervals|is|IscaleMin|IsotropyType|Iterations|IterationStep|kf|l|Lambda|LasingWavelength|LayerStructure|Lch)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(LEDRadiation|Left|Length|LengthDiscretization|lFacetReflectivity|LifeTime|LineSearchDamping|LineSearchDumping|LineWidthEnhancementFactor|Load|LoadWithInterpolation|LocalModel|Location|LogDifference|LowDensityLimit|lT_Range|m|MagneticField|Material|MaterialInterface|materialInterface|Materials|MaxAngle|MaxAspectRatio|MaxBoundaryCutRatio|MaxCLoops|MaxConnectivity|MaxCurrent|MaxDoping4Majority|MaxElectricField)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(MaxElementSize|MaxFitWeight|MaxIFactor|Maximum|MaxIntDistance|MaxInternalPoints|MaxIstep|MaxIterations|MaxLogIfactor|MaxMismatch|MaxNeighborRatio|MaxNumberOfIterations|MaxRload|MaxSolidAngle|MaxSolutions|MaxStep|MaxVal|MaxVoltage|MaxVstep|MaxX|MaxY|MaxZ|Memory|MeshDomain|MesherInput|Method|MinAmplitude|MinAngle|MinCurrent|MinEdgeLength)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(MinElectricField|MinElementSize|Minimum|MinIntensity|MinorityFactor|MinRload|MinStep|MinVal|MinVoltage|MinX|MinY|MinZ|Mirror|MLDAMinDistanceToContact|mModeIndex|MobilityDoping|Mode|ModeGain|Model|modelParameter|ModelParameter|ModeNumber|ModeType|MortarSide|MoveBoundaryStartRays|MSConfig|MSDistResist|MVMLDAcontrols|N|n)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Name|Ndivisions|Netlist|NewCurrentPrefix|NewtonPlot|NewtonPlotStep|nModeIndex|Node|NodesPerWavelength|NoisePlot|NonLocal|NonLocalLengthLimit|NonLocalPlot|NormalFieldCorrection|NotDamped|Notdamped|Number|Number_of_Assembly_Threads|Number_of_Solver_Threads|Number_of_Threads|NumberOfAssemblyThreads|NumberOfCellsPerLayer|NumberOfClusters|NumberOfCrystalFieldSplitHoleSubbands|NumberOfElectronSubbands|NumberOfFailures|NumberOfHarmonics|NumberOfHeavyHoleSubbands|NumberOfLightHoleSubbands|NumberOfPoints)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(NumberOfRandomTraps|NumberOfRays|NumberOfSamples|NumberOfSlices|NumberOfSolverThreads|NumberOfSpectralPoints|NumberOfThreads|NumberOfTransverseCellsPerDirection|NumberOfValenceBands|ObservationCenter|ObservationRadius|Offset|Operation|OptFarField|OptField|OptGenOffset|OptGenScaling|OptGenTransientScaling|OptGenWavelength|OpticalConfinement|OpticalDevice|OpticalGenerationFile|OpticalGenerationInput|OpticalGenerationOutput|OpticalLoss|OpticalSolverInput|Optics|OpticsOutput|Options|Order)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Origin|OriginAnchor|OriKddx|OriKddy|OutCouplingLoss|Output|OutputLevel|Parameter|parameter|ParameterInheritance|ParameterPath|Parameters|ParameterSetName|PasCoef|PasTemp|PasVolume|PathSearchStopField|PeakPosition|PeakWidth|Period|Permeation|Phi|PhononEnergy|PhotonRecycle|Piezo|Plot|pmiModel|PMIPath|PMIUserFields|Polarization)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(PolarizationAngle|PolarizationFactor|PolarizationVector|Position|Postprocessing|Power|PowerCouplingFactor|PowerEnhan|ProfileIndex|Program|ProgressMarkers|PropagationDirection|pulse|pwl|QuantityPower|QuantumYield|QWeScatTime|QWExtension|QWHScatTime|QWhScatTime|Radius|radius|Randomize|RandomSeed|Range|RangeOfSpectrum|RayDirection|RaysFromFile|RaysPerCluster|RaysPerVertex)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(RectangleV1|RectangleV2|RectangleV3|ReEmit|RefDens_eEparallel_ElectricField|RefDens_eEparallel_ElectricField_Aval|RefDens_eEparallel_ElectricField_HFS|RefDens_eGradQuasiFermi_ElectricField|RefDens_eGradQuasiFermi_ElectricField_HFS|RefDens_eGradQuasiFermi_EparallelToInterface_HFS|RefDens_eGradQuasiFermi_Zero|RefDens_Eparallel_ElectricField|RefDens_Eparallel_ElectricField_Aval|RefDens_Eparallel_ElectricField_HFS|RefDens_GradQuasiFermi_ElectricField|RefDens_GradQuasiFermi_ElectricField_HFS|RefDens_GradQuasiFermi_EparallelToInterface_HFS|RefDens_GradQuasiFermi_Zero|RefDens_hEparallel_ElectricField|RefDens_hEparallel_ElectricField_Aval|RefDens_hEparallel_ElectricField_HFS|RefDens_hGradQuasiFermi_ElectricField|RefDens_hGradQuasiFermi_ElectricField_HFS|RefDens_hGradQuasiFermi_EparallelToInterface_HFS|RefDens_hGradQuasiFermi_Zero|Reference|ReferenceElementSize|ReferenceMaterial|ReferenceNormal|ReferencePoint)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(ReferenceQuantityRange|ReferenceRefractiveIndex|ReferenceRefractiveIndexDelta|ReferenceRegion|ReferenceStep|RefinedIntervals|RefinementScale|RefLatticeConst|Reflectivity|RefractiveIndex|RefractiveIndexDelta|RefreshEverytime|Region|RegionInterface|regionInterface|RegionName|Regions|RelError|RelFactor|RelTermMinDensity|RelTermMinDensityZero|Resist|resistance|Resolution|Restart|RetraceCRIChange|RetraceCRIchange|ReverseReactionCoef|ReverseReactionEnergy|ReverseReactionFieldCoef)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(rFacetReflectivity|Rfixed|RhsFactor|RhsMax|RhsMaxQ|RhsMin|RhsMinFactor|RhsScale|Right|RotationAngles|RoughInterface|rs|SaturationFactor|Save|SaveOptField|SaveOptSpectrum|SaveType|SBTECommandFile|Scaling|ScalingFactor|Select|Set|Sfactor|SFactor|sffm|SHECutoff|SHEIterations|SHEMethod|SHERefinement|SHESORParameter)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(SHETopMargin|ShiftVector|Side|SideMaterial|SideRegion|Sigma|SigmaGauss|sin|sine|SliverAngle|SliverDistance|Smooth|SolveSpectrum|SourceBoxCorner1|SourceBoxCorner2|SourcePolarization|SourceRegions|SpaceMid|SpaceSig|SpatialShape|SpectralInterpolation|SpectralPlot|Spice_gmin|Spice_Temperature|SPICEPath|SplitSpectrumRays|SponEmiss|SponEmissionTable|SponScaling|StackSize)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(StartFrequency|StartingPeriod|StimEmissionTable|StimScaling|Strain|Strategy|StressLimit|StressMobilityDependence|StretchingParameterImag|StretchingParameterReal|String|SubMethod|Summand|Surface|SurfaceConductance|SurfaceName|SurfaceResistance|Symmetry|T2TconcScale|T2TPDEerrorScale|Table|TargetEffectiveIndex|TargetLifetime|TargetLoss|TargetWavelength|TATNonlocalPathNC|temp|Temperature|TensorPlot|Theta)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Thickness|Time|TimeDependence|tnom|To|Tolerance|TransferredElectronEffect2_eMinDerivativePerField|TransferredElectronEffect2_hMinDerivativePerField|TransferredElectronEffect2_MinDerivativePerField|Transient|TransientDigits|Transition|Transmittivity|TrapDLN|TrapFilling|TrappedCarPlotFile|TrapVolume|TrStepRejectionFactor|TruncationPositionX|TruncationPositionY|TruncationSlope|tt|Type|Unit|UpdateFactor|UpdateIncrease|UpdateMax|UpdateSacel|UpdateScale|VacuumGridNodes)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Vadapt|value|Value|ValueMin|ValueVariation|Var|VBRate|VCSELNearField|VectorUnits|Verbosity|Vertex|vj|Voltage|voltage|Volume|VoronoiFaceBoxMethod|w|Wavelength|WavelengthDiscretization|WavePeriods|WaveTCos|WaveTExp|WaveTime|WaveTLin|WaveTPeriod|WaveTPeriodOffset|WaveTSigma|WaveTSlope|WeightDielectric|WeightedAPDintegrationLayers)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(WeightedAPDIntegrationSetBoundaries|WeightQuantumPotential|Weights|WellContactName|WidthDiscretization|WindowName|WindowPosition|Workfunction|x1|x2|xAxis|XConst|xCuts|XDirection|xFraction|Xmax|Xmin|xti|yAxis|YConst|yCuts|YDirection|yFraction|Ymax|Ymin|ZConst|zCuts|Zmax|Zmin)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                }
-            ]
+          "match": "\\b(HBPlot|hCurrent|hCurrentDensity|hDensity|HeatSource|hHCSDegradation|hHighFieldSaturation|HighFieldSaturation|hMobility|hMultiValley|Hole|hQuantumPotential|hQuasiFermi|hSHEDistribution|hSubband|hTemperature|hVelocity|HydrogenAtom|HydrogenIon|HydrogenMolecule|HydrogenReaction|i|IALMob|ILS|ImportDomain|IncompleteNewton|InnerDevicePower|Integrate|IntensityDistribution|Laser)(?![A-Za-z0-9_:-])",
+          "name": "entity.name.tag.sdevice"
         },
         {
-            "match": "\\b(value)(?![A-Za-z0-9_:-])",
-            "name": "constant.numeric.sdevice"
+          "match": "\\b(LatticeTemperature|LayerStackExtraction|LayerStructure|LayerThickness|LED|LEDRadiationPara|LEDSpectrum|LHSCoef|Line|MATH|Maximum|Mechanics|Medium|MeshDomain|Meshing|MetalTEPower|MetalWorkfunction|Minimum|MLDAbox|Mobility|Model|MoleFraction|MSConfig|MSConfigs|MultiValley|MVMLDAcontrols|Newton|NewtonPlot|Node|Noise)(?![A-Za-z0-9_:-])",
+          "name": "entity.name.tag.sdevice"
         },
         {
-            "patterns": [
-                {
-                    "match": "\\b(128|256|Abort|AbsorbedPhotonDensity|AbsorbedPhotonDensityCoherent|AbsorbedPhotonDensityDiffuse|AbsorbedPhotonDensityFromMonochromaticSource|AbsorbedPhotonDensityFromSpectrum|AbsorbedPhotonDensityIncoherent|AbsorbedPhotonDensityo|AbsorbedPhotonDensitySpecular|AC|AccelewareOption|AccepMinusConcentration|AcceptNewtonParameter|Acceptor|Active|Add2TotalDoping|Add_F|AdjustImpurityScattering|Ads_Vg|Agg_Vg|AGM|AGMDissipationRate|AGMDissipationRateAbsJump|AGMDissipationRateDensity|AGMNewVertex|AllLNS|AllLNVSD|AllLNVXVSD)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(AllowDuplicates|AlphaCharge|AlphaChargeDensity|AlphaGeneration|Analytic|AnalyticLTFit|AnalyticTEP|Aniso|AnisoSG|AntimonyActiveConcentration|AntimonyConcentration|AntimonyPlusConcentration|ApplyToMobilityComponents|Arora|Arsenic|ArsenicActiveConcentration|ArsenicConcentration|ArsenicPlusConcentration|Ascii|AsIs|AsPlus|AtInsulatorInterface|AugerRecombination|Auto|AutoDetect|Autodetect|AutomaticCircuitContact|AutomaticUpdate|AutoOrientation|AutoOrientationSmoothing)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(AutoPeak|AutoPeakPower|AutoPopulate|Avalanche|AvalancheGeneration|AvalDensGradQF|AvalDerivatives|AvalFlatElementMax|AvalFlatElementMin|AvalPostProcessing|Average|AverageBoxMethod|AxisAligned|AxisAlignedNormals|Band2BandGeneration|BandEdge|BandEdgeFluctuations|Bandgap|BandgapDependence|BandgapNarrowing|BandStructure|BarrierLowering|BarrierTunneling|BeamGeneration|BennettWilson|Bimolecular|Binary|BM_AngleElements|BM_AngleVertex|BM_CoeffIntersectionNonDelaunayElements)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(BM_EdgesPerVertex|BM_ElementsPerVertex|BM_ElementsWithCommonObtuseFace|BM_ElementsWithObtuseFaceOnBoundaryDevice|BM_ElementVolume|BM_ExtendedPrecision|BM_IntersectionNonDelaunayElements|BM_ShortestEdge|BM_VolumeIntersectionNonDelaunayElements|BM_wCoeffIntersectionNonDelaunayElements|BM_wElementsWithCommonObtuseFace|BM_wElementsWithObtuseFaceOnBoundaryDevice|BM_wIntersectionNonDelaunayElements|BM_wVolumeIntersectionNonDelaunayElements|bMinus|BondDispersion|BoronActiveConcentration|BoronConcentration|BoronMinusConcentration|Both|Bottom|BoxCoefficientsFromFile|BoxMeasureFromFile|BoxMethodFromFile|BreakAtIonIntegral|BreakdownProbability|BreakOnFailure|BreakRequest|BrooksHerring|BuiltinPotential)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Bulk|Cap|CarrierCarrierScattering|CarrierDep|Carriers|CarrierTempDrive|CarrierTempDriveBasic|CarrierTempDriveME|CarrierTempDrivePolynomial|CarrierTempDriveSpline|Cartesian|CaugheyThomas|Cavity|CBBarrierLowering|CBEnergyWithLowering|CDL|CDL1|CDL1Recombination|CDL2|CDL2Recombination|CDL3|CDLcRecombination|CDLRecombination|Center|Cgd_F|Cgd_Vg|Charge|ChargedTraps|CheckRhsAfterUpdate|CheckTransientError)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(CheckUndefinedModels|CircuitNoise|ClusteringEverywhere|cm|CNormPrint|Collected|CompactMemoryOption|ComplexRefractiveIndex|Composite|Compressed|ComputeAll|ComputeAtMaxElectricField|ComputeDopingConcentration|ComputeFromMonochromaticSource|ComputeFromSpectrum|ComputeIonizationIntegrals|CondBand|CondInsulator|ConductionBand|ConductionBandEnergy|ConductionCurrent|ConductionCurrentDensity|Conductivity|ConductivityFluctuations|Conservative|constant|Contact|ContactSurfaceNormal|ConversePiezoelectricField|ConversePiezoelectricFieldXX)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(ConversePiezoelectricFieldXY|ConversePiezoelectricFieldXZ|ConversePiezoelectricFieldYY|ConversePiezoelectricFieldYZ|ConversePiezoelectricFieldZZ|ConwellWeisskopf|Coordinates|CosHyper|Coulomb2D|CRIModel|CrystalSystem|Csd_F|Cup|CurECImACGreenFunction|CurECReACGreenFunction|CurETImACGreenFunction|CurETReACGreenFunction|CurGeoGreenFunction|CurHCImACGreenFunction|CurHCReACGreenFunction|CurHTImACGreenFunction|CurHTReACGreenFunction|curLTImACGreenFunction|curLTReACGreenFunction|CurPotImACGreenFunction|CurPotReACGreenFunction|Current|CurrentPlot|CurrentPotential|CurrentWeighting)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Cylindrical|DampingLength|DatasetsFromGrid|DC|DCMode|Decade|DeepLevels|DefaultParametersFromFile|Degradation|delAlamo|DelVorWeight|Density|DensityCorrection|DensityIntegral|DephasingRates|Derivative|Derivatives|DFISE|DielectricConstant|DielectricConstantAniso|Diffusivity|DirectCurrent|DirectTunneling|Dirichlet|Disable|DisableInternalMobilityModels|Discontinuity|DiscreteTrapT2T|DisplacementCurrentDensity|DissipationRateDensity)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Donor|DonorPlusConcentration|Doping|DopingConcentration|DopingDep|DopingVariation|DopingWells|DoZero|E1|E1_5|E2|e_h_Temperature|eAlphaAvalanche|eAmorphousRecombination|eAmorphousTrappedCharge|East|eAugerRecombination|eAvalancheGeneration|eB2BGenWithinSelectedRegions|eBand2BandGeneration|eBarrierTunneling|eBreakdownProbability|eCDL1Lifetime|eCDL2Lifetime|eDeformationPotential|eDensityCorrection|eDifferentialGain|eDiffusivity|eDiffusivityMobility|eDirectTunnelCurrent)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(eDirectTunneling|eDissipationRateDensity|eDriftVelocity|eeDiffusionLNS|eEffectiveField|eEffectiveStateDensity|eEffectiveStress|eeFlickerGRLNS|eeMonopolarGRLNS|eEnormal|eEparallel|eEquilibriumDensity|eFactor|Effective|EffectiveAbsorption|EffectiveBandGap|EffectiveBandgap|EffectiveIntrinsicDensity|EffectiveMass|EffectiveStressModel|eFiegna|eFreeCarrierAbsorption|eGapStatesRecombination|eGradQuasiFermi|eHeatFlux|eHIDensity|eHIDensityPer_eTemperature|eHIDensityPerDensity|eHIDensityPerTemperature|EigenEnergy)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(eInterfaceTrappedCharge|eIonIntegral|eJouleHeat|ekp|ElasticStrain|ElectricField|ElectricFieldDep|electron|ElectronAffinity|ElectrostaticPotential|Element|ElementEdge|ElementSize|ElementVolumeAvalanche|ElementWise|eLifetime|Elimination|eLucky|eMass|EMLABGeneration|eMLDA|eMLDAQuantumPotential|eMobilityAniso|eMobilityAnisoFactor|eMobilityStressFactorXX|eMobilityStressFactorXY|eMobilityStressFactorXZ|eMobilityStressFactorYY|eMobilityStressFactorYZ|eMobilityStressFactorZZ)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Empty|EMWPlusOption|EndPoint|eNeutral|eNLLTunnelingGeneration|eNLLTunnelingPeltierHeat|eNMPCaptureTime|eNMPEmissionTime|Enormal|Envelope|Eparallel|EparallelToInterface|Epsilon|EpsilonFluctuations|eQuantumPotential|eQuasiFermiEnergy|eQuasiFermiPotential|eQuenching|Equidistant|EquilibriumElectricField|EquilibriumPotential|eRelativeEffectiveMass|Error|ErrorBBReCurrent|ErrorBBRElectricField|ErrorBBRhCurrent|eSaturationVelocity|eSaturationVelocityAniso|eSchenkBGN|eSchenkTunnel)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(eSHEAvalancheGeneration|eSHEBandEnergy|eSHECurrentDensity|eSHEDensity|eSHEDistribution|eSHEEnergy|eSHEVelocity|eSRHRecombination|eTemperatureRelaxationTime|eTensor|eTensorMobilityFactorXX|eTensorMobilityFactorYY|eTensorMobilityFactorZZ|eTensorMobilityXX|eTensorMobilityYY|eTensorMobilityZZ|eThermionic|eThermionicCurrentDensity|eThermionicEnFluxDensity|eThermoElectricPower|eTotalHeat|eTrappedCharge|Everywhere|ExitOnFailure|ExitOnUnknownParameterRegion|Explicit|Exponential|ExpTempDependence|ExtendedPrecision|ExternalBoundary)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(ExternalTransportSolver|ExternalXPlane|ExternalYPlane|ExternalZPlane|Extrapolate|ExtrudeTo3D|f1BandOccupancy001|f1BandOccupancy010|f1BandOccupancy100|f2BandOccupancy001|f2BandOccupancy010|f2BandOccupancy100|Factor|Fermi|FieldFromInsulator|Fieldweighted|FileOrHooke|FirstOrder|fixedCharge|Flatten|FlickerGRNoise|FluxBC|ForEachWavelength|Formula|formula|Forward|Fowler|FranzDispersion|Frensley|Fresnel)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(fromBottom|FromBoundaryAndCommand|fromCondBand|FromFile|fromMidBandGap|fromTop|fromValBand|Frozen|Full|FullBand|FullLayer|FullPhuMob|GainDep|Gaussian|GaussianDos_Full|GenerateMesh|Geometric|GeometricDistances|GeometricFluctuations|Grad2PoECACGreenFunction|Grad2PoHCACGreenFunction|GradAGMDissipationRateDensity|GradPoECImACGreenFunction|GradPoECReACGreenFunction|GradPoETImACGreenFunction|GradPoETReACGreenFunction|GradPoHCImACGreenFunction|GradPoHCReACGreenFunction|GradPoHTImACGreenFunction|GradPoHTReACGreenFunction)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(GradQuasiFermi|Grain|GreenFunctions|GridAdaptation|GridCompressed|GridNumbering|hAlphaAvalanche|hAmorphousRecombination|hAmorphousTrappedCharge|hAugerRecombination|hAvalancheGeneration|hBand2BandGeneration|hBarrierTunneling|HBMode|hBreakdownProbability|hCDL1Lifetime|hCDL2Lifetime|HCI|hDeformationPotential|hDensityCorrection|hDifferentialGain|hDiffusivity|hDiffusivityMobility|hDirectTunnelCurrent|hDirectTunneling|hDissipationRateDensity|hDriftVelocity|HeavyIonChargeDensity|HeavyIonGeneration|hEffectiveField)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(hEffectiveStateDensity|hEffectiveStress|heiTemperature|HEmn|hEnormal|hEparallel|hEquilibriumDensity|HeteroInterface|hFactor|hFiegna|hFreeCarrierAbsorption|hGapStatesRecombination|hGradQuasiFermi|hhDiffusionLNS|hHeatFlux|hhFlickerGRLNS|hHIDensity|hHIDensityPer_hTemperature|hHIDensityPerDensity|hHIDensityPerTemperature|hhMonopolarGRLNS|hInterfaceTrappedCharge|hIonIntegral|hJouleHeat|hkp|hLifetime|hLucky|hMass|hMLDA|hMLDAQuantumPotential)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(hMobilityAniso|hMobilityAnisoFactor|hMobilityStressFactorXX|hMobilityStressFactorXY|hMobilityStressFactorXZ|hMobilityStressFactorYY|hMobilityStressFactorYZ|hMobilityStressFactorZZ|hNeutral|hNLLTunnelingGeneration|hNLLTunnelingPeltierHeat|hole|Hooke|HotElectronInj|HotElectronInjection|HotHoleInj|HotHoleInjection|hQuantumPotential|hQuasiFermiEnergy|hQuasiFermiPotential|hQuenching|hRelativeEffectiveMass|hSaturationVelocity|hSaturationVelocityAniso|hSchenkBGN|hSchenkTunnel|hSHEAvalancheGeneration|hSHEBandEnergy|hSHECurrentDensity|hSHEDensity)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(hSHEDistribution|hSHEEnergy|hSHEVelocity|hSixband|hSRHRecombination|hTemperatureRelaxationTime|hTensor|hTensorMobilityFactorXX|hTensorMobilityFactorYY|hTensorMobilityFactorZZ|hTensorMobilityXX|hTensorMobilityYY|hTensorMobilityZZ|hThermionic|hThermionicCurrentDensity|hThermionicEnFluxDensity|hThermoElectricPower|hTotalHeat|hTrappedCharge|Hurkx|Hydrodynamic|HydrogenAtom|HydrogenDiffusion|HydrogenIon|HydrogenMolecule|HydrogenSpaceCharge|IALMob|IbVd|IdVd|IdVg)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Ignore|IgnoreTdrUnits|ILS|imag|ImConductionCurrentResponse|ImDisplacementCurrentResponse|ImeCurrentResponse|ImeDensityResponse|ImeeDiffusionLNVXVSD|ImeeFlickerGRLNVXVSD|ImeeLNVXVSD|ImeeMonopolarGRLNVXVSD|ImeEnFluxResponse|ImElectrostaticPotentialResponse|ImeTemperatureResponse|ImhCurrentResponse|ImhDensityResponse|ImhEnFluxResponse|ImhhDiffusionLNVXVSD|ImhhFlickerGRLNVXVSD|ImhhLNVXVSD|ImhhMonopolarGRLNVXVSD|ImhTemperatureResponse|ImLatticeTemperatureResponse|ImlEnFluxResponse|ImLNISD|ImLNVXVSD|ImplicitACSystem|ImTotalCurrentResponse|ImTrapLNISD)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(ImTrapLNVSD|InBuilt|IncompleteIonization|IncompleteNewton|IndiumActiveConcentration|IndiumConcentration|IndiumMinusConcentration|InelasticPhonon|InMinus|Insulator|InsulatorElectricField|InsulatorElectrifield|Integral0|Interface|InterfaceCharge|InterfaceDistance|InterfaceeNMPCharge|InterfaceeNMPState1|InterfaceeNMPState1p|InterfaceeNMPState2|InterfaceeNMPState2p|InterfaceNBTICharge|InterfaceNBTIState1|InterfaceNBTIState2|InterfaceNBTIState3|InterfaceNBTIState4|InterfaceOrientation|InterfaceReflection|InterpolatedDiscretization|IntrinsicDensity)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(intrinsicRichter|InvokeAtDivergence|irrational|IsotropicRefinement|IsVg|IterativeRefinement|JainRoulston|jBreakdownProbability|JouleHeat|Kanda|KeepSpectralData|KineticEnergy|Klaassen|kpDOS|Lackner|LambdaTemp|Landsberg|Laplacian|LaserIntensity|LatticeHeatCapacity|LatticeTemperature|LayerThickness|LayerThicknessField|LED_TraceSource|Level|LHeatFlux|lin|Linear|LinearParametrization|LNVSD)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Load|Loadable|LoadFromFile|Local|log|Logarithmic|LogDensity|Lombardi|Lombardi_highk|LongitudinalModes|Lorentzian|MagneticField|Makkram\\-Ebeid_Lannoo|Makram\\-Ebeid|Masetti|MatGain|Max|MaxEnergy|Maximum|MaxMismatch|mcDOS|MDFT|MeanIonIntegral|Mechanics|Metal|MetalConductivity|MetalTEPower|MetalWorkfunction|Meyer|Micron)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Millimeter|Min|MinEnergy|MinError|Minimum|MixAverageBoxMethod|Mixed|MixedMode|MLDA|Mobility|MobilityAcceptorConcentration|MobilityDonorConcentration|Mod_eGradQuasiFermi_ElectricField|Mod_eQuasiFermi_ElectricField_Potential|Mod_hGradQuasiFermi_ElectricField|Mod_hQuasiFermi_ElectricField_Potential|ModeOscillator|modifiedHurkx|MonopolarGRNoise|MonteCarlo|MPBC|MSConfig|MSPeltierHeat|MultipleRHS|MultiValley|NaturalBoxMethod|NBTI|NDopantActiveConcentration|NDopantConcentration|NdopantPlus)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(NDopantPlusConcentration|NearestInterfaceOrientation|NegInterfaceCharge|Neumann|NewArc|NewGdiff|NewWavelengthSearch|NitrogenActiveConcentration|NitrogenConcentration|NitrogenPlus|NitrogenPlusConcentration|NoAutomaticCircuitContact|NoBandgapNarrowing|NoCheckTransientError|Nodes|NoFermi|Noise|noise_Id_Vg|noise_Ig_Vg|noise_Is_F|noise_Vd_F|noise_Vg_F|NonActiveAbsorptionOff|None|NonLocal|NonLocalBackDirection|NonLocalDirection|NonLocalPath|NonlocalPath|NonlocalPath1)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(NonlocalPath2|NonlocalPath3|NonParabolicity|NonSymmetric|NonsymmetricPermutation|noOverwrite|Normalized|North|NorthEast|NorthWest|NoSRHperPotential|NoSRHperT|NumberOfSlices|NumericalIntegration|Numerically|NumericalTable|Off|Okuto|OldSlotboom|OldSlotBoom|OmitReflectedRays|OmitWeakerRays|Once|OneOverDegradationTime|OpticalAbsorption|OpticalAbsorptionHeat|OpticalField|OpticalGeneration|OpticalGenerationFromConstant|OpticalGenerationFromMonochromaticSource)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(OpticalGenerationFromSpectrum|OpticalGridElement|OpticalIntensity|OpticalIntensityCoherent|OpticalIntensityDiffuse|OpticalIntensityIncoherent|OpticalIntensityMode0|OpticalIntensityMode1|OpticalIntensityMode2|OpticalIntensityMode3|OpticalIntensityMode4|OpticalIntensityMode5|OpticalIntensityMode6|OpticalIntensityMode7|OpticalIntensityMode8|OpticalIntensityMode9|OpticalIntensitySpecular|OpticalPolarizationAngleMode0|OpticalPolarizationAngleMode1|OpticalPolarizationAngleMode2|OpticalPolarizationAngleMode3|OpticalPolarizationAngleMode4|OpticalPolarizationAngleMode5|OpticalPolarizationAngleMode6|OpticalPolarizationAngleMode7|OpticalPolarizationAngleMode8|OpticalPolarizationAngleMode9|OpticalTurningPoints|Optics|Organic_Gaussian)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Outside|OverlapIntegral|Overwrite|ParallelToInterfaceInBoundaryLayer|ParallelToInterfaceInBoundaryLayerActive|ParameterSetName|Pardiso|parfile|PartialLayer|PDopantActiveConcentration|PDopantConcentration|pDopantMinus|PDopantMinusConcentration|PE_Charge|PE_Polarization|PeltierHeat|Periodic|Permeable|Perpendicular|perpendicular|PFMob|PhononCombination|Phosphorus|PhosphorusActiveConcentration|PhosphorusConcentration|PhosphorusPlusConcentration|PhotonicAC|PhotonicIntensityNoise|PhotonicPhaseNoise|PhotonNumberNoise)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(PhotonPhase|PhotonPhaseAlpha|PhotonPhaseNoise|PhotonRate|PhotonRecycle|PhotonStab|phPlus|PhuMob|PhuMob2|PieceWiseConstant|Piezo|PiezoCharge|PlaneArea|Plot|PlotCompressed|PlotExplicit|PlotInterfaceFlux|PlotLasingSpectrum|PlotLoadable|PlotRequest|PMIeNonLocalRecombination|PMIHeat|PMIhNonLocalRecombination|PMIRecombination|PMIUserField0|PMIUserField1|PMIUserField2|PMIUserField3|PMIUserField4|PMIUserField5)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(PMIUserField6|PMIUserField7|PMIUserField8|PMIUserField9|PoECImACGreenFunction|PoECReACGreenFunction|PoETImACGreenFunction|PoETReACGreenFunction|PoGeoGreenFunction|PoHCImACGreenFunction|PoHCReACGreenFunction|PoHTImACGreenFunction|PoHTReACGreenFunction|Polarization|PoLTImACGreenFunction|PoLTReACGreenFunction|PooleFrenkel|PoPotImACGreenFunction|PoPotReACGreenFunction|PosInterfaceCharge|PowerLaw|Print|PrintInfo|PrintLinearSolver|QCEffectiveBandGap|QCEffectiveIntrinsicDensity|QFtraps|QuantumWell|QuantumYield|QuasiFermiPotential)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(QW_chEigenEnergy|QW_chNumberOfBoundStates|QW_chRelativeEffectiveMass|QW_chStrainBandshift|QW_eEigenEnergy|QW_eLeakageCurrent|QW_ElectricFieldProjection|QW_eNetCapture|QW_eNumberOfBoundStates|QW_eRelativeEffectiveMass|QW_eStrainBandShift|QW_hhEigenEnergy|QW_hhNumberOfBoundStates|QW_hhRelativeEffectiveMass|QW_hhStrainBandShift|QW_hLeakageCurrent|QW_hNetCapture|QW_lhEigenEnergy|QW_lhNumberOfBoundStates|QW_lhRelativeEffectiveMass|QW_lhStrainBandShift|QW_OverlapIntegral|QW_QuantizationDirection|QW_Width|QWDeep|QWeDensity|QWeQuasiFermi|QWeScatter|QWhDensity|QWhQuasiFermi)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(QWhScatter|QWScatModel|QWShallow|QWTransport|RadiationGeneration|RadiativeRecombination|Random|Randomize|RandomizedDoping|RaysRandomOffset|RayTraceIntensity|RayTrees|RCS|rDissipationRateDensity|ReadExtrapolation|ReadFromExcitation|ReadFromFile|real|RecombinationHeat|RecomputeQFP|RecomupteNonsymmetricPermutation|ReConductionCurrentResponse|ReDisplacementCurrentResponse|RedistributeStoppedRays|ReeCurrentResponse|ReeDensityResponse|ReeeDiffusionLNVXVSD|ReeeFlickerGRLNVXVSD|ReeeLNVXVSD|ReeeMonopolarGRLNVXVSD)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(ReeEnFluxResponse|ReElectrostaticPotentialResponse|ReeTemperatureResponse|Refined|Reflective|refractive|RefractiveIndex|RegionWise|RegionWiseAssembly|RehCurrentResponse|RehDensityResponse|RehEnFluxResponse|RehhDiffusionLNVXVSD|RehhFlickerGRLNVXVSD|RehhLNVXVSD|RehhMonopolarGRLNVXVSD|RehTemperatureResponse|RelativeToDOSMass|ReLatticeTemperatureResponse|RelEnFluxResponse|RelErrControl|ReLNISD|ReLNVXVSD|Residual|Resistivity|Resolve|ReTotalCurrentResponse|ReTrapLNISD|ReTrapLNVSD|rhoDirection)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(RhsAndUpdateConvergence|RloadAdjust|RPBC|RPS|RTA|Save|SaveCompressed|SbandCommandFile|sbPlus|Scalar1D|Scalar2D|Scattering|Schenk|SchenkBGN_elec|SchenkBGN_hole|Schottky|SchottkyResist|SchottkyResistance|Schroedinger|SecondOrder|Semiconductor|SemiconductorElectricField|SemiconductorElectrifield|Serial|sExc_BimolecularRecomb|sExc_Density|sExc_EquilibriumDensity|sExc_eRecomb|sExc_FluxDensity|sExc_hRecomb)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(sExc_RadiativeRecomb|SHE|SHESOR|Simple|SimpleCapt|simpleCapt|SimStats|SimulationSystem|SingletExciton|SingleTrap|Slotboom|SlotBoom|Smooth|Smoothing|South|SouthEast|SouthWest|SpaceMid|SpaceSig|SpatialShape|SpecialVector|SpectralPlot|SpontaneousRecombination|SRDoping|SRHRecombination|Staggered3DFarfieldGrid|StandingWave|StimulatedRecombination|StoreExtrapolation|strain)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Strain|stress|StressSG|StressXX|StressXY|StressXZ|StressYY|StressYZ|StressZZ|Super|SurfaceMultRecombination|SurfaceRecombination|surfaceSRH|Symmetric|TableBGN|TCircuit|TContact|TE0n|TempDep|Temperature|TemperatureDep|TemperatureDependent|Tensor|TensorFactor|TensorGridAniso|ThermalConductivity|ThermalConductivityAniso|ThermalizationYield|Thermionic|ThermionicEmission)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(ThinLayer|ThomsonHeat|TM|ToCurrentEnormal|Top|Total|TotalConcentration|TotalCurrentDensity|TotalDD|TotalHeat|TotalInterfaceTrapConcentration|TotalRecombination|TotalTrapConcentration|Trace|TransferredElectronEffect|TransferredElectronEffect2|Transmission|Transparent|Transport|TransverseModes|TrapAssistedAuger|TrapConcentration|Traps|Truncated|tSRHRecombination|Tunneling|TurnOffTreeNodeCount|TwoBand|Type1|Type2)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(um|UniBo|UniBo2|Uniform|UniformDistribution|Unity|Update|UpsideDown|UseElecrostaticPotential|UseMeshCommandFileRefinement|UseNormalFlux|UseQuasiFermi|UserRays|UserSpeciesConcentration|UseSchurSolver|ValBand|ValenceBand|ValenceBandEnergy|vanOverStraeten|VaryPhi|VaryTheta|VBBarrierLowering|VBEnergyWithLowering|Vector2D|VertexIndex|VoltageGreenFunctions|Volume|Wait|Wallclock|Wavefunction)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                },
-                {
-                    "match": "\\b(Waveguide|WaveguideLoss|Wavelength|WavelengthDep|WeightedAPDIntegration|WeightedOpticalGeneration|WeightedVoronoiBox|West|WithGeneration|WithJoyceDixon|Workfunction|WorkfunctionFluctuations|WriteAll|WriteDOE|Wurtzite|xAxis|xDirection|Xmax|Xmin|xMoleFraction|yAxis|Ymax|Ymin|yMoleFraction|zAxis|ZincBlende|Zmax|Zmin)(?![A-Za-z0-9_:-])",
-                    "name": "constant.numeric.sdevice"
-                }
-            ]
+          "match": "\\b(NonLocal|NonLocalPath|ObservationNode|OptBeam|Optical|OpticalGeneration|OpticalSolver|Optics|OpticsFromFile|OuterDevicePower|OutputLightToolsFarfieldRays|OutputLightToolsRays|OutputT2TPaths|p|ParallelLicence|ParameterVariation|ParDiSo|PeriodicBC|Piezo|Piezoelectric_Polarization|Plot|PMIModel|Poisson|Polygon|PostProcess|Potential|Print|PrintORArays|PrintRayInfo|PrintSourceVertices)(?![A-Za-z0-9_:-])",
+          "name": "entity.name.tag.sdevice"
         },
         {
-            "name": "comment.line.hash",
-            "match": "#.*$"
+          "match": "\\b(QWLocal|Radiation|Radiative|RandomField|Randomize|RandomizedVariation|RayDistribution|RaysRandomOffset|Raytrace|RayTraceBC|RayTracing|RecBoxIntegr|RecGenHeat|Recombination|Rectangle|RectangularWindow|RefractiveIndex|Regexp|Reservoirs|RHSCoef|Scattering|Schroedinger|Sensor|SensorSweep|Set|SetConstant|SimStats|SingletExciton|Skip|SourcePosition)(?![A-Za-z0-9_:-])",
+          "name": "entity.name.tag.sdevice"
         },
         {
-            "name": "comment.line.asterisk",
-            "match": "\\*.*$"
+          "match": "\\b(SourceRaysFromFile|SpaceCharge|Split|SponEmissionIntegration|SRH|State|StepFunction|StimEmissionCoeff|Strain|Stress|Stripe|Surface|SurfaceSRH|Sweep|System|t|TE|TempDependence|TEPower|Thermal|ThermalConductivity|Thermodynamic|ThinLayer|Time|time|TimeDependence|TMM|TMM1D|Tone|TotalCurrent)(?![A-Za-z0-9_:-])",
+          "name": "entity.name.tag.sdevice"
         },
         {
-            "name": "string.quoted.double",
-            "begin": "\"",
-            "end": "\"",
-            "patterns": [
-                {
-                    "name": "constant.character.escape",
-                    "match": "\\\\."
-                },
-                {
-                    "match": "@[a-zA-Z_<][^@]*@",
-                    "name": "constant.character.format.placeholder"
-                }
-            ]
-        },
-        {
-            "match": "\\b(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?\\b",
-            "name": "constant.numeric"
-        },
-        {
-            "match": "@[a-zA-Z_<][^@]*@",
-            "name": "constant.character.format.placeholder"
-        },
-        {
-            "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
-            "name": "variable.other"
+          "match": "\\b(TraceSource|TransientError|TransientErrRef|Transition|TrapConcentration|Traps|TRBDF|Tunneling|TurningPoints|UCS|Unset|UserWindow|v|VCSEL|Voltage|Volume|Weights|When|WidthExtraction|Window)(?![A-Za-z0-9_:-])",
+          "name": "entity.name.tag.sdevice"
         }
-    ],
-    "repository": {},
-    "scopeName": "source.sentaurus.sdevice"
+      ]
+    },
+    {
+      "match": "\\b(Insert)(?![A-Za-z0-9_:-])",
+      "name": "support.class.sdevice"
+    },
+    {
+      "patterns": [
+        {
+          "match": "\\b(AbsEmit|AbsError|AbsVal|Accuracy|ACExtract|ACMethod|ACPlot|ACSubMethod|ActEnergy|activation|af|Algorithm|AllowLayerThickness|Alpha|Amplitude|Amplitude_Abs|Amplitude_Chi|Amplitude_Eg|Amplitude_Iso|AngularDiscretization|AnisoAxes|AnisoSG_DerivativeMinDen|AnisoSG_MinDen|Area|AreaFactor|ASE|AutoCNPMinStepFactor|AutoNPMinStepFactor|AutoOrientation|AutoOrientationSmoothingDistance)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(AvalFlatElementExclusion|AveDistanceFactor|AverageGrainSize|AzimuthalExpansion|Bandstructure|Barrier|BarrierTunnelingEnhan|binary|BlockSize|BondConc|BondConcSFactor|Boundary|BoundaryCondition|bv|capacitance|Carriers|CavityLength|CBRate|CDensityMin|CenterGauss|ChannelDirection|Charge|Chi2Eg|ChiComponent|ChordWeight|cj0|cjo|ClusterQuantity|CMIPath|command)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(ComplexRefractiveIndexThreshold|ComputeGradQuasiFermiAtContacts|Conc|Condition|ConstRefPot|Contact|ContactName|control|Coordinates|CoplanarityAngle|CoplanarityDistance|CoreWidth|corner1|corner2|corner3|CorrelationFunction|Coupled|CritConc|CrystalType|cT_Range|Current|CurrentEnhan|Cutoff|Damping|DampingLength|DataName|Dataset|DatasetName|Datasetname|dc)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Decrement|DelaunayTolerance|delta|DensityCorrection|DensityTail|DensLowLimit|DePassCoef|DephasingRates|DepthLimit|Derivative|DestinationBoxCorner1|DestinationBoxCorner2|DestinationRegions|DevFields|Device|DevicePath|DevName|DFBPeriod|Difference|DiffusionEnhan|Diffusivity|Digits|Direction|direction|DirectTunnelingEnhan|Discretization|DistResist|DistResistance|DOE_prefix|Dopants)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Doping|DopingThreshold|DopingWell|Dose|DoseRate|DoseTime|DoseTSigma|Dt|DtFall|DtFallEnd|DtFallStart|DtPlateau|DtPlateauEnd|DtPlateauStart|DtRise|DtRiseEnd|DtRiseStart|dx|Dx|dy|Dy|dz|eConstEmissionRate|EdgeProximity|eDrForceRefDens|eg|EgComponent|eGfactor|eJfactor|Electrode)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(ElementEdgeCurrent|eMinorityFactor|EmissionTable|eMobilityAveraging|eMobilityFactor|EMWgrid|EMWinput|EndFrequency|Endpoint|Energy|EnergyInterval|EnergyMid|EnergyResolution|EnergyShift|EnergySig|EqOhmic|eQuantumPotential|EquationType|eQWMobility|eRecVelocity|Error|eSaturationFactor|eSHEDistribution|exp|eXSection|ExternalMaterialCRIFile|ExtinctionCoefficient|Extraction|FaceProximity|Factor)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(fc|FGCap|FieldEnhan|FieldFromMaterial|FieldFromRegion|Filename|FilePrefix|FinalTime|Finish|Formula|ForwardReactionCoef|ForwardReactionEnergy|ForwardReactionFieldCoef|FowlerNordheimEnhan|Fraction|Frequency|Fresnel|From|FullPhotonRecycle|Function|Gain|gain|GainShift|Gamma|GateName|GeometricAccuracy|GrainChi|GrainConductivity|GrainEg|GrainEpsilon)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(GrainProbability|GrainWorkfunction|GrDistance|Grid|GridNodes|GroupRefractiveIndex|hConstEmissionRate|hDrForceRefDens|hGfactor|hJfactor|hMinorityFactor|hMobilityAveraging|hMobilityFactor|hQuantumPotential|hQWMobility|hRecVelocity|hSaturationFactor|hSHEDistribution|HuangRhys|hXSection|Hydrogen|HydrogenAtom|HydrogenIon|HydrogenMolecule|Iadapt|ibv|ic|IdentifyingParameter|Ignore|IlluminationSpectrum)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(ILS|ILSrc|Increment|Index|inductance|Init|initial_structure|InitializationMethod|Initialize|InitialStep|InitialTime|InitialVstep|InitialWavelength|InjectionRegion|IntegrationUnit|Intensity|IntensityPattern|Interrupt|Intervals|is|IscaleMin|IsotropyType|Iterations|IterationStep|kf|l|Lambda|LasingWavelength|LayerStructure|Lch)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(LEDRadiation|Left|Length|LengthDiscretization|lFacetReflectivity|LifeTime|LineSearchDamping|LineSearchDumping|LineWidthEnhancementFactor|Load|LoadWithInterpolation|LocalModel|Location|LogDifference|LowDensityLimit|lT_Range|m|MagneticField|Material|MaterialInterface|materialInterface|Materials|MaxAngle|MaxAspectRatio|MaxBoundaryCutRatio|MaxCLoops|MaxConnectivity|MaxCurrent|MaxDoping4Majority|MaxElectricField)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(MaxElementSize|MaxFitWeight|MaxIFactor|Maximum|MaxIntDistance|MaxInternalPoints|MaxIstep|MaxIterations|MaxLogIfactor|MaxMismatch|MaxNeighborRatio|MaxNumberOfIterations|MaxRload|MaxSolidAngle|MaxSolutions|MaxStep|MaxVal|MaxVoltage|MaxVstep|MaxX|MaxY|MaxZ|Memory|MeshDomain|MesherInput|Method|MinAmplitude|MinAngle|MinCurrent|MinEdgeLength)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(MinElectricField|MinElementSize|Minimum|MinIntensity|MinorityFactor|MinRload|MinStep|MinVal|MinVoltage|MinX|MinY|MinZ|Mirror|MLDAMinDistanceToContact|mModeIndex|MobilityDoping|Mode|ModeGain|Model|modelParameter|ModelParameter|ModeNumber|ModeType|MortarSide|MoveBoundaryStartRays|MSConfig|MSDistResist|MVMLDAcontrols|N|n)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Name|Ndivisions|Netlist|NewCurrentPrefix|NewtonPlot|NewtonPlotStep|nModeIndex|Node|NodesPerWavelength|NoisePlot|NonLocal|NonLocalLengthLimit|NonLocalPlot|NormalFieldCorrection|NotDamped|Notdamped|Number|Number_of_Assembly_Threads|Number_of_Solver_Threads|Number_of_Threads|NumberOfAssemblyThreads|NumberOfCellsPerLayer|NumberOfClusters|NumberOfCrystalFieldSplitHoleSubbands|NumberOfElectronSubbands|NumberOfFailures|NumberOfHarmonics|NumberOfHeavyHoleSubbands|NumberOfLightHoleSubbands|NumberOfPoints)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(NumberOfRandomTraps|NumberOfRays|NumberOfSamples|NumberOfSlices|NumberOfSolverThreads|NumberOfSpectralPoints|NumberOfThreads|NumberOfTransverseCellsPerDirection|NumberOfValenceBands|ObservationCenter|ObservationRadius|Offset|Operation|OptFarField|OptField|OptGenOffset|OptGenScaling|OptGenTransientScaling|OptGenWavelength|OpticalConfinement|OpticalDevice|OpticalGenerationFile|OpticalGenerationInput|OpticalGenerationOutput|OpticalLoss|OpticalSolverInput|Optics|OpticsOutput|Options|Order)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Origin|OriginAnchor|OriKddx|OriKddy|OutCouplingLoss|Output|OutputLevel|Parameter|parameter|ParameterInheritance|ParameterPath|Parameters|ParameterSetName|PasCoef|PasTemp|PasVolume|PathSearchStopField|PeakPosition|PeakWidth|Period|Permeation|Phi|PhononEnergy|PhotonRecycle|Piezo|Plot|pmiModel|PMIPath|PMIUserFields|Polarization)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(PolarizationAngle|PolarizationFactor|PolarizationVector|Position|Postprocessing|Power|PowerCouplingFactor|PowerEnhan|ProfileIndex|Program|ProgressMarkers|PropagationDirection|pulse|pwl|QuantityPower|QuantumYield|QWeScatTime|QWExtension|QWHScatTime|QWhScatTime|Radius|radius|Randomize|RandomSeed|Range|RangeOfSpectrum|RayDirection|RaysFromFile|RaysPerCluster|RaysPerVertex)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(RectangleV1|RectangleV2|RectangleV3|ReEmit|RefDens_eEparallel_ElectricField|RefDens_eEparallel_ElectricField_Aval|RefDens_eEparallel_ElectricField_HFS|RefDens_eGradQuasiFermi_ElectricField|RefDens_eGradQuasiFermi_ElectricField_HFS|RefDens_eGradQuasiFermi_EparallelToInterface_HFS|RefDens_eGradQuasiFermi_Zero|RefDens_Eparallel_ElectricField|RefDens_Eparallel_ElectricField_Aval|RefDens_Eparallel_ElectricField_HFS|RefDens_GradQuasiFermi_ElectricField|RefDens_GradQuasiFermi_ElectricField_HFS|RefDens_GradQuasiFermi_EparallelToInterface_HFS|RefDens_GradQuasiFermi_Zero|RefDens_hEparallel_ElectricField|RefDens_hEparallel_ElectricField_Aval|RefDens_hEparallel_ElectricField_HFS|RefDens_hGradQuasiFermi_ElectricField|RefDens_hGradQuasiFermi_ElectricField_HFS|RefDens_hGradQuasiFermi_EparallelToInterface_HFS|RefDens_hGradQuasiFermi_Zero|Reference|ReferenceElementSize|ReferenceMaterial|ReferenceNormal|ReferencePoint)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(ReferenceQuantityRange|ReferenceRefractiveIndex|ReferenceRefractiveIndexDelta|ReferenceRegion|ReferenceStep|RefinedIntervals|RefinementScale|RefLatticeConst|Reflectivity|RefractiveIndex|RefractiveIndexDelta|RefreshEverytime|Region|RegionInterface|regionInterface|RegionName|Regions|RelError|RelFactor|RelTermMinDensity|RelTermMinDensityZero|Resist|resistance|Resolution|Restart|RetraceCRIChange|RetraceCRIchange|ReverseReactionCoef|ReverseReactionEnergy|ReverseReactionFieldCoef)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(rFacetReflectivity|Rfixed|RhsFactor|RhsMax|RhsMaxQ|RhsMin|RhsMinFactor|RhsScale|Right|RotationAngles|RoughInterface|rs|SaturationFactor|Save|SaveOptField|SaveOptSpectrum|SaveType|SBTECommandFile|Scaling|ScalingFactor|Select|Set|Sfactor|SFactor|sffm|SHECutoff|SHEIterations|SHEMethod|SHERefinement|SHESORParameter)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(SHETopMargin|ShiftVector|Side|SideMaterial|SideRegion|Sigma|SigmaGauss|sin|sine|SliverAngle|SliverDistance|Smooth|SolveSpectrum|SourceBoxCorner1|SourceBoxCorner2|SourcePolarization|SourceRegions|SpaceMid|SpaceSig|SpatialShape|SpectralInterpolation|SpectralPlot|Spice_gmin|Spice_Temperature|SPICEPath|SplitSpectrumRays|SponEmiss|SponEmissionTable|SponScaling|StackSize)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(StartFrequency|StartingPeriod|StimEmissionTable|StimScaling|Strain|Strategy|StressLimit|StressMobilityDependence|StretchingParameterImag|StretchingParameterReal|String|SubMethod|Summand|Surface|SurfaceConductance|SurfaceName|SurfaceResistance|Symmetry|T2TconcScale|T2TPDEerrorScale|Table|TargetEffectiveIndex|TargetLifetime|TargetLoss|TargetWavelength|TATNonlocalPathNC|temp|Temperature|TensorPlot|Theta)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Thickness|Time|TimeDependence|tnom|To|Tolerance|TransferredElectronEffect2_eMinDerivativePerField|TransferredElectronEffect2_hMinDerivativePerField|TransferredElectronEffect2_MinDerivativePerField|Transient|TransientDigits|Transition|Transmittivity|TrapDLN|TrapFilling|TrappedCarPlotFile|TrapVolume|TrStepRejectionFactor|TruncationPositionX|TruncationPositionY|TruncationSlope|tt|Type|Unit|UpdateFactor|UpdateIncrease|UpdateMax|UpdateSacel|UpdateScale|VacuumGridNodes)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Vadapt|value|Value|ValueMin|ValueVariation|Var|VBRate|VCSELNearField|VectorUnits|Verbosity|Vertex|vj|Voltage|voltage|Volume|VoronoiFaceBoxMethod|w|Wavelength|WavelengthDiscretization|WavePeriods|WaveTCos|WaveTExp|WaveTime|WaveTLin|WaveTPeriod|WaveTPeriodOffset|WaveTSigma|WaveTSlope|WeightDielectric|WeightedAPDintegrationLayers)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(WeightedAPDIntegrationSetBoundaries|WeightQuantumPotential|Weights|WellContactName|WidthDiscretization|WindowName|WindowPosition|Workfunction|x1|x2|xAxis|XConst|xCuts|XDirection|xFraction|Xmax|Xmin|xti|yAxis|YConst|yCuts|YDirection|yFraction|Ymax|Ymin|ZConst|zCuts|Zmax|Zmin)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        }
+      ]
+    },
+    {
+      "match": "\\b(value)(?![A-Za-z0-9_:-])",
+      "name": "constant.numeric.sdevice"
+    },
+    {
+      "patterns": [
+        {
+          "match": "\\b(128|256|Abort|AbsorbedPhotonDensity|AbsorbedPhotonDensityCoherent|AbsorbedPhotonDensityDiffuse|AbsorbedPhotonDensityFromMonochromaticSource|AbsorbedPhotonDensityFromSpectrum|AbsorbedPhotonDensityIncoherent|AbsorbedPhotonDensityo|AbsorbedPhotonDensitySpecular|AC|AccelewareOption|AccepMinusConcentration|AcceptNewtonParameter|Acceptor|Active|Add2TotalDoping|Add_F|AdjustImpurityScattering|Ads_Vg|Agg_Vg|AGM|AGMDissipationRate|AGMDissipationRateAbsJump|AGMDissipationRateDensity|AGMNewVertex|AllLNS|AllLNVSD|AllLNVXVSD)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(AllowDuplicates|AlphaCharge|AlphaChargeDensity|AlphaGeneration|Analytic|AnalyticLTFit|AnalyticTEP|Aniso|AnisoSG|AntimonyActiveConcentration|AntimonyConcentration|AntimonyPlusConcentration|ApplyToMobilityComponents|Arora|Arsenic|ArsenicActiveConcentration|ArsenicConcentration|ArsenicPlusConcentration|Ascii|AsIs|AsPlus|AtInsulatorInterface|AugerRecombination|Auto|AutoDetect|Autodetect|AutomaticCircuitContact|AutomaticUpdate|AutoOrientation|AutoOrientationSmoothing)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(AutoPeak|AutoPeakPower|AutoPopulate|Avalanche|AvalancheGeneration|AvalDensGradQF|AvalDerivatives|AvalFlatElementMax|AvalFlatElementMin|AvalPostProcessing|Average|AverageBoxMethod|AxisAligned|AxisAlignedNormals|Band2BandGeneration|BandEdge|BandEdgeFluctuations|Bandgap|BandgapDependence|BandgapNarrowing|BandStructure|BarrierLowering|BarrierTunneling|BeamGeneration|BennettWilson|Bimolecular|Binary|BM_AngleElements|BM_AngleVertex|BM_CoeffIntersectionNonDelaunayElements)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(BM_EdgesPerVertex|BM_ElementsPerVertex|BM_ElementsWithCommonObtuseFace|BM_ElementsWithObtuseFaceOnBoundaryDevice|BM_ElementVolume|BM_ExtendedPrecision|BM_IntersectionNonDelaunayElements|BM_ShortestEdge|BM_VolumeIntersectionNonDelaunayElements|BM_wCoeffIntersectionNonDelaunayElements|BM_wElementsWithCommonObtuseFace|BM_wElementsWithObtuseFaceOnBoundaryDevice|BM_wIntersectionNonDelaunayElements|BM_wVolumeIntersectionNonDelaunayElements|bMinus|BondDispersion|BoronActiveConcentration|BoronConcentration|BoronMinusConcentration|Both|Bottom|BoxCoefficientsFromFile|BoxMeasureFromFile|BoxMethodFromFile|BreakAtIonIntegral|BreakdownProbability|BreakOnFailure|BreakRequest|BrooksHerring|BuiltinPotential)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Bulk|Cap|CarrierCarrierScattering|CarrierDep|Carriers|CarrierTempDrive|CarrierTempDriveBasic|CarrierTempDriveME|CarrierTempDrivePolynomial|CarrierTempDriveSpline|Cartesian|CaugheyThomas|Cavity|CBBarrierLowering|CBEnergyWithLowering|CDL|CDL1|CDL1Recombination|CDL2|CDL2Recombination|CDL3|CDLcRecombination|CDLRecombination|Center|Cgd_F|Cgd_Vg|Charge|ChargedTraps|CheckRhsAfterUpdate|CheckTransientError)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(CheckUndefinedModels|CircuitNoise|ClusteringEverywhere|cm|CNormPrint|Collected|CompactMemoryOption|ComplexRefractiveIndex|Composite|Compressed|ComputeAll|ComputeAtMaxElectricField|ComputeDopingConcentration|ComputeFromMonochromaticSource|ComputeFromSpectrum|ComputeIonizationIntegrals|CondBand|CondInsulator|ConductionBand|ConductionBandEnergy|ConductionCurrent|ConductionCurrentDensity|Conductivity|ConductivityFluctuations|Conservative|constant|Contact|ContactSurfaceNormal|ConversePiezoelectricField|ConversePiezoelectricFieldXX)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(ConversePiezoelectricFieldXY|ConversePiezoelectricFieldXZ|ConversePiezoelectricFieldYY|ConversePiezoelectricFieldYZ|ConversePiezoelectricFieldZZ|ConwellWeisskopf|Coordinates|CosHyper|Coulomb2D|CRIModel|CrystalSystem|Csd_F|Cup|CurECImACGreenFunction|CurECReACGreenFunction|CurETImACGreenFunction|CurETReACGreenFunction|CurGeoGreenFunction|CurHCImACGreenFunction|CurHCReACGreenFunction|CurHTImACGreenFunction|CurHTReACGreenFunction|curLTImACGreenFunction|curLTReACGreenFunction|CurPotImACGreenFunction|CurPotReACGreenFunction|Current|CurrentPlot|CurrentPotential|CurrentWeighting)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Cylindrical|DampingLength|DatasetsFromGrid|DC|DCMode|Decade|DeepLevels|DefaultParametersFromFile|Degradation|delAlamo|DelVorWeight|Density|DensityCorrection|DensityIntegral|DephasingRates|Derivative|Derivatives|DFISE|DielectricConstant|DielectricConstantAniso|Diffusivity|DirectCurrent|DirectTunneling|Dirichlet|Disable|DisableInternalMobilityModels|Discontinuity|DiscreteTrapT2T|DisplacementCurrentDensity|DissipationRateDensity)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Donor|DonorPlusConcentration|Doping|DopingConcentration|DopingDep|DopingVariation|DopingWells|DoZero|E1|E1_5|E2|e_h_Temperature|eAlphaAvalanche|eAmorphousRecombination|eAmorphousTrappedCharge|East|eAugerRecombination|eAvalancheGeneration|eB2BGenWithinSelectedRegions|eBand2BandGeneration|eBarrierTunneling|eBreakdownProbability|eCDL1Lifetime|eCDL2Lifetime|eDeformationPotential|eDensityCorrection|eDifferentialGain|eDiffusivity|eDiffusivityMobility|eDirectTunnelCurrent)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(eDirectTunneling|eDissipationRateDensity|eDriftVelocity|eeDiffusionLNS|eEffectiveField|eEffectiveStateDensity|eEffectiveStress|eeFlickerGRLNS|eeMonopolarGRLNS|eEnormal|eEparallel|eEquilibriumDensity|eFactor|Effective|EffectiveAbsorption|EffectiveBandGap|EffectiveBandgap|EffectiveIntrinsicDensity|EffectiveMass|EffectiveStressModel|eFiegna|eFreeCarrierAbsorption|eGapStatesRecombination|eGradQuasiFermi|eHeatFlux|eHIDensity|eHIDensityPer_eTemperature|eHIDensityPerDensity|eHIDensityPerTemperature|EigenEnergy)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(eInterfaceTrappedCharge|eIonIntegral|eJouleHeat|ekp|ElasticStrain|ElectricField|ElectricFieldDep|electron|ElectronAffinity|ElectrostaticPotential|Element|ElementEdge|ElementSize|ElementVolumeAvalanche|ElementWise|eLifetime|Elimination|eLucky|eMass|EMLABGeneration|eMLDA|eMLDAQuantumPotential|eMobilityAniso|eMobilityAnisoFactor|eMobilityStressFactorXX|eMobilityStressFactorXY|eMobilityStressFactorXZ|eMobilityStressFactorYY|eMobilityStressFactorYZ|eMobilityStressFactorZZ)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Empty|EMWPlusOption|EndPoint|eNeutral|eNLLTunnelingGeneration|eNLLTunnelingPeltierHeat|eNMPCaptureTime|eNMPEmissionTime|Enormal|Envelope|Eparallel|EparallelToInterface|Epsilon|EpsilonFluctuations|eQuantumPotential|eQuasiFermiEnergy|eQuasiFermiPotential|eQuenching|Equidistant|EquilibriumElectricField|EquilibriumPotential|eRelativeEffectiveMass|Error|ErrorBBReCurrent|ErrorBBRElectricField|ErrorBBRhCurrent|eSaturationVelocity|eSaturationVelocityAniso|eSchenkBGN|eSchenkTunnel)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(eSHEAvalancheGeneration|eSHEBandEnergy|eSHECurrentDensity|eSHEDensity|eSHEDistribution|eSHEEnergy|eSHEVelocity|eSRHRecombination|eTemperatureRelaxationTime|eTensor|eTensorMobilityFactorXX|eTensorMobilityFactorYY|eTensorMobilityFactorZZ|eTensorMobilityXX|eTensorMobilityYY|eTensorMobilityZZ|eThermionic|eThermionicCurrentDensity|eThermionicEnFluxDensity|eThermoElectricPower|eTotalHeat|eTrappedCharge|Everywhere|ExitOnFailure|ExitOnUnknownParameterRegion|Explicit|Exponential|ExpTempDependence|ExtendedPrecision|ExternalBoundary)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(ExternalTransportSolver|ExternalXPlane|ExternalYPlane|ExternalZPlane|Extrapolate|ExtrudeTo3D|f1BandOccupancy001|f1BandOccupancy010|f1BandOccupancy100|f2BandOccupancy001|f2BandOccupancy010|f2BandOccupancy100|Factor|Fermi|FieldFromInsulator|Fieldweighted|FileOrHooke|FirstOrder|fixedCharge|Flatten|FlickerGRNoise|FluxBC|ForEachWavelength|Formula|formula|Forward|Fowler|FranzDispersion|Frensley|Fresnel)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(fromBottom|FromBoundaryAndCommand|fromCondBand|FromFile|fromMidBandGap|fromTop|fromValBand|Frozen|Full|FullBand|FullLayer|FullPhuMob|GainDep|Gaussian|GaussianDos_Full|GenerateMesh|Geometric|GeometricDistances|GeometricFluctuations|Grad2PoECACGreenFunction|Grad2PoHCACGreenFunction|GradAGMDissipationRateDensity|GradPoECImACGreenFunction|GradPoECReACGreenFunction|GradPoETImACGreenFunction|GradPoETReACGreenFunction|GradPoHCImACGreenFunction|GradPoHCReACGreenFunction|GradPoHTImACGreenFunction|GradPoHTReACGreenFunction)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(GradQuasiFermi|Grain|GreenFunctions|GridAdaptation|GridCompressed|GridNumbering|hAlphaAvalanche|hAmorphousRecombination|hAmorphousTrappedCharge|hAugerRecombination|hAvalancheGeneration|hBand2BandGeneration|hBarrierTunneling|HBMode|hBreakdownProbability|hCDL1Lifetime|hCDL2Lifetime|HCI|hDeformationPotential|hDensityCorrection|hDifferentialGain|hDiffusivity|hDiffusivityMobility|hDirectTunnelCurrent|hDirectTunneling|hDissipationRateDensity|hDriftVelocity|HeavyIonChargeDensity|HeavyIonGeneration|hEffectiveField)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(hEffectiveStateDensity|hEffectiveStress|heiTemperature|HEmn|hEnormal|hEparallel|hEquilibriumDensity|HeteroInterface|hFactor|hFiegna|hFreeCarrierAbsorption|hGapStatesRecombination|hGradQuasiFermi|hhDiffusionLNS|hHeatFlux|hhFlickerGRLNS|hHIDensity|hHIDensityPer_hTemperature|hHIDensityPerDensity|hHIDensityPerTemperature|hhMonopolarGRLNS|hInterfaceTrappedCharge|hIonIntegral|hJouleHeat|hkp|hLifetime|hLucky|hMass|hMLDA|hMLDAQuantumPotential)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(hMobilityAniso|hMobilityAnisoFactor|hMobilityStressFactorXX|hMobilityStressFactorXY|hMobilityStressFactorXZ|hMobilityStressFactorYY|hMobilityStressFactorYZ|hMobilityStressFactorZZ|hNeutral|hNLLTunnelingGeneration|hNLLTunnelingPeltierHeat|hole|Hooke|HotElectronInj|HotElectronInjection|HotHoleInj|HotHoleInjection|hQuantumPotential|hQuasiFermiEnergy|hQuasiFermiPotential|hQuenching|hRelativeEffectiveMass|hSaturationVelocity|hSaturationVelocityAniso|hSchenkBGN|hSchenkTunnel|hSHEAvalancheGeneration|hSHEBandEnergy|hSHECurrentDensity|hSHEDensity)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(hSHEDistribution|hSHEEnergy|hSHEVelocity|hSixband|hSRHRecombination|hTemperatureRelaxationTime|hTensor|hTensorMobilityFactorXX|hTensorMobilityFactorYY|hTensorMobilityFactorZZ|hTensorMobilityXX|hTensorMobilityYY|hTensorMobilityZZ|hThermionic|hThermionicCurrentDensity|hThermionicEnFluxDensity|hThermoElectricPower|hTotalHeat|hTrappedCharge|Hurkx|Hydrodynamic|HydrogenAtom|HydrogenDiffusion|HydrogenIon|HydrogenMolecule|HydrogenSpaceCharge|IALMob|IbVd|IdVd|IdVg)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Ignore|IgnoreTdrUnits|ILS|imag|ImConductionCurrentResponse|ImDisplacementCurrentResponse|ImeCurrentResponse|ImeDensityResponse|ImeeDiffusionLNVXVSD|ImeeFlickerGRLNVXVSD|ImeeLNVXVSD|ImeeMonopolarGRLNVXVSD|ImeEnFluxResponse|ImElectrostaticPotentialResponse|ImeTemperatureResponse|ImhCurrentResponse|ImhDensityResponse|ImhEnFluxResponse|ImhhDiffusionLNVXVSD|ImhhFlickerGRLNVXVSD|ImhhLNVXVSD|ImhhMonopolarGRLNVXVSD|ImhTemperatureResponse|ImLatticeTemperatureResponse|ImlEnFluxResponse|ImLNISD|ImLNVXVSD|ImplicitACSystem|ImTotalCurrentResponse|ImTrapLNISD)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(ImTrapLNVSD|InBuilt|IncompleteIonization|IncompleteNewton|IndiumActiveConcentration|IndiumConcentration|IndiumMinusConcentration|InelasticPhonon|InMinus|Insulator|InsulatorElectricField|InsulatorElectrifield|Integral0|Interface|InterfaceCharge|InterfaceDistance|InterfaceeNMPCharge|InterfaceeNMPState1|InterfaceeNMPState1p|InterfaceeNMPState2|InterfaceeNMPState2p|InterfaceNBTICharge|InterfaceNBTIState1|InterfaceNBTIState2|InterfaceNBTIState3|InterfaceNBTIState4|InterfaceOrientation|InterfaceReflection|InterpolatedDiscretization|IntrinsicDensity)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(intrinsicRichter|InvokeAtDivergence|irrational|IsotropicRefinement|IsVg|IterativeRefinement|JainRoulston|jBreakdownProbability|JouleHeat|Kanda|KeepSpectralData|KineticEnergy|Klaassen|kpDOS|Lackner|LambdaTemp|Landsberg|Laplacian|LaserIntensity|LatticeHeatCapacity|LatticeTemperature|LayerThickness|LayerThicknessField|LED_TraceSource|Level|LHeatFlux|lin|Linear|LinearParametrization|LNVSD)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Load|Loadable|LoadFromFile|Local|log|Logarithmic|LogDensity|Lombardi|Lombardi_highk|LongitudinalModes|Lorentzian|MagneticField|Makkram\\-Ebeid_Lannoo|Makram\\-Ebeid|Masetti|MatGain|Max|MaxEnergy|Maximum|MaxMismatch|mcDOS|MDFT|MeanIonIntegral|Mechanics|Metal|MetalConductivity|MetalTEPower|MetalWorkfunction|Meyer|Micron)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Millimeter|Min|MinEnergy|MinError|Minimum|MixAverageBoxMethod|Mixed|MixedMode|MLDA|Mobility|MobilityAcceptorConcentration|MobilityDonorConcentration|Mod_eGradQuasiFermi_ElectricField|Mod_eQuasiFermi_ElectricField_Potential|Mod_hGradQuasiFermi_ElectricField|Mod_hQuasiFermi_ElectricField_Potential|ModeOscillator|modifiedHurkx|MonopolarGRNoise|MonteCarlo|MPBC|MSConfig|MSPeltierHeat|MultipleRHS|MultiValley|NaturalBoxMethod|NBTI|NDopantActiveConcentration|NDopantConcentration|NdopantPlus)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(NDopantPlusConcentration|NearestInterfaceOrientation|NegInterfaceCharge|Neumann|NewArc|NewGdiff|NewWavelengthSearch|NitrogenActiveConcentration|NitrogenConcentration|NitrogenPlus|NitrogenPlusConcentration|NoAutomaticCircuitContact|NoBandgapNarrowing|NoCheckTransientError|Nodes|NoFermi|Noise|noise_Id_Vg|noise_Ig_Vg|noise_Is_F|noise_Vd_F|noise_Vg_F|NonActiveAbsorptionOff|None|NonLocal|NonLocalBackDirection|NonLocalDirection|NonLocalPath|NonlocalPath|NonlocalPath1)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(NonlocalPath2|NonlocalPath3|NonParabolicity|NonSymmetric|NonsymmetricPermutation|noOverwrite|Normalized|North|NorthEast|NorthWest|NoSRHperPotential|NoSRHperT|NumberOfSlices|NumericalIntegration|Numerically|NumericalTable|Off|Okuto|OldSlotboom|OldSlotBoom|OmitReflectedRays|OmitWeakerRays|Once|OneOverDegradationTime|OpticalAbsorption|OpticalAbsorptionHeat|OpticalField|OpticalGeneration|OpticalGenerationFromConstant|OpticalGenerationFromMonochromaticSource)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(OpticalGenerationFromSpectrum|OpticalGridElement|OpticalIntensity|OpticalIntensityCoherent|OpticalIntensityDiffuse|OpticalIntensityIncoherent|OpticalIntensityMode0|OpticalIntensityMode1|OpticalIntensityMode2|OpticalIntensityMode3|OpticalIntensityMode4|OpticalIntensityMode5|OpticalIntensityMode6|OpticalIntensityMode7|OpticalIntensityMode8|OpticalIntensityMode9|OpticalIntensitySpecular|OpticalPolarizationAngleMode0|OpticalPolarizationAngleMode1|OpticalPolarizationAngleMode2|OpticalPolarizationAngleMode3|OpticalPolarizationAngleMode4|OpticalPolarizationAngleMode5|OpticalPolarizationAngleMode6|OpticalPolarizationAngleMode7|OpticalPolarizationAngleMode8|OpticalPolarizationAngleMode9|OpticalTurningPoints|Optics|Organic_Gaussian)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Outside|OverlapIntegral|Overwrite|ParallelToInterfaceInBoundaryLayer|ParallelToInterfaceInBoundaryLayerActive|ParameterSetName|Pardiso|parfile|PartialLayer|PDopantActiveConcentration|PDopantConcentration|pDopantMinus|PDopantMinusConcentration|PE_Charge|PE_Polarization|PeltierHeat|Periodic|Permeable|Perpendicular|perpendicular|PFMob|PhononCombination|Phosphorus|PhosphorusActiveConcentration|PhosphorusConcentration|PhosphorusPlusConcentration|PhotonicAC|PhotonicIntensityNoise|PhotonicPhaseNoise|PhotonNumberNoise)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(PhotonPhase|PhotonPhaseAlpha|PhotonPhaseNoise|PhotonRate|PhotonRecycle|PhotonStab|phPlus|PhuMob|PhuMob2|PieceWiseConstant|Piezo|PiezoCharge|PlaneArea|Plot|PlotCompressed|PlotExplicit|PlotInterfaceFlux|PlotLasingSpectrum|PlotLoadable|PlotRequest|PMIeNonLocalRecombination|PMIHeat|PMIhNonLocalRecombination|PMIRecombination|PMIUserField0|PMIUserField1|PMIUserField2|PMIUserField3|PMIUserField4|PMIUserField5)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(PMIUserField6|PMIUserField7|PMIUserField8|PMIUserField9|PoECImACGreenFunction|PoECReACGreenFunction|PoETImACGreenFunction|PoETReACGreenFunction|PoGeoGreenFunction|PoHCImACGreenFunction|PoHCReACGreenFunction|PoHTImACGreenFunction|PoHTReACGreenFunction|Polarization|PoLTImACGreenFunction|PoLTReACGreenFunction|PooleFrenkel|PoPotImACGreenFunction|PoPotReACGreenFunction|PosInterfaceCharge|PowerLaw|Print|PrintInfo|PrintLinearSolver|QCEffectiveBandGap|QCEffectiveIntrinsicDensity|QFtraps|QuantumWell|QuantumYield|QuasiFermiPotential)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(QW_chEigenEnergy|QW_chNumberOfBoundStates|QW_chRelativeEffectiveMass|QW_chStrainBandshift|QW_eEigenEnergy|QW_eLeakageCurrent|QW_ElectricFieldProjection|QW_eNetCapture|QW_eNumberOfBoundStates|QW_eRelativeEffectiveMass|QW_eStrainBandShift|QW_hhEigenEnergy|QW_hhNumberOfBoundStates|QW_hhRelativeEffectiveMass|QW_hhStrainBandShift|QW_hLeakageCurrent|QW_hNetCapture|QW_lhEigenEnergy|QW_lhNumberOfBoundStates|QW_lhRelativeEffectiveMass|QW_lhStrainBandShift|QW_OverlapIntegral|QW_QuantizationDirection|QW_Width|QWDeep|QWeDensity|QWeQuasiFermi|QWeScatter|QWhDensity|QWhQuasiFermi)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(QWhScatter|QWScatModel|QWShallow|QWTransport|RadiationGeneration|RadiativeRecombination|Random|Randomize|RandomizedDoping|RaysRandomOffset|RayTraceIntensity|RayTrees|RCS|rDissipationRateDensity|ReadExtrapolation|ReadFromExcitation|ReadFromFile|real|RecombinationHeat|RecomputeQFP|RecomupteNonsymmetricPermutation|ReConductionCurrentResponse|ReDisplacementCurrentResponse|RedistributeStoppedRays|ReeCurrentResponse|ReeDensityResponse|ReeeDiffusionLNVXVSD|ReeeFlickerGRLNVXVSD|ReeeLNVXVSD|ReeeMonopolarGRLNVXVSD)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(ReeEnFluxResponse|ReElectrostaticPotentialResponse|ReeTemperatureResponse|Refined|Reflective|refractive|RefractiveIndex|RegionWise|RegionWiseAssembly|RehCurrentResponse|RehDensityResponse|RehEnFluxResponse|RehhDiffusionLNVXVSD|RehhFlickerGRLNVXVSD|RehhLNVXVSD|RehhMonopolarGRLNVXVSD|RehTemperatureResponse|RelativeToDOSMass|ReLatticeTemperatureResponse|RelEnFluxResponse|RelErrControl|ReLNISD|ReLNVXVSD|Residual|Resistivity|Resolve|ReTotalCurrentResponse|ReTrapLNISD|ReTrapLNVSD|rhoDirection)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(RhsAndUpdateConvergence|RloadAdjust|RPBC|RPS|RTA|Save|SaveCompressed|SbandCommandFile|sbPlus|Scalar1D|Scalar2D|Scattering|Schenk|SchenkBGN_elec|SchenkBGN_hole|Schottky|SchottkyResist|SchottkyResistance|Schroedinger|SecondOrder|Semiconductor|SemiconductorElectricField|SemiconductorElectrifield|Serial|sExc_BimolecularRecomb|sExc_Density|sExc_EquilibriumDensity|sExc_eRecomb|sExc_FluxDensity|sExc_hRecomb)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(sExc_RadiativeRecomb|SHE|SHESOR|Simple|SimpleCapt|simpleCapt|SimStats|SimulationSystem|SingletExciton|SingleTrap|Slotboom|SlotBoom|Smooth|Smoothing|South|SouthEast|SouthWest|SpaceMid|SpaceSig|SpatialShape|SpecialVector|SpectralPlot|SpontaneousRecombination|SRDoping|SRHRecombination|Staggered3DFarfieldGrid|StandingWave|StimulatedRecombination|StoreExtrapolation|strain)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Strain|stress|StressSG|StressXX|StressXY|StressXZ|StressYY|StressYZ|StressZZ|Super|SurfaceMultRecombination|SurfaceRecombination|surfaceSRH|Symmetric|TableBGN|TCircuit|TContact|TE0n|TempDep|Temperature|TemperatureDep|TemperatureDependent|Tensor|TensorFactor|TensorGridAniso|ThermalConductivity|ThermalConductivityAniso|ThermalizationYield|Thermionic|ThermionicEmission)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(ThinLayer|ThomsonHeat|TM|ToCurrentEnormal|Top|Total|TotalConcentration|TotalCurrentDensity|TotalDD|TotalHeat|TotalInterfaceTrapConcentration|TotalRecombination|TotalTrapConcentration|Trace|TransferredElectronEffect|TransferredElectronEffect2|Transmission|Transparent|Transport|TransverseModes|TrapAssistedAuger|TrapConcentration|Traps|Truncated|tSRHRecombination|Tunneling|TurnOffTreeNodeCount|TwoBand|Type1|Type2)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(um|UniBo|UniBo2|Uniform|UniformDistribution|Unity|Update|UpsideDown|UseElecrostaticPotential|UseMeshCommandFileRefinement|UseNormalFlux|UseQuasiFermi|UserRays|UserSpeciesConcentration|UseSchurSolver|ValBand|ValenceBand|ValenceBandEnergy|vanOverStraeten|VaryPhi|VaryTheta|VBBarrierLowering|VBEnergyWithLowering|Vector2D|VertexIndex|VoltageGreenFunctions|Volume|Wait|Wallclock|Wavefunction)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        },
+        {
+          "match": "\\b(Waveguide|WaveguideLoss|Wavelength|WavelengthDep|WeightedAPDIntegration|WeightedOpticalGeneration|WeightedVoronoiBox|West|WithGeneration|WithJoyceDixon|Workfunction|WorkfunctionFluctuations|WriteAll|WriteDOE|Wurtzite|xAxis|xDirection|Xmax|Xmin|xMoleFraction|yAxis|Ymax|Ymin|yMoleFraction|zAxis|ZincBlende|Zmax|Zmin)(?![A-Za-z0-9_:-])",
+          "name": "constant.numeric.sdevice"
+        }
+      ]
+    },
+    {
+      "name": "comment.line.hash",
+      "match": "#.*$"
+    },
+    {
+      "name": "comment.line.asterisk",
+      "match": "\\*.*$"
+    },
+    {
+      "name": "string.quoted.double",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape",
+          "match": "\\\\."
+        },
+        {
+          "match": "@[a-zA-Z_<][^@]*@",
+          "name": "constant.character.format.placeholder"
+        }
+      ]
+    },
+    {
+      "match": "\\b(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?\\b",
+      "name": "constant.numeric"
+    },
+    {
+      "match": "@[a-zA-Z_<][^@]*@",
+      "name": "constant.character.format.placeholder"
+    },
+    {
+      "match": "\\b(if|else|elseif|for|foreach|while|switch|break|continue|return)\\b",
+      "name": "keyword.control.sdevice"
+    },
+    {
+      "match": "\\b(proc|try|throw)\\b",
+      "name": "keyword.other.sdevice"
+    },
+    {
+      "match": "\\b(after|append|array|catch|close|concat|error|eval|expr|file|format|gets|glob|global|incr|info|join|lappend|lindex|linsert|list|llength|lrange|lreplace|lsearch|lsort|open|puts|read|regsub|rename|scan|set|source|split|string|subst|unset|uplevel|upvar|variable|vwait)\\b",
+      "name": "support.function.sdevice"
+    },
+    {
+      "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
+      "name": "variable.other"
+    }
+  ],
+  "repository": {},
+  "scopeName": "source.sentaurus.sdevice"
 }

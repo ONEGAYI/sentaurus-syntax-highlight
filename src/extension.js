@@ -254,6 +254,8 @@ function activate(context) {
     const tclWasmChannel = vscode.window.createOutputChannel('Sentaurus Tcl WASM');
     tclParserWasm.init(context, tclWasmChannel).then(() => {
         vscode.window.showInformationMessage('Sentaurus: Tcl WASM 解析器初始化成功!');
+        // WASM 就绪后重新扫描已打开的 Tcl 文档（激活时 WASM 未就绪，诊断为空）
+        undefVarDiagnostic.refreshAll();
     }).catch(err => {
         tclWasmChannel.appendLine(`[ERROR] Tcl WASM 初始化失败: ${err.message}`);
         vscode.window.showWarningMessage(`Sentaurus: Tcl WASM 初始化失败 - ${err.message}`);
@@ -332,21 +334,18 @@ function activate(context) {
     const schemeDocs = loadDocsJson('scheme_function_docs.json', useZh);
     const sdeviceDocs = loadDocsJson('sdevice_command_docs.json', useZh);
     const svisualDocs = loadDocsJson('svisual_command_docs.json', useZh);
+    const tclDocs = loadDocsJson('tcl_command_docs.json', useZh);
 
     // SDE: SDE API + Scheme 内置函数
     langFuncDocs.sde = { ...sdeDocs };
     if (schemeDocs) Object.assign(langFuncDocs.sde, schemeDocs);
 
-    // sdevice: 仅 sdevice 命令文档
-    langFuncDocs.sdevice = sdeviceDocs ? { ...sdeviceDocs } : {};
-
-    // svisual: 仅 svisual 命令文档
-    langFuncDocs.svisual = svisualDocs ? { ...svisualDocs } : {};
-
-    // sprocess/emw/inspect: 无专属文档文件
-    langFuncDocs.sprocess = {};
-    langFuncDocs.emw = {};
-    langFuncDocs.inspect = {};
+    // Tcl 方言语言：各自专属文档 + 共享的 Tcl 核心命令文档
+    langFuncDocs.sdevice = { ...(sdeviceDocs || {}), ...(tclDocs || {}) };
+    langFuncDocs.svisual = { ...(svisualDocs || {}), ...(tclDocs || {}) };
+    langFuncDocs.sprocess = { ...(tclDocs || {}) };
+    langFuncDocs.emw = { ...(tclDocs || {}) };
+    langFuncDocs.inspect = { ...(tclDocs || {}) };
 
     // 构建 modeDispatch 查找表：始终从英文文档提取（结构化元数据，与语言无关）
     const enSdeDocs = loadDocsJson('sde_function_docs.json', false);
