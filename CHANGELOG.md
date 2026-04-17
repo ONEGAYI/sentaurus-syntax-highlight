@@ -4,6 +4,24 @@
 
 ---
 
+## [1.5.0] - 2026-04-17
+
+### 新功能
+
+- **SDE 符号索引与语义分析**：为 SDE (Scheme) 语言引入声明式符号系统，支持 Region、Material、Contact 三类 TCAD 符号的语义感知。核心引擎（`symbol-index.js`）遍历 AST 提取符号定义与引用，通过 `symbolParams` 参数映射表配置约 55 个 SDE API 的符号行为，支持 `string-append` 静态拼接解析和 `modeDispatch` 动态类型推断
+- **未定义符号语义诊断**：实时检测未定义的 Region/Material/Contact 引用并显示黄色警告，帮助用户在编码阶段发现拼写错误和遗漏定义
+- **符号智能补全**：根据光标所在函数的参数位置和期望的符号类型（Region/Material/Contact），提供已定义符号的上下文感知补全
+- **查找所有引用**：支持对 Region/Material/Contact 符号的 "Find All References" 功能，交叉索引符号定义与所有引用位置
+
+### 测试
+
+- 新增 `test-symbol-index.js`（符号提取引擎测试：resolveSymbolName + extractSymbols）
+- 新增 `test-region-undef-diagnostic.js`（未定义符号语义诊断测试）
+- 新增 `test-symbol-completion.js`（符号补全过滤测试）
+- 新增 `test-symbol-reference.js`（查找所有引用测试）
+
+---
+
 ## [1.4.2] - 2026-04-17
 
 ### 新功能
@@ -470,6 +488,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.5.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.4.2...v1.5.0
 [1.4.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.3.0...v1.4.0
