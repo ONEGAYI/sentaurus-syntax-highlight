@@ -47,11 +47,23 @@ function provideSymbolCompletions(document, position) {
     const config = symbolParamsTable[functionName];
     if (!config || !config.symbolParams) return null;
 
-    const matching = config.symbolParams.find(p => p.index === activeParam);
+    // modeDispatch argIndex===0 时，activeParam 包含模式关键词，需 -1 对齐 symbolParams 索引
+    const modeDispatchMeta = modeDispatchTable ? modeDispatchTable[functionName] : null;
+    let effectiveParam = activeParam;
+    if (modeDispatchMeta && modeDispatchMeta.argIndex === 0) {
+        effectiveParam = activeParam - 1;
+    }
+    if (effectiveParam < 0) return null;
+
+    const matching = config.symbolParams.find(p => p.index === effectiveParam);
     if (!matching) return null;
 
     const { defs } = extractSymbols(ast, text, symbolParamsTable, modeDispatchTable);
-    const targetType = matching.type;
+    // type:auto 时，根据解析到的模式关键词确定实际类型
+    let targetType = matching.type;
+    if (targetType === 'auto' && result.mode) {
+        targetType = result.mode;
+    }
     const seen = new Set();
     const items = [];
 
