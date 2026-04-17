@@ -16,6 +16,9 @@ const tclDocSymbolMod = require('./lsp/providers/tcl-document-symbol-provider');
 const schemeOnEnterProvider = require('./lsp/providers/scheme-on-enter-provider');
 const unitAutoClose = require('./lsp/providers/unit-auto-close-provider');
 const quoteAutoDelete = require('./lsp/providers/quote-auto-delete-provider');
+const regionUndefDiagnostic = require('./lsp/providers/region-undef-diagnostic');
+const symbolCompletion = require('./lsp/providers/symbol-completion');
+const symbolReferenceProvider = require('./lsp/providers/symbol-reference-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
 
 /** @type {SchemeParseCache} */
@@ -372,6 +375,14 @@ function activate(context) {
         }
     }
 
+    // 构建 symbolParams 查找表：从 sde_function_docs.json 提取符号索引参数
+    const symbolParamsTable = {};
+    for (const [fnName, fnDoc] of Object.entries(modeDispatchSource)) {
+        if (fnDoc.symbolParams) {
+            symbolParamsTable[fnName] = { symbolParams: fnDoc.symbolParams };
+        }
+    }
+
     // FoldingRangeProvider (SDE only)
     const foldingProvider = foldingProviderMod.createFoldingProvider(schemeCache);
     context.subscriptions.push(
@@ -411,6 +422,9 @@ function activate(context) {
     // 未定义变量诊断
     undefVarDiagnostic.activate(context, schemeCache, tclCache);
 
+    // Region/Material/Contact 未定义语义诊断（SDE only）
+    regionUndefDiagnostic.activate(context, schemeCache, symbolParamsTable, modeDispatchTable);
+
     // DocumentSymbol / 面包屑导航（4 语言共用）
     const tclDocumentSymbolProvider = tclDocSymbolMod.createTclDocumentSymbolProvider(tclCache);
     for (const langId of astUtils.TCL_LANGS) {
@@ -437,6 +451,12 @@ function activate(context) {
         ' ', '\t', '"', '('
     );
     context.subscriptions.push(sigHelpDisposable);
+
+    // Symbol completion (SDE only) — region/material/contact 补全
+    symbolCompletion.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, vscode);
+
+    // Find All References (SDE only) — region/material/contact
+    symbolReferenceProvider.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, vscode);
 
     const languages = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect', 'svisual'];
 
