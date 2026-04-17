@@ -167,6 +167,35 @@ test('letrec 绑定提取', () => {
     assert.strictEqual(result.definitions[0].name, 'even?');
 });
 
+test('let 绑定提取 — 注释不干扰', () => {
+    const { ast } = parse('(let ; comment\n    ((Var1 val)) Var1)');
+    const list = ast.body[0];
+    // Comment 节点不应出现在列表 children 中
+    assert.strictEqual(list.children[0].type, 'Identifier');
+    assert.strictEqual(list.children[0].value, 'let');
+    assert.strictEqual(list.children[1].type, 'List'); // 绑定列表，不是 Comment
+    const result = analyze(ast);
+    assert.strictEqual(result.definitions.length, 1);
+    assert.strictEqual(result.definitions[0].name, 'Var1');
+});
+
+test('lambda 参数列表 — 注释不干扰', () => {
+    const { ast } = parse('(lambda ; comment\n    (x y) (+ x y))');
+    const list = ast.body[0];
+    assert.strictEqual(list.children[1].type, 'List'); // 参数列表，不是 Comment
+    // lambda 参数由 scope-analyzer 的 buildScopeTree 处理，不在 analyze() 中
+});
+
+test('define 函数 — 注释不干扰', () => {
+    const { ast } = parse('(define ; comment\n    (my-func x) (+ x 1))');
+    const list = ast.body[0];
+    assert.strictEqual(list.children[1].type, 'List'); // 函数签名，不是 Comment
+    const result = analyze(ast);
+    assert.strictEqual(result.definitions.length, 2);
+    assert.strictEqual(result.definitions[0].name, 'my-func');
+    assert.strictEqual(result.definitions[1].name, 'x');
+});
+
 test('AST 跳过注释中的 define', () => {
     const { ast } = parse('; (define commented 1)\n(define real 2)');
     const result = analyze(ast);

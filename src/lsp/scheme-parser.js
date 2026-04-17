@@ -186,7 +186,9 @@ function parse(text) {
         while (current().type !== TokenType.RPAREN && current().type !== TokenType.EOF) {
             const child = parseExpr();
             if (!child) break;
-            children.push(child);
+            if (child.type !== 'Comment') {
+                children.push(child);
+            }
             endLine = child.endLine;
         }
 
