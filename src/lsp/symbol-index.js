@@ -65,34 +65,68 @@ function extractSymbols(ast, sourceText, symbolParamsTable, modeDispatchTable) {
                 if (config && config.symbolParams) {
                     const modeDispatchMeta = modeDispatchTable ? modeDispatchTable[funcName] : null;
 
-                    for (const param of config.symbolParams) {
-                        let argIndex;
-                        if (modeDispatchMeta) {
-                            // modeDispatch 函数：模式关键词在 argIndex 位置，
-                            // 参数从 argIndex+2 开始（+1 跳过函数名，+1 跳过模式关键词）
-                            argIndex = modeDispatchMeta.argIndex + 1 + 1 + param.index;
-                        } else {
-                            // 普通函数：+1 跳过函数名
-                            argIndex = param.index + 1;
+                    // modeDispatch 分支：需要解析模式关键词以支持 type: auto
+                    if (modeDispatchMeta) {
+                        // 解析模式关键词（argIndex+1 跳过函数名）
+                        const modeArgIdx = modeDispatchMeta.argIndex + 1;
+                        const modeNode = ec[modeArgIdx];
+                        let modeValue = null;
+                        if (modeNode) {
+                            if (modeNode.type === 'String') modeValue = modeNode.value;
+                            else if (modeNode.type === 'Identifier') modeValue = modeNode.value;
                         }
 
-                        if (argIndex < ec.length) {
-                            const argNode = ec[argIndex];
-                            const name = resolveSymbolName(argNode);
-                            if (name !== null) {
-                                const entry = {
-                                    name,
-                                    type: param.type,
-                                    role: param.role,
-                                    line: argNode.line,
-                                    start: argNode.start,
-                                    end: argNode.end,
-                                    functionName: funcName,
-                                };
-                                if (param.role === 'def') {
-                                    defs.push(entry);
-                                } else {
-                                    refs.push(entry);
+                        for (const param of config.symbolParams) {
+                            // +1 跳过函数名，+1 跳过模式关键词
+                            const argIndex = modeDispatchMeta.argIndex + 1 + 1 + param.index;
+                            if (argIndex < ec.length) {
+                                const argNode = ec[argIndex];
+                                const name = resolveSymbolName(argNode);
+                                if (name !== null) {
+                                    // type: auto → 使用模式名作为实际类型
+                                    let actualType = param.type;
+                                    if (actualType === 'auto') {
+                                        actualType = modeValue || param.type;
+                                    }
+                                    const entry = {
+                                        name,
+                                        type: actualType,
+                                        role: param.role,
+                                        line: argNode.line,
+                                        start: argNode.start,
+                                        end: argNode.end,
+                                        functionName: funcName,
+                                    };
+                                    if (param.role === 'def') {
+                                        defs.push(entry);
+                                    } else {
+                                        refs.push(entry);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        // 普通函数：+1 跳过函数名
+                        for (const param of config.symbolParams) {
+                            const argIndex = param.index + 1;
+                            if (argIndex < ec.length) {
+                                const argNode = ec[argIndex];
+                                const name = resolveSymbolName(argNode);
+                                if (name !== null) {
+                                    const entry = {
+                                        name,
+                                        type: param.type,
+                                        role: param.role,
+                                        line: argNode.line,
+                                        start: argNode.start,
+                                        end: argNode.end,
+                                        functionName: funcName,
+                                    };
+                                    if (param.role === 'def') {
+                                        defs.push(entry);
+                                    } else {
+                                        refs.push(entry);
+                                    }
                                 }
                             }
                         }
