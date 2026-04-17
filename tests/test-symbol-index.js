@@ -244,5 +244,86 @@ test('modeDispatch 函数：offset-interface material 模式', () => {
     assert.strictEqual(refs[0].type, 'material');
 });
 
+// --- type: auto ---
+console.log('\ntype auto:');
+
+test('type auto: offset-block region 模式解析为 region 类型', () => {
+    const code = '(sdedr:offset-block "region" "R.Si" "maxlevel" 0.5)';
+    const { ast } = parse(code);
+    const symbolTable = {
+        'sdedr:offset-block': {
+            symbolParams: [
+                { index: 0, role: 'ref', type: 'auto' },
+            ],
+        },
+    };
+    const modeTable = {
+        'sdedr:offset-block': {
+            argIndex: 0,
+            modes: {
+                region: { params: ['region'] },
+                material: { params: ['material'] },
+            },
+        },
+    };
+    const { refs } = extractSymbols(ast, code, symbolTable, modeTable);
+    assert.strictEqual(refs.length, 1);
+    assert.strictEqual(refs[0].name, 'R.Si');
+    assert.strictEqual(refs[0].type, 'region');
+});
+
+test('type auto: offset-block material 模式解析为 material 类型', () => {
+    const code = '(sdedr:offset-block "material" "Silicon" "maxlevel" 0.5)';
+    const { ast } = parse(code);
+    const symbolTable = {
+        'sdedr:offset-block': {
+            symbolParams: [
+                { index: 0, role: 'ref', type: 'auto' },
+            ],
+        },
+    };
+    const modeTable = {
+        'sdedr:offset-block': {
+            argIndex: 0,
+            modes: {
+                region: { params: ['region'] },
+                material: { params: ['material'] },
+            },
+        },
+    };
+    const { refs } = extractSymbols(ast, code, symbolTable, modeTable);
+    assert.strictEqual(refs.length, 1);
+    assert.strictEqual(refs[0].name, 'Silicon');
+    assert.strictEqual(refs[0].type, 'material');
+});
+
+test('type auto: offset-interface 多参数 auto', () => {
+    const code = '(sdedr:offset-interface "material" "Si" "Ox")';
+    const { ast } = parse(code);
+    const symbolTable = {
+        'sdedr:offset-interface': {
+            symbolParams: [
+                { index: 0, role: 'ref', type: 'auto' },
+                { index: 1, role: 'ref', type: 'auto' },
+            ],
+        },
+    };
+    const modeTable = {
+        'sdedr:offset-interface': {
+            argIndex: 0,
+            modes: {
+                region: { params: ['r1', 'r2'] },
+                material: { params: ['m1', 'm2'] },
+            },
+        },
+    };
+    const { refs } = extractSymbols(ast, code, symbolTable, modeTable);
+    assert.strictEqual(refs.length, 2);
+    assert.strictEqual(refs[0].type, 'material');
+    assert.strictEqual(refs[1].type, 'material');
+    assert.strictEqual(refs[0].name, 'Si');
+    assert.strictEqual(refs[1].name, 'Ox');
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);
