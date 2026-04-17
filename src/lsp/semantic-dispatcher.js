@@ -195,6 +195,7 @@ function dispatch(ast, line, column, modeDispatchTable, lineStarts) {
         modeData,
         activeParam,
         callNode,
+        argIndex: dispatchMeta.argIndex,
     };
 }
 

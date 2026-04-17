@@ -55,8 +55,8 @@ test('带可选参数的签名', () => {
         ],
     });
     assert.ok(label.includes('[factor]'));
-    assert.ok(label.includes('[DoubleSide]'));
-    assert.ok(label.includes('[UseRegionNames]'));
+    assert.ok(label.includes('["DoubleSide"]'));
+    assert.ok(label.includes('["UseRegionNames"]'));
 });
 
 test('带标签可选参数的签名', () => {
@@ -66,7 +66,7 @@ test('带标签可选参数的签名', () => {
             { name: 'Scaling', tag: 'Scaling', type: 'number', param: 'scaling' },
         ],
     });
-    assert.ok(label.includes('[Scaling scaling]'));
+    assert.ok(label.includes('["Scaling" scaling]'));
 });
 
 console.log('\nbuildParams:');

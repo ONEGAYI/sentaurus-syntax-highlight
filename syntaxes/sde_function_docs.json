@@ -5615,6 +5615,23 @@
   "sdedr:offset-block": {
     "signature": "(sdedr:offset-block \"material\" material \"maxlevel\" maxlevel) | (sdedr:offset-block \"region\" region \"maxlevel\" maxlevel)",
     "description": "Generates a new offsetting block inside the Offsetting section of the mesh command file.",
+    "modeDispatch": {
+      "argIndex": 0,
+      "modes": {
+        "material": {
+          "params": ["material"],
+          "optionals": [
+            {"tag": "maxlevel", "param": "maxlevel"}
+          ]
+        },
+        "region": {
+          "params": ["region"],
+          "optionals": [
+            {"tag": "maxlevel", "param": "maxlevel"}
+          ]
+        }
+      }
+    },
     "parameters": [
       {
         "name": "region",
@@ -5664,6 +5681,27 @@
   "sdedr:offset-interface": {
     "signature": "(sdedr:offset-interface \"region\" region1 region2 \"hlocal\" hlocal \"factor\" factor \"window\" x1 y1 z1 x2 y2 z2) | (sdedr:offset-interface \"material\" material1 material2 \"hlocal\" hlocal \"factor\" factor \"window\" x1 y1 z1 x2 y2 z2)",
     "description": "Generates a new offsetting interface block inside the Offsetting section of the mesh command file.",
+    "modeDispatch": {
+      "argIndex": 0,
+      "modes": {
+        "region": {
+          "params": ["region1", "region2"],
+          "optionals": [
+            {"tag": "hlocal", "param": "hlocal"},
+            {"tag": "factor", "param": "factor"},
+            {"tag": "window", "param": "x1 y1 z1 x2 y2 z2"}
+          ]
+        },
+        "material": {
+          "params": ["material1", "material2"],
+          "optionals": [
+            {"tag": "hlocal", "param": "hlocal"},
+            {"tag": "factor", "param": "factor"},
+            {"tag": "window", "param": "x1 y1 z1 x2 y2 z2"}
+          ]
+        }
+      }
+    },
     "parameters": [
       {
         "name": "region1",
