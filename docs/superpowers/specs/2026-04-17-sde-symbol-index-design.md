@@ -3,7 +3,7 @@
 ## 概述
 
 为 SDE (Scheme) 语言建立 Region/Material/Contact 三类符号的索引系统，实现：
-1. **语义诊断**：引用未定义的 region/material/contact 时显示黄色波浪线警告
+1. **语义诊断**：引用未定义的 region/material/contact 时显示信息级别的下划线警告
 2. **符号补全**：在需要符号名称的参数位置提供已定义符号的补全
 3. **Find All References**：查找某个符号在文档中所有定义和引用位置
 
@@ -22,10 +22,10 @@
 
 ```
 src/lsp/
-├── symbol-index.js               # 符号提取引擎（AST 遍历 + 声明式配置）
+├── symbol-index.js                  # 符号提取引擎（AST 遍历 + 声明式配置）
 └── providers/
-    ├── region-undef-diagnostic.js # Region/Material/Contact 未定义诊断
-    └── symbol-completion.js       # 符号补全 Provider
+    ├── region-undef-diagnostic.js   # Region/Material/Contact 未定义诊断
+    ├── symbol-completion.js         # 符号补全 Provider
     └── symbol-reference-provider.js # Find All References Provider
 ```
 
@@ -74,8 +74,8 @@ AST (scheme-parser)
 - `sdegeo:create-torus` [3], `sdegeo:create-triangle` [3], `sdegeo:create-prism` [3]
 - `sdegeo:create-pyramid` [3], `sdegeo:create-ruled-region` [3], `sdegeo:create-reg-polygon` [3]
 - `sdegeo:create-ot-sphere` [3], `sdegeo:create-ot-ellipsoid` [3]
-- `sde:add-material` [2], `sdepe:add-substrate` [region-name], `sdepe:depo` [region-name]
-- `sdepe:fill-device` [region-name], `sdeicwb:create-boxes-from-layer` [region-name]
+- `sde:add-material` [2], `sdepe:add-substrate` [3], `sdepe:depo` [2]
+- `sdepe:fill-device` [2], `sdeicwb:create-boxes-from-layer` [4]
 
 #### Region 引用（ref）
 - `sde:hide-region` [0], `sde:show-region` [0], `sde:xshow-region` [0]
@@ -193,7 +193,7 @@ function resolveSymbolName(node):
 
 部分函数（如 `sdedr:offset-interface`、`sdedr:define-refinement-function`）的参数语义取决于模式关键词。需要复用 `semantic-dispatcher.js` 的 `resolveMode` 逻辑来确定实际模式，再查 `modeDispatch.modes[mode].params` 来确定参数的实际含义。
 
-对于有 modeDispatch 的函数，`symbolParams` 中的 `index` 应指向 **mode 调整后的参数列表**（即 `modeData.params` 数组中的索引）。
+对于有 modeDispatch 的函数，`symbolParams` 中的 `index` 应指向 **mode 调整后的参数列表**（即 `modeData.params` 数组中的索引）。对于没有 modeDispatch 的函数（绝大多数 create-* 系列），`symbolParams` 中的 `index` 直接对应 `effectiveChildren` 中的位置（+1 跳过函数名）。
 
 ### 3. region-undef-diagnostic.js — 语义诊断 Provider
 
