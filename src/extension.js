@@ -500,7 +500,7 @@ function activate(context) {
                         const item = new vscode.CompletionItem(d.name, itemKind);
                         item.detail = detail;
                         item.sortText = '4' + d.name;
-                        item.documentation = new vscode.MarkdownString('```scheme\n' + defs.truncateDefinitionText(d.definitionText, maxWidth) + '\n```');
+                        item.documentation = new vscode.MarkdownString('```' + langId + '\n' + defs.truncateDefinitionText(d.definitionText, maxWidth, langId) + '\n```');
                         return item;
                     });
 
@@ -547,7 +547,7 @@ function activate(context) {
                         const hoverMaxWidth = vscode.workspace.getConfiguration('sentaurus').get('definitionMaxWidth', 60);
                         const md = new vscode.MarkdownString();
                         md.appendMarkdown(`**${def.name}** (用户变量, 第 ${def.line} 行)\n\n`);
-                        md.appendCodeblock(defs.truncateDefinitionText(def.definitionText, hoverMaxWidth), langId);
+                        md.appendCodeblock(defs.truncateDefinitionText(def.definitionText, hoverMaxWidth, langId), langId);
                         return new vscode.Hover(md, range);
                     }
 

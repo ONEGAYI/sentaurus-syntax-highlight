@@ -107,16 +107,49 @@ function invalidateDefinitionCache(uri) {
 }
 
 /**
- * 截断定义文本中过长的行。
+ * 截断定义文本中过长的行，保持语法正确性以便 TextMate 高亮正常渲染。
+ * 策略：若截断点落在字符串内部，回退到引号之前再截断，避免生成虚假内容。
+ * 仅添加 ) 闭合括号，所有显示内容均为原始代码的真实片段。
  * @param {string} text 定义文本
  * @param {number} maxWidth 每行最大字符数
+ * @param {string} langId 语言标识（'sde' 为 Scheme，其余为 Tcl）
  * @returns {string} 截断后的文本
  */
-function truncateDefinitionText(text, maxWidth) {
+function truncateDefinitionText(text, maxWidth, langId) {
     if (!text || maxWidth <= 0) return text;
+    const isScheme = langId === 'sde';
+    const suffix = isScheme ? ' ;\u2026' : ' #\u2026';
+
     return text.split('\n').map(line => {
         if (line.length <= maxWidth) return line;
-        return line.slice(0, maxWidth - 1) + '\u2026';
+
+        const maxContent = Math.max(1, maxWidth - suffix.length);
+        let result = line.slice(0, maxContent);
+
+        if (isScheme) {
+            // 若截断位置在字符串内部，回退到起始引号之前
+            let inStr = false;
+            let strStart = -1;
+            for (let i = 0; i < result.length; i++) {
+                if (result[i] === '"' && (i === 0 || result[i - 1] !== '\\')) {
+                    if (!inStr) strStart = i;
+                    inStr = !inStr;
+                }
+            }
+            if (inStr) {
+                result = result.slice(0, strStart).trimEnd();
+            }
+
+            // 仅添加闭合括号（不生成虚假字符串/参数）
+            let depth = 0;
+            for (const ch of result) {
+                if (ch === '(') depth++;
+                else if (ch === ')') depth--;
+            }
+            if (depth > 0) result += ')'.repeat(depth);
+        }
+
+        return result + suffix;
     }).join('\n');
 }
 
