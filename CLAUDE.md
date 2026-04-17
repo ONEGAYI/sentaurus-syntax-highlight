@@ -75,6 +75,7 @@ sentaurus-syntax-highlight/
 │   │   ├── scheme-analyzer.js                  ← Scheme AST 定义提取 + 折叠范围
 │   │   ├── scope-analyzer.js                   ← Scheme 作用域树构建（词法作用域追踪）
 │   │   ├── semantic-dispatcher.js              ← Scheme 函数调用语义模式分发
+│   │   ├── symbol-index.js                    ← 符号提取引擎（Region/Material/Contact 声明式配置）
 │   │   ├── tcl-parser-wasm.js                  ← Tcl WASM 解析器接口（单例模式）
 │   │   ├── tcl-ast-utils.js                    ← Tcl AST 遍历/查询/折叠/变量提取
 │   │   ├── tcl-symbol-configs.js               ← Tcl 工具 section 关键词配置
@@ -92,7 +93,10 @@ sentaurus-syntax-highlight/
 │   │       ├── unit-auto-close-logic.js        ← SPROCESS Unit 括号自动配对判断逻辑
 │   │       ├── unit-auto-close-provider.js     ← SPROCESS Unit 括号自动配对 Provider
 │   │       ├── quote-auto-delete-logic.js      ← 空引号对自动删除判断逻辑
-│   │       └── quote-auto-delete-provider.js   ← 空引号对自动删除 Provider（6 种语言共用）
+│   │       ├── quote-auto-delete-provider.js   ← 空引号对自动删除 Provider（6 种语言共用）
+│   │       ├── region-undef-diagnostic.js         ← Region/Material/Contact 未定义语义诊断（Scheme）
+│   │       ├── symbol-completion.js               ← Region/Material/Contact 符号补全
+│   │       └── symbol-reference-provider.js       ← Find All References（Region/Material/Contact）
 │   │
 │   └── snippets/                               ← QuickPick 代码片段数据（JS 模块）
 │       ├── sde.js                              ← SDE 结构编辑器片段
@@ -122,6 +126,10 @@ sentaurus-syntax-highlight/
 │   ├── test-undef-var-integration.js           ← 未定义变量诊断集成测试
 │   ├── test-unit-auto-close.js                 ← Unit 括号自动配对测试
 │   ├── test-quote-auto-delete.js               ← 空引号对自动删除测试
+│   ├── test-symbol-index.js                    ← 符号提取引擎（resolveSymbolName + extractSymbols）
+│   ├── test-region-undef-diagnostic.js         ← Region/Material/Contact 未定义诊断
+│   ├── test-symbol-completion.js               ← 符号补全过滤
+│   ├── test-symbol-reference.js                ← Find All References
 │   └── benchmark.js                            ← 性能基准测试工具
 │
 ├── scripts/                                    ← 开发工具脚本
@@ -178,7 +186,7 @@ sentaurus-syntax-highlight/
 
 双解析器架构，按语言方言分治：
 
-- **Scheme（SDE）**：手写解析器（`scheme-parser.js`），生成自定义 AST → `scheme-analyzer.js` 提取定义和折叠范围 → `scope-analyzer.js` 构建词法作用域树 → `semantic-dispatcher.js` 按函数调用模式分发语义
+- **Scheme（SDE）**：手写解析器（`scheme-parser.js`），生成自定义 AST → `scheme-analyzer.js` 提取定义和折叠范围 → `scope-analyzer.js` 构建词法作用域树 → `semantic-dispatcher.js` 按函数调用模式分发语义 → `symbol-index.js` 根据声明式 symbolParams 配置提取 Region/Material/Contact 的定义和引用（支持 string-append 静态推断和 modeDispatch 动态类型）
 - **Tcl（其余 5 种）**：`tree-sitter-tcl` WASM 解析器（`tcl-parser-wasm.js`）→ `tcl-ast-utils.js` 统一 AST 遍历/变量提取/折叠 → `tcl-symbol-configs.js` 配置各工具 section 关键词
 
 共用 Provider（`src/lsp/providers/`）：
@@ -190,6 +198,9 @@ sentaurus-syntax-highlight/
 - `tcl-document-symbol-provider.js` — Tcl 文档大纲
 - `unit-auto-close-provider.js` — SPROCESS Unit 括号自动配对（含 logic 层判断逻辑）
 - `quote-auto-delete-provider.js` — 空引号对自动删除（6 种语言共用，含 logic 层判断逻辑）
+- `region-undef-diagnostic.js` — Region/Material/Contact 未定义语义诊断
+- `symbol-completion.js` — Region/Material/Contact 符号补全（声明式 symbolParams 配置）
+- `symbol-reference-provider.js` — Find All References（Region/Material/Contact 交叉引用）
 
 **内存管理**：WASM `tree` 对象使用后必须 `tree.delete()` 释放，由 `parse-cache.js` 的 `TclParseCache` 统一管理生命周期。
 
