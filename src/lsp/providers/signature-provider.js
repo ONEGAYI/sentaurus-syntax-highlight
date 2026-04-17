@@ -15,9 +15,9 @@ function buildSignatureLabel(functionName, modeData) {
     if (modeData.optionals && modeData.optionals.length > 0) {
         for (const opt of modeData.optionals) {
             if (opt.type === 'flag') {
-                parts.push(`[${opt.name}]`);
+                parts.push(`["${opt.name}"]`);
             } else if (opt.tag) {
-                parts.push(`[${opt.tag} ${opt.param || opt.name}]`);
+                parts.push(`["${opt.tag}" ${opt.param || opt.name}]`);
             } else {
                 parts.push(`[${opt.name}]`);
             }
@@ -50,8 +50,8 @@ function buildParams(modeData, funcDoc) {
     }
     if (modeData.optionals) {
         for (const opt of modeData.optionals) {
-            const label = opt.type === 'flag' ? opt.name
-                : opt.tag ? `${opt.tag} ${opt.param || opt.name}`
+            const label = opt.type === 'flag' ? `"${opt.name}"`
+                : opt.tag ? `"${opt.tag}" ${opt.param || opt.name}`
                 : opt.name;
             params.push({
                 label: `[${label}]`,
@@ -86,6 +86,12 @@ function provideSignatureHelp(document, position, token, modeDispatchTable, func
     if (mode && modeData) {
         const label = buildSignatureLabel(functionName, modeData);
         const params = buildParams(modeData, funcDoc);
+        // argIndex=0 时，第一个参数是模式关键词（不在 params 中），
+        // activeParam 需减 1 才能对齐 params 索引。
+        // argIndex≥1 的函数 params 已包含模式关键词位，映射 1:1 无需偏移。
+        const adjustedParam = result.argIndex === 0
+            ? Math.max(0, activeParam - 1)
+            : activeParam;
         return {
             signatures: [{
                 label,
@@ -93,7 +99,7 @@ function provideSignatureHelp(document, position, token, modeDispatchTable, func
                 documentation: funcDoc ? funcDoc.description : undefined,
             }],
             activeSignature: 0,
-            activeParameter: Math.min(activeParam, params.length - 1),
+            activeParameter: Math.min(adjustedParam, params.length - 1),
         };
     }
 
