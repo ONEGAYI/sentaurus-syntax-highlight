@@ -58,7 +58,7 @@ function updateDiagnostics(doc) {
     const entry = schemeCache.get(doc);
     if (!entry) return;
 
-    const { ast, text } = entry;
+    const { ast, text, lineStarts } = entry;
     const { defs, refs } = extractSymbols(ast, text, symbolParamsTable, modeDispatchTable);
     const definedNames = new Set(defs.map(d => `${d.type}:${d.name}`));
 
@@ -67,9 +67,12 @@ function updateDiagnostics(doc) {
 
     for (const ref of refs) {
         if (!definedNames.has(`${ref.type}:${ref.name}`)) {
+            // ref.start/ref.end 是文档级偏移量，需转为行内列号
+            const startCol = ref.start - lineStarts[ref.line - 1];
+            const endCol = ref.end - lineStarts[ref.line - 1];
             const range = new vscode.Range(
-                ref.line - 1, ref.start,
-                ref.line - 1, ref.end
+                ref.line - 1, startCol,
+                ref.line - 1, endCol
             );
             const label = typeLabels[ref.type] || ref.type;
             const diagnostic = new vscode.Diagnostic(

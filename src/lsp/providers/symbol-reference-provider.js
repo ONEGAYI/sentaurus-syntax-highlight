@@ -49,7 +49,7 @@ function provideSymbolReferences(document, position, options) {
     const entry = schemeCache.get(document);
     if (!entry) return null;
 
-    const { ast, text } = entry;
+    const { ast, text, lineStarts } = entry;
 
     // 从光标位置提取可能的符号名（引号内字符串）
     const range = document.getWordRangeAtPosition(position, /"[^"]*"/);
@@ -67,9 +67,12 @@ function provideSymbolReferences(document, position, options) {
 
     const locations = [];
     for (const m of matches) {
+        // m.start/m.end 是文档级偏移量，需转为行内列号
+        const startCol = m.start - lineStarts[m.line - 1];
+        const endCol = m.end - lineStarts[m.line - 1];
         const loc = new vscode.Location(
             document.uri,
-            new vscode.Range(m.line - 1, m.start, m.line - 1, m.end)
+            new vscode.Range(m.line - 1, startCol, m.line - 1, endCol)
         );
         locations.push(loc);
     }
