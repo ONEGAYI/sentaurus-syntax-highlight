@@ -179,33 +179,53 @@ test('未知语言返回空数组', () => {
 
 console.log('\ntruncateDefinitionText:');
 
-test('短行不截断', () => {
-    assert.strictEqual(truncateDefinitionText('(define x 1)', 60), '(define x 1)');
+test('短行不截断 (Scheme)', () => {
+    assert.strictEqual(truncateDefinitionText('(define x 1)', 60, 'sde'), '(define x 1)');
 });
 
-test('长行截断并加省略号', () => {
+test('Scheme 长行截断：括号平衡 + 注释标记', () => {
     const longLine = '(define very-long-variable-name-that-exceeds-max-width 0.01)';
-    const result = truncateDefinitionText(longLine, 40);
-    assert.strictEqual(result.length, 40);
-    assert.ok(result.endsWith('\u2026'));
+    const result = truncateDefinitionText(longLine, 40, 'sde');
+    assert.ok(result.endsWith(' ;\u2026'), '应以 ;… 结尾');
+    assert.ok(result.endsWith(') ;\u2026'), '括号应已闭合');
+});
+
+test('Scheme 截断：截断在字符串内部时回退到引号之前', () => {
+    const line = '(define name "a very long string value")';
+    const result = truncateDefinitionText(line, 30, 'sde');
+    assert.ok(result.endsWith(') ;\u2026'), '括号应闭合');
+    const quotes = (result.match(/"/g) || []).length;
+    assert.strictEqual(quotes % 2, 0, '引号应成对');
+    assert.ok(!result.includes('""'), '不应生成虚假空字符串');
+});
+
+test('Tcl 长行截断：使用 # 注释标记', () => {
+    const longLine = 'set very_long_variable_name_that_exceeds_max_width some_value';
+    const result = truncateDefinitionText(longLine, 30, 'sdevice');
+    assert.ok(result.endsWith(' #\u2026'), 'Tcl 应以 #… 结尾');
+});
+
+test('无 langId 默认为 Tcl 风格', () => {
+    const longLine = 'set variable_name value';
+    const result = truncateDefinitionText(longLine, 15);
+    assert.ok(result.endsWith(' #\u2026'), '无 langId 时使用 Tcl 注释');
 });
 
 test('多行只截断超长行', () => {
     const text = '(define x\n  12345678901234567890123456789012345678901234567890)';
-    const result = truncateDefinitionText(text, 30);
+    const result = truncateDefinitionText(text, 30, 'sde');
     const lines = result.split('\n');
     assert.strictEqual(lines[0], '(define x'); // 短行不变
-    assert.ok(lines[1].endsWith('\u2026'));     // 长行截断
-    assert.ok(lines[1].length <= 30);
+    assert.ok(lines[1].includes(';\u2026'), '长行使用注释标记');
 });
 
 test('maxWidth=0 返回原文', () => {
-    assert.strictEqual(truncateDefinitionText('abc', 0), 'abc');
+    assert.strictEqual(truncateDefinitionText('abc', 0, 'sde'), 'abc');
 });
 
 test('null/undefined 返回原值', () => {
-    assert.strictEqual(truncateDefinitionText(null, 60), null);
-    assert.strictEqual(truncateDefinitionText(undefined, 60), undefined);
+    assert.strictEqual(truncateDefinitionText(null, 60, 'sde'), null);
+    assert.strictEqual(truncateDefinitionText(undefined, 60, 'sde'), undefined);
 });
 
 console.log('\ngetDefinitions (缓存):');
