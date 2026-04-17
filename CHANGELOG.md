@@ -4,6 +4,19 @@
 
 ---
 
+## [1.4.2] - 2026-04-17
+
+### 新功能
+
+- **空引号对自动删除**：在空引号对 `""`、`''`、`||` 中按退格删除开引号时，如果引号两侧均为边界字符（空白、分隔符、行首/行尾），自动删除配对的闭引号。支持所有 6 种语言
+
+### Bug 修复
+
+- **修复 SDE 函数签名模式分派与参数偏移**：为 `sdedr:offset-interface` 和 `sdedr:offset-block` 添加模式分派，输入 `region`/`material` 后只显示对应模式签名；修复 `argIndex=0` 函数的参数高亮错位一位问题；签名标签中 flag/tag 可选参数统一加引号
+- **修复列表内注释导致 let/lambda/define 变量误报未定义**：`parseList` 在构建 children 时过滤 Comment 节点，消除注释对固定索引访问的干扰
+
+---
+
 ## [1.4.1] - 2026-04-16
 
 ### 新功能
@@ -457,6 +470,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.4.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.2.0...v1.3.0
