@@ -34,7 +34,19 @@
         "desc": "Optional end angle in degrees. When specified together with start-angle, a circular arc is generated instead of a full circle."
       }
     ],
-    "example": "(sdegeo:create-circle (position 0 0 0) 10 \"Silicon\" \"Region_1\")"
+    "example": "(sdegeo:create-circle (position 0 0 0) 10 \"Silicon\" \"Region_1\")",
+    "symbolParams": [
+      {
+        "index": 2,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 3,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-cone": {
     "signature": "(sdegeo:create-cone {start-axis end-axis} base-radius top-radius [ratio [position3]] region-material region-name)",
@@ -81,7 +93,19 @@
         "desc": "Region name string assigned to the body"
       }
     ],
-    "example": "(sdegeo:create-cone (position -20 -5 -9) (position 15 20 10) 10 2 \"Gold\" \"\")"
+    "example": "(sdegeo:create-cone (position -20 -5 -9) (position 15 20 10) 10 2 \"Gold\" \"\")",
+    "symbolParams": [
+      {
+        "index": 6,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 7,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-cuboid": {
     "signature": "(sdegeo:create-cuboid diagonal1 diagonal2 region-material region-name)",
@@ -108,7 +132,19 @@
         "desc": "Region name string assigned to the body"
       }
     ],
-    "example": "(sdegeo:create-cuboid (position 0 0 0) (position 1 1 1) (sde:get-default-material) \"r1\")"
+    "example": "(sdegeo:create-cuboid (position 0 0 0) (position 1 1 1) (sde:get-default-material) \"r1\")",
+    "symbolParams": [
+      {
+        "index": 2,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 3,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-cylinder": {
     "signature": "(sdegeo:create-cylinder {start-pos end-pos} radius [ratio [position3]] region-material region-name)",
@@ -150,7 +186,19 @@
         "desc": "Region name string assigned to the body"
       }
     ],
-    "example": "(sdegeo:create-cylinder (position 0 0 0) (position 25 25 0) 30 \"Gold\" \"\")"
+    "example": "(sdegeo:create-cylinder (position 0 0 0) (position 25 25 0) 30 \"Gold\" \"\")",
+    "symbolParams": [
+      {
+        "index": 5,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 6,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-ellipse": {
     "signature": "(sdegeo:create-ellipse position1 position2 ratio region-material region-name)",
@@ -182,7 +230,19 @@
         "desc": "Region name string assigned to the region"
       }
     ],
-    "example": "(sdegeo:create-ellipse (position 0 0 0) (position 10 0 0) 0.5 \"PolySi\" \"x1\")"
+    "example": "(sdegeo:create-ellipse (position 0 0 0) (position 10 0 0) 0.5 \"PolySi\" \"x1\")",
+    "symbolParams": [
+      {
+        "index": 3,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 4,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-ellipsoid": {
     "signature": "(sdegeo:create-ellipsoid position1 position2 ratio region-material region-name)",
@@ -214,7 +274,19 @@
         "desc": "Region name string assigned to the body"
       }
     ],
-    "example": "(sdegeo:create-ellipsoid (position 0 0 0) (position 10 0 0) 0.5 \"PolySi\" \"x1\")"
+    "example": "(sdegeo:create-ellipsoid (position 0 0 0) (position 10 0 0) 0.5 \"PolySi\" \"x1\")",
+    "symbolParams": [
+      {
+        "index": 3,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 4,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-linear-edge": {
     "signature": "(sdegeo:create-linear-edge position1 position2)",
@@ -273,7 +345,19 @@
         "desc": "Region name string assigned to the body"
       }
     ],
-    "example": "(sdegeo:create-ot-ellipsoid (position 0 0 2) (position 0 0 3) 0.5 20 80 \"Gold\" \"xx\")"
+    "example": "(sdegeo:create-ot-ellipsoid (position 0 0 2) (position 0 0 3) 0.5 20 80 \"Gold\" \"xx\")",
+    "symbolParams": [
+      {
+        "index": 5,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 6,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-ot-sphere": {
     "signature": "(sdegeo:create-ot-sphere center-position orientation radius truncate-angle-1 truncate-angle-2 region-material region-name)",
@@ -315,7 +399,19 @@
         "desc": "Region name string assigned to the body"
       }
     ],
-    "example": "(sdegeo:create-ot-sphere (position 0 0 0) (gvector 1 0 0) 1 65 65 \"Silicon\" \"x1\")"
+    "example": "(sdegeo:create-ot-sphere (position 0 0 0) (gvector 1 0 0) 1 65 65 \"Silicon\" \"x1\")",
+    "symbolParams": [
+      {
+        "index": 5,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 6,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-polygon": {
     "signature": "(sdegeo:create-polygon vertex-list region-material region-name)",
@@ -337,7 +433,19 @@
         "desc": "Region name string assigned to the region"
       }
     ],
-    "example": "(sdegeo:create-polygon (list (position 0 0 0) (position 1 0 0) (position 1 1 0) (position 0 1 0)) \"Silicon\" \"R.Sub\")"
+    "example": "(sdegeo:create-polygon (list (position 0 0 0) (position 1 0 0) (position 1 1 0) (position 0 1 0)) \"Silicon\" \"R.Sub\")",
+    "symbolParams": [
+      {
+        "index": 1,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 2,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-polyline-wire": {
     "signature": "(sdegeo:create-polyline-wire vertex-list)",
@@ -391,7 +499,19 @@
         "desc": "Region name string assigned to the body"
       }
     ],
-    "example": "(sdegeo:create-prism (position 0 0 0) 20 40 40 6 \"PolySilicon\" \"\")"
+    "example": "(sdegeo:create-prism (position 0 0 0) 20 40 40 6 \"PolySilicon\" \"\")",
+    "symbolParams": [
+      {
+        "index": 5,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 6,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-pyramid": {
     "signature": "(sdegeo:create-pyramid centerposition height major-radius minor-radius nsides top region-material region-name)",
@@ -438,7 +558,19 @@
         "desc": "Region name string assigned to the body"
       }
     ],
-    "example": "(sdegeo:create-pyramid (position 0 0 0) 20 40 40 6 12 \"PolySilicon\" \"\")"
+    "example": "(sdegeo:create-pyramid (position 0 0 0) 20 40 40 6 12 \"PolySilicon\" \"\")",
+    "symbolParams": [
+      {
+        "index": 6,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 7,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-rectangle": {
     "signature": "(sdegeo:create-rectangle pos1 pos2 material region)",
@@ -465,7 +597,19 @@
         "desc": "Region name string assigned to the region, e.g. `\"R.Substrate\"`"
       }
     ],
-    "example": "(sdegeo:create-rectangle (position 0 0 0) (position 2 1 0) \"Silicon\" \"R.Substrate\")"
+    "example": "(sdegeo:create-rectangle (position 0 0 0) (position 2 1 0) \"Silicon\" \"R.Substrate\")",
+    "symbolParams": [
+      {
+        "index": 2,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 3,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-reg-polygon": {
     "signature": "(sdegeo:create-reg-polygon center radius [nsides] [angle] region-material region-name)",
@@ -502,7 +646,19 @@
         "desc": "Region name string assigned to the region"
       }
     ],
-    "example": "(sdegeo:create-reg-polygon (position 0 0 0) 5 6 0 \"Silicon\" \"R.Hex\")"
+    "example": "(sdegeo:create-reg-polygon (position 0 0 0) 5 6 0 \"Silicon\" \"R.Hex\")",
+    "symbolParams": [
+      {
+        "index": 4,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 5,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-ruled-region": {
     "signature": "(sdegeo:create-ruled-region edge1 edge2 region-material region-name)",
@@ -529,7 +685,19 @@
         "desc": "Region name string assigned to the region"
       }
     ],
-    "example": "(sdegeo:create-ruled-region edge1 edge2 \"Silicon\" \"R.Ruled\")"
+    "example": "(sdegeo:create-ruled-region edge1 edge2 \"Silicon\" \"R.Ruled\")",
+    "symbolParams": [
+      {
+        "index": 2,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 3,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-sphere": {
     "signature": "(sdegeo:create-sphere {center-position | {cx cy cz}} radius region-material region-name)",
@@ -579,7 +747,19 @@
           ]
         }
       }
-    }
+    },
+    "symbolParams": [
+      {
+        "index": 2,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 3,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-spline-wire": {
     "signature": "(sdegeo:create-spline-wire vertex-list)",
@@ -648,7 +828,19 @@
           ]
         }
       }
-    }
+    },
+    "symbolParams": [
+      {
+        "index": 3,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 4,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:create-triangle": {
     "signature": "(sdegeo:create-triangle v1 v2 v3 region-material region-name)",
@@ -680,7 +872,19 @@
         "desc": "Region name string assigned to the region"
       }
     ],
-    "example": "(sdegeo:create-triangle (position 0 0 0) (position 1 0 0) (position 0.5 1 0) \"Silicon\" \"sir\")"
+    "example": "(sdegeo:create-triangle (position 0 0 0) (position 1 0 0) (position 0.5 1 0) \"Silicon\" \"sir\")",
+    "symbolParams": [
+      {
+        "index": 3,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 4,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdegeo:extrude": {
     "signature": "(sdegeo:extrude body-list extrusion-depth [extrude-option])",
@@ -1071,7 +1275,14 @@
         "desc": "Specifies the name of the contact set to delete. The corresponding contact attributes (either 2D contact or 3D contact) are also removed. Argument type: STRING"
       }
     ],
-    "example": "(sdegeo:delete-contact-set \"Gate\")"
+    "example": "(sdegeo:delete-contact-set \"Gate\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "contact"
+      }
+    ]
   },
   "sdegeo:delete-coord-sys": {
     "signature": "(sdegeo:delete-coord-sys cs-name)",
@@ -1233,7 +1444,14 @@
         "desc": "Name of the contact set"
       }
     ],
-    "example": "(sdegeo:get-contact-edgelist \"Drain\")"
+    "example": "(sdegeo:get-contact-edgelist \"Drain\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "contact"
+      }
+    ]
   },
   "sdegeo:get-contact-facelist": {
     "signature": "(sdegeo:get-contact-facelist contact-set-name)",
@@ -1245,7 +1463,14 @@
         "desc": "Name of the contact set"
       }
     ],
-    "example": "(sdegeo:get-contact-facelist \"Gate\")"
+    "example": "(sdegeo:get-contact-facelist \"Gate\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "contact"
+      }
+    ]
   },
   "sdegeo:get-current-contact-set": {
     "signature": "(sdegeo:get-current-contact-set)",
@@ -1321,7 +1546,14 @@
         "desc": "Optional; deletes the region and converts its boundary edges (2D) or boundary faces (3D) into the specified contact"
       }
     ],
-    "example": "(sdegeo:set-contact (car (sde:get-body-list)) \"Gate\")"
+    "example": "(sdegeo:set-contact (car (sde:get-body-list)) \"Gate\")",
+    "symbolParams": [
+      {
+        "index": 1,
+        "role": "ref",
+        "type": "contact"
+      }
+    ]
   },
   "sdegeo:set-contact-boundary-edges": {
     "signature": "(sdegeo:set-contact-boundary-edges body | body-list)",
@@ -1362,7 +1594,14 @@
         "desc": "Name of the predefined contact set to assign"
       }
     ],
-    "example": "(sdegeo:set-contact-edges (sde:get-edge-list) \"Drain\")"
+    "example": "(sdegeo:set-contact-edges (sde:get-edge-list) \"Drain\")",
+    "symbolParams": [
+      {
+        "index": 1,
+        "role": "ref",
+        "type": "contact"
+      }
+    ]
   },
   "sdegeo:set-contact-faces": {
     "signature": "(sdegeo:set-contact-faces face | face-list)",
@@ -1396,7 +1635,14 @@
         "desc": "Name of the contact set to assign to the imprinted face segments"
       }
     ],
-    "example": "(sdegeo:set-contact-faces-by-polygon (list (list (position 8 7 10) (position 9 8 10))) (list (gvector 0 0 -1)) \"c1\")"
+    "example": "(sdegeo:set-contact-faces-by-polygon (list (list (position 8 7 10) (position 9 8 10))) (list (gvector 0 0 -1)) \"c1\")",
+    "symbolParams": [
+      {
+        "index": 2,
+        "role": "ref",
+        "type": "contact"
+      }
+    ]
   },
   "sdegeo:set-current-contact-set": {
     "signature": "(sdegeo:set-current-contact-set csName)",
@@ -1408,7 +1654,14 @@
         "desc": "Contact set name to make active"
       }
     ],
-    "example": "(sdegeo:set-current-contact-set \"Drain\")"
+    "example": "(sdegeo:set-current-contact-set \"Drain\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "contact"
+      }
+    ]
   },
   "sdegeo:set-default-boolean": {
     "signature": "(sdegeo:set-default-boolean boolean-value)",
@@ -1886,7 +2139,14 @@
         "desc": "Specifies the name of the contact set. Argument type: STRING"
       }
     ],
-    "example": "(sdegeo:define-3d-contact-by-polygon (list (position 1 1 10) (position 5 1 10) (position 5 5 10) (position 3 2 10) (position 1 5 10) (position 1 1 10)) (gvector 0 0 -1) \"demo\")"
+    "example": "(sdegeo:define-3d-contact-by-polygon (list (position 1 1 10) (position 5 1 10) (position 5 5 10) (position 3 2 10) (position 1 5 10) (position 1 1 10)) (gvector 0 0 -1) \"demo\")",
+    "symbolParams": [
+      {
+        "index": 2,
+        "role": "def",
+        "type": "contact"
+      }
+    ]
   },
   "sdegeo:define-contact-set": {
     "signature": "(sdegeo:define-contact-set name [edgeThickness Color] | [Color facePattern])",
@@ -1913,7 +2173,14 @@
         "desc": "Optional. Specifies the face pattern for 3D face contacts. Can be one of: \"solid\", \"###\", \"||\", \"==\", \"//\", \"::\", \"<><\", \"[]\". Default is \"##\". Argument type: STRING (optional)"
       }
     ],
-    "example": "(sdegeo:define-contact-set \"Source\" 4.0 (color:rgb 1.0 0.0 0.0) \"##\")"
+    "example": "(sdegeo:define-contact-set \"Source\" 4.0 (color:rgb 1.0 0.0 0.0) \"##\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "def",
+        "type": "contact"
+      }
+    ]
   },
   "sdegeo:define-coord-sys": {
     "signature": "(sdegeo:define-coord-sys cs-name x-pos y-pos angle)",
@@ -2350,7 +2617,19 @@
         "desc": "New name for the contact"
       }
     ],
-    "example": "(sdegeo:rename-contact \"old_name\" \"new_name\")"
+    "example": "(sdegeo:rename-contact \"old_name\" \"new_name\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "contact"
+      },
+      {
+        "index": 1,
+        "role": "def",
+        "type": "contact"
+      }
+    ]
   },
   "sdegeo:skin-wires": {
     "signature": "(sdegeo:skin-wires body-list [path] [skin-options])",
@@ -2775,7 +3054,14 @@
         "desc": "DATEX material name or list of DATEX material names"
       }
     ],
-    "example": "(sde:delete-materials \"Silicon\")"
+    "example": "(sde:delete-materials \"Silicon\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "material"
+      }
+    ]
   },
   "sde:delete-parameter": {
     "signature": "(sde:delete-parameter parameter-name)",
@@ -3050,7 +3336,14 @@
         "desc": "Contact attribute name or list of names"
       }
     ],
-    "example": "(sde:hide-contact \"contact_1\")"
+    "example": "(sde:hide-contact \"contact_1\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "contact"
+      }
+    ]
   },
   "sde:hide-interface": {
     "signature": "(sde:hide-interface interface-name | interface-name-list)",
@@ -3086,7 +3379,14 @@
         "desc": "DATEX material name or list of names"
       }
     ],
-    "example": "(sde:hide-material \"Silicon\")"
+    "example": "(sde:hide-material \"Silicon\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "material"
+      }
+    ]
   },
   "sde:hide-region": {
     "signature": "(sde:hide-region region-name | region-name-list)",
@@ -3098,7 +3398,14 @@
         "desc": "Region name or list of region names"
       }
     ],
-    "example": "(sde:hide-region \"region_1\")"
+    "example": "(sde:hide-region \"region_1\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "region"
+      }
+    ]
   },
   "sde:hide-ruler": {
     "signature": "(sde:hide-ruler)",
@@ -3194,7 +3501,14 @@
         "desc": "Specifies one of the DATEX colors/materials, as defined in the datecodes.txt file. Argument type: DATEMAT"
       }
     ],
-    "example": "(sde:set-default-material \"Silicon\")"
+    "example": "(sde:set-default-material \"Silicon\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "material"
+      }
+    ]
   },
   "sde:set-menubar-font-size": {
     "signature": "(sde:set-menubar-font-size font-size)",
@@ -3395,7 +3709,14 @@
         "desc": "Specifies the name of a contact (STRING) or a list of contact names (STRING LIST) to display"
       }
     ],
-    "example": "(sde:show-contact \"gate_contact\")"
+    "example": "(sde:show-contact \"gate_contact\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "contact"
+      }
+    ]
   },
   "sde:show-grid": {
     "signature": "(sde:show-grid on-off)",
@@ -3443,7 +3764,14 @@
         "desc": "Specifies a DATEX material (DATEXMAT) or a list of DATEX materials (DATEXMAT LIST) whose regions to display"
       }
     ],
-    "example": "(sde:show-material \"Silicon\")"
+    "example": "(sde:show-material \"Silicon\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "material"
+      }
+    ]
   },
   "sde:show-pcurves": {
     "signature": "(sde:show-pcurves rendering-flag [u-params [v-params]])",
@@ -3477,7 +3805,14 @@
         "desc": "Specifies the name of a region (STRING) or a list of region names (STRING LIST). Must be existing region names."
       }
     ],
-    "example": "(sde:show-region \"region_1\")"
+    "example": "(sde:show-region \"region_1\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "region"
+      }
+    ]
   },
   "sde:max-z": {
     "signature": "(sde:max-z body | body-list)",
@@ -3622,7 +3957,14 @@
         "desc": "Specifies the name of a contact (STRING) or a list of contact names (STRING LIST) to show exclusively"
       }
     ],
-    "example": "(sde:xshow-contact \"anode\")"
+    "example": "(sde:xshow-contact \"anode\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "contact"
+      }
+    ]
   },
   "sde:xshow-interface": {
     "signature": "(sde:xshow-interface interface-name | interface-name-list)",
@@ -3658,7 +4000,14 @@
         "desc": "Specifies a DATEX material (DATEXMAT) or a list of DATEX materials (DATEXMAT LIST) to show exclusively"
       }
     ],
-    "example": "(sde:xshow-material \"Silicon\")"
+    "example": "(sde:xshow-material \"Silicon\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "material"
+      }
+    ]
   },
   "sde:xshow-region": {
     "signature": "(sde:xshow-region region-name | region-name-list)",
@@ -3670,7 +4019,14 @@
         "desc": "Specifies the name of a region (STRING) or a list of region names (STRING LIST). The region name(s) must exist."
       }
     ],
-    "example": "(sde:xshow-region \"region_1\")"
+    "example": "(sde:xshow-region \"region_1\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "region"
+      }
+    ]
   },
   "sde:save-tcl-parameters": {
     "signature": "(sde:save-tcl-parameters filename)",
@@ -3710,7 +4066,19 @@
         "desc": "Region name used in the tessellated boundary output"
       }
     ],
-    "example": "(sde:add-material (car (sde:get-body-list)) \"Silicon\" \"Reg.Silicon\")"
+    "example": "(sde:add-material (car (sde:get-body-list)) \"Silicon\" \"Reg.Silicon\")",
+    "symbolParams": [
+      {
+        "index": 1,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 2,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sde:back-coord": {
     "signature": "(sde:back-coord body | body-list)",
@@ -4010,7 +4378,14 @@
         "desc": "DATEX material name to query"
       }
     ],
-    "example": "(sde:material-type \"Silicon\")"
+    "example": "(sde:material-type \"Silicon\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "material"
+      }
+    ]
   },
   "sde:merge-materials": {
     "signature": "(sde:merge-materials materials newmaterial)",
@@ -4027,7 +4402,14 @@
         "desc": "The DATEX material to assign to the merged body"
       }
     ],
-    "example": "(sde:merge-materials (list \"Oxide1\" \"Oxide2\") \"Oxide\")"
+    "example": "(sde:merge-materials (list \"Oxide1\" \"Oxide2\") \"Oxide\")",
+    "symbolParams": [
+      {
+        "index": 1,
+        "role": "def",
+        "type": "material"
+      }
+    ]
   },
   "sde:new-region-name": {
     "signature": "(sde:new-region-name)",
@@ -4694,7 +5076,14 @@
         "desc": "Optional; \"Replace\" replaces all other previously defined profiles; \"LocalReplace\" replaces only the doping species being defined; \"NoReplace\" adds the new profile to all previously defined profiles (default)"
       }
     ],
-    "example": "(sdedr:define-constant-profile-material \"PlaceCD.BG\" \"Const.BG\" \"GaAs\")"
+    "example": "(sdedr:define-constant-profile-material \"PlaceCD.BG\" \"Const.BG\" \"GaAs\")",
+    "symbolParams": [
+      {
+        "index": 2,
+        "role": "ref",
+        "type": "material"
+      }
+    ]
   },
   "sdedr:define-constant-profile-placement": {
     "signature": "(sdedr:define-constant-profile-placement placement-name definition-name ref-win-name [decay-length [\"Gauss\"]] [replace])",
@@ -4758,7 +5147,14 @@
         "desc": "Optional; \"Replace\" replaces all other previously defined profiles; \"LocalReplace\" replaces only the doping species being defined; \"NoReplace\" adds the new profile to all previously defined profiles (default)"
       }
     ],
-    "example": "(sdedr:define-constant-profile-region \"PlaceCD.GaAsCap\" \"Const.GaAsCap\" \"R.GaAsCap\" 2 \"Replace\")"
+    "example": "(sdedr:define-constant-profile-region \"PlaceCD.GaAsCap\" \"Const.GaAsCap\" \"R.GaAsCap\" 2 \"Replace\")",
+    "symbolParams": [
+      {
+        "index": 2,
+        "role": "ref",
+        "type": "region"
+      }
+    ]
   },
   "sdedr:define-erf-profile": {
     "signature": "(sdedr:define-erf-profile definition-name species \"SymPos\" symmetry-position {\"MaxVal\" max-value | \"Dose\" dose} \"Junction\" junction \"ValueAtDepth\" value-at-depth \"Depth\" depth \"Length\" length \"StdDev\" standard-deviation [lateral-function])",
@@ -5300,7 +5696,14 @@
         "desc": "Material name (DATEXMAT type)"
       }
     ],
-    "example": "(sdedr:define-refinement-material \"p1\" \"d1\" \"Silicon\")"
+    "example": "(sdedr:define-refinement-material \"p1\" \"d1\" \"Silicon\")",
+    "symbolParams": [
+      {
+        "index": 2,
+        "role": "ref",
+        "type": "material"
+      }
+    ]
   },
   "sdedr:define-refinement-placement": {
     "signature": "(sdedr:define-refinement-placement refinement-name definition-name ref-eval-window)",
@@ -5344,7 +5747,14 @@
         "desc": "Name of the region"
       }
     ],
-    "example": "(sdedr:define-refinement-region \"p1\" \"d1\" \"Region_1\")"
+    "example": "(sdedr:define-refinement-region \"p1\" \"d1\" \"Region_1\")",
+    "symbolParams": [
+      {
+        "index": 2,
+        "role": "ref",
+        "type": "region"
+      }
+    ]
   },
   "sdedr:define-refinement-size": {
     "signature": "(sdedr:define-refinement-size definition-name max-x [max-y] [max-z] min-x [min-y] [min-z])",
@@ -5619,15 +6029,25 @@
       "argIndex": 0,
       "modes": {
         "material": {
-          "params": ["material"],
+          "params": [
+            "material"
+          ],
           "optionals": [
-            {"tag": "maxlevel", "param": "maxlevel"}
+            {
+              "tag": "maxlevel",
+              "param": "maxlevel"
+            }
           ]
         },
         "region": {
-          "params": ["region"],
+          "params": [
+            "region"
+          ],
           "optionals": [
-            {"tag": "maxlevel", "param": "maxlevel"}
+            {
+              "tag": "maxlevel",
+              "param": "maxlevel"
+            }
           ]
         }
       }
@@ -5644,7 +6064,14 @@
         "desc": "Maximum refinement level for the offsetting block"
       }
     ],
-    "example": "(sdedr:offset-block \"region\" \"R.Substrate\" \"maxlevel\" 10)"
+    "example": "(sdedr:offset-block \"region\" \"R.Substrate\" \"maxlevel\" 10)",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "auto"
+      }
+    ]
   },
   "sdedr:offset-global": {
     "signature": "(sdedr:offset-global \"collisionDistance\" collisionDistance \"factor\" factor \"hlocal\" hlocal \"maxlevel\" maxlevel \"minAngle\" minAngle)",
@@ -5685,19 +6112,43 @@
       "argIndex": 0,
       "modes": {
         "region": {
-          "params": ["region1", "region2"],
+          "params": [
+            "region1",
+            "region2"
+          ],
           "optionals": [
-            {"tag": "hlocal", "param": "hlocal"},
-            {"tag": "factor", "param": "factor"},
-            {"tag": "window", "param": "x1 y1 z1 x2 y2 z2"}
+            {
+              "tag": "hlocal",
+              "param": "hlocal"
+            },
+            {
+              "tag": "factor",
+              "param": "factor"
+            },
+            {
+              "tag": "window",
+              "param": "x1 y1 z1 x2 y2 z2"
+            }
           ]
         },
         "material": {
-          "params": ["material1", "material2"],
+          "params": [
+            "material1",
+            "material2"
+          ],
           "optionals": [
-            {"tag": "hlocal", "param": "hlocal"},
-            {"tag": "factor", "param": "factor"},
-            {"tag": "window", "param": "x1 y1 z1 x2 y2 z2"}
+            {
+              "tag": "hlocal",
+              "param": "hlocal"
+            },
+            {
+              "tag": "factor",
+              "param": "factor"
+            },
+            {
+              "tag": "window",
+              "param": "x1 y1 z1 x2 y2 z2"
+            }
           ]
         }
       }
@@ -5729,7 +6180,19 @@
         "desc": "Bounding window coordinates defining two opposite corners (six REAL values, tagged \"window\")"
       }
     ],
-    "example": "(sdedr:offset-interface \"region\" \"R1\" \"R2\" \"hlocal\" 0.01 \"factor\" 1.5 \"window\" 0 0 0 10 10 10)"
+    "example": "(sdedr:offset-interface \"region\" \"R1\" \"R2\" \"hlocal\" 0.01 \"factor\" 1.5 \"window\" 0 0 0 10 10 10)",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "auto"
+      },
+      {
+        "index": 1,
+        "role": "ref",
+        "type": "auto"
+      }
+    ]
   },
   "sdedr:read-cmd-file": {
     "signature": "(sdedr:read-cmd-file cmd-file-name)",
@@ -6124,7 +6587,19 @@
         "desc": "Name for the region to create inside the cuboids"
       }
     ],
-    "example": "(define GATEMETAL (sdeicwb:create-boxes-from-layer \"ngate\" (sdeicwb:down PoTop 0.05) (sdeicwb:up PoTop 0.1) \"Metal\" \"R.dummy\"))"
+    "example": "(define GATEMETAL (sdeicwb:create-boxes-from-layer \"ngate\" (sdeicwb:down PoTop 0.05) (sdeicwb:up PoTop 0.1) \"Metal\" \"R.dummy\"))",
+    "symbolParams": [
+      {
+        "index": 3,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 4,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdeicwb:define-refinement-from-layer": {
     "signature": "(sdeicwb:define-refinement-from-layer \"lname\" lname [\"rname\" rname] [\"oversize\" oversize] \"top\" top \"bot\" bot \"dlrmin\" dlrmin \"dlrmax\" dlrmax \"dbtmin\" dbtmin \"dbtmax\" dbtmax [\"dbfmin\" dbfmin] [\"dbfmax\" dbfmax] [\"material\" material] [\"region\" region] [\"use-bbox\" use-bbox])",
@@ -6723,7 +7198,19 @@
         "desc": "Explicit region name assigned to the generated substrate (STRING, optional)"
       }
     ],
-    "example": "(sdepe:add-substrate \"material\" \"Silicon\" \"thickness\" 2.0 \"base\" 0 \"region\" \"Substrate\")"
+    "example": "(sdepe:add-substrate \"material\" \"Silicon\" \"thickness\" 2.0 \"base\" 0 \"region\" \"Substrate\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 3,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdepe:clean": {
     "signature": "(sdepe:clean)",
@@ -6807,6 +7294,18 @@
         "type": "number",
         "desc": "Number of deposition steps, must be >= 1 (INTEGER, optional)"
       }
+    ],
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 2,
+        "role": "def",
+        "type": "region"
+      }
     ]
   },
   "sdepe:doping-constant-placement": {
@@ -6834,7 +7333,14 @@
         "desc": "Name of the region to which the constant doping is applied (STRING)"
       }
     ],
-    "example": "(sdepe:doping-constant-placement \"myDoping\" \"Boron\" 1e16 \"region_1\")"
+    "example": "(sdepe:doping-constant-placement \"myDoping\" \"Boron\" 1e16 \"region_1\")",
+    "symbolParams": [
+      {
+        "index": 3,
+        "role": "ref",
+        "type": "region"
+      }
+    ]
   },
   "sdepe:etch-material": {
     "signature": "(sdepe:etch-material \"material\" material \"depth\" depth [\"overetch\" overetch] [\"ebl\" ebl] ...depo-args)",
@@ -6861,7 +7367,14 @@
         "desc": "Etch body list: \"all\" (default, affects initially unexposed layers too) or \"top\" (only initially exposed bodies are affected), optional"
       }
     ],
-    "example": "(sdepe:etch-material \"material\" \"Oxide\" \"depth\" 0.5 \"type\" \"aniso\")"
+    "example": "(sdepe:etch-material \"material\" \"Oxide\" \"depth\" 0.5 \"type\" \"aniso\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "material"
+      }
+    ]
   },
   "sdepe:extend-masks": {
     "signature": "(sdepe:extend-masks pminx pminy pmaxx pmaxy extension-distance)",
@@ -6915,7 +7428,19 @@
         "desc": "Region name for the filled region (STRING, optional)"
       }
     ],
-    "example": "(sdepe:fill-device \"material\" \"Oxide\" \"height\" 5.0 \"region\" \"fill_region\")"
+    "example": "(sdepe:fill-device \"material\" \"Oxide\" \"height\" 5.0 \"region\" \"fill_region\")",
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 2,
+        "role": "def",
+        "type": "region"
+      }
+    ]
   },
   "sdepe:generate-domainboundary": {
     "signature": "(sdepe:generate-domainboundary)",
@@ -7189,7 +7714,14 @@
           ]
         }
       }
-    }
+    },
+    "symbolParams": [
+      {
+        "index": 2,
+        "role": "ref",
+        "type": "material"
+      }
+    ]
   },
   "sdepe:remove": {
     "signature": "(sdepe:remove { [\"region\" region-name] | [\"material\" material] })",
@@ -7224,7 +7756,19 @@
           ]
         }
       }
-    }
+    },
+    "symbolParams": [
+      {
+        "index": 0,
+        "role": "ref",
+        "type": "region"
+      },
+      {
+        "index": 1,
+        "role": "ref",
+        "type": "material"
+      }
+    ]
   },
   "sdepe:trim-masks": {
     "signature": "(sdepe:trim-masks domainboundary)",
