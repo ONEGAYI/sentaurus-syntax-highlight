@@ -90,7 +90,9 @@ sentaurus-syntax-highlight/
 │   │       ├── tcl-bracket-diagnostic.js       ← Tcl 括号诊断（文本级 {} 平衡）
 │   │       ├── tcl-document-symbol-provider.js ← Tcl 文档大纲（Outline 视图）
 │   │       ├── unit-auto-close-logic.js        ← SPROCESS Unit 括号自动配对判断逻辑
-│   │       └── unit-auto-close-provider.js     ← SPROCESS Unit 括号自动配对 Provider
+│   │       ├── unit-auto-close-provider.js     ← SPROCESS Unit 括号自动配对 Provider
+│   │       ├── quote-auto-delete-logic.js      ← 空引号对自动删除判断逻辑
+│   │       └── quote-auto-delete-provider.js   ← 空引号对自动删除 Provider（6 种语言共用）
 │   │
 │   └── snippets/                               ← QuickPick 代码片段数据（JS 模块）
 │       ├── sde.js                              ← SDE 结构编辑器片段
@@ -119,6 +121,7 @@ sentaurus-syntax-highlight/
 │   ├── test-tcl-scope-index.js                 ← ScopeIndex 作用域查询测试
 │   ├── test-undef-var-integration.js           ← 未定义变量诊断集成测试
 │   ├── test-unit-auto-close.js                 ← Unit 括号自动配对测试
+│   ├── test-quote-auto-delete.js               ← 空引号对自动删除测试
 │   └── benchmark.js                            ← 性能基准测试工具
 │
 ├── scripts/                                    ← 开发工具脚本
@@ -186,6 +189,7 @@ sentaurus-syntax-highlight/
 - `scheme-on-enter-provider.js` — Scheme 括号内回车多级自动缩进（与 `sde.json` onEnterRules 协同）
 - `tcl-document-symbol-provider.js` — Tcl 文档大纲
 - `unit-auto-close-provider.js` — SPROCESS Unit 括号自动配对（含 logic 层判断逻辑）
+- `quote-auto-delete-provider.js` — 空引号对自动删除（6 种语言共用，含 logic 层判断逻辑）
 
 **内存管理**：WASM `tree` 对象使用后必须 `tree.delete()` 释放，由 `parse-cache.js` 的 `TclParseCache` 统一管理生命周期。
 
