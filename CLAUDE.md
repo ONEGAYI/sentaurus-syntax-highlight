@@ -45,7 +45,7 @@ sentaurus-syntax-highlight/
 │   ├── svisual.tmLanguage.json                 ← Svisual 语法高亮规则
 │   ├── all_keywords.json                       ← 全工具关键词数据库（补全 + 语法共用）
 │   ├── tree-sitter-tcl.wasm                    ← tree-sitter-tcl WASM 字节码
-│   ├── sde_function_docs.{json,zh-CN.json}     ← SDE 函数文档（中英文双语，400 API）
+│   ├── sde_function_docs.{json,zh-CN.json}     ← SDE 函数文档（中英文双语，565 API）
 │   ├── scheme_function_docs.{json,zh-CN.json}  ← Scheme 内置函数文档（中英文双语，191 函数）
 │   ├── sdevice_command_docs.{json,zh-CN.json}  ← SDEVICE 命令文档（中英文双语，341 关键词）
 │   ├── svisual_command_docs.{json,zh-CN.json}  ← Svisual 命令文档（中英文双语）
@@ -178,7 +178,7 @@ sentaurus-syntax-highlight/
 
 ### 第二层：关键词补全与文档悬停
 
-`src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（400 API）、Scheme 内置（191 函数）、SDEVICE（341 关键词）、Tcl 核心命令（43 命令）、Svisual（中英文双语）。文档 JSON 按语言懒加载，激活时仅加载当前语言所需文档。
+`src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（565 API）、Scheme 内置（191 函数）、SDEVICE（341 关键词）、Tcl 核心命令（43 命令）、Svisual（中英文双语）。文档 JSON 按语言懒加载，激活时仅加载当前语言所需文档。
 
 `src/definitions.js` 独立提供用户自定义变量的补全、悬停和跳转定义，通过 `document.version` 惰性缓存避免重复扫描。definitionText 扩展到行尾包含行末注释，并通过 `truncateDefinitionText` 工具函数按 `sentaurus.definitionMaxWidth` 设置截断过长文本。
 
