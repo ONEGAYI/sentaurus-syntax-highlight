@@ -35,6 +35,11 @@ const SYMBOL_TABLE = {
     },
 };
 
+/** Sentaurus 内置材料名白名单（从 all_keywords.json MATERIAL 分类加载） */
+const BUILTIN_MATERIALS = new Set(
+    require('../syntaxes/all_keywords.json').MATERIAL || []
+);
+
 /**
  * 模拟诊断逻辑：提取 defs + refs，找出未定义的引用。
  */
@@ -44,6 +49,7 @@ function computeUndefDiagnostics(code, symbolTable) {
     const definedNames = new Set(defs.map(d => `${d.type}:${d.name}`));
     const undefs = [];
     for (const ref of refs) {
+        if (ref.type === 'material' && BUILTIN_MATERIALS.has(ref.name)) continue;
         if (!definedNames.has(`${ref.type}:${ref.name}`)) {
             undefs.push(ref);
         }
@@ -130,6 +136,49 @@ test('contact 未定义引用 → 诊断', () => {
     const undefs = computeUndefDiagnostics(code, table);
     assert.strictEqual(undefs.length, 1);
     assert.strictEqual(undefs[0].type, 'contact');
+});
+
+test('内置材料名引用 → 无诊断', () => {
+    const code = `(sdedr:define-refinement-material "PL.1" "RD.1" "Silicon")`;
+    const table = {
+        'sdedr:define-refinement-material': {
+            symbolParams: [{ index: 2, role: 'ref', type: 'material' }],
+        },
+    };
+    const undefs = computeUndefDiagnostics(code, table);
+    assert.strictEqual(undefs.length, 0);
+});
+
+test('非内置材料名引用 → 诊断', () => {
+    const code = `(sdedr:define-refinement-material "PL.1" "RD.1" "CustomMat")`;
+    const table = {
+        'sdedr:define-refinement-material': {
+            symbolParams: [{ index: 2, role: 'ref', type: 'material' }],
+        },
+    };
+    const undefs = computeUndefDiagnostics(code, table);
+    assert.strictEqual(undefs.length, 1);
+    assert.strictEqual(undefs[0].name, 'CustomMat');
+});
+
+test('用户定义材料覆盖内置名 → 无诊断', () => {
+    const code = `
+(sdegeo:create-rectangle (position 0 0 0) (position 1 1 0) "Silicon" "R.Si")
+(sdedr:define-refinement-material "PL.1" "RD.1" "Silicon")
+`;
+    const table = {
+        'sdegeo:create-rectangle': {
+            symbolParams: [
+                { index: 2, role: 'def', type: 'material' },
+                { index: 3, role: 'def', type: 'region' },
+            ],
+        },
+        'sdedr:define-refinement-material': {
+            symbolParams: [{ index: 2, role: 'ref', type: 'material' }],
+        },
+    };
+    const undefs = computeUndefDiagnostics(code, table);
+    assert.strictEqual(undefs.length, 0);
 });
 
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
