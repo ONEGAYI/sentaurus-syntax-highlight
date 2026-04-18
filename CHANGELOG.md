@@ -4,6 +4,19 @@
 
 ---
 
+## [1.5.1] - 2026-04-18
+
+### Bug 修复
+
+- **修复定义提示框截断导致语法高亮错误和虚假内容**：`truncateDefinitionText` 截断时检测是否落在字符串内部，若是则回退到引号之前，避免生成虚假参数；Scheme 截断后自动平衡未闭合括号并用 `;…` 注释标记，Tcl 使用 `#…` 标记；补全文档语言标记从硬编码改为动态 `langId`
+- **修复内置材料名被误报未定义**：将 `region-undef-diagnostic.js` 中硬编码的 `BUILTIN_MATERIALS` 白名单迁移到 `all_keywords.json` 的顶层 `MATERIAL` 分类（109 项），供诊断白名单和补全系统共用，用户编辑 JSON 即可扩展材料
+
+### 其他改进
+
+- `sentaurus.definitionMaxWidth` 设置最小值放宽至 0，设为 0 时禁用截断
+
+---
+
 ## [1.5.0] - 2026-04-17
 
 ### 新功能
@@ -488,6 +501,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.5.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.4.2...v1.5.0
 [1.4.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.4.0...v1.4.1
