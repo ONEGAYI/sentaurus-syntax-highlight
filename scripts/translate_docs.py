@@ -16,6 +16,22 @@
         --source syntaxes/sde_function_docs.json \
         --target syntaxes/sde_function_docs.zh-CN.json \
         --batch-size 10
+
+注意事项：
+    目标 JSON 中必须已存在对应条目的完整结构（含 parameters 数组），否则参数级字段
+    （如 parameters[].desc）的翻译会被静默跳过——apply_translation 在目标条目缺少
+    parameters 时无法写入。
+
+    翻译全新条目（目标文件中不存在）时，需先预填充：从源文件复制完整结构，将可译字段
+    （description、parameters[].desc）置空，再运行本脚本。例如：
+        node -e "
+          const src = JSON.parse(require('fs').readFileSync('source.json','utf8'));
+          const tgt = {};
+          for (const [k,v] of Object.entries(src))
+            tgt[k] = { ...v, description: '',
+              parameters: (v.parameters||[]).map(p => ({...p, desc: ''})) };
+          require('fs').writeFileSync('target.json', JSON.stringify(tgt,null,2));
+        "
 """
 
 import argparse

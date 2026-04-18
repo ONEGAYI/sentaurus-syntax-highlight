@@ -7087,5 +7087,2379 @@
       }
     ],
     "signature": "(generic:get entity-id attribute)"
+  },
+  "gvector": {
+    "signature": "(gvector x y z [space = model])",
+    "description": "创建一个具有指定 x、y 和 z 坐标的新向量，相对于当前活动坐标系。",
+    "parameters": [
+      {
+        "name": "x",
+        "type": "number",
+        "desc": "定义 x 坐标 (REAL)。"
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "desc": "定义 y 坐标 (REAL)。"
+      },
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "定义 z 坐标 (REAL)。"
+      },
+      {
+        "name": "space",
+        "type": "string",
+        "desc": "可选。用于解释 x, y, z 值的坐标系。默认为 WCS（当前工作平面）。\n支持的值：\n\"model\" — 相对于模型的直角笛卡尔坐标系。\n\"polar\" 或 \"cylindrical\" — 径向距离、与 xz 平面的极角（度）、z 坐标。\n\"spherical\" — 径向距离、与 z 轴的偏角（度）、与 xz 平面的极角（度）。"
+      }
+    ],
+    "example": "(gvector 1.0 2.0 3.0)"
+  },
+  "gvector?": {
+    "signature": "(gvector? object)",
+    "description": "判断一个 Scheme 对象是否为向量。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "指定要查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(gvector? my-gvector)"
+  },
+  "gvector:+": {
+    "signature": "(gvector:+ gvector1 gvector2)",
+    "description": "返回两个向量相加的结果作为一个新向量。",
+    "parameters": [
+      {
+        "name": "gvector1",
+        "type": "gvector",
+        "desc": "定义第一个向量。"
+      },
+      {
+        "name": "gvector2",
+        "type": "gvector",
+        "desc": "定义第二个向量。"
+      }
+    ],
+    "example": "(gvector:+ (gvector 1 3 2) (gvector 2 2 2))"
+  },
+  "gvector:-": {
+    "signature": "(gvector:- gvector1 gvector2)",
+    "description": "返回从向量1减去向量2的结果作为一个新向量。",
+    "parameters": [
+      {
+        "name": "gvector1",
+        "type": "gvector",
+        "desc": "定义两个向量的起始位置（被减数）。"
+      },
+      {
+        "name": "gvector2",
+        "type": "gvector",
+        "desc": "定义两个向量的结束位置（减数）。"
+      }
+    ],
+    "example": "(gvector:- (gvector 1 3 2) (gvector 2 2 2))"
+  },
+  "gvector:copy": {
+    "signature": "(gvector:copy gvector)",
+    "description": "通过复制现有向量来创建一个新向量。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "要复制的向量。"
+      }
+    ],
+    "example": "(define gvcopy (gvector:copy (gvector 6 5 2)))"
+  },
+  "gvector:cross": {
+    "signature": "(gvector:cross gvector1 gvector2)",
+    "description": "返回两个向量的叉积作为一个新向量。",
+    "parameters": [
+      {
+        "name": "gvector1",
+        "type": "gvector",
+        "desc": "第一个向量。"
+      },
+      {
+        "name": "gvector2",
+        "type": "gvector",
+        "desc": "第二个向量。"
+      }
+    ],
+    "example": "(gvector:cross (gvector 1 0 0) (gvector 0 1 0))"
+  },
+  "gvector:dot": {
+    "signature": "(gvector:dot gvector1 gvector2)",
+    "description": "返回两个向量的点积作为一个实数。",
+    "parameters": [
+      {
+        "name": "gvector1",
+        "type": "gvector",
+        "desc": "第一个向量。"
+      },
+      {
+        "name": "gvector2",
+        "type": "gvector",
+        "desc": "第二个向量。"
+      }
+    ],
+    "example": "(gvector:dot (gvector 1 0 0) (gvector 0 1 0))"
+  },
+  "gvector:from-to": {
+    "signature": "(gvector:from-to position1 position2)",
+    "description": "返回两个位置之间的向量。",
+    "parameters": [
+      {
+        "name": "position1",
+        "type": "position",
+        "desc": "定义第一个位置（起点）。"
+      },
+      {
+        "name": "position2",
+        "type": "position",
+        "desc": "定义第二个位置（终点）。"
+      }
+    ],
+    "example": "(gvector:from-to (position 0 0 0) (position 1 2 3))"
+  },
+  "gvector:length": {
+    "signature": "(gvector:length gvector)",
+    "description": "返回向量的长度（模）作为一个实数。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "要计算其长度的向量。"
+      }
+    ],
+    "example": "(gvector:length (gvector 3 4 0))"
+  },
+  "gvector:parallel?": {
+    "signature": "(gvector:parallel? gvector1 gvector2)",
+    "description": "判断两个向量是否平行。如果平行则返回 #t，否则返回 #f。零向量不与任何向量（包括其自身）平行，因此返回 #t。",
+    "parameters": [
+      {
+        "name": "gvector1",
+        "type": "gvector",
+        "desc": "定义第一个向量。"
+      },
+      {
+        "name": "gvector2",
+        "type": "gvector",
+        "desc": "定义第二个向量。"
+      }
+    ],
+    "example": "(gvector:parallel? (gvector 1 0 0) (gvector 2 0 0))"
+  },
+  "gvector:perpendicular?": {
+    "signature": "(gvector:perpendicular? gvector1 gvector2)",
+    "description": "判断两个向量是否垂直。如果垂直则返回 #t，否则返回 #f。零向量与所有向量（包括其自身）垂直，因此返回 #f。",
+    "parameters": [
+      {
+        "name": "gvector1",
+        "type": "gvector",
+        "desc": "定义第一个向量。"
+      },
+      {
+        "name": "gvector2",
+        "type": "gvector",
+        "desc": "定义第二个向量。"
+      }
+    ],
+    "example": "(gvector:perpendicular? (gvector 1 0 0) (gvector 0 1 0))"
+  },
+  "gvector:reverse": {
+    "signature": "(gvector:reverse gvector)",
+    "description": "反转向量的方向，返回一个指向相反方向的新向量。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "要反转的向量。"
+      }
+    ],
+    "example": "(gvector:reverse (gvector 1 2 3))"
+  },
+  "gvector:scale": {
+    "signature": "(gvector:scale gvector scale)",
+    "description": "将向量乘以一个标量数值，生成一个新的缩放后的向量。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "要缩放的向量。"
+      },
+      {
+        "name": "scale",
+        "type": "number",
+        "desc": "标量乘数 (REAL)。"
+      }
+    ],
+    "example": "(gvector:scale (gvector 1 2 3) 2.0)"
+  },
+  "gvector:set!": {
+    "signature": "(gvector:set! gvector {x y z})",
+    "description": "给定新的 x、y 和 z 分量，设置向量的方向。坐标相对于当前活动坐标系计算。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "指定其分量将被替换的原始向量。"
+      },
+      {
+        "name": "x",
+        "type": "number",
+        "desc": "指定新的 x 分量值 (REAL)。"
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "desc": "指定新的 y 分量值 (REAL)。"
+      },
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "指定新的 z 分量值 (REAL)。"
+      }
+    ],
+    "example": "(gvector:set! vec1 1.0 2.0 3.0)"
+  },
+  "gvector:set-x!": {
+    "signature": "(gvector:set-x! gvector x)",
+    "description": "设置向量的 x 方向分量。坐标相对于当前活动坐标系计算。返回新的 x 值作为一个实数。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "指定其 x 分量将被替换的向量。"
+      },
+      {
+        "name": "x",
+        "type": "number",
+        "desc": "指定新的 x 分量值 (REAL)。"
+      }
+    ],
+    "example": "(gvector:set-x! vector1 3)"
+  },
+  "gvector:set-y!": {
+    "signature": "(gvector:set-y! gvector y)",
+    "description": "设置向量的 y 方向分量。坐标相对于活动坐标系计算。返回新的 y 值（REAL）。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "指定其 y 分量将被替换的向量。"
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "desc": "指定新的 y 分量值（REAL）。"
+      }
+    ],
+    "example": "(gvector:set-y! vector1 3)"
+  },
+  "gvector:set-z!": {
+    "signature": "(gvector:set-z! gvector z)",
+    "description": "设置向量的 z 方向分量。坐标相对于活动坐标系计算。返回新的 z 值（REAL）。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "指定其 z 分量将被替换的向量。"
+      },
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "指定新的 z 分量值（REAL）。"
+      }
+    ],
+    "example": "(gvector:set-z! vector1 3)"
+  },
+  "gvector:transform": {
+    "signature": "(gvector:transform gvector transform)",
+    "description": "对向量应用变换，返回变换后的向量。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "要变换的向量。"
+      },
+      {
+        "name": "transform",
+        "type": "transform",
+        "desc": "要应用的变换。"
+      }
+    ],
+    "example": "(gvector:transform vec1 (transform:rotate (angle 0 0 90)))"
+  },
+  "gvector:unitize": {
+    "signature": "(gvector:unitize gvector)",
+    "description": "创建一个与指定向量方向相同的单位向量。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "要单位化的向量。"
+      }
+    ],
+    "example": "(gvector:unitize (gvector 3 4 0))"
+  },
+  "gvector:x": {
+    "signature": "(gvector:x gvector)",
+    "description": "返回向量相对于活动坐标系的 x 分量。x 坐标被变换到活动工作平面。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "要获取其 x 分量的向量。"
+      }
+    ],
+    "example": "(gvector:x (gvector 1 2 3))"
+  },
+  "gvector:y": {
+    "signature": "(gvector:y gvector)",
+    "description": "返回向量相对于活动坐标系的 y 分量。y 坐标被变换到活动工作平面。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "要获取其 y 分量的向量。"
+      }
+    ],
+    "example": "(gvector:y (gvector 1 2 3))"
+  },
+  "gvector:z": {
+    "signature": "(gvector:z gvector)",
+    "description": "返回向量相对于活动坐标系的 z 分量。z 坐标被变换到活动工作平面。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "要获取其 z 分量的向量。"
+      }
+    ],
+    "example": "(gvector:z (gvector 1 2 3))"
+  },
+  "entity:box": {
+    "signature": "(entity:box entity-list [create-box])",
+    "description": "返回体相对于活动坐标系的包围盒对角线极值（最小值和最大值）。返回一个序对(pair) (min-pt . max-pt)，如果指定了 create-box 则返回一个实体盒子。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "要计算其包围盒的一个实体或一个实体列表（体、线、面或边）。"
+      },
+      {
+        "name": "create-box",
+        "type": "boolean",
+        "desc": "可选。如果指定，则返回一个实体盒子，而不是位置序对(pair)。"
+      }
+    ],
+    "example": "(entity:box (car (body:all)))"
+  },
+  "entity:copy": {
+    "signature": "(entity:copy entity-list)",
+    "description": "复制任何实体（体、面、边等）及其所有附属实体。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "要复制的一个实体或一个实体列表。"
+      }
+    ],
+    "example": "(define copy-body (entity:copy (car (body:all))))"
+  },
+  "entity:debug": {
+    "signature": "(entity:debug entity [level])",
+    "description": "打印关于实体数据结构的信息。输出的详细程度由 level 参数控制。",
+    "parameters": [
+      {
+        "name": "entity",
+        "type": "list",
+        "desc": "要查询的实体。"
+      },
+      {
+        "name": "level",
+        "type": "int",
+        "desc": "可选。控制调试信息的数量：\n0 = 无输出，仅返回实体类型；\n1 = 给定实体特有的数据；\n2 = 附加信息，如边的端点坐标和曲线数据；\n3 = 实体大小和所有关联实体；\n4 = 实体及所有关联实体的完整信息。"
+      }
+    ],
+    "example": "(entity:debug (car (body:all)) 1)"
+  },
+  "entity:deep-copy": {
+    "signature": "(entity:deep-copy entity-list)",
+    "description": "深度复制一个实体（体、面、边等）以及所有附属实体。与 entity:copy 创建指向共享 splf_splf 数据的指针不同，entity:deep-copy 创建完全独立的副本，与原始实体没有链接。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "要深度复制的一个实体或一个实体列表。"
+      }
+    ],
+    "example": "(define deep-body (entity:deep-copy (car (body:all))))"
+  },
+  "entity:delete": {
+    "signature": "(entity:delete entity-list)",
+    "description": "删除一个实体或一个实体列表，以及附加到这些实体的任何属性。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "要删除的一个实体或一个实体列表。"
+      }
+    ],
+    "example": "(entity:delete (car (body:all)))"
+  },
+  "entity:dist": {
+    "signature": "(entity:dist part1 part2 [acis-opts])",
+    "description": "查找两个实体之间，或一个实体与一个位置之间的最小距离。返回距离、每个实体上的位置以及实体信息。支持的实体类型包括 BODY、EDGE、FACE、LOOP、LUMP、SHELL、VERTEX 和 WIRE。",
+    "parameters": [
+      {
+        "name": "part1",
+        "type": "list",
+        "desc": "一个实体或一个位置；如果 part1 是一个位置，则 part2 必须是一个实体。"
+      },
+      {
+        "name": "part2",
+        "type": "list",
+        "desc": "一个实体或一个位置。"
+      },
+      {
+        "name": "acis-opts",
+        "type": "list",
+        "desc": "可选。用于开启日志记录和版本控制的 ACIS 选项。"
+      }
+    ],
+    "example": "(entity:dist (car (body:all)) (position 0 0 0))"
+  },
+  "entity:edges": {
+    "signature": "(entity:edges entity-list)",
+    "description": "返回一个实体或实体列表的所有边实体列表。未找到边时返回空列表。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "要从中提取边的一个实体或一个实体列表。"
+      }
+    ],
+    "example": "(entity:edges (car (body:all)))"
+  },
+  "entity:erase": {
+    "signature": "(entity:erase entity-list)",
+    "description": "从显示中擦除但不删除指定的实体或实体列表。这些实体仍可通过 render:rebuild 重新显示。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "要从显示中擦除的一个实体或一个实体列表。"
+      }
+    ],
+    "example": "(entity:erase (car (body:all)))"
+  },
+  "entity:faces": {
+    "signature": "(entity:faces entity-list)",
+    "description": "返回一个实体或实体列表中的所有面实体列表。若未找到面，则返回空列表。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "一个实体或实体列表，用于从中提取面"
+      }
+    ],
+    "example": "(entity:faces (car (body:all)))"
+  },
+  "entity:loops": {
+    "signature": "(entity:loops entity-list [include-pat])",
+    "description": "返回一个实体或实体列表中的所有环列表。若未找到环，则返回空列表。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "一个实体或实体列表，用于查询"
+      },
+      {
+        "name": "include-pat",
+        "type": "int",
+        "desc": "可选。控制如何处理图案化对象：0 = 若图案化对象不存在则创建并包含它们（默认）；1 = 仅包含已存在的图案化对象；2 = 排除图案化对象（种子图案对象除外）"
+      }
+    ],
+    "example": "(entity:loops (car (body:all)))"
+  },
+  "entity:lumps": {
+    "signature": "(entity:lumps entity-list)",
+    "description": "返回一个实体或实体列表中的所有块列表。若未找到块，则返回空列表。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "一个实体或实体列表，用于查询"
+      }
+    ],
+    "example": "(entity:lumps (car (body:all)))"
+  },
+  "entity:set-color": {
+    "signature": "(entity:set-color entity-list color)",
+    "description": "为一个实体或实体列表设置显示颜色。返回该实体之前的颜色。预定义颜色名称包括 BLACK (0), RED (1), GREEN (2), BLUE (3), CYAN (4), YELLOW (5), MAGENTA (6), WHITE (7)。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "一个实体或实体列表，用于分配颜色"
+      },
+      {
+        "name": "color",
+        "type": "int",
+        "desc": "一个整数 (0-7) 或 color:rgb 值，用于指定新的显示颜色。预定义名称：BLACK, RED, GREEN, BLUE, CYAN, YELLOW, MAGENTA, WHITE"
+      }
+    ],
+    "example": "(entity:set-color (find-face-id (position 0.5 0.5 1)) RED)"
+  },
+  "entity:shells": {
+    "signature": "(entity:shells entity-list [include-pat])",
+    "description": "从一个拓扑实体或实体列表中返回壳实体列表。若未找到壳实体，则返回空列表。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "一个拓扑实体或实体列表，用于从中提取壳"
+      },
+      {
+        "name": "include-pat",
+        "type": "int",
+        "desc": "可选。控制如何处理图案化对象：0 = 若图案化对象不存在则创建并包含它们（默认）；1 = 仅包含已存在的图案化对象；2 = 排除图案化对象（种子图案对象除外）"
+      }
+    ],
+    "example": "(entity:shells (car (body:all)))"
+  },
+  "entity:vertices": {
+    "signature": "(entity:vertices entity-list)",
+    "description": "返回一个实体或实体列表中的所有顶点列表。若未找到顶点，则返回空列表。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "一个实体或实体列表，用于从中提取顶点"
+      }
+    ],
+    "example": "(entity:vertices (car (body:all)))"
+  },
+  "position": {
+    "signature": "(position x y z [space = \"model\"])",
+    "description": "创建一个相对于活动坐标系具有 x、y 和 z 坐标的新位置。位置用于帮助定义几何体，但不随部件保存。",
+    "parameters": [
+      {
+        "name": "x",
+        "type": "number",
+        "desc": "定义相对于活动坐标系的 x 坐标。"
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "desc": "定义相对于活动坐标系的 y 坐标。"
+      },
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "定义相对于活动坐标系的 z 坐标。"
+      },
+      {
+        "name": "space",
+        "type": "string",
+        "desc": "可选。默认为活动（工作）坐标系的 wcs；如果不存在活动工作平面，则默认为 model。\n\"model\" — x, y, z 是相对于模型的直角笛卡尔坐标。\n\"polar\" 或 \"cylindrical\" — x, y, z 分别解释为径向距离、极角（度，从 xz 平面起算，右手定则）和 z 坐标。\n\"spherical\" — x, y, z 分别是距原点的径向距离、与 z 轴的偏角（度）以及与 xz 平面的极角（度）。"
+      }
+    ],
+    "example": "(position 0.0 0.0 0.0)"
+  },
+  "position?": {
+    "signature": "(position? object)",
+    "description": "判断一个 Scheme 对象是否为位置。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "一个待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(position? my-pos)"
+  },
+  "position:+": {
+    "signature": "(position:+ arg1 arg2)",
+    "description": "将一个位置或向量与另一个位置或向量相加，并将和作为位置返回。",
+    "parameters": [
+      {
+        "name": "arg1",
+        "type": "position",
+        "desc": "要相加的位置或向量。"
+      },
+      {
+        "name": "arg2",
+        "type": "position",
+        "desc": "要相加的位置或向量。"
+      }
+    ],
+    "example": "(position:+ (position 1 0 0) (position 0 2 0))"
+  },
+  "position:-": {
+    "signature": "(position:- arg1 arg2)",
+    "description": "从一个位置或向量中减去另一个位置或向量，并将结果作为位置返回。",
+    "parameters": [
+      {
+        "name": "arg1",
+        "type": "position",
+        "desc": "被减的位置或向量。"
+      },
+      {
+        "name": "arg2",
+        "type": "position",
+        "desc": "要减去的的位置或向量。"
+      }
+    ],
+    "example": "(position:- (position 5 5 0) (position 2 3 0))"
+  },
+  "position:distance": {
+    "signature": "(position:distance position1 {position2 | ray})",
+    "description": "返回两个位置之间的距离，或一个位置与一条光线之间的距离。",
+    "parameters": [
+      {
+        "name": "position1",
+        "type": "position",
+        "desc": "定义起始位置。"
+      },
+      {
+        "name": "position2",
+        "type": "position",
+        "desc": "定义结束位置。与 ray 互斥。"
+      },
+      {
+        "name": "ray",
+        "type": "any",
+        "desc": "定义用于计算距离的光线。与 position2 互斥。"
+      }
+    ],
+    "example": "(position:distance (position 0 0 0) (position 3 4 0))"
+  },
+  "position:set!": {
+    "signature": "(position:set! position1 {x y z} | {position2})",
+    "description": "设置位置的 x、y 和 z 分量，可以通过单个坐标设置，也可以通过复制另一个位置来设置。",
+    "parameters": [
+      {
+        "name": "position1",
+        "type": "position",
+        "desc": "待修改的位置。"
+      },
+      {
+        "name": "x",
+        "type": "number",
+        "desc": "要复制到 position1 中的新 x 值。"
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "desc": "要复制到 position1 中的新 y 值。"
+      },
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "要复制到 position1 中的新 z 值。"
+      },
+      {
+        "name": "position2",
+        "type": "position",
+        "desc": "x, y, z 的替代方案：将此位置的坐标值复制到 position1 中。"
+      }
+    ],
+    "example": "(position:set! my-pos 1.0 2.0 3.0)"
+  },
+  "position:set-x!": {
+    "signature": "(position:set-x! position x)",
+    "description": "设置位置的 x 分量。坐标是相对于活动坐标系计算的。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "其 x 分量将被替换的位置。原始的 y 和 z 值将被保留。"
+      },
+      {
+        "name": "x",
+        "type": "number",
+        "desc": "用于替换原始 x 分量的新 x 值。"
+      }
+    ],
+    "example": "(position:set-x! my-pos 5.0)"
+  },
+  "position:set-y!": {
+    "signature": "(position:set-y! position y)",
+    "description": "设置位置的 y 分量。坐标是相对于活动坐标系计算的。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "其 y 分量将被替换的位置。原始的 x 和 z 值将被保留。"
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "desc": "用于替换原始 y 分量的新 y 值。"
+      }
+    ],
+    "example": "(position:set-y! my-pos 3.0)"
+  },
+  "position:set-z!": {
+    "signature": "(position:set-z! position z)",
+    "description": "设置位置的 z 分量。坐标是相对于活动坐标系计算的。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "其 z 分量将被替换的位置。原始的 x 和 y 值将被保留。"
+      },
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "用于替换原始 z 分量的新 z 值。"
+      }
+    ],
+    "example": "(position:set-z! my-pos 0.0)"
+  },
+  "position:x": {
+    "signature": "(position:x position)",
+    "description": "返回一个位置相对于当前坐标系的 x 分量。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "position — 用于提取 x 坐标的位置。"
+      }
+    ],
+    "example": "(position:x (position 1 2 3))"
+  },
+  "position:y": {
+    "signature": "(position:y position)",
+    "description": "返回一个位置相对于当前坐标系的 y 分量。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "position — 用于提取 y 坐标的位置。"
+      }
+    ],
+    "example": "(position:y (position 1 2 3))"
+  },
+  "position:z": {
+    "signature": "(position:z position)",
+    "description": "返回一个位置相对于当前坐标系的 z 分量。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "position — 用于提取 z 坐标的位置。"
+      }
+    ],
+    "example": "(position:z (position 1 2 3))"
+  },
+  "edge?": {
+    "signature": "(edge? object)",
+    "description": "判断一个 Scheme 对象是否为边。如果对象是边，则返回 #t。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "any — 待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(edge? my-edge)"
+  },
+  "edge:circular": {
+    "signature": "(edge:circular center-position radius [start-angle = 0 [end-angle = 360]])",
+    "description": "创建具有指定中心位置和半径的圆弧。起始角和终止角从当前坐标系的 x 轴逆时针测量。起始和终止位置必须位于当前 xy 构造平面内。",
+    "parameters": [
+      {
+        "name": "center-position",
+        "type": "position",
+        "desc": "position — 圆弧的中心位置。"
+      },
+      {
+        "name": "radius",
+        "type": "number",
+        "desc": "number — 圆弧的半径，定义了中心位置与圆弧边缘之间的隐式线。"
+      },
+      {
+        "name": "start-angle",
+        "type": "number",
+        "desc": "number — 可选。圆弧的起始角（度），从 x 轴逆时针测量。默认值为 0。"
+      },
+      {
+        "name": "end-angle",
+        "type": "number",
+        "desc": "number — 可选。圆弧的终止角（度），从 x 轴逆时针测量。默认值为 360。"
+      }
+    ],
+    "example": "(edge:circular (position 0 0 0) 5.0)"
+  },
+  "edge:circular?": {
+    "signature": "(edge:circular? object)",
+    "description": "判断一个 Scheme 对象是否为圆弧边。如果对象是圆弧边，则返回 #t。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "any — 待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(edge:circular? my-edge)"
+  },
+  "edge:elliptical?": {
+    "signature": "(edge:elliptical? object)",
+    "description": "判断一个 Scheme 对象是否为椭圆边。如果对象是椭圆边，则返回 #t。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "any — 待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(edge:elliptical? my-edge)"
+  },
+  "edge:end": {
+    "signature": "(edge:end edge)",
+    "description": "返回一条边的终点位置。",
+    "parameters": [
+      {
+        "name": "edge",
+        "type": "edge",
+        "desc": "edge — 输入的边。"
+      }
+    ],
+    "example": "(edge:end my-edge)"
+  },
+  "edge:length": {
+    "signature": "(edge:length edge)",
+    "description": "返回一条边的长度。",
+    "parameters": [
+      {
+        "name": "edge",
+        "type": "edge",
+        "desc": "edge — 输入的边。"
+      }
+    ],
+    "example": "(edge:length my-edge)"
+  },
+  "edge:linear": {
+    "signature": "(edge:linear position position)",
+    "description": "在两个指定位置之间创建一条线性边。第一个位置是线的起点，第二个位置是线的终点。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "position — 第一个位置参数指定线的起点；第二个指定线的终点。"
+      }
+    ],
+    "example": "(define edge1 (edge:linear (position 0 0 0) (position 30 30 0)))"
+  },
+  "edge:linear?": {
+    "signature": "(edge:linear? object)",
+    "description": "判断一个 Scheme 对象是否为线性边。如果对象是线性边，则返回 #t。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "any — 待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(edge:linear? (list-ref (entity:edges myrect) 0))"
+  },
+  "edge:mid-point": {
+    "signature": "(edge:mid-point edge [approximation = #t])",
+    "description": "返回一条边的中点位置。",
+    "parameters": [
+      {
+        "name": "edge",
+        "type": "edge",
+        "desc": "edge — 输入的边实体。"
+      },
+      {
+        "name": "approximation",
+        "type": "boolean",
+        "desc": "boolean — 可选。如果为 #t（默认），返回边的精确几何中点；如果为 #f，返回参数空间中的中点。"
+      }
+    ],
+    "example": "(edge:mid-point my-edge)"
+  },
+  "edge:start": {
+    "signature": "(edge:start edge)",
+    "description": "返回一条边的起点位置。",
+    "parameters": [
+      {
+        "name": "edge",
+        "type": "edge",
+        "desc": "edge — 输入的边实体。"
+      }
+    ],
+    "example": "(edge:start my-edge)"
+  },
+  "edge:type": {
+    "signature": "(edge:type edge)",
+    "description": "确定一条边的类型。返回一个描述边类型的字符串。",
+    "parameters": [
+      {
+        "name": "edge",
+        "type": "edge",
+        "desc": "edge — 输入的边。"
+      }
+    ],
+    "example": "(edge:type my-edge)"
+  },
+  "journal:abort": {
+    "signature": "(journal:abort)",
+    "description": "终止当前加载，不执行文件中剩余的命令。",
+    "parameters": [],
+    "example": "(journal:abort)"
+  },
+  "journal:append": {
+    "signature": "(journal:append [filename])",
+    "description": "打开一个日志文件并将额外的日志数据追加到文件末尾。追加的时间和日期会在日志中注明。",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "可选参数。如果未指定，将自动创建一个唯一的名称，该名称基于最后创建的日志文件按数字顺序递增（例如 j(最后编号+1).jrl）。"
+      }
+    ],
+    "example": "(journal:append)"
+  },
+  "journal:clean": {
+    "signature": "(journal:clean jname)",
+    "description": "清理日志文件，移除所有不可执行的内容（注释和返回值），只保留可执行的 Scheme 命令。对于参数化和调试已保存的日志文件很有用。",
+    "parameters": [
+      {
+        "name": "jname",
+        "type": "string",
+        "desc": "要清理的日志文件的名称。"
+      }
+    ],
+    "example": "(journal:clean \"my_script.jrl\")"
+  },
+  "journal:load": {
+    "signature": "(journal:load filename)",
+    "description": "加载一个日志文件并逐行运行每条命令。与 Scheme 的 load 原语不同，错误不会终止加载。当与 (journal:step #t) 一起使用时，支持单步执行。",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "要加载并执行的日志文件的名称。"
+      }
+    ],
+    "example": "(journal:load \"my_script.jrl\")"
+  },
+  "journal:off": {
+    "signature": "(journal:off)",
+    "description": "关闭当前日志文件并关闭日志记录功能。之后执行的所有 Scheme 命令都不会记录在日志文件中。",
+    "parameters": [],
+    "example": "(journal:off)"
+  },
+  "journal:on": {
+    "signature": "(journal:on [filename])",
+    "description": "关闭当前日志文件并打开一个新文件。所有未来的命令都将记录到新文件中。如果指定的文件已存在，它将被截断为零长度。",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "可选参数。如果未指定，将自动创建一个唯一的名称，该名称基于最后创建的日志文件按数字顺序递增（例如 j(最后编号+1).jrl）。如果文件存在，它将被截断。"
+      }
+    ],
+    "example": "(journal:on \"new_jrl\")"
+  },
+  "journal:pause": {
+    "signature": "(journal:pause)",
+    "description": "临时停用日志记录，同时保持日志文件处于打开状态。暂停期间评估的命令不会记录在日志文件中。",
+    "parameters": [],
+    "example": "(journal:pause)"
+  },
+  "journal:resume": {
+    "signature": "(journal:resume)",
+    "description": "在暂停后恢复日志文件中的日志记录。",
+    "parameters": [],
+    "example": "(journal:resume)"
+  },
+  "journal:save": {
+    "signature": "(journal:save filename)",
+    "description": "将当前日志保存到文件中。如果日志记录未激活，则忽略此命令。如果 filename 与当前日志文件名相同，则会生成错误。",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "用于保存日志的文件的名称。必须与当前日志文件名不同。"
+      }
+    ],
+    "example": "(journal:save \"new_jrl\")"
+  },
+  "journal:step": {
+    "signature": "(journal:step value)",
+    "description": "设置一个标志来控制单步执行日志文件。启用后，系统在执行每一行之前等待输入，允许交互式调试和演示。",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "boolean",
+        "desc": "当为 #t 时，启用单步模式（系统在执行每行前暂停等待用户输入）。当为 #f 时，返回到自由运行模式。"
+      }
+    ],
+    "example": "(journal:step #t)"
+  },
+  "face:area": {
+    "signature": "(face:area face)",
+    "description": "计算指定面的面积。对于无法解析确定面积的几何体，计算的精度固定为 0.001。",
+    "parameters": [
+      {
+        "name": "face",
+        "type": "face",
+        "desc": "指定要计算其面积的输入面。"
+      }
+    ],
+    "example": "(face:area (car (entity:get-faces my-body)))"
+  },
+  "face:conical?": {
+    "signature": "(face:conical? object)",
+    "description": "判断一个 Scheme 对象是否为圆锥面。如果对象是圆锥面则返回 #t；否则返回 #f。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "要查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(face:conical? (car (entity:get-faces my-body)))"
+  },
+  "face:cylindrical?": {
+    "signature": "(face:cylindrical? object)",
+    "description": "判断一个 Scheme 对象是否为圆柱面。返回的布尔值指定提供的实体输入是否为圆柱面。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "要查询的 Scheme 对象。注意：此输入参数是圆柱面（曲面），而不是实心圆柱体。"
+      }
+    ],
+    "example": "(face:cylindrical? (car (entity:get-faces my-body)))"
+  },
+  "face:planar?": {
+    "signature": "(face:planar? object)",
+    "description": "判断一个 Scheme 对象是否为平面。如果指定的对象是平面则返回 #t。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "要查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(face:planar? (car (entity:get-faces my-body)))"
+  },
+  "face:plane-normal": {
+    "signature": "(face:plane-normal face)",
+    "description": "将指定平面的面法向作为向量返回。",
+    "parameters": [
+      {
+        "name": "face",
+        "type": "face",
+        "desc": "指定要查询的平面。返回该面的外法向方向。"
+      }
+    ],
+    "example": "(face:plane-normal (car (entity:get-faces my-body)))"
+  },
+  "face:spherical?": {
+    "signature": "(face:spherical? object)",
+    "description": "判断一个 Scheme 对象是否为球面。如果指定的对象是球面则返回 #t。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "要查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(face:spherical? (car (entity:get-faces my-body)))"
+  },
+  "face:spline?": {
+    "signature": "(face:spline? object)",
+    "description": "判断一个 Scheme 对象是否为样条面。如果对象是样条面则返回 #t。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "要查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(face:spline? (car (entity:get-faces my-body)))"
+  },
+  "face:toroidal?": {
+    "signature": "(face:toroidal? object)",
+    "description": "判断一个 Scheme 对象是否为环面。如果对象是环面则返回 #t。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "要查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(face:toroidal? (car (entity:get-faces my-body)))"
+  },
+  "find-body-id": {
+    "signature": "(find-body-id position)",
+    "description": "查找包含指定位置的所有体（body）的 ACIS 实体 ID。该位置可以位于边界面、顶点或体的内部点。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "要查询的位置（POSITION）。可以位于体的边界面、顶点或内部点。"
+      }
+    ],
+    "example": "(find-body-id (position 0.5 0.5 0.5))"
+  },
+  "find-body-id-drs": {
+    "signature": "(find-body-id-drs position)",
+    "description": "查找包含指定位置的 Ref/Eval 窗口体的 ACIS 实体 ID。仅搜索已定义的 Ref/Eval 窗口体。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "要查询的位置（POSITION）。可以位于 Ref/Eval 窗口体的边界面或内部点。"
+      }
+    ],
+    "example": "(find-body-id-drs (position 0.5 0.5 0.5))"
+  },
+  "find-drs-id": {
+    "signature": "(find-drs-id DRSname)",
+    "description": "返回与指定 DRS 名称匹配的 Ref/Eval 窗口体的 ACIS 实体 ID。DRS 名称是每个 Ref/Eval 窗口体的唯一标识符。",
+    "parameters": [
+      {
+        "name": "DRSname",
+        "type": "string",
+        "desc": "标识 Ref/Eval 窗口体的唯一 DRS 名称（STRING）。"
+      }
+    ],
+    "example": "(find-drs-id \"RefEvalWindow_1\")"
+  },
+  "find-edge-id": {
+    "signature": "(find-edge-id position body)",
+    "description": "查找包含指定位置的所有边的 ACIS 实体 ID。支持使用额外的体筛选器来限制搜索范围。该位置可以是边的端点顶点或边上的内部位置。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "位于边上的位置（POSITION），可以是端点顶点或内部点。"
+      },
+      {
+        "name": "body",
+        "type": "body",
+        "desc": "用作筛选器的体或体列表（BODY | BODY LIST），用于将搜索限制在特定的体。"
+      }
+    ],
+    "example": "(sdegeo:create-cuboid (position 0 0 0) (position 1 1 1) \"Silicon\" \"x1\")\n(define chamferedges (find-edge-id (position 1 0.5 1) (find-material-id \"Silicon\")))"
+  },
+  "find-edge-id-drs": {
+    "signature": "(find-edge-id-drs position)",
+    "description": "查找属于包含指定位置的 Ref/Eval 窗口体的边的 ACIS 实体 ID。该位置可以是边的端点顶点或边上的内部位置。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "位于边上的位置（POSITION），可以是端点顶点或内部点。"
+      }
+    ],
+    "example": "(find-edge-id-drs (position 0.5 0.5 0))"
+  },
+  "find-face-id": {
+    "signature": "(find-face-id position | gvector)",
+    "description": "查找包含指定位置的所有面的 ACIS 实体 ID。如果提供的是向量（gvector）而非位置，则返回所有具有匹配面法向方向的平面。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "位于面的边界边或内部点的位置（POSITION）。"
+      },
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "指定面法向方向的向量（GVECTOR）；返回所有匹配此法向的平面。"
+      }
+    ],
+    "example": "(find-face-id (position 0.5 0.5 0))"
+  },
+  "find-face-id-drs": {
+    "signature": "(find-face-id-drs position)",
+    "description": "查找属于包含指定位置的 Ref/Eval 窗口体的面的 ACIS 实体 ID。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "位于面的边界边或内部点的位置（POSITION）。"
+      }
+    ],
+    "example": "(find-face-id-drs (position 0.5 0.5 0))"
+  },
+  "find-material-id": {
+    "signature": "(find-material-id material-name)",
+    "description": "查找并返回所有具有指定材料属性的实体。如果只找到一个匹配项，则返回单个体 ID；如果存在多个匹配项，则返回一个列表；如果没有匹配项，则返回一个空列表。",
+    "parameters": [
+      {
+        "name": "material-name",
+        "type": "string",
+        "desc": "要查找其区域的材料名称（DATEXMAT 类型，例如 \"Silicon\"）。"
+      }
+    ],
+    "example": "(find-material-id \"Silicon\")"
+  },
+  "find-region": {
+    "signature": "(find-region region-name [partial-match])",
+    "description": "返回将指定区域名称作为区域属性的区域的实体 ID。支持从字符串开头进行可选的部分匹配。",
+    "parameters": [
+      {
+        "name": "region-name",
+        "type": "string",
+        "desc": "要搜索的区域名称（STRING）。"
+      },
+      {
+        "name": "partial-match",
+        "type": "boolean",
+        "desc": "可选。如果为 #t，则返回名称以给定字符串开头的区域（增量前缀匹配）。"
+      }
+    ],
+    "example": "(find-region \"Region_1\")"
+  },
+  "find-region-id": {
+    "signature": "(find-region-id region-name)",
+    "description": "返回将指定区域名称作为区域属性的区域的实体 ID。如果只找到一个匹配项，则返回单个体 ID；如果存在多个匹配项，则返回一个列表；如果没有匹配项，则返回一个空列表。",
+    "parameters": [
+      {
+        "name": "region-name",
+        "type": "string",
+        "desc": "要搜索的区域名称（STRING）。"
+      }
+    ],
+    "example": "(find-region-id \"Region_1\")"
+  },
+  "find-vertex-id": {
+    "signature": "(find-vertex-id position)",
+    "description": "查找位于指定位置的所有顶点的 ACIS 实体 ID。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "要定位顶点的位置（POSITION）。"
+      }
+    ],
+    "example": "(find-vertex-id (position 0 0 0))"
+  },
+  "find-vertex-id-drs": {
+    "signature": "(find-vertex-id-drs position)",
+    "description": "查找位于指定位置的、属于 Ref/Eval 窗口体的顶点的 ACIS 实体 ID。",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "要在 Ref/Eval 窗口体内定位顶点的位置（POSITION）。"
+      }
+    ],
+    "example": "(find-vertex-id-drs (position 0 0 0))"
+  },
+  "get-body-list": {
+    "signature": "(get-body-list)",
+    "description": "返回模型中定义的所有 2D 和 3D 体的列表，不包括掩膜体和掺杂/细化 Ref/Eval 窗口。使用此函数来区分常规体与掩膜体和 Ref/Eval 窗口。",
+    "parameters": [],
+    "example": "(get-body-list)"
+  },
+  "get-drs-list": {
+    "signature": "(get-drs-list)",
+    "description": "返回模型中定义的所有 2D 和 3D 掺杂/细化/子网格（DRS）窗口体的列表。",
+    "parameters": [],
+    "example": "(get-drs-list)"
+  },
+  "bbox": {
+    "signature": "(bbox entity-list)",
+    "description": "返回一个体相对于当前坐标系的包围盒对角线上最小和最大值。返回一个由 (min-pt . max-pt) 组成的序对(pair)。返回的包围盒是紧密的（精确的）。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "entity | list",
+        "desc": "entity | LIST — 一个实体或一个实体列表。每个实体可以是一个体、一个线体、一个面或一条边。"
+      }
+    ],
+    "example": "(bbox my-body)"
+  },
+  "bbox-exact": {
+    "signature": "(bbox-exact entity-list)",
+    "description": "返回一个体相对于当前坐标系的紧密包围盒对角线上精确的最小和最大值。返回一个由 (min-pt . max-pt) 组成的序对(pair)。",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "entity | list",
+        "desc": "entity | LIST — 一个实体或一个实体列表。每个实体可以是一个体、一条线、一个面或一条边。"
+      }
+    ],
+    "example": "(bbox-exact my-body)"
+  },
+  "complete-edge-list": {
+    "signature": "(complete-edge-list edge-list)",
+    "description": "将指定的边列表与所有相邻的线性边进行追加。这确保了边界简化算法不会在相邻体之间留下间隙或产生重叠。",
+    "parameters": [
+      {
+        "name": "edge-list",
+        "type": "list",
+        "desc": "LIST — 指定一个边列表。"
+      }
+    ],
+    "example": "(complete-edge-list (entity:edges mb1))"
+  },
+  "exists-empty-mask-name": {
+    "signature": "(exists-empty-mask-name maskname)",
+    "description": "检查指定的空掩模是否存在。",
+    "parameters": [
+      {
+        "name": "maskname",
+        "type": "string",
+        "desc": "STRING — 指定一个空掩模的名称。"
+      }
+    ],
+    "example": "(exists-empty-mask-name \"MyMask\")"
+  },
+  "exists-mask-name": {
+    "signature": "(exists-mask-name maskname)",
+    "description": "检查指定的掩模是否存在。",
+    "parameters": [
+      {
+        "name": "maskname",
+        "type": "string",
+        "desc": "STRING — 指定一个掩模的名称。"
+      }
+    ],
+    "example": "(exists-mask-name \"MyMask\")"
+  },
+  "extract-interface-normal-offset-refwindow": {
+    "signature": "(extract-interface-normal-offset-refwindow body1 body2 offset-distance refwindowname)",
+    "description": "生成两个体之间的非正则化交集，并通过沿法向偏移界面体的面，从该非正则化交集创建一个 3D 偏移体，并将其指定为掺杂/细化/子网格（DRS）体。",
+    "parameters": [
+      {
+        "name": "body1",
+        "type": "entity",
+        "desc": "entity — 第一个体实体。"
+      },
+      {
+        "name": "body2",
+        "type": "entity",
+        "desc": "entity — 第二个体实体。"
+      },
+      {
+        "name": "offset-distance",
+        "type": "float",
+        "desc": "float — 法向的偏移距离。"
+      },
+      {
+        "name": "refwindowname",
+        "type": "string",
+        "desc": "STRING — 创建的 Ref/Eval 窗口的名称。"
+      }
+    ],
+    "example": "(extract-interface-normal-offset-refwindow mb1 mb2 1 \"rw1\")"
+  },
+  "extract-interface-offset-refwindow": {
+    "signature": "(extract-interface-offset-refwindow body1 body2 offset-distance refwindowname)",
+    "description": "生成两个体之间的非正则化交集，并从该非正则化交集创建一个 3D 偏移体，并将其指定为掺杂/细化/子网格（DRS）体。",
+    "parameters": [
+      {
+        "name": "body1",
+        "type": "entity",
+        "desc": "entity — 第一个体实体。"
+      },
+      {
+        "name": "body2",
+        "type": "entity",
+        "desc": "entity — 第二个体实体。"
+      },
+      {
+        "name": "offset-distance",
+        "type": "float",
+        "desc": "float — 界面体的偏移距离。"
+      },
+      {
+        "name": "refwindowname",
+        "type": "string",
+        "desc": "STRING — 创建的 Ref/Eval 窗口的名称。"
+      }
+    ],
+    "example": "(extract-interface-offset-refwindow mb1 mb2 1 \"rw1\")"
+  },
+  "extract-refpolyhedron": {
+    "signature": "(extract-refpolyhedron bodyid refwindowname)",
+    "description": "将 3D 几何体转换为多面体细化窗口。ACIS 表面网格划分器通过保存镶嵌的多面体边界用于网格划分，将体（可能包含非平面面）转换为多面体细化窗口。",
+    "parameters": [
+      {
+        "name": "bodyid",
+        "type": "entity",
+        "desc": "entity — 要转换的 3D 几何体。"
+      },
+      {
+        "name": "refwindowname",
+        "type": "string",
+        "desc": "STRING — 创建的多面体细化窗口的名称。"
+      }
+    ],
+    "example": "(extract-refpolyhedron mb \"ref1\")"
+  },
+  "extract-refwindow": {
+    "signature": "(extract-refwindow faceid refwindowname)",
+    "description": "定义与指定几何面或多个面匹配的细化窗口。\n对于平面面，创建一个细化多边形；对于曲面，对面进行三角剖分，并为每个三角形创建一个单独的多边形。\n还支持将线性几何边转换为 Ref/Eval 窗口（线单元）。",
+    "parameters": [
+      {
+        "name": "faceid",
+        "type": "face | list",
+        "desc": "face | LIST — 一个面、一个面列表或一条线性边，用于从中提取细化窗口。"
+      },
+      {
+        "name": "refwindowname",
+        "type": "string",
+        "desc": "STRING — 创建的 Ref/Eval 窗口的名称。"
+      }
+    ],
+    "example": "(extract-refwindow myface \"refinement1\")"
+  },
+  "get-empty-mask-list": {
+    "signature": "(get-empty-mask-list)",
+    "description": "返回所有已定义的空掩模的列表。如果未定义空掩模，则返回一个空列表。",
+    "parameters": [],
+    "example": "(get-empty-mask-list)"
+  },
+  "get-mask-list": {
+    "signature": "(get-mask-list)",
+    "description": "返回所有已定义（几何）掩模的列表。如果未定义掩模，则返回一个空列表。",
+    "parameters": [],
+    "example": "(get-mask-list)"
+  },
+  "mask-refevalwin-extract-2d": {
+    "signature": "(mask-refevalwin-extract-2d rwname maskname polarity)",
+    "description": "从指定的掩模中提取一个 2D Ref/Eval 窗口。必须在调用前设置域边界。\n如果掩模由多个不相交的块组成，则从每个块中提取一个单独的 Ref/Eval 窗口，其名称后附加一个计数器 _N。",
+    "parameters": [
+      {
+        "name": "rwname",
+        "type": "string",
+        "desc": "STRING — 提取的 Ref/Eval 窗口的名称。"
+      },
+      {
+        "name": "maskname",
+        "type": "string",
+        "desc": "STRING — 要从中提取的掩模的名称（非实体 ID）。"
+      },
+      {
+        "name": "polarity",
+        "type": "string",
+        "desc": "STRING — 用于提取的掩模极性：\"light\" 直接提取掩模区域；\"dark\" 提取域边界内的补集区域。"
+      }
+    ],
+    "example": "(mask-refevalwin-extract-2d \"RW1\" \"M1\" \"light\")"
+  },
+  "mask-refevalwin-extract-3d": {
+    "signature": "(mask-refevalwin-extract-3d rwname maskname polarity minz maxz)",
+    "description": "从指定的掩模中提取一个 3D Ref/Eval 窗口，放置在 3D 空间中 minz 和 maxz 之间。必须在调用前设置域边界。\n如果掩模由多个不相交的块组成，则从每个块中提取一个单独的 Ref/Eval 窗口。",
+    "parameters": [
+      {
+        "name": "rwname",
+        "type": "string",
+        "desc": "STRING — 提取的 Ref/Eval 窗口的名称。"
+      },
+      {
+        "name": "maskname",
+        "type": "string",
+        "desc": "STRING — 要从中提取的掩模的名称（非实体 ID）。"
+      },
+      {
+        "name": "polarity",
+        "type": "string",
+        "desc": "STRING — 用于提取的掩模极性：\"light\" 直接提取掩模区域；\"dark\" 提取域边界内的补集区域。"
+      },
+      {
+        "name": "minz",
+        "type": "float",
+        "desc": "float — 3D Ref/Eval 窗口的最小 z 坐标。"
+      },
+      {
+        "name": "maxz",
+        "type": "float",
+        "desc": "float — 3D Ref/Eval 窗口的最大 z 坐标。"
+      }
+    ],
+    "example": "(mask-refevalwin-extract-3d \"RW1\" \"M1\" \"light\" -0.1 0.5)"
+  },
+  "set-interface-contact": {
+    "signature": "(set-interface-contact region1 region2 contact-name)",
+    "description": "将接触属性附加到指定区域的公共面上。仅适用于 3D 模型。",
+    "parameters": [
+      {
+        "name": "region1",
+        "type": "string",
+        "desc": "STRING — 第一个区域的名称。"
+      },
+      {
+        "name": "region2",
+        "type": "string",
+        "desc": "STRING — 第二个区域的名称。"
+      },
+      {
+        "name": "contact-name",
+        "type": "string",
+        "desc": "STRING — 要附加到界面的接触的名称。"
+      }
+    ],
+    "example": "(set-interface-contact \"mb1\" \"mb2\" \"ifcontact\")"
+  },
+  "body?": {
+    "signature": "(body? object)",
+    "description": "判断一个 Scheme 对象是否为体。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(define myrect (sdegeo:create-rectangle (position 0 0 0) (position 1 1 0) \"Silicon\" \"Region_1\"))\n(body? myrect) ;; #t"
+  },
+  "loop?": {
+    "signature": "(loop? object)",
+    "description": "判断一个 Scheme 对象是否为环。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(loop? my-loop) ;; #t if my-loop is a loop entity"
+  },
+  "lump?": {
+    "signature": "(lump? object)",
+    "description": "判断一个 Scheme 对象是否为块。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(lump? my-lump) ;; #t if my-lump is a lump entity"
+  },
+  "member?": {
+    "signature": "(member? element list)",
+    "description": "检查指定元素是否为指定列表的成员。",
+    "parameters": [
+      {
+        "name": "element",
+        "type": "any",
+        "desc": "要查找的元素（INTEGER、REAL、STRING 或任何 Scheme 值）。"
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "要在其中搜索的 Scheme 列表。"
+      }
+    ],
+    "example": "(member? 2 (list 1 2 3 4)) ;; #t\n(member? \"apple\" (list 1 2 \"apple\" 3 4)) ;; #t"
+  },
+  "shell?": {
+    "signature": "(shell? object)",
+    "description": "判断一个 Scheme 对象是否为壳。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(shell? my-shell) ;; #t if my-shell is a shell entity"
+  },
+  "solid?": {
+    "signature": "(solid? object)",
+    "description": "判断一个 Scheme 对象是否为实体。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(solid? my-body) ;; #t if my-body is a solid body"
+  },
+  "vertex?": {
+    "signature": "(vertex? object)",
+    "description": "判断一个 Scheme 对象是否为顶点。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(vertex? my-vertex) ;; #t if my-vertex is a vertex entity"
+  },
+  "wire?": {
+    "signature": "(wire? object)",
+    "description": "判断一个 Scheme 对象是否为线。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(wire? my-wire) ;; #t if my-wire is a wire entity"
+  },
+  "wire-body?": {
+    "signature": "(wire-body? object)",
+    "description": "判断一个 Scheme 对象是否为线体。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(wire-body? my-wirebody) ;; #t if my-wirebody is a wire body"
+  },
+  "afm-smooth-layers": {
+    "signature": "(afm-smooth-layers fname z0 zplanar layerregion layermaterial layerthickness)",
+    "description": "根据 CSV 文件中定义的纹理图创建分层透镜结构。每层被分配一个区域名称、材料和厚度。",
+    "parameters": [
+      {
+        "name": "fname",
+        "type": "string",
+        "desc": "包含纹理图数据的输入 CSV 文件名。"
+      },
+      {
+        "name": "z0",
+        "type": "number",
+        "desc": "分层结构底部的 z 坐标。"
+      },
+      {
+        "name": "zplanar",
+        "type": "number",
+        "desc": "分层结构顶部平面的 z 坐标。"
+      },
+      {
+        "name": "layerregion",
+        "type": "list",
+        "desc": "区域名称列表（STRING LIST），每层一个。"
+      },
+      {
+        "name": "layermaterial",
+        "type": "list",
+        "desc": "DATEX 材料名称列表（DATEMAT LIST），每层一个。"
+      },
+      {
+        "name": "layerthickness",
+        "type": "list",
+        "desc": "厚度值列表（REAL LIST），每层一个，沿 +z 方向。"
+      }
+    ],
+    "example": "(sdegeo:create-cuboid (position 0 0 0) (position 6.28 6.28 4) \"Silicon\" \"xx\")\n(afm-smooth-layers \"xx.csv\" 0 4 (list \"tco\" \"copper\" \"polysi\") (list \"TCO\" \"Copper\" \"PolySi\") (list 2 2 2))"
+  },
+  "build-csv-lens": {
+    "signature": "(build-csv-lens fname bottom-z material-name [region-name])",
+    "description": "根据 CSV 文件中的用户定义数据创建实体。CSV 定义了一个张量网格，其中第一行和第一列为 x/y 坐标，其余值定义了顶面高度。",
+    "parameters": [
+      {
+        "name": "fname",
+        "type": "string",
+        "desc": "CSV 格式的输入数据文件名，定义了 n x m 张量网格上的值。"
+      },
+      {
+        "name": "bottom-z",
+        "type": "number",
+        "desc": "基平面的 z 坐标。实体从此平面向上延伸。"
+      },
+      {
+        "name": "material-name",
+        "type": "string",
+        "desc": "所创建体的 DATEX 材料名称。"
+      },
+      {
+        "name": "region-name",
+        "type": "string",
+        "desc": "可选。所创建体的区域名称。"
+      }
+    ],
+    "example": "(build-csv-lens \"data.csv\" 0.0 \"Silicon\" \"lens_region\")"
+  },
+  "color:rgb": {
+    "signature": "(color:rgb red green blue)",
+    "description": "使用 0 到 1 范围内的归一化实数指定 RGB 颜色分量。也可使用预定义常量，如 rgb:red、rgb:green 和 rgb:white。",
+    "parameters": [
+      {
+        "name": "red",
+        "type": "number",
+        "desc": "红色分量，一个介于 0 和 1 之间的实数。"
+      },
+      {
+        "name": "green",
+        "type": "number",
+        "desc": "绿色分量，一个介于 0 和 1 之间的实数。"
+      },
+      {
+        "name": "blue",
+        "type": "number",
+        "desc": "蓝色分量，一个介于 0 和 1 之间的实数。"
+      }
+    ],
+    "example": "(color:rgb 1 0 0) ;; red\n(color:rgb 0 1 1) ;; cyan"
+  },
+  "convert-to-degree": {
+    "signature": "(convert-to-degree angle)",
+    "description": "将角度从弧度转换为度。",
+    "parameters": [
+      {
+        "name": "angle",
+        "type": "number",
+        "desc": "以弧度表示的角度值。"
+      }
+    ],
+    "example": "(convert-to-degree PI) ;; 180.0"
+  },
+  "convert-to-radian": {
+    "signature": "(convert-to-radian angle)",
+    "description": "将角度从度转换为弧度。",
+    "parameters": [
+      {
+        "name": "angle",
+        "type": "number",
+        "desc": "以度表示的角度值。"
+      }
+    ],
+    "example": "(convert-to-radian 180) ;; 3.14159..."
+  },
+  "erf": {
+    "signature": "(erf value)",
+    "description": "返回输入的误差函数 (erf) 值。",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "number",
+        "desc": "误差函数的输入值。"
+      }
+    ],
+    "example": "(erf 1.0) ;; 0.8427..."
+  },
+  "erfc": {
+    "signature": "(erfc value)",
+    "description": "返回输入值的互补误差函数(erfc)值，定义为 1 - erf(x)。",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "number",
+        "desc": "互补误差函数的输入值。"
+      }
+    ],
+    "example": "(erfc 1.0) ;; 0.1573..."
+  },
+  "merge-collinear-edges-2d": {
+    "signature": "(merge-collinear-edges-2d body-list [angular-tolerance])",
+    "description": "合并指定体的所有共线边。仅适用于 2D 建模。当指定 angular-tolerance 时，夹角大于该阈值的边也会被合并。",
+    "parameters": [
+      {
+        "name": "body-list",
+        "type": "list",
+        "desc": "将要合并其共线边的体列表。"
+      },
+      {
+        "name": "angular-tolerance",
+        "type": "number",
+        "desc": "可选。当指定时，形成的夹角大于此阈值（以度为单位）的边也会被合并为一条边，连接其他端点。"
+      }
+    ],
+    "example": "(merge-collinear-edges-2d (list body1 body2))"
+  },
+  "protect-all-contacts": {
+    "signature": "(protect-all-contacts)",
+    "description": "保护所有 2D 和 3D 接触，防止其被合并或删除。防止边界简化命令移除接触边，并防止 sde:bool-regularise 将共面的接触面与相邻面合并。",
+    "parameters": [],
+    "example": "(protect-all-contacts)"
+  },
+  "random-sd": {
+    "signature": "(random-sd [initial-seed])",
+    "description": "返回一个在 [0, 1] 范围内归一化的、带种子的随机数。默认使用硬编码的固定种子。可以设置一次自定义种子来重置随机数序列。",
+    "parameters": [
+      {
+        "name": "initial-seed",
+        "type": "int",
+        "desc": "可选。用于初始化随机数序列的整数种子。必须仅设置一次；后续不带参数的调用会推进序列。"
+      }
+    ],
+    "example": "(random-sd 987654321) ;; reset sequence with custom seed\n(random-sd) ;; get next random number"
+  },
+  "remove-body-ABA": {
+    "signature": "(remove-body-ABA rbody)",
+    "description": "从所有其他存在重叠的现有体中减去指定的体。等效于事后应用的“新替换旧”(ABA)自动重叠移除规则。",
+    "parameters": [
+      {
+        "name": "rbody",
+        "type": "any",
+        "desc": "要从所有重叠体中减去的体。"
+      }
+    ],
+    "example": "(remove-body-ABA new-body)"
+  },
+  "remove-body-BAB": {
+    "signature": "(remove-body-BAB rbody)",
+    "description": "从指定体中减去所有其他存在重叠的现有体。等效于事后应用的“旧替换新”(BAB)自动重叠移除规则。",
+    "parameters": [
+      {
+        "name": "rbody",
+        "type": "any",
+        "desc": "将从中减去所有重叠体的体。"
+      }
+    ],
+    "example": "(remove-body-BAB target-body)"
+  },
+  "roll": {
+    "signature": "(roll [num])",
+    "description": "撤销或重做与几何体、掺杂或细化相关的操作。负数回滚到先前状态；正数前进到后续状态。",
+    "parameters": [
+      {
+        "name": "num",
+        "type": "int",
+        "desc": "可选。要回滚的状态数。负值撤销（回滚），正值重做（前进）。"
+      }
+    ],
+    "example": "(roll -1) ;; undo last operation\n(roll 1) ;; redo last undone operation"
+  },
+  "part:entities": {
+    "signature": "(part:entities [filter = NULL])",
+    "description": "返回部件中所有顶级实体的列表。可以提供可选的实体筛选器以仅选中特定类型的实体。",
+    "parameters": [
+      {
+        "name": "filter",
+        "type": "any",
+        "desc": "可选。一个过程式实体筛选器对象，用于从实体列表中选中实体。使用 filter:type 或类似的筛选器构造函数来创建它。默认为 NULL（返回所有实体）。"
+      }
+    ],
+    "example": "(sde:clear)\n(sdegeo:create-rectangle (position 0 0 0) (position 1 1 0) \"Silver\" \"region_3\")\n(part:entities)\n(part:entities (filter:type \"solid?\"))"
+  },
+  "part:load": {
+    "signature": "(part:load filename [textmode = #t] [part = active] [with-history = #f])",
+    "description": "将部件从文件加载到活动部件中。实体被合并（而非替换）到当前工作会话。返回实体列表。可以设置全局变量 part-load-path 为一个目录列表以搜索部件文件。",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "指定当前工作目录中的文件名或包含文件名的完整路径。"
+      },
+      {
+        "name": "textmode",
+        "type": "boolean",
+        "desc": "可选。如果为 #t，则以文本模式加载文件（.sat 文件）。如果为 #f，则以二进制模式加载。如果未指定，模式由文件扩展名决定：.sab 或 .SAB 使用二进制模式；否则使用文本模式。"
+      },
+      {
+        "name": "part",
+        "type": "any",
+        "desc": "可选。要将实体合并到的目标部件。默认为活动部件。"
+      },
+      {
+        "name": "with-history",
+        "type": "boolean",
+        "desc": "可选。如果为 #t，则恢复回滚历史数据。历史只能恢复到空部件中。默认为 #f。"
+      }
+    ],
+    "example": "(part:load \"my_structure.sat\")"
+  },
+  "part:save": {
+    "signature": "(part:save [filename = partname.sat] [textmode = #t] [part = active] [with-history = #f] [mainline-only = #f])",
+    "description": "将部件中的所有实体保存到文件。当使用文件名保存时，该文件名成为部件的新名称。通过设置全局选项 save_version，可以将部件文件保存为早期版本的格式。",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "可选。指定要保存到的文件名或路径。如果省略，则使用 part:set-name 分配的名称。"
+      },
+      {
+        "name": "textmode",
+        "type": "boolean",
+        "desc": "可选。如果为 #t，则以文本模式保存（.sat 文件）。如果为 #f，则以二进制模式保存。如果未指定，模式由文件扩展名决定：.sab 或 .SAB 使用二进制模式；否则使用文本模式。默认为 #t。"
+      },
+      {
+        "name": "part",
+        "type": "any",
+        "desc": "可选。要保存的部件。默认为活动部件。"
+      },
+      {
+        "name": "with-history",
+        "type": "boolean",
+        "desc": "可选。如果为 #t，则保存通过属性附加的实体特定回滚历史数据。默认为 #f。"
+      },
+      {
+        "name": "mainline-only",
+        "type": "boolean",
+        "desc": "可选。如果为 #f，则保存包括已回滚分支在内的整个历史。默认为 #f。"
+      }
+    ],
+    "example": "(part:save \"my_structure.sat\")"
+  },
+  "part:save-selection": {
+    "signature": "(part:save-selection ent-list filename [textmode = #f] [with-history = #f])",
+    "description": "将指定的实体列表保存到文件。通过设置全局选项 save_version，可以将部件文件保存为早期版本的格式。",
+    "parameters": [
+      {
+        "name": "ent-list",
+        "type": "list",
+        "desc": "要保存到输出文件中的实体列表。"
+      },
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "指定要保存到的文件名或路径。"
+      },
+      {
+        "name": "textmode",
+        "type": "boolean",
+        "desc": "可选。如果为 #t，则以文本模式保存（.sat 文件）。如果为 #f，则以二进制模式保存。如果未指定，模式由文件扩展名决定：.sab 或 .SAB 使用二进制模式；否则使用文本模式。默认为 #f。"
+      },
+      {
+        "name": "with-history",
+        "type": "boolean",
+        "desc": "可选。如果为 #t，则保存通过属性附加的实体特定历史。默认为 #f。"
+      }
+    ],
+    "example": "(part:save-selection (get-body-list) \"selected.sat\")"
+  },
+  "part:set-name": {
+    "signature": "(part:set-name [name] [part = active])",
+    "description": "为指定部件分配一个名称，如果省略 part 参数，则为活动部件分配名称。如果保存部件时未指定文件名，part:save 将使用此分配的名称作为文件名。如果省略 name 参数，则清除部件名称。",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "可选。部件的字符串标识名称。如果省略，则清除部件的名称。"
+      },
+      {
+        "name": "part",
+        "type": "any",
+        "desc": "可选。要命名的部件。默认为活动部件。"
+      }
+    ],
+    "example": "(part:set-name \"my_device\")"
+  },
+  "transform:reflection": {
+    "signature": "(transform:reflection plane-position plane-direction)",
+    "description": "创建反射变换，以通过一个平面对物体进行镜像。生成的变换可与 sdegeo:mirror-selected 一起使用。",
+    "parameters": [
+      {
+        "name": "plane-position",
+        "type": "position",
+        "desc": "镜像平面上的一个点，指定反射的位置。"
+      },
+      {
+        "name": "plane-direction",
+        "type": "any",
+        "desc": "镜像平面的法向量(gvector)，定义反射方向。"
+      }
+    ],
+    "example": "(sde:clear)\n(define mb (sdegeo:create-rectangle (position 1 1 0) (position 2 2 0) \"Silicon\" \"xx\"))\n(define trl (transform:reflection (position 0 0 0) (gvector -1 0 0)))\n(sdegeo:mirror-selected (get-body-list) trl #t)"
+  },
+  "transform:rotation": {
+    "signature": "(transform:rotation origin-position axis-direction angle)",
+    "description": "创建旋转变换，使物体绕指定坐标轴旋转给定角度。生成的变换可与 sdegeo:rotate-selected 一起使用。",
+    "parameters": [
+      {
+        "name": "origin-position",
+        "type": "position",
+        "desc": "旋转轴的起始位置（原点）。"
+      },
+      {
+        "name": "axis-direction",
+        "type": "any",
+        "desc": "旋转轴的方向向量(gvector)。"
+      },
+      {
+        "name": "angle",
+        "type": "number",
+        "desc": "旋转角度，以度为单位。"
+      }
+    ],
+    "example": "(sde:clear)\n(sdegeo:create-circle (position 0 0 0) 0.1 \"PolySilicon\" \"xx\")\n(define mb (sdegeo:create-rectangle (position 1 1 0) (position 2 2 0) \"Silicon\" \"xx\"))\n(define trl (transform:rotation (position 0 0 0) (gvector 0 0 1) 45))\n(sdegeo:rotate-selected mb trl #t)"
+  },
+  "transform:scaling": {
+    "signature": "(transform:scaling x-scale [y-scale z-scale])",
+    "description": "创建缩放变换，用于 sdegeo:scale-selected。当仅提供 x-scale 时，对所有三个坐标轴应用均匀缩放。建议仅使用正缩放因子。",
+    "parameters": [
+      {
+        "name": "x-scale",
+        "type": "number",
+        "desc": "x 轴方向的缩放因子。对于均匀缩放，仅提供此参数。"
+      },
+      {
+        "name": "y-scale",
+        "type": "number",
+        "desc": "可选。y 轴方向的缩放因子。如果与 z-scale 一起省略，则应用均匀缩放。"
+      },
+      {
+        "name": "z-scale",
+        "type": "number",
+        "desc": "可选。z 轴方向的缩放因子。"
+      }
+    ],
+    "example": "(sde:clear)\n(define mb (sdegeo:create-rectangle (position 0 0 0) (position 1 1 0) \"Silicon\" \"xx\"))\n(define trl (transform:scaling 1.0 2.0 1.0))\n(sdegeo:scale-selected mb trl)"
+  },
+  "transform:translation": {
+    "signature": "(transform:translation gvector)",
+    "description": "创建一个平移变换，用于将对象沿指定的位移向量移动。生成的变换可与 sdegeo:translate-selected 配合使用。",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "any",
+        "desc": "指定平移方向和距离的位移向量(gvector)。"
+      }
+    ],
+    "example": "(sde:clear)\n(define mb (sdegeo:create-rectangle (position 0 0 0) (position 1 1 0) \"Silicon\" \"xx\"))\n(define tr1 (transform:translation (gvector 3.0 0.0 0.0)))\n(sdegeo:translate-selected mb tr1 #t 5)"
+  },
+  "env:set-tolerance": {
+    "signature": "(env:set-tolerance resabs resnor resfit resmch)",
+    "description": "设置系统建模容差(resabs, resnor, resfit, resmch)。每个参数接受一个 REAL 值来设置，使用 #f 保持不变，或使用 #t 重置为默认值。",
+    "parameters": [
+      {
+        "name": "resabs",
+        "type": "number",
+        "desc": "绝对容差，用于判断空间中两个位置是否相等。定义了不同点之间的最小距离。默认值: 1e-6。"
+      },
+      {
+        "name": "resnor",
+        "type": "number",
+        "desc": "法向容差，用于检查一个数值是否等于0。用于判断向量是否平行或垂直，或检查长度是否为零。默认值: 1e-10。"
+      },
+      {
+        "name": "resfit",
+        "type": "number",
+        "desc": "拟合容差，在曲面求交过程中拟合插值曲线时使用。默认值: 1e-3。"
+      },
+      {
+        "name": "resmch",
+        "type": "number",
+        "desc": "机器容差，由样条函数使用，用途类似于 resnor。默认值: 1e-11。"
+      }
+    ],
+    "example": "(env:set-tolerance 1e-6 1e-10 1e-3 1e-11)"
+  },
+  "env:tolerance": {
+    "signature": "(env:tolerance)",
+    "description": "以列表形式返回当前的系统建模容差，包含四个 REAL 值，顺序为：resabs, resnor, resfit, resmch。",
+    "parameters": [],
+    "example": "(env:tolerance)"
+  },
+  "filter:type": {
+    "signature": "(filter:type type-name)",
+    "description": "创建一个筛选器，指定要在另一个筛选操作中使用的实体类型。如果创建了新的类型筛选器，它将替换先前定义的类型。不带参数调用会显示可用的筛选器类型。",
+    "parameters": [
+      {
+        "name": "type-name",
+        "type": "string",
+        "desc": "实体筛选器类型字符串。可能的值包括：\"body?\", \"edge?\", \"edge:circular?\", \"edge:curve?\", \"edge:elliptical?\", \"edge:linear?\", \"edge:spline?\", \"face?\", \"face:conical?\", \"face:cylindrical?\", \"face:planar?\", \"face:spherical?\", \"face:spline?\", \"face:toroidal?\", \"mixed-body?\", \"point?\", \"solid?\", \"text?\", \"vertex?\", \"wcs?\", \"wire?\", \"wire-body?\"。"
+      }
+    ],
+    "example": "(filter:type \"face:planar?\")"
+  },
+  "loop:external?": {
+    "signature": "(loop:external? loop)",
+    "description": "判断一个环是外环（返回 #t）还是内环（返回 #f）。如果参数不是环，则返回错误。",
+    "parameters": [
+      {
+        "name": "loop",
+        "type": "string",
+        "desc": "要查询的环对象。"
+      }
+    ],
+    "example": "(loop:external? my-loop)"
+  },
+  "render:rebuild": {
+    "signature": "(render:rebuild [clear])",
+    "description": "刷新视图的显示列表。在更改视图参数后使用。",
+    "parameters": [
+      {
+        "name": "clear",
+        "type": "boolean",
+        "desc": "可选。如果为 #t 或省略，则清除视图窗口并重新显示线框。如果为 #f，则在重新显示前不清除视图窗口（不写入新页面）。"
+      }
+    ],
+    "example": "(render:rebuild)"
+  },
+  "string:head": {
+    "signature": "(string:head string snum)",
+    "description": "返回字符串开头指定数量的字符。",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "要从中提取的输入字符串。"
+      },
+      {
+        "name": "snum",
+        "type": "int",
+        "desc": "要从字符串开头返回的字符数。如果大于字符串长度，则返回空字符串。"
+      }
+    ],
+    "example": "(string:head \"Hello World\" 5)"
+  },
+  "string:tail": {
+    "signature": "(string:tail string snum)",
+    "description": "返回从输入字符串的第 snum 个字符开始到最后一个字符的子字符串。如果 snum 大于字符串长度，则返回空字符串。",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "要从中提取的输入字符串。"
+      },
+      {
+        "name": "snum",
+        "type": "int",
+        "desc": "开始提取子字符串的起始字符位置（从1开始计数）。如果大于字符串长度，则返回空字符串。"
+      }
+    ],
+    "example": "(string:tail \"Hello World\" 7)"
+  },
+  "sweep:law": {
+    "signature": "(sweep:law profile {path | distance | vector | axis} [sweep-options])",
+    "description": "通过沿路径扫描轮廓来创建曲面或实体。路径可以定义为线体/边、距离、向量或轴（位置和向量）。如果扫描导致自相交，可能会失败。",
+    "parameters": [
+      {
+        "name": "profile",
+        "type": "string",
+        "desc": "定义扫描几何体的线体、面或边，并成为实体的底面或曲面的边。"
+      },
+      {
+        "name": "path",
+        "type": "string",
+        "desc": "轮廓沿其扫描的线体或边。根据扫描模式，可以用距离、向量或轴替换。"
+      },
+      {
+        "name": "distance",
+        "type": "number",
+        "desc": "沿面法向扫描的距离。当轮廓是平面时使用。"
+      },
+      {
+        "name": "vector",
+        "type": "string",
+        "desc": "扫描的方向和距离(GVECTOR)。与 \"rail_law\" 配合使用以实现无扭曲扫描。"
+      },
+      {
+        "name": "axis",
+        "type": "string",
+        "desc": "定义旋转轴的位置和向量。旋转量由 \"sweep_angle\" 选项控制。"
+      },
+      {
+        "name": "sweep-options",
+        "type": "string",
+        "desc": "可选。由 sweep:options 创建的扫描选项数据结构。如果省略，则使用默认选项值。"
+      }
+    ],
+    "example": "(define edge1 (wire-body (edge:linear (position 10 0 0) (position 10 10 0)))) (sweep:law edge1 (gvector 10 0 0))"
+  },
+  "sweep:options": {
+    "signature": "(sweep:options sweep-option-name {value | location direction})",
+    "description": "创建一个由 sweep:law 使用的扫描选项数据结构。可以同时指定多个选项名和值序对(pair)，例如 (sweep:options \"draft_angle\" 5 \"solid\" #f)。",
+    "parameters": [
+      {
+        "name": "sweep-option-name",
+        "type": "string",
+        "desc": "选项名称字符串。可用选项：\"draft_angle\" (REAL, 拔模角度，单位度，默认 0), \"gap_type\" (STRING), \"miter\" (STRING), \"rigid\" (STRING), \"sweep_angle\" (REAL, 轴扫描的旋转角度)。极端的拔模角度可能导致自相交错误。"
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "desc": "命名选项的值。可以是 REAL（无需分隔符）、law 变量名或用双引号括起来的 STRING。"
+      },
+      {
+        "name": "location",
+        "type": "position",
+        "desc": "为某些选项指定位置的位置。"
+      },
+      {
+        "name": "direction",
+        "type": "string",
+        "desc": "为某些选项指定方向的 GVECTOR。"
+      }
+    ],
+    "example": "(sweep:options \"sweep_angle\" 60)"
+  },
+  "system:command": {
+    "signature": "(system:command cmd)",
+    "description": "从 Scheme 命令行执行系统（shell）命令。命令结果显示在 UNIX 窗口中。必须正确处理返回值以便 Sentaurus Workbench 进行错误检测。",
+    "parameters": [
+      {
+        "name": "cmd",
+        "type": "string",
+        "desc": "要执行的系统命令字符串。"
+      }
+    ],
+    "example": "(system:command \"ls -la\")"
+  },
+  "system:getenv": {
+    "signature": "(system:getenv name-string)",
+    "description": "以字符串形式返回环境变量的值。如果未找到变量，则返回 #f。",
+    "parameters": [
+      {
+        "name": "name-string",
+        "type": "string",
+        "desc": "要查询的环境变量名称。"
+      }
+    ],
+    "example": "(system:getenv \"HOME\")"
+  },
+  "skin:options": {
+    "signature": "(skin:options {skin-option-name value} [skin-options])",
+    "description": "设置在蒙皮和放样 Scheme 扩展中使用的数据结构中的选项。",
+    "parameters": [
+      {
+        "name": "skin-option-name",
+        "type": "string",
+        "desc": "蒙皮选项的名称。可用选项：\"align\" (对齐截面曲线方向，默认 #t), \"allow_same_uv\" (允许具有相同 u/v 方向的曲面，默认 #f), \"arc_length\" / \"arc_length_u\" (弧长与等参参数化，默认 #f), \"closed\" (构造在 v/圆环方向上闭合的实体，默认 #f), \"estimate_Loft_tanfacs\" (最小化平均曲率半径，默认 #f), \"gap_type\" (面之间的间隙类型：\"extended\", \"rounded\", 或 \"champered\"), \"guidePreference\" (过约束引导线分辨率：\"constrain_to_guide\" 或 \"constrain_to_tangent\"), \"matchVertices\" (抑制顶点匹配算法，默认 #t), \"merge_wirecoedges\" (通过合并相邻的共边/边来合并 G1 顶点，默认 #t), \"no_new_twistVertices\" (强制仅从现有顶点中选择，默认 #f), \"no_twist\" (最小化曲面扭曲，默认 #t), \"periodic\" (在 v 方向上周期性，在起始/结束轮廓处平滑闭合), \"perpendicular\" (指定起飞向量方向垂直于共边，默认 #f), \"postprocess_stitch\" (将放样体缝合到原始体，默认 #t), \"self_int_test\" (自相交检查级别：0=关闭，1=默认，2=检查并警告)。"
+      },
+      {
+        "name": "value",
+        "type": "boolean",
+        "desc": "蒙皮选项的值（对于布尔选项通常为 #t 或 #f，对于特定选项为字符串或整数）。"
+      },
+      {
+        "name": "skin-options",
+        "type": "list",
+        "desc": "可选。额外的 skin-option-name 和 value 序对(pair)。"
+      }
+    ],
+    "example": "(skin:options \"no_twist\" #t \"align\" #t)"
+  },
+  "solid:area": {
+    "signature": "(solid:area solid-body [tolerance])",
+    "description": "以序对(pair)形式返回实体的表面积：总面积和相对精度（绝对精度/面积）。",
+    "parameters": [
+      {
+        "name": "solid-body",
+        "type": "string",
+        "desc": "一个实体。如果未明确定义，请使用 `(entity # [#])`，其中第一个 # 是其实体编号，第二个 # 是其部件编号。"
+      },
+      {
+        "name": "tolerance",
+        "type": "float",
+        "desc": "可选。指定计算的精度。默认值为 0.01。"
+      }
+    ],
+    "example": "(solid:area (car (body-list)))"
+  },
+  "solid:massprop": {
+    "signature": "(solid:massprop entity [compute-type])",
+    "description": "分析实体的质量属性，返回的结果取决于 compute-type。",
+    "parameters": [
+      {
+        "name": "entity",
+        "type": "string",
+        "desc": "要计算质量属性的实体。"
+      },
+      {
+        "name": "compute-type",
+        "type": "int",
+        "desc": "可选。计算类型：0 = 仅体积和容差；1 = 体积、容差、质心、主惯性矩和主轴；2 = 体积、质心、主惯性矩、主轴和惯性张量。"
+      }
+    ],
+    "example": "(solid:massprop (car (body-list)) 1)"
+  },
+  "sort": {
+    "signature": "(sort sort-criteria sort-list)",
+    "description": "根据给定的排序条件对提供的列表进行排序。",
+    "parameters": [
+      {
+        "name": "sort-criteria",
+        "type": "string",
+        "desc": "排序条件运算符，例如 <, <=, >, >=。"
+      },
+      {
+        "name": "sort-list",
+        "type": "list",
+        "desc": "待排序的列表。"
+      }
+    ],
+    "example": "(sort < (list 1 2 3 4 9 8 7 6))"
+  },
+  "timer:end": {
+    "signature": "(timer:end)",
+    "description": "停止计时器。与 timer:start、timer:show-time 和 timer:get-time 配合使用，以测量命令执行的 CPU 时间。",
+    "parameters": [],
+    "example": "(timer:start)\n(sdegeo:create-rectangle (position 0 0 0) (position 10 10 0) \"Silicon\" \"R.Sub\")\n(timer:end)"
+  },
+  "timer:get-time": {
+    "signature": "(timer:get-time)",
+    "description": "计算并返回自执行 timer:start 以来经过的 CPU 时间量。可以在命令序列中调用任意次数。",
+    "parameters": [],
+    "example": "(timer:start)\n(sdegeo:create-rectangle (position 0 0 0) (position 10 10 0) \"Silicon\" \"R.Sub\")\n(define elapsed (timer:get-time))"
+  },
+  "timer:show-time": {
+    "signature": "(timer:show-time)",
+    "description": "计算并返回自执行 timer:start 以来经过的 CPU 时间量。如果未调用 timer:start，则返回零。",
+    "parameters": [],
+    "example": "(timer:start)\n(sdegeo:create-rectangle (position 0 0 0) (position 10 10 0) \"Silicon\" \"R.Sub\")\n(timer:show-time)"
+  },
+  "timer:start": {
+    "signature": "(timer:start)",
+    "description": "启动内部时钟或计时器，用于测量后续命令的 CPU 时间。",
+    "parameters": [],
+    "example": "(timer:start)\n(sdegeo:create-rectangle (position 0 0 0) (position 10 10 0) \"Silicon\" \"R.Sub\")\n(timer:show-time)"
+  },
+  "util:make-bot-contact": {
+    "signature": "(util:make-bot-contact contact-name [contact-argument])",
+    "description": "为二维或三维器件的底部分配一个接触。在二维中，底部边被定义为接触；在三维中，底部面被定义为接触。",
+    "parameters": [
+      {
+        "name": "contact-name",
+        "type": "string",
+        "desc": "接触的名称。如果该接触尚未定义，则会自动创建。"
+      },
+      {
+        "name": "contact-argument",
+        "type": "string",
+        "desc": "可选。在二维中：颜色（颜色名称或 RGB 颜色）。在三维中：面图案字符串，例如 \"solid\", \"##\", \"[/]\", \"*\", \"<><>\", \"[] [ ]\"。"
+      }
+    ],
+    "example": "(sdegeo:create-rectangle (position 0 0 0) (position 10 10 0) \"Silicon\" \"R.Sub\")\n(util:make-bot-contact \"c1\" \"Green\")"
+  },
+  "util:make-top-contact": {
+    "signature": "(util:make-top-contact contact-name [contact-argument])",
+    "description": "为二维或三维器件的顶部分配一个接触。在二维中，顶部边被定义为接触；在三维中，顶部面被定义为接触。",
+    "parameters": [
+      {
+        "name": "contact-name",
+        "type": "string",
+        "desc": "接触的名称。如果该接触尚未定义，则会自动创建。"
+      },
+      {
+        "name": "contact-argument",
+        "type": "string",
+        "desc": "可选。在二维中：颜色（颜色名称或 RGB 颜色）。在三维中：面图案字符串，例如 \"solid\", \"##\", \"[/]\", \"*\", \"<><>\", \"[] [ ]\"。"
+      }
+    ],
+    "example": "(sdegeo:create-rectangle (position 0 0 0) (position 10 10 0) \"Silicon\" \"R.Sub\")\n(util:make-top-contact \"c2\" \"Blue\")"
+  },
+  "view:set-point-size": {
+    "signature": "(view:set-point-size vertex-size)",
+    "description": "设置 GUI 主窗口中渲染的顶点的大小。",
+    "parameters": [
+      {
+        "name": "vertex-size",
+        "type": "int",
+        "desc": "顶点渲染大小。默认值为 10。设置为 0 可关闭顶点渲染并移除顶点标记。"
+      }
+    ],
+    "example": "(view:set-point-size 15)"
+  },
+  "wire:planar?": {
+    "signature": "(wire:planar? object)",
+    "description": "判断一个 Scheme 对象是否为平面 wire。",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "string",
+        "desc": "待查询的 Scheme 对象。"
+      }
+    ],
+    "example": "(wire:planar? my-wire)"
   }
 }
