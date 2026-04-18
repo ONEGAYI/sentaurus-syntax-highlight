@@ -1,4 +1,26 @@
 {
+  "MATERIAL": [
+    "4H-SiC", "6H-SiC", "Air", "Al2O3", "AlAs", "AlGaAs", "AlGaN",
+    "AlGaP", "AlInGaAs", "AlInGaN", "AlInGaP", "AlInN", "AlInP",
+    "AlN", "AlP", "Aluminum", "AmorphousSilicon", "Anyinsulator",
+    "Anymaterial", "Anysemiconductor", "BackMat", "BN", "BSG",
+    "Cadmium", "CdTe", "Ceramic", "Co", "Cobalt", "CoSilicide",
+    "Copper", "Diamond", "Fluid", "Ga2O3", "GaAs", "GaAsP",
+    "GaAsSb", "GaInP", "GaInSb", "GaN", "GaP", "GaSb",
+    "GatePolySilicon", "Gas", "Ge", "GeO2", "GeOxide", "Germanium",
+    "Gold", "HfO2", "HgCdTe", "HgTe", "InAlAs", "InAs", "InAsP",
+    "InAsSb", "InGaAs", "InGaAsP", "InGaAsSb", "InGaN", "InN",
+    "InP", "InSb", "Insulator", "Insulator1", "Insulator2",
+    "Insulator3", "InsulatorX", "InterfacialOxide", "Invisible",
+    "Iron", "LowK", "Metal", "Molybdenum", "NiSilicide", "Nickel",
+    "Nitride", "Oxide", "OxideAsSemiconductor", "Oxynitride",
+    "Photoresist", "Poly", "PolySilicon", "Pt", "Refractory",
+    "Resist", "Semiconductor", "Si", "Si3N4", "SiC", "SiGe",
+    "SiO2", "Silicide", "Silicon", "Silicon110", "Silicon111",
+    "Silver", "Solder60_40", "StrainedSilicon", "Ta", "Ti",
+    "TiN", "TiSi2", "Tungsten", "TungstenSilicide", "Unknown",
+    "Vacuum", "W", "Water", "WSilicide"
+  ],
   "emw": {
     "KEYWORD1": [
       "CodeVExcitation",

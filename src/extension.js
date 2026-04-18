@@ -46,6 +46,7 @@ const KIND_MAP = {
     LITERAL2: vscode.CompletionItemKind.Value,
     LITERAL3: vscode.CompletionItemKind.EnumMember,
     FUNCTION: vscode.CompletionItemKind.Function,
+    MATERIAL: vscode.CompletionItemKind.Constant,
 };
 
 /** Sort prefix: keywords/functions first, then classes/tags, then literals. */
@@ -53,6 +54,7 @@ const SORT_PREFIX = {
     KEYWORD1: '0', KEYWORD2: '0', FUNCTION: '0',
     KEYWORD3: '1', KEYWORD4: '1',
     LITERAL1: '2', LITERAL2: '2', LITERAL3: '2',
+    MATERIAL: '2',
 };
 
 /** Human-readable category label shown in completion detail. */
@@ -61,6 +63,7 @@ const DETAIL_LABEL = {
     KEYWORD3: 'Tag', KEYWORD4: 'Class',
     LITERAL1: 'Constant', LITERAL2: 'Numeric Literal', LITERAL3: 'String Literal',
     FUNCTION: 'Function',
+    MATERIAL: 'Material',
 };
 
 /** Labels used in formatted documentation (i18n). */
@@ -251,6 +254,8 @@ function activate(context) {
         return;
     }
 
+    const builtinMaterials = new Set(allKeywords.MATERIAL || []);
+
     // ── 解析缓存初始化 ──────────────────────────
     schemeCache = new SchemeParseCache();
     tclCache = new TclParseCache();
@@ -423,7 +428,7 @@ function activate(context) {
     undefVarDiagnostic.activate(context, schemeCache, tclCache);
 
     // Region/Material/Contact 未定义语义诊断（SDE only）
-    regionUndefDiagnostic.activate(context, schemeCache, symbolParamsTable, modeDispatchTable);
+    regionUndefDiagnostic.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, builtinMaterials);
 
     // DocumentSymbol / 面包屑导航（4 语言共用）
     const tclDocumentSymbolProvider = tclDocSymbolMod.createTclDocumentSymbolProvider(tclCache);
@@ -459,12 +464,15 @@ function activate(context) {
     symbolReferenceProvider.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, vscode);
 
     const languages = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect', 'svisual'];
+    const materialKeywords = allKeywords.MATERIAL || [];
 
     for (const langId of languages) {
         const moduleKeywords = allKeywords[langId];
         if (!moduleKeywords) continue;
 
-        const items = buildItems(moduleKeywords, getDocs(langId), langId);
+        // 将全局 MATERIAL 分类合并到各语言补全
+        const enrichedKeywords = { ...moduleKeywords, MATERIAL: materialKeywords };
+        const items = buildItems(enrichedKeywords, getDocs(langId), langId);
 
         const completionDisposable = vscode.languages.registerCompletionItemProvider(
             { language: langId },

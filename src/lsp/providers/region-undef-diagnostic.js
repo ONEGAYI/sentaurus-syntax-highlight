@@ -12,6 +12,8 @@ let schemeCache;
 let symbolParamsTable;
 /** @type {object} */
 let modeDispatchTable;
+/** @type {Set<string>} */
+let builtinMaterials;
 /** @type {vscode.DiagnosticCollection} */
 let diagnosticCollection;
 /** @type {NodeJS.Timeout} */
@@ -19,11 +21,13 @@ let debounceTimer;
 
 /**
  * 注册 Region/Material/Contact 未定义语义诊断。
+ * @param {Set<string>} materials - 内置材料名白名单（从 all_keywords.json MATERIAL 加载）
  */
-function activate(context, schemeCacheInstance, symbolParams, modeDispatch) {
+function activate(context, schemeCacheInstance, symbolParams, modeDispatch, materials) {
     schemeCache = schemeCacheInstance;
     symbolParamsTable = symbolParams;
     modeDispatchTable = modeDispatch;
+    builtinMaterials = materials || new Set();
 
     diagnosticCollection = vscode.languages.createDiagnosticCollection('sde-symbol-undef');
     context.subscriptions.push(diagnosticCollection);
@@ -66,8 +70,8 @@ function updateDiagnostics(doc) {
     const typeLabels = { region: 'Region', material: 'Material', contact: 'Contact' };
 
     for (const ref of refs) {
+        if (ref.type === 'material' && builtinMaterials.has(ref.name)) continue;
         if (!definedNames.has(`${ref.type}:${ref.name}`)) {
-            // ref.start/ref.end 是文档级偏移量，需转为行内列号
             const startCol = ref.start - lineStarts[ref.line - 1];
             const endCol = ref.end - lineStarts[ref.line - 1];
             const range = new vscode.Range(
