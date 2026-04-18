@@ -8088,5 +8088,2405 @@
       }
     ],
     "example": "(generic:get BODY \"material\") ; -> \"Silicon\""
+  },
+  "gvector": {
+    "signature": "(gvector x y z [space = model])",
+    "description": "Creates a new gvector with the specified x-, y-, and z-coordinates, relative to the active coordinate system.",
+    "parameters": [
+      {
+        "name": "x",
+        "type": "number",
+        "desc": "Defines the x-coordinate (REAL)."
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "desc": "Defines the y-coordinate (REAL)."
+      },
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "Defines the z-coordinate (REAL)."
+      },
+      {
+        "name": "space",
+        "type": "string",
+        "desc": "Optional. Coordinate system for interpreting the x, y, z values. Defaults to WCS (active work plane). Supported values: \"model\" (rectangular Cartesian relative to the model), \"polar\" or \"cylindrical\" (radial distance, polar angle in degrees from xz plane, z-coordinate), \"spherical\" (radial distance, declination from z-axis in degrees, polar angle in degrees from xz plane)."
+      }
+    ],
+    "example": "(gvector 1.0 2.0 3.0)"
+  },
+  "gvector?": {
+    "signature": "(gvector? object)",
+    "description": "Determines whether a Scheme object is a gvector.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "Specifies a Scheme object to be queried."
+      }
+    ],
+    "example": "(gvector? my-gvector)"
+  },
+  "gvector:+": {
+    "signature": "(gvector:+ gvector1 gvector2)",
+    "description": "Returns the result of adding two gvectors as a new gvector.",
+    "parameters": [
+      {
+        "name": "gvector1",
+        "type": "gvector",
+        "desc": "Defines the first gvector."
+      },
+      {
+        "name": "gvector2",
+        "type": "gvector",
+        "desc": "Defines the second gvector."
+      }
+    ],
+    "example": "(gvector:+ (gvector 1 3 2) (gvector 2 2 2))"
+  },
+  "gvector:-": {
+    "signature": "(gvector:- gvector1 gvector2)",
+    "description": "Returns the result of subtracting gvector2 from gvector1 as a new gvector.",
+    "parameters": [
+      {
+        "name": "gvector1",
+        "type": "gvector",
+        "desc": "Defines the start location for both vectors (minuend)."
+      },
+      {
+        "name": "gvector2",
+        "type": "gvector",
+        "desc": "Defines the end location for both vectors (subtrahend)."
+      }
+    ],
+    "example": "(gvector:- (gvector 1 3 2) (gvector 2 2 2))"
+  },
+  "gvector:copy": {
+    "signature": "(gvector:copy gvector)",
+    "description": "Creates a new gvector by copying an existing gvector.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "The gvector to copy."
+      }
+    ],
+    "example": "(define gvcopy (gvector:copy (gvector 6 5 2)))"
+  },
+  "gvector:cross": {
+    "signature": "(gvector:cross gvector1 gvector2)",
+    "description": "Returns the cross product of two gvectors as a new gvector.",
+    "parameters": [
+      {
+        "name": "gvector1",
+        "type": "gvector",
+        "desc": "The first gvector."
+      },
+      {
+        "name": "gvector2",
+        "type": "gvector",
+        "desc": "The second gvector."
+      }
+    ],
+    "example": "(gvector:cross (gvector 1 0 0) (gvector 0 1 0))"
+  },
+  "gvector:dot": {
+    "signature": "(gvector:dot gvector1 gvector2)",
+    "description": "Returns the dot product of two gvectors as a real number.",
+    "parameters": [
+      {
+        "name": "gvector1",
+        "type": "gvector",
+        "desc": "The first gvector."
+      },
+      {
+        "name": "gvector2",
+        "type": "gvector",
+        "desc": "The second gvector."
+      }
+    ],
+    "example": "(gvector:dot (gvector 1 0 0) (gvector 0 1 0))"
+  },
+  "gvector:from-to": {
+    "signature": "(gvector:from-to position1 position2)",
+    "description": "Returns the gvector between two positions.",
+    "parameters": [
+      {
+        "name": "position1",
+        "type": "position",
+        "desc": "Defines the first position (start point)."
+      },
+      {
+        "name": "position2",
+        "type": "position",
+        "desc": "Defines the second position (end point)."
+      }
+    ],
+    "example": "(gvector:from-to (position 0 0 0) (position 1 2 3))"
+  },
+  "gvector:length": {
+    "signature": "(gvector:length gvector)",
+    "description": "Returns the length (magnitude) of a gvector as a real number.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "The gvector whose length is to be computed."
+      }
+    ],
+    "example": "(gvector:length (gvector 3 4 0))"
+  },
+  "gvector:parallel?": {
+    "signature": "(gvector:parallel? gvector1 gvector2)",
+    "description": "Determines whether two gvectors are parallel. Returns #t if parallel, #f otherwise. A zero gvector is not parallel to anything including itself, so it returns #t.",
+    "parameters": [
+      {
+        "name": "gvector1",
+        "type": "gvector",
+        "desc": "Defines the first gvector."
+      },
+      {
+        "name": "gvector2",
+        "type": "gvector",
+        "desc": "Defines the second gvector."
+      }
+    ],
+    "example": "(gvector:parallel? (gvector 1 0 0) (gvector 2 0 0))"
+  },
+  "gvector:perpendicular?": {
+    "signature": "(gvector:perpendicular? gvector1 gvector2)",
+    "description": "Determines whether two gvectors are perpendicular. Returns #t if perpendicular, #f otherwise. A zero gvector is perpendicular to all gvectors including itself, so it returns #f.",
+    "parameters": [
+      {
+        "name": "gvector1",
+        "type": "gvector",
+        "desc": "Defines the first gvector."
+      },
+      {
+        "name": "gvector2",
+        "type": "gvector",
+        "desc": "Defines the second gvector."
+      }
+    ],
+    "example": "(gvector:perpendicular? (gvector 1 0 0) (gvector 0 1 0))"
+  },
+  "gvector:reverse": {
+    "signature": "(gvector:reverse gvector)",
+    "description": "Reverses the direction of a gvector, returning a new gvector pointing in the opposite direction.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "The gvector to reverse."
+      }
+    ],
+    "example": "(gvector:reverse (gvector 1 2 3))"
+  },
+  "gvector:scale": {
+    "signature": "(gvector:scale gvector scale)",
+    "description": "Multiplies a gvector by a scalar number to produce a new scaled gvector.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "The gvector to scale."
+      },
+      {
+        "name": "scale",
+        "type": "number",
+        "desc": "The scalar multiplier (REAL)."
+      }
+    ],
+    "example": "(gvector:scale (gvector 1 2 3) 2.0)"
+  },
+  "gvector:set!": {
+    "signature": "(gvector:set! gvector {x y z})",
+    "description": "Sets the direction of a gvector given new x, y, and z components. The coordinates are computed relative to the active coordinate system.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "Specifies the original gvector whose components will be replaced."
+      },
+      {
+        "name": "x",
+        "type": "number",
+        "desc": "Specifies the new x-component value (REAL)."
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "desc": "Specifies the new y-component value (REAL)."
+      },
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "Specifies the new z-component value (REAL)."
+      }
+    ],
+    "example": "(gvector:set! vec1 1.0 2.0 3.0)"
+  },
+  "gvector:set-x!": {
+    "signature": "(gvector:set-x! gvector x)",
+    "description": "Sets the x-direction component of a gvector. The coordinate is computed relative to the active coordinate system. Returns the new x-value as a real.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "Specifies the gvector whose x-component will be replaced."
+      },
+      {
+        "name": "x",
+        "type": "number",
+        "desc": "Specifies the new x-component value (REAL)."
+      }
+    ],
+    "example": "(gvector:set-x! vector1 3)"
+  },
+  "gvector:set-y!": {
+    "signature": "(gvector:set-y! gvector y)",
+    "description": "Sets the y-direction component of a gvector. The coordinate is computed relative to the active coordinate system. Returns the new y-value as a real.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "Specifies the gvector whose y-component will be replaced."
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "desc": "Specifies the new y-component value (REAL)."
+      }
+    ],
+    "example": "(gvector:set-y! vector1 3)"
+  },
+  "gvector:set-z!": {
+    "signature": "(gvector:set-z! gvector z)",
+    "description": "Sets the z-direction component of a gvector. The coordinate is computed relative to the active coordinate system. Returns the new z-value as a real.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "Specifies the gvector whose z-component will be replaced."
+      },
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "Specifies the new z-component value (REAL)."
+      }
+    ],
+    "example": "(gvector:set-z! vector1 3)"
+  },
+  "gvector:transform": {
+    "signature": "(gvector:transform gvector transform)",
+    "description": "Applies a transform to a gvector, returning the transformed gvector.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "The gvector to transform."
+      },
+      {
+        "name": "transform",
+        "type": "transform",
+        "desc": "The transform to apply."
+      }
+    ],
+    "example": "(gvector:transform vec1 (transform:rotate (angle 0 0 90)))"
+  },
+  "gvector:unitize": {
+    "signature": "(gvector:unitize gvector)",
+    "description": "Creates a new gvector as a unit vector in the same direction as the specified gvector.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "The gvector to unitize."
+      }
+    ],
+    "example": "(gvector:unitize (gvector 3 4 0))"
+  },
+  "gvector:x": {
+    "signature": "(gvector:x gvector)",
+    "description": "Returns the x-component of a gvector relative to the active coordinate system. The x-coordinate is transformed to the active work plane.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "The gvector whose x-component is retrieved."
+      }
+    ],
+    "example": "(gvector:x (gvector 1 2 3))"
+  },
+  "gvector:y": {
+    "signature": "(gvector:y gvector)",
+    "description": "Returns the y-component of a gvector relative to the active coordinate system. The y-coordinate is transformed to the active work plane.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "The gvector whose y-component is retrieved."
+      }
+    ],
+    "example": "(gvector:y (gvector 1 2 3))"
+  },
+  "gvector:z": {
+    "signature": "(gvector:z gvector)",
+    "description": "Returns the z-component of a gvector relative to the active coordinate system. The z-coordinate is transformed to the active work plane.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "The gvector whose z-component is retrieved."
+      }
+    ],
+    "example": "(gvector:z (gvector 1 2 3))"
+  },
+  "entity:box": {
+    "signature": "(entity:box entity-list [create-box])",
+    "description": "Returns the extrema box (minimum and maximum values) of the bounding box diagonal for a body, relative to the active coordinate system. Returns a pair (min-pt . max-pt), or a solid box if create-box is specified.",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "An entity or a list of entities (body, wire, face, or edge) whose bounding box is to be computed"
+      },
+      {
+        "name": "create-box",
+        "type": "boolean",
+        "desc": "Optional. If specified, a solid box entity is returned instead of the position pair"
+      }
+    ],
+    "example": "(entity:box (car (body:all)))"
+  },
+  "entity:copy": {
+    "signature": "(entity:copy entity-list)",
+    "description": "Copies any entity (solid, face, edge, etc.) and all entities attached to it.",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "An entity or a list of entities to be copied"
+      }
+    ],
+    "example": "(define copy-body (entity:copy (car (body:all))))"
+  },
+  "entity:debug": {
+    "signature": "(entity:debug entity [level])",
+    "description": "Prints information about the data structure of an entity. The verbosity of the output is controlled by the level argument.",
+    "parameters": [
+      {
+        "name": "entity",
+        "type": "list",
+        "desc": "The entity to be queried"
+      },
+      {
+        "name": "level",
+        "type": "int",
+        "desc": "Optional. Controls the amount of debug information: 0 = no output, returns entity type only; 1 = data specific to the given entity; 2 = additional information such as endpoint coordinates and curve data for edges; 3 = entity size and all associated entities; 4 = complete information for the entity and all associated entities"
+      }
+    ],
+    "example": "(entity:debug (car (body:all)) 1)"
+  },
+  "entity:deep-copy": {
+    "signature": "(entity:deep-copy entity-list)",
+    "description": "Deep copies an entity (solid, face, edge, etc.) as well as all attached entities. Unlike entity:copy which creates a pointer to shared splf_splf data, entity:deep-copy creates fully independent copies with no links to the original.",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "An entity or a list of entities to be deep copied"
+      }
+    ],
+    "example": "(define deep-body (entity:deep-copy (car (body:all))))"
+  },
+  "entity:delete": {
+    "signature": "(entity:delete entity-list)",
+    "description": "Deletes an entity or a list of entities, and any attributes attached to those entities.",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "An entity or a list of entities to be deleted"
+      }
+    ],
+    "example": "(entity:delete (car (body:all)))"
+  },
+  "entity:dist": {
+    "signature": "(entity:dist part1 part2 [acis-opts])",
+    "description": "Finds the minimum distance between two entities, or between an entity and a position. Returns the distance, positions on each entity, and entity information. Supported entity types include BODY, EDGE, FACE, LOOP, LUMP, SHELL, VERTEX, and WIRE.",
+    "parameters": [
+      {
+        "name": "part1",
+        "type": "list",
+        "desc": "An entity or a position; if part1 is a position, part2 must be an entity"
+      },
+      {
+        "name": "part2",
+        "type": "list",
+        "desc": "An entity or a position"
+      },
+      {
+        "name": "acis-opts",
+        "type": "list",
+        "desc": "Optional. ACIS options to switch on journaling and versioning"
+      }
+    ],
+    "example": "(entity:dist (car (body:all)) (position 0 0 0))"
+  },
+  "entity:edges": {
+    "signature": "(entity:edges entity-list)",
+    "description": "Returns a list of all edge entities of an entity or a list of entities. Returns an empty list when no edges are found.",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "An entity or a list of entities from which to extract edges"
+      }
+    ],
+    "example": "(entity:edges (car (body:all)))"
+  },
+  "entity:erase": {
+    "signature": "(entity:erase entity-list)",
+    "description": "Erases, but does not remove, the specified entity or list of entities from the display. The entities remain available for later redisplay using render:rebuild.",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "An entity or a list of entities to be erased from the display"
+      }
+    ],
+    "example": "(entity:erase (car (body:all)))"
+  },
+  "entity:faces": {
+    "signature": "(entity:faces entity-list)",
+    "description": "Returns a list of all face entities of an entity or a list of entities. Returns an empty list when no faces are found.",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "An entity or a list of entities from which to extract faces"
+      }
+    ],
+    "example": "(entity:faces (car (body:all)))"
+  },
+  "entity:loops": {
+    "signature": "(entity:loops entity-list [include-pat])",
+    "description": "Returns a list of all the loops of an entity or a list of entities. Returns an empty list if no loops are found.",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "An entity or a list of entities to be queried"
+      },
+      {
+        "name": "include-pat",
+        "type": "int",
+        "desc": "Optional. Controls how patterned objects are handled: 0 = create patterned objects if they do not exist and include them (default); 1 = include only existing patterned objects; 2 = exclude patterned objects except seed pattern objects"
+      }
+    ],
+    "example": "(entity:loops (car (body:all)))"
+  },
+  "entity:lumps": {
+    "signature": "(entity:lumps entity-list)",
+    "description": "Returns a list of all the lumps of an entity or a list of entities. Returns an empty list if no lumps are found.",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "An entity or a list of entities to be queried"
+      }
+    ],
+    "example": "(entity:lumps (car (body:all)))"
+  },
+  "entity:set-color": {
+    "signature": "(entity:set-color entity-list color)",
+    "description": "Sets the display color for an entity or a list of entities. Returns the previous color of the entity. Predefined color names include BLACK (0), RED (1), GREEN (2), BLUE (3), CYAN (4), YELLOW (5), MAGENTA (6), WHITE (7).",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "An entity or a list of entities to be assigned a color"
+      },
+      {
+        "name": "color",
+        "type": "int",
+        "desc": "An integer (0-7) or color:rgb value specifying the new display color. Predefined names: BLACK, RED, GREEN, BLUE, CYAN, YELLOW, MAGENTA, WHITE"
+      }
+    ],
+    "example": "(entity:set-color (find-face-id (position 0.5 0.5 1)) RED)"
+  },
+  "entity:shells": {
+    "signature": "(entity:shells entity-list [include-pat])",
+    "description": "Returns a list of shell entities from a topological entity or a list of entities. Returns an empty list if no shell entities are found.",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "A topological entity or an entity list from which to extract shells"
+      },
+      {
+        "name": "include-pat",
+        "type": "int",
+        "desc": "Optional. Controls how patterned objects are handled: 0 = create patterned objects if they do not exist and include them (default); 1 = include only existing patterned objects; 2 = exclude patterned objects except seed pattern objects"
+      }
+    ],
+    "example": "(entity:shells (car (body:all)))"
+  },
+  "entity:vertices": {
+    "signature": "(entity:vertices entity-list)",
+    "description": "Returns a list of all the vertices in an entity or a list of entities. Returns an empty list if no vertices are found.",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "list",
+        "desc": "An entity or an entity list from which to extract vertices"
+      }
+    ],
+    "example": "(entity:vertices (car (body:all)))"
+  },
+  "position": {
+    "signature": "(position x y z [space = \"model\"])",
+    "description": "Creates a new position with x-, y-, and z-coordinates relative to the active coordinate system. A position is used to help define geometry and is not saved with the part.",
+    "parameters": [
+      {
+        "name": "x",
+        "type": "number",
+        "desc": "Defines the x-coordinate relative to the active coordinate system."
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "desc": "Defines the y-coordinate relative to the active coordinate system."
+      },
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "Defines the z-coordinate relative to the active coordinate system."
+      },
+      {
+        "name": "space",
+        "type": "string",
+        "desc": "Optional. Defaults to wcs for the active (working) coordinate system; if no active work plane exists, defaults to model. Values: \"model\" — x, y, z are rectangular Cartesian coordinates relative to the model; \"polar\" or \"cylindrical\" — x, y, z are interpreted as radial distance, polar angle in degrees (from xz plane, right-hand rule), and z-coordinate, respectively; \"spherical\" — x, y, z are radial distance from origin, declination angle from z-axis in degrees, and polar angle from xz plane in degrees, respectively."
+      }
+    ],
+    "example": "(position 0.0 0.0 0.0)"
+  },
+  "position?": {
+    "signature": "(position? object)",
+    "description": "Determines whether a Scheme object is a position.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "A Scheme object to be queried."
+      }
+    ],
+    "example": "(position? my-pos)"
+  },
+  "position:+": {
+    "signature": "(position:+ arg1 arg2)",
+    "description": "Adds a position or gvector to a position or gvector, and returns the sum as a position.",
+    "parameters": [
+      {
+        "name": "arg1",
+        "type": "position",
+        "desc": "A position or gvector to add."
+      },
+      {
+        "name": "arg2",
+        "type": "position",
+        "desc": "A position or gvector to add."
+      }
+    ],
+    "example": "(position:+ (position 1 0 0) (position 0 2 0))"
+  },
+  "position:-": {
+    "signature": "(position:- arg1 arg2)",
+    "description": "Subtracts a position or gvector from a position or gvector, and returns the result as a position.",
+    "parameters": [
+      {
+        "name": "arg1",
+        "type": "position",
+        "desc": "A position or gvector to subtract from."
+      },
+      {
+        "name": "arg2",
+        "type": "position",
+        "desc": "A position or gvector to subtract."
+      }
+    ],
+    "example": "(position:- (position 5 5 0) (position 2 3 0))"
+  },
+  "position:distance": {
+    "signature": "(position:distance position1 {position2 | ray})",
+    "description": "Returns the distance between two positions, or between a position and a ray.",
+    "parameters": [
+      {
+        "name": "position1",
+        "type": "position",
+        "desc": "Defines the start location."
+      },
+      {
+        "name": "position2",
+        "type": "position",
+        "desc": "Defines the end location. Mutually exclusive with ray."
+      },
+      {
+        "name": "ray",
+        "type": "any",
+        "desc": "Defines the ray to calculate the distance. Mutually exclusive with position2."
+      }
+    ],
+    "example": "(position:distance (position 0 0 0) (position 3 4 0))"
+  },
+  "position:set!": {
+    "signature": "(position:set! position1 {x y z} | {position2})",
+    "description": "Sets the x-, y-, and z-components of a position, either from individual coordinates or by copying from another position.",
+    "parameters": [
+      {
+        "name": "position1",
+        "type": "position",
+        "desc": "The position to be modified."
+      },
+      {
+        "name": "x",
+        "type": "number",
+        "desc": "The new x-value to copy into position1."
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "desc": "The new y-value to copy into position1."
+      },
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "The new z-value to copy into position1."
+      },
+      {
+        "name": "position2",
+        "type": "position",
+        "desc": "An alternative to x, y, z: copies the coordinate values from this position into position1."
+      }
+    ],
+    "example": "(position:set! my-pos 1.0 2.0 3.0)"
+  },
+  "position:set-x!": {
+    "signature": "(position:set-x! position x)",
+    "description": "Sets the x-component of a position. The coordinates are computed relative to the active coordinate system.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "The position whose x-component will be replaced. The original y- and z-values are preserved."
+      },
+      {
+        "name": "x",
+        "type": "number",
+        "desc": "The new x-value to replace the original x-component."
+      }
+    ],
+    "example": "(position:set-x! my-pos 5.0)"
+  },
+  "position:set-y!": {
+    "signature": "(position:set-y! position y)",
+    "description": "Sets the y-component of a position. The coordinates are computed relative to the active coordinate system.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "The position whose y-component will be replaced. The original x- and z-values are preserved."
+      },
+      {
+        "name": "y",
+        "type": "number",
+        "desc": "The new y-value to replace the original y-component."
+      }
+    ],
+    "example": "(position:set-y! my-pos 3.0)"
+  },
+  "position:set-z!": {
+    "signature": "(position:set-z! position z)",
+    "description": "Sets the z-component of a position. The coordinates are computed relative to the active coordinate system.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "The position whose z-component will be replaced. The original x- and y-values are preserved."
+      },
+      {
+        "name": "z",
+        "type": "number",
+        "desc": "The new z-value to replace the original z-component."
+      }
+    ],
+    "example": "(position:set-z! my-pos 0.0)"
+  },
+  "position:x": {
+    "signature": "(position:x position)",
+    "description": "Returns the x-component of a position relative to the active coordinate system.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "A position from which to extract the x-coordinate."
+      }
+    ],
+    "example": "(position:x (position 1 2 3))"
+  },
+  "position:y": {
+    "signature": "(position:y position)",
+    "description": "Returns the y-component of a position relative to the active coordinate system.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "A position from which to extract the y-coordinate."
+      }
+    ],
+    "example": "(position:y (position 1 2 3))"
+  },
+  "position:z": {
+    "signature": "(position:z position)",
+    "description": "Returns the z-component of a position relative to the active coordinate system.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "A position from which to extract the z-coordinate."
+      }
+    ],
+    "example": "(position:z (position 1 2 3))"
+  },
+  "edge?": {
+    "signature": "(edge? object)",
+    "description": "Determines whether a Scheme object is an edge. Returns #t if the object is an edge.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "The Scheme object to be queried."
+      }
+    ],
+    "example": "(edge? my-edge)"
+  },
+  "edge:circular": {
+    "signature": "(edge:circular center-position radius [start-angle = 0 [end-angle = 360]])",
+    "description": "Creates a circular arc with the specified center position and radius. The start and end angles are measured counterclockwise from the x-axis of the active coordinate system. The start and end locations must be in the current xy construction plane.",
+    "parameters": [
+      {
+        "name": "center-position",
+        "type": "position",
+        "desc": "The center position of the arc."
+      },
+      {
+        "name": "radius",
+        "type": "number",
+        "desc": "The radius of the arc, defining an implicit line between the center position and the edge of the arc."
+      },
+      {
+        "name": "start-angle",
+        "type": "number",
+        "desc": "Optional. The starting angle of the arc in degrees, measured counterclockwise from the x-axis. Defaults to 0."
+      },
+      {
+        "name": "end-angle",
+        "type": "number",
+        "desc": "Optional. The end angle of the arc in degrees, measured counterclockwise from the x-axis. Defaults to 360."
+      }
+    ],
+    "example": "(edge:circular (position 0 0 0) 5.0)"
+  },
+  "edge:circular?": {
+    "signature": "(edge:circular? object)",
+    "description": "Determines whether a Scheme object is a circular edge. Returns #t if the object is a circular edge.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "The Scheme object to be queried."
+      }
+    ],
+    "example": "(edge:circular? my-edge)"
+  },
+  "edge:elliptical?": {
+    "signature": "(edge:elliptical? object)",
+    "description": "Determines whether a Scheme object is an elliptical edge. Returns #t if the object is an elliptical edge.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "The Scheme object to be queried."
+      }
+    ],
+    "example": "(edge:elliptical? my-edge)"
+  },
+  "edge:end": {
+    "signature": "(edge:end edge)",
+    "description": "Returns the end position of an edge.",
+    "parameters": [
+      {
+        "name": "edge",
+        "type": "edge",
+        "desc": "An input edge."
+      }
+    ],
+    "example": "(edge:end my-edge)"
+  },
+  "edge:length": {
+    "signature": "(edge:length edge)",
+    "description": "Returns the length of an edge.",
+    "parameters": [
+      {
+        "name": "edge",
+        "type": "edge",
+        "desc": "An input edge."
+      }
+    ],
+    "example": "(edge:length my-edge)"
+  },
+  "edge:linear": {
+    "signature": "(edge:linear position position)",
+    "description": "Creates a linear edge between two specified positions. The first position is the start location and the second position is the end location of the line.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "The first position argument specifies the start location of the line; the second specifies the end location."
+      }
+    ],
+    "example": "(define edge1 (edge:linear (position 0 0 0) (position 30 30 0)))"
+  },
+  "edge:linear?": {
+    "signature": "(edge:linear? object)",
+    "description": "Determines whether a Scheme object is a linear edge. Returns #t if the object is a linear edge.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "The Scheme object to be queried."
+      }
+    ],
+    "example": "(edge:linear? (list-ref (entity:edges myrect) 0))"
+  },
+  "edge:mid-point": {
+    "signature": "(edge:mid-point edge [approximation = #t])",
+    "description": "Returns the midpoint position of an edge.",
+    "parameters": [
+      {
+        "name": "edge",
+        "type": "edge",
+        "desc": "An input edge entity."
+      },
+      {
+        "name": "approximation",
+        "type": "boolean",
+        "desc": "Optional. If #t (default), returns the exact geometric midpoint of the edge; if #f, returns the midpoint in parameter space."
+      }
+    ],
+    "example": "(edge:mid-point my-edge)"
+  },
+  "edge:start": {
+    "signature": "(edge:start edge)",
+    "description": "Returns the starting position of an edge.",
+    "parameters": [
+      {
+        "name": "edge",
+        "type": "edge",
+        "desc": "An input edge entity."
+      }
+    ],
+    "example": "(edge:start my-edge)"
+  },
+  "edge:type": {
+    "signature": "(edge:type edge)",
+    "description": "Determines the type of an edge. Returns a string describing the edge type.",
+    "parameters": [
+      {
+        "name": "edge",
+        "type": "edge",
+        "desc": "An input edge."
+      }
+    ],
+    "example": "(edge:type my-edge)"
+  },
+  "journal:abort": {
+    "signature": "(journal:abort)",
+    "description": "Terminates the current load without executing the rest of the commands in the file.",
+    "parameters": [],
+    "example": "(journal:abort)"
+  },
+  "journal:append": {
+    "signature": "(journal:append [filename])",
+    "description": "Opens a journal file and appends additional journal data to the end of the file. The time and date of the append are indicated in the journal.",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "Optional. If not specified, a unique name is created automatically, sequenced numerically from the last journal file created (e.g. j(last number+1).jrl)."
+      }
+    ],
+    "example": "(journal:append)"
+  },
+  "journal:clean": {
+    "signature": "(journal:clean jname)",
+    "description": "Cleans the journal file by removing all nonexecutable content (comments and return values), leaving only executable Scheme commands. Useful for parameterizing and debugging saved journal files.",
+    "parameters": [
+      {
+        "name": "jname",
+        "type": "string",
+        "desc": "Name of the journal file to clean."
+      }
+    ],
+    "example": "(journal:clean \"my_script.jrl\")"
+  },
+  "journal:load": {
+    "signature": "(journal:load filename)",
+    "description": "Loads a journal file and runs each command one line at a time. Unlike the Scheme load primitive, errors do not terminate the load. Supports single stepping when used with (journal:step #t).",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "Name of the journal file to load and execute."
+      }
+    ],
+    "example": "(journal:load \"my_script.jrl\")"
+  },
+  "journal:off": {
+    "signature": "(journal:off)",
+    "description": "Closes the current journal file and switches off journaling. All Scheme commands executed afterwards are not recorded in the journal file.",
+    "parameters": [],
+    "example": "(journal:off)"
+  },
+  "journal:on": {
+    "signature": "(journal:on [filename])",
+    "description": "Closes the current journal file and opens a new one. All future commands are journaled to the new file. If the specified file already exists, it is truncated to zero length.",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "Optional. If not specified, a unique name is created automatically, sequenced numerically from the last journal file created (e.g. j(last number+1).jrl). If the file exists, it is truncated."
+      }
+    ],
+    "example": "(journal:on \"new_jrl\")"
+  },
+  "journal:pause": {
+    "signature": "(journal:pause)",
+    "description": "Deactivates journaling temporarily while keeping the journal file open. Commands evaluated while paused are not recorded in the journal file.",
+    "parameters": [],
+    "example": "(journal:pause)"
+  },
+  "journal:resume": {
+    "signature": "(journal:resume)",
+    "description": "Resumes journaling in the journal file after a pause.",
+    "parameters": [],
+    "example": "(journal:resume)"
+  },
+  "journal:save": {
+    "signature": "(journal:save filename)",
+    "description": "Saves the current journal to a file. Ignored if journaling is not active. An error is generated if filename is the same as the current journal file.",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "Name of the file in which the journal is saved. Must differ from the current journal file name."
+      }
+    ],
+    "example": "(journal:save \"new_jrl\")"
+  },
+  "journal:step": {
+    "signature": "(journal:step value)",
+    "description": "Sets a flag to control stepping through journal file execution. When enabled, the system waits for input before executing each line, allowing interactive debugging and demonstrations.",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "boolean",
+        "desc": "When #t, enables step mode (system pauses before each line for user input). When #f, returns to free-running mode."
+      }
+    ],
+    "example": "(journal:step #t)"
+  },
+  "face:area": {
+    "signature": "(face:area face)",
+    "description": "Calculates the area of a specified face. The accuracy of the calculation is fixed at 0.001 for an area of geometry that cannot be determined analytically.",
+    "parameters": [
+      {
+        "name": "face",
+        "type": "face",
+        "desc": "Specifies an input face whose area is to be calculated."
+      }
+    ],
+    "example": "(face:area (car (entity:get-faces my-body)))"
+  },
+  "face:conical?": {
+    "signature": "(face:conical? object)",
+    "description": "Determines whether a Scheme object is a conical face. Returns #t if the object is a conical face; otherwise, returns #f.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "A Scheme object to be queried."
+      }
+    ],
+    "example": "(face:conical? (car (entity:get-faces my-body)))"
+  },
+  "face:cylindrical?": {
+    "signature": "(face:cylindrical? object)",
+    "description": "Determines whether a Scheme object is a cylindrical face. The returned Boolean specifies whether the supplied entity input is a cylindrical face.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "A Scheme object to be queried. Note: This input argument is a cylindrical face (surface), not a solid cylinder."
+      }
+    ],
+    "example": "(face:cylindrical? (car (entity:get-faces my-body)))"
+  },
+  "face:planar?": {
+    "signature": "(face:planar? object)",
+    "description": "Determines whether a Scheme object is a planar face. Returns #t if the specified object is a planar face.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "A Scheme object to be queried."
+      }
+    ],
+    "example": "(face:planar? (car (entity:get-faces my-body)))"
+  },
+  "face:plane-normal": {
+    "signature": "(face:plane-normal face)",
+    "description": "Returns the face normal of the specified planar face as a gvector.",
+    "parameters": [
+      {
+        "name": "face",
+        "type": "face",
+        "desc": "Specifies a planar face to be queried. Returns the outward normal direction of the face."
+      }
+    ],
+    "example": "(face:plane-normal (car (entity:get-faces my-body)))"
+  },
+  "face:spherical?": {
+    "signature": "(face:spherical? object)",
+    "description": "Determines whether a Scheme object is a spherical face. Returns #t if the specified object is a spherical face.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "A Scheme object to be queried."
+      }
+    ],
+    "example": "(face:spherical? (car (entity:get-faces my-body)))"
+  },
+  "face:spline?": {
+    "signature": "(face:spline? object)",
+    "description": "Determines whether a Scheme object is a face-spline. Returns #t if the object is a spline face.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "A Scheme object to be queried."
+      }
+    ],
+    "example": "(face:spline? (car (entity:get-faces my-body)))"
+  },
+  "face:toroidal?": {
+    "signature": "(face:toroidal? object)",
+    "description": "Determines whether a Scheme object is a toroidal face. Returns #t if the object is a toroidal face.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "A Scheme object to be queried."
+      }
+    ],
+    "example": "(face:toroidal? (car (entity:get-faces my-body)))"
+  },
+  "find-body-id": {
+    "signature": "(find-body-id position)",
+    "description": "Finds the ACIS entity IDs of all bodies that contain the specified position. The position can be on a boundary face or vertex, or an internal point.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "A position (POSITION) to query. Can lie on a boundary face, vertex, or be an internal point of a body."
+      }
+    ],
+    "example": "(find-body-id (position 0.5 0.5 0.5))"
+  },
+  "find-body-id-drs": {
+    "signature": "(find-body-id-drs position)",
+    "description": "Finds the ACIS entity IDs of Ref/Eval window bodies that contain the specified position. Searches only through defined Ref/Eval window bodies.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "A position (POSITION) to query. Can lie on a boundary face or be an internal point of a Ref/Eval window body."
+      }
+    ],
+    "example": "(find-body-id-drs (position 0.5 0.5 0.5))"
+  },
+  "find-drs-id": {
+    "signature": "(find-drs-id DRSname)",
+    "description": "Returns the ACIS entity ID of the Ref/Eval window body that matches the specified DRS name. The DRS name is a unique identifier for each Ref/Eval window body.",
+    "parameters": [
+      {
+        "name": "DRSname",
+        "type": "string",
+        "desc": "The unique DRS name (STRING) identifying a Ref/Eval window body."
+      }
+    ],
+    "example": "(find-drs-id \"RefEvalWindow_1\")"
+  },
+  "find-edge-id": {
+    "signature": "(find-edge-id position body)",
+    "description": "Finds the ACIS entity IDs of all edges that contain the specified position. Supports an additional body filter to restrict the search scope. The position can be an end vertex or an internal position on the edge.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "A position (POSITION) lying on the edge, either at an end vertex or an internal point."
+      },
+      {
+        "name": "body",
+        "type": "body",
+        "desc": "A body or body list (BODY | BODY LIST) used as a filter to restrict the search to specific bodies."
+      }
+    ],
+    "example": "(sdegeo:create-cuboid (position 0 0 0) (position 1 1 1) \"Silicon\" \"x1\")\n(define chamferedges (find-edge-id (position 1 0.5 1) (find-material-id \"Silicon\")))"
+  },
+  "find-edge-id-drs": {
+    "signature": "(find-edge-id-drs position)",
+    "description": "Finds the ACIS entity IDs of edges belonging to Ref/Eval window bodies that contain the specified position. The position can be an end vertex or an internal position on the edge.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "A position (POSITION) lying on the edge, either at an end vertex or an internal point."
+      }
+    ],
+    "example": "(find-edge-id-drs (position 0.5 0.5 0))"
+  },
+  "find-face-id": {
+    "signature": "(find-face-id position | gvector)",
+    "description": "Finds the ACIS entity IDs of all faces that contain the specified position. If a gvector is provided instead, returns all planar faces with the matching face normal direction.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "A position (POSITION) lying on a boundary edge or an internal point of a face."
+      },
+      {
+        "name": "gvector",
+        "type": "gvector",
+        "desc": "A gvector (GVECTOR) specifying a face normal direction; returns all planar faces matching this normal."
+      }
+    ],
+    "example": "(find-face-id (position 0.5 0.5 0))"
+  },
+  "find-face-id-drs": {
+    "signature": "(find-face-id-drs position)",
+    "description": "Finds the ACIS entity IDs of faces belonging to Ref/Eval window bodies that contain the specified position.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "A position (POSITION) lying on a boundary edge or an internal point of a face."
+      }
+    ],
+    "example": "(find-face-id-drs (position 0.5 0.5 0))"
+  },
+  "find-material-id": {
+    "signature": "(find-material-id material-name)",
+    "description": "Finds and returns all entities that have the specified material attribute. Returns a single body ID if only one match is found, a list if multiple matches exist, or an empty list if no match.",
+    "parameters": [
+      {
+        "name": "material-name",
+        "type": "string",
+        "desc": "Material name (DATEXMAT type, e.g. \"Silicon\") whose regions to find."
+      }
+    ],
+    "example": "(find-material-id \"Silicon\")"
+  },
+  "find-region": {
+    "signature": "(find-region region-name [partial-match])",
+    "description": "Returns the entity IDs for regions that have the specified region-name as the region attribute. Supports optional partial matching from the beginning of the string.",
+    "parameters": [
+      {
+        "name": "region-name",
+        "type": "string",
+        "desc": "The name of a region (STRING) to search for."
+      },
+      {
+        "name": "partial-match",
+        "type": "boolean",
+        "desc": "Optional. If #t, returns regions whose names start with the given string (incremental prefix match)."
+      }
+    ],
+    "example": "(find-region \"Region_1\")"
+  },
+  "find-region-id": {
+    "signature": "(find-region-id region-name)",
+    "description": "Returns the entity IDs for regions that have the specified region-name as the region attribute. Returns a single body ID if only one match is found, a list if multiple matches exist, or an empty list if no match.",
+    "parameters": [
+      {
+        "name": "region-name",
+        "type": "string",
+        "desc": "The name of a region (STRING) to search for."
+      }
+    ],
+    "example": "(find-region-id \"Region_1\")"
+  },
+  "find-vertex-id": {
+    "signature": "(find-vertex-id position)",
+    "description": "Finds the ACIS entity IDs of all vertices placed at the specified position.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "A position (POSITION) at which to locate vertices."
+      }
+    ],
+    "example": "(find-vertex-id (position 0 0 0))"
+  },
+  "find-vertex-id-drs": {
+    "signature": "(find-vertex-id-drs position)",
+    "description": "Finds the ACIS entity IDs of vertices belonging to Ref/Eval window bodies at the specified position.",
+    "parameters": [
+      {
+        "name": "position",
+        "type": "position",
+        "desc": "A position (POSITION) at which to locate vertices within Ref/Eval window bodies."
+      }
+    ],
+    "example": "(find-vertex-id-drs (position 0 0 0))"
+  },
+  "get-body-list": {
+    "signature": "(get-body-list)",
+    "description": "Returns a list of all 2D and 3D bodies defined in the model, excluding mask bodies and doping/refinement Ref/Eval windows. Use this to distinguish regular bodies from masks and Ref/Eval windows.",
+    "parameters": [],
+    "example": "(get-body-list)"
+  },
+  "get-drs-list": {
+    "signature": "(get-drs-list)",
+    "description": "Returns a list of all 2D and 3D Ref/Eval window bodies defined in the model.",
+    "parameters": [],
+    "example": "(get-drs-list)"
+  },
+  "bbox": {
+    "signature": "(bbox entity-list)",
+    "description": "Returns the minimum and maximum values corresponding to a diagonal across the bounding box of a body, relative to the active coordinate system. Returns a pair comprising (min-pt . max-pt). The returned bounding box is tight (exact).",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "entity | list",
+        "desc": "An entity or a list of entities. Each entity can be a body, a wire body, a face, or an edge."
+      }
+    ],
+    "example": "(bbox my-body)"
+  },
+  "bbox-exact": {
+    "signature": "(bbox-exact entity-list)",
+    "description": "Returns the exact minimum and maximum values corresponding to a diagonal across the tight bounding box of a body, relative to the active coordinate system. Returns a pair comprising (min-pt . max-pt).",
+    "parameters": [
+      {
+        "name": "entity-list",
+        "type": "entity | list",
+        "desc": "An entity or a list of entities. Each entity can be a body, a wire, a face, or an edge."
+      }
+    ],
+    "example": "(bbox-exact my-body)"
+  },
+  "complete-edge-list": {
+    "signature": "(complete-edge-list edge-list)",
+    "description": "Appends the specified edge list with all neighboring linear edges. This ensures that boundary simplification algorithms do not leave gaps or create overlaps between neighboring bodies.",
+    "parameters": [
+      {
+        "name": "edge-list",
+        "type": "list",
+        "desc": "Specifies an edge list."
+      }
+    ],
+    "example": "(complete-edge-list (entity:edges mb1))"
+  },
+  "exists-empty-mask-name": {
+    "signature": "(exists-empty-mask-name maskname)",
+    "description": "Checks whether the specified empty mask exists.",
+    "parameters": [
+      {
+        "name": "maskname",
+        "type": "string",
+        "desc": "Specifies the name of an empty mask."
+      }
+    ],
+    "example": "(exists-empty-mask-name \"MyMask\")"
+  },
+  "exists-mask-name": {
+    "signature": "(exists-mask-name maskname)",
+    "description": "Checks whether the specified mask exists.",
+    "parameters": [
+      {
+        "name": "maskname",
+        "type": "string",
+        "desc": "Specifies the name of a mask."
+      }
+    ],
+    "example": "(exists-mask-name \"MyMask\")"
+  },
+  "extract-interface-normal-offset-refwindow": {
+    "signature": "(extract-interface-normal-offset-refwindow body1 body2 offset-distance refwindowname)",
+    "description": "Generates the non-regularized intersection between two bodies and creates a 3D offset body from the non-regularized intersection, by offsetting the faces of the interface body in the normal direction, and assigns it as a doping/refinement/submesh (DRS) body.",
+    "parameters": [
+      {
+        "name": "body1",
+        "type": "entity",
+        "desc": "First body entity."
+      },
+      {
+        "name": "body2",
+        "type": "entity",
+        "desc": "Second body entity."
+      },
+      {
+        "name": "offset-distance",
+        "type": "float",
+        "desc": "Offset distance for the normal direction."
+      },
+      {
+        "name": "refwindowname",
+        "type": "string",
+        "desc": "Name of the created Ref/Eval window."
+      }
+    ],
+    "example": "(extract-interface-normal-offset-refwindow mb1 mb2 1 \"rw1\")"
+  },
+  "extract-interface-offset-refwindow": {
+    "signature": "(extract-interface-offset-refwindow body1 body2 offset-distance refwindowname)",
+    "description": "Generates the non-regularized intersection between two bodies and creates a 3D offset body from the non-regularized intersection, and assigns it as a doping/refinement/submesh (DRS) body.",
+    "parameters": [
+      {
+        "name": "body1",
+        "type": "entity",
+        "desc": "First body entity."
+      },
+      {
+        "name": "body2",
+        "type": "entity",
+        "desc": "Second body entity."
+      },
+      {
+        "name": "offset-distance",
+        "type": "float",
+        "desc": "Offset distance for the interface body."
+      },
+      {
+        "name": "refwindowname",
+        "type": "string",
+        "desc": "Name of the created Ref/Eval window."
+      }
+    ],
+    "example": "(extract-interface-offset-refwindow mb1 mb2 1 \"rw1\")"
+  },
+  "extract-refpolyhedron": {
+    "signature": "(extract-refpolyhedron bodyid refwindowname)",
+    "description": "Converts a 3D geometric body to a polyhedral refinement window. The ACIS surface mesher converts the body (possibly with nonplanar faces) to a polyhedral refinement window by saving the tessellated polyhedral boundary for meshing.",
+    "parameters": [
+      {
+        "name": "bodyid",
+        "type": "entity",
+        "desc": "A 3D geometric body to be converted."
+      },
+      {
+        "name": "refwindowname",
+        "type": "string",
+        "desc": "Name of the created polyhedral refinement window."
+      }
+    ],
+    "example": "(extract-refpolyhedron mb \"ref1\")"
+  },
+  "extract-refwindow": {
+    "signature": "(extract-refwindow faceid refwindowname)",
+    "description": "Defines refinement windows matching the specified geometry face or faces. For planar faces, a single refinement polygon is created; for curved faces, the face is triangulated and a separate polygon is created for each triangle. Also supports converting linear geometric edges to Ref/Eval windows (line elements).",
+    "parameters": [
+      {
+        "name": "faceid",
+        "type": "face | list",
+        "desc": "A face, a face list, or a linear edge to extract the refinement window from."
+      },
+      {
+        "name": "refwindowname",
+        "type": "string",
+        "desc": "Name of the created Ref/Eval window."
+      }
+    ],
+    "example": "(extract-refwindow myface \"refinement1\")"
+  },
+  "get-empty-mask-list": {
+    "signature": "(get-empty-mask-list)",
+    "description": "Returns a list of all defined empty masks. If no empty mask is defined, an empty list is returned.",
+    "parameters": [],
+    "example": "(get-empty-mask-list)"
+  },
+  "get-mask-list": {
+    "signature": "(get-mask-list)",
+    "description": "Returns a list of all defined (geometric) masks. If no mask is defined, an empty list is returned.",
+    "parameters": [],
+    "example": "(get-mask-list)"
+  },
+  "mask-refevalwin-extract-2d": {
+    "signature": "(mask-refevalwin-extract-2d rwname maskname polarity)",
+    "description": "Extracts a 2D Ref/Eval window from the specified mask. The domain boundary must be set before calling. If the mask consists of several disjoint lumps, a separate Ref/Eval window is extracted from each lump, with the name appended by a counter _N.",
+    "parameters": [
+      {
+        "name": "rwname",
+        "type": "string",
+        "desc": "Name of the extracted Ref/Eval window."
+      },
+      {
+        "name": "maskname",
+        "type": "string",
+        "desc": "Name (not entity ID) of the mask to extract from."
+      },
+      {
+        "name": "polarity",
+        "type": "string",
+        "desc": "Mask polarity for extraction: \"light\" extracts the mask area directly; \"dark\" extracts the complement area within the domain boundary."
+      }
+    ],
+    "example": "(mask-refevalwin-extract-2d \"RW1\" \"M1\" \"light\")"
+  },
+  "mask-refevalwin-extract-3d": {
+    "signature": "(mask-refevalwin-extract-3d rwname maskname polarity minz maxz)",
+    "description": "Extracts a 3D Ref/Eval window from the specified mask, placed between minz and maxz in the 3D space. The domain boundary must be set before calling. If the mask consists of several disjoint lumps, a separate Ref/Eval window is extracted from each lump.",
+    "parameters": [
+      {
+        "name": "rwname",
+        "type": "string",
+        "desc": "Name of the extracted Ref/Eval window."
+      },
+      {
+        "name": "maskname",
+        "type": "string",
+        "desc": "Name (not entity ID) of the mask to extract from."
+      },
+      {
+        "name": "polarity",
+        "type": "string",
+        "desc": "Mask polarity for extraction: \"light\" extracts the mask area directly; \"dark\" extracts the complement area within the domain boundary."
+      },
+      {
+        "name": "minz",
+        "type": "float",
+        "desc": "Minimum z-coordinate of the 3D Ref/Eval window."
+      },
+      {
+        "name": "maxz",
+        "type": "float",
+        "desc": "Maximum z-coordinate of the 3D Ref/Eval window."
+      }
+    ],
+    "example": "(mask-refevalwin-extract-3d \"RW1\" \"M1\" \"light\" -0.1 0.5)"
+  },
+  "set-interface-contact": {
+    "signature": "(set-interface-contact region1 region2 contact-name)",
+    "description": "Attaches a contact attribute to the common faces of the specified regions. Applies to 3D models only.",
+    "parameters": [
+      {
+        "name": "region1",
+        "type": "string",
+        "desc": "Name of the first region."
+      },
+      {
+        "name": "region2",
+        "type": "string",
+        "desc": "Name of the second region."
+      },
+      {
+        "name": "contact-name",
+        "type": "string",
+        "desc": "Name of the contact to attach to the interface."
+      }
+    ],
+    "example": "(set-interface-contact \"mb1\" \"mb2\" \"ifcontact\")"
+  },
+  "body?": {
+    "signature": "(body? object)",
+    "description": "Determines whether a Scheme object is a body. Returns #t if the object is a body; otherwise, returns #f.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "The Scheme object to be queried."
+      }
+    ],
+    "example": "(define myrect (sdegeo:create-rectangle (position 0 0 0) (position 1 1 0) \"Silicon\" \"Region_1\"))\n(body? myrect) ;; #t"
+  },
+  "loop?": {
+    "signature": "(loop? object)",
+    "description": "Determines whether a Scheme object is a loop. Returns #t if the object is a loop; otherwise, returns #f.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "The Scheme object to be queried."
+      }
+    ],
+    "example": "(loop? my-loop) ;; #t if my-loop is a loop entity"
+  },
+  "lump?": {
+    "signature": "(lump? object)",
+    "description": "Determines whether a Scheme object is a lump. Returns #t if the object is a lump; otherwise, returns #f.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "The Scheme object to be queried."
+      }
+    ],
+    "example": "(lump? my-lump) ;; #t if my-lump is a lump entity"
+  },
+  "member?": {
+    "signature": "(member? element list)",
+    "description": "Checks whether the specified element is part of the specified list. Returns #t if the element is found in the list; otherwise, returns #f.",
+    "parameters": [
+      {
+        "name": "element",
+        "type": "any",
+        "desc": "The element to search for (INTEGER, REAL, STRING, or any Scheme value)."
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "A Scheme list to search within."
+      }
+    ],
+    "example": "(member? 2 (list 1 2 3 4)) ;; #t\n(member? \"apple\" (list 1 2 \"apple\" 3 4)) ;; #t"
+  },
+  "shell?": {
+    "signature": "(shell? object)",
+    "description": "Determines whether a Scheme object is a shell. Returns #t if the object is a shell; otherwise, returns #f.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "The Scheme object to be queried."
+      }
+    ],
+    "example": "(shell? my-shell) ;; #t if my-shell is a shell entity"
+  },
+  "solid?": {
+    "signature": "(solid? object)",
+    "description": "Determines whether a Scheme object is a solid. Returns #t if the object is a solid; otherwise, returns #f.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "The Scheme object to be queried."
+      }
+    ],
+    "example": "(solid? my-body) ;; #t if my-body is a solid body"
+  },
+  "vertex?": {
+    "signature": "(vertex? object)",
+    "description": "Determines whether a Scheme object is a vertex. Returns #t if the object is a vertex; otherwise, returns #f.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "The Scheme object to be queried."
+      }
+    ],
+    "example": "(vertex? my-vertex) ;; #t if my-vertex is a vertex entity"
+  },
+  "wire?": {
+    "signature": "(wire? object)",
+    "description": "Determines whether a Scheme object is a wire. Returns #t if the object is a wire; otherwise, returns #f.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "The Scheme object to be queried."
+      }
+    ],
+    "example": "(wire? my-wire) ;; #t if my-wire is a wire entity"
+  },
+  "wire-body?": {
+    "signature": "(wire-body? object)",
+    "description": "Determines whether a Scheme object is a wire body. Returns #t if the object is a wire body; otherwise, returns #f.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "any",
+        "desc": "The Scheme object to be queried."
+      }
+    ],
+    "example": "(wire-body? my-wirebody) ;; #t if my-wirebody is a wire body"
+  },
+  "afm-smooth-layers": {
+    "signature": "(afm-smooth-layers fname z0 zplanar layerregion layermaterial layerthickness)",
+    "description": "Creates a layered lens structure with a texture map defined in a CSV file. Each layer is assigned a region name, material, and thickness.",
+    "parameters": [
+      {
+        "name": "fname",
+        "type": "string",
+        "desc": "The name of the input CSV file containing the texture map data."
+      },
+      {
+        "name": "z0",
+        "type": "number",
+        "desc": "The bottom z-coordinate of the layered structure."
+      },
+      {
+        "name": "zplanar",
+        "type": "number",
+        "desc": "The top planar z-coordinate of the layered structure."
+      },
+      {
+        "name": "layerregion",
+        "type": "list",
+        "desc": "List of region names (STRING LIST), one per layer."
+      },
+      {
+        "name": "layermaterial",
+        "type": "list",
+        "desc": "List of DATEX material names (DATEMAT LIST), one per layer."
+      },
+      {
+        "name": "layerthickness",
+        "type": "list",
+        "desc": "List of thickness values (REAL LIST), one per layer, in the +z direction."
+      }
+    ],
+    "example": "(sdegeo:create-cuboid (position 0 0 0) (position 6.28 6.28 4) \"Silicon\" \"xx\")\n(afm-smooth-layers \"xx.csv\" 0 4 (list \"tco\" \"copper\" \"polysi\") (list \"TCO\" \"Copper\" \"PolySi\") (list 2 2 2))",
+    "symbolParams": [
+      {
+        "index": 3,
+        "role": "def",
+        "type": "region",
+        "list": true
+      },
+      {
+        "index": 4,
+        "role": "def",
+        "type": "material",
+        "list": true
+      }
+    ]
+  },
+  "build-csv-lens": {
+    "signature": "(build-csv-lens fname bottom-z material-name [region-name])",
+    "description": "Creates a solid body from user-defined data in a CSV file. The CSV defines a tensor grid where the first row and column are x/y coordinates, and the remaining values define the top surface height.",
+    "parameters": [
+      {
+        "name": "fname",
+        "type": "string",
+        "desc": "The name of the input data file in CSV format, defining values over an n x m tensor grid."
+      },
+      {
+        "name": "bottom-z",
+        "type": "number",
+        "desc": "The z-coordinate of the base plane. The solid body extends upward from this plane."
+      },
+      {
+        "name": "material-name",
+        "type": "string",
+        "desc": "DATEX material name for the created body."
+      },
+      {
+        "name": "region-name",
+        "type": "string",
+        "desc": "Optional. Region name for the created body."
+      }
+    ],
+    "example": "(build-csv-lens \"data.csv\" 0.0 \"Silicon\" \"lens_region\")",
+    "symbolParams": [
+      {
+        "index": 2,
+        "role": "def",
+        "type": "material"
+      },
+      {
+        "index": 3,
+        "role": "def",
+        "type": "region"
+      }
+    ]
+  },
+  "color:rgb": {
+    "signature": "(color:rgb red green blue)",
+    "description": "Specifies RGB color components using normalized real numbers ranging from 0 to 1. Predefined constants such as rgb:red, rgb:green, and rgb:white are also available.",
+    "parameters": [
+      {
+        "name": "red",
+        "type": "number",
+        "desc": "Red color component, a real number between 0 and 1."
+      },
+      {
+        "name": "green",
+        "type": "number",
+        "desc": "Green color component, a real number between 0 and 1."
+      },
+      {
+        "name": "blue",
+        "type": "number",
+        "desc": "Blue color component, a real number between 0 and 1."
+      }
+    ],
+    "example": "(color:rgb 1 0 0) ;; red\n(color:rgb 0 1 1) ;; cyan"
+  },
+  "convert-to-degree": {
+    "signature": "(convert-to-degree angle)",
+    "description": "Converts an angle from radians to degrees.",
+    "parameters": [
+      {
+        "name": "angle",
+        "type": "number",
+        "desc": "Angle value in radians."
+      }
+    ],
+    "example": "(convert-to-degree PI) ;; 180.0"
+  },
+  "convert-to-radian": {
+    "signature": "(convert-to-radian angle)",
+    "description": "Converts an angle from degrees to radians.",
+    "parameters": [
+      {
+        "name": "angle",
+        "type": "number",
+        "desc": "Angle value in degrees."
+      }
+    ],
+    "example": "(convert-to-radian 180) ;; 3.14159..."
+  },
+  "erf": {
+    "signature": "(erf value)",
+    "description": "Returns the error function (erf) value of the input.",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "number",
+        "desc": "Input value for the error function."
+      }
+    ],
+    "example": "(erf 1.0) ;; 0.8427..."
+  },
+  "erfc": {
+    "signature": "(erfc value)",
+    "description": "Returns the complementary error function (erfc) value of the input, defined as 1 - erf(x).",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "number",
+        "desc": "Input value for the complementary error function."
+      }
+    ],
+    "example": "(erfc 1.0) ;; 0.1573..."
+  },
+  "merge-collinear-edges-2d": {
+    "signature": "(merge-collinear-edges-2d body-list [angular-tolerance])",
+    "description": "Merges all collinear edges of the specified bodies. Applies to 2D models only. When angular-tolerance is specified, edges that close an angle larger than the threshold are also merged.",
+    "parameters": [
+      {
+        "name": "body-list",
+        "type": "list",
+        "desc": "List of bodies whose collinear edges will be merged."
+      },
+      {
+        "name": "angular-tolerance",
+        "type": "number",
+        "desc": "Optional. When specified, edges forming an angle larger than this threshold (in degrees) are also merged into a single edge, connecting the other endpoints."
+      }
+    ],
+    "example": "(merge-collinear-edges-2d (list body1 body2))"
+  },
+  "protect-all-contacts": {
+    "signature": "(protect-all-contacts)",
+    "description": "Protects all 2D and 3D contacts against merging and deleting. Prevents boundary simplification commands from removing contact edges and sde:bool-regularise from merging coplanar contact faces with adjoining faces.",
+    "parameters": [],
+    "example": "(protect-all-contacts)"
+  },
+  "random-sd": {
+    "signature": "(random-sd [initial-seed])",
+    "description": "Returns a seeded random number normalized in [0, 1]. Uses a hard-coded fixed seed by default. A custom seed can be set once to reset the random number sequence.",
+    "parameters": [
+      {
+        "name": "initial-seed",
+        "type": "int",
+        "desc": "Optional. Integer seed to initialize the random number sequence. Must be set only once; subsequent calls without arguments advance the sequence."
+      }
+    ],
+    "example": "(random-sd 987654321) ;; reset sequence with custom seed\n(random-sd) ;; get next random number"
+  },
+  "remove-body-ABA": {
+    "signature": "(remove-body-ABA rbody)",
+    "description": "Subtracts the specified body from all other existing bodies where overlaps exist. Equivalent to the \"new replaces old\" (ABA) automatic overlap removal rule applied after the fact.",
+    "parameters": [
+      {
+        "name": "rbody",
+        "type": "any",
+        "desc": "The body to subtract from all overlapping bodies."
+      }
+    ],
+    "example": "(remove-body-ABA new-body)"
+  },
+  "remove-body-BAB": {
+    "signature": "(remove-body-BAB rbody)",
+    "description": "Subtracts all other existing bodies from the specified body where overlaps exist. Equivalent to the \"old replaces new\" (BAB) automatic overlap removal rule applied after the fact.",
+    "parameters": [
+      {
+        "name": "rbody",
+        "type": "any",
+        "desc": "The body from which all overlapping bodies will be subtracted."
+      }
+    ],
+    "example": "(remove-body-BAB target-body)"
+  },
+  "roll": {
+    "signature": "(roll [num])",
+    "description": "Undoes or redoes geometry-related, doping-related, or refinement-related operations. A negative number rolls back to a previous state; a positive number rolls forward to a later state.",
+    "parameters": [
+      {
+        "name": "num",
+        "type": "int",
+        "desc": "Optional. Number of states to roll. Negative values undo (roll back), positive values redo (roll forward)."
+      }
+    ],
+    "example": "(roll -1) ;; undo last operation\n(roll 1) ;; redo last undone operation"
+  },
+  "part:entities": {
+    "signature": "(part:entities [filter = NULL])",
+    "description": "Returns a list of all top-level entities in a part. An optional entity-filter can be supplied to select only entities of specific types.",
+    "parameters": [
+      {
+        "name": "filter",
+        "type": "any",
+        "desc": "Optional. A procedural entity-filter object that selects entities from the entity list. Use filter:type or similar filter constructors to create it. Defaults to NULL (return all entities)."
+      }
+    ],
+    "example": "(sde:clear)\n(sdegeo:create-rectangle (position 0 0 0) (position 1 1 0) \"Silver\" \"region_3\")\n(part:entities)\n(part:entities (filter:type \"solid?\"))"
+  },
+  "part:load": {
+    "signature": "(part:load filename [textmode = #t] [part = active] [with-history = #f])",
+    "description": "Loads a part from a file into the active part. Entities are merged (not replaced) into the current working session. Returns a list of entities. The global variable part-load-path can be set to a list of directories to search for the part file.",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "Specifies a file name in the current working directory or a full path including the file name."
+      },
+      {
+        "name": "textmode",
+        "type": "boolean",
+        "desc": "Optional. If #t, loads the file as text mode (.sat file). If #f, loads as binary. If not specified, the mode is determined by the file extension: .sab or .SAB uses binary mode; otherwise, text mode."
+      },
+      {
+        "name": "part",
+        "type": "any",
+        "desc": "Optional. The target part to merge entities into. Defaults to the active part."
+      },
+      {
+        "name": "with-history",
+        "type": "boolean",
+        "desc": "Optional. If #t, restores the rollback history data. History can only be restored into an empty part. Defaults to #f."
+      }
+    ],
+    "example": "(part:load \"my_structure.sat\")"
+  },
+  "part:save": {
+    "signature": "(part:save [filename = partname.sat] [textmode = #t] [part = active] [with-history = #f] [mainline-only = #f])",
+    "description": "Saves all entities in a part to a file. When saved with a filename, the filename becomes the new name for the part. Part files can be saved in the format of an earlier version by setting the global option save_version.",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "Optional. Specifies a file name or path to save to. If omitted, uses the name assigned by part:set-name."
+      },
+      {
+        "name": "textmode",
+        "type": "boolean",
+        "desc": "Optional. If #t, saves as text mode (.sat file). If #f, saves as binary. If not specified, the mode is determined by the file extension: .sab or .SAB uses binary mode; otherwise, text mode. Defaults to #t."
+      },
+      {
+        "name": "part",
+        "type": "any",
+        "desc": "Optional. The part to save. Defaults to the active part."
+      },
+      {
+        "name": "with-history",
+        "type": "boolean",
+        "desc": "Optional. If #t, saves entity-specific rollback history data attached through attributes. Defaults to #f."
+      },
+      {
+        "name": "mainline-only",
+        "type": "boolean",
+        "desc": "Optional. If #f, saves the entire history including rolled-back branches. Defaults to #f."
+      }
+    ],
+    "example": "(part:save \"my_structure.sat\")"
+  },
+  "part:save-selection": {
+    "signature": "(part:save-selection ent-list filename [textmode = #f] [with-history = #f])",
+    "description": "Saves a specified list of entities to a file. Part files can be saved in the format of an earlier version by setting the global option save_version.",
+    "parameters": [
+      {
+        "name": "ent-list",
+        "type": "list",
+        "desc": "A list of entities to be saved in the output file."
+      },
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "Specifies a file name or path to save to."
+      },
+      {
+        "name": "textmode",
+        "type": "boolean",
+        "desc": "Optional. If #t, saves as text mode (.sat file). If #f, saves as binary. If not specified, the mode is determined by the file extension: .sab or .SAB uses binary mode; otherwise, text mode. Defaults to #f."
+      },
+      {
+        "name": "with-history",
+        "type": "boolean",
+        "desc": "Optional. If #t, saves entity-specific history attached through attributes. Defaults to #f."
+      }
+    ],
+    "example": "(part:save-selection (get-body-list) \"selected.sat\")"
+  },
+  "part:set-name": {
+    "signature": "(part:set-name [name] [part = active])",
+    "description": "Assigns a name to the specified part, or to the active part if part is omitted. If the part is saved without specifying a file name, part:save uses this assigned name as the file name. If name is omitted, the part name is cleared.",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "Optional. The string identification name for the part. If omitted, the name of the part is cleared."
+      },
+      {
+        "name": "part",
+        "type": "any",
+        "desc": "Optional. The part to name. Defaults to the active part."
+      }
+    ],
+    "example": "(part:set-name \"my_device\")"
+  },
+  "transform:reflection": {
+    "signature": "(transform:reflection plane-position plane-direction)",
+    "description": "Creates a reflection transform to mirror an object through a plane. The resulting transform can be used with sdegeo:mirror-selected.",
+    "parameters": [
+      {
+        "name": "plane-position",
+        "type": "position",
+        "desc": "A point on the mirror plane that specifies the location of the reflection."
+      },
+      {
+        "name": "plane-direction",
+        "type": "any",
+        "desc": "The normal vector (gvector) of the mirror plane that defines the reflection direction."
+      }
+    ],
+    "example": "(sde:clear)\n(define mb (sdegeo:create-rectangle (position 1 1 0) (position 2 2 0) \"Silicon\" \"xx\"))\n(define trl (transform:reflection (position 0 0 0) (gvector -1 0 0)))\n(sdegeo:mirror-selected (get-body-list) trl #t)"
+  },
+  "transform:rotation": {
+    "signature": "(transform:rotation origin-position axis-direction angle)",
+    "description": "Creates a rotation transform to rotate an object about a specified axis by a given angle. The resulting transform can be used with sdegeo:rotate-selected.",
+    "parameters": [
+      {
+        "name": "origin-position",
+        "type": "position",
+        "desc": "The start location (origin) of the rotation axis."
+      },
+      {
+        "name": "axis-direction",
+        "type": "any",
+        "desc": "The direction vector (gvector) of the rotation axis."
+      },
+      {
+        "name": "angle",
+        "type": "number",
+        "desc": "The rotation angle in degrees."
+      }
+    ],
+    "example": "(sde:clear)\n(sdegeo:create-circle (position 0 0 0) 0.1 \"PolySilicon\" \"xx\")\n(define mb (sdegeo:create-rectangle (position 1 1 0) (position 2 2 0) \"Silicon\" \"xx\"))\n(define trl (transform:rotation (position 0 0 0) (gvector 0 0 1) 45))\n(sdegeo:rotate-selected mb trl #t)"
+  },
+  "transform:scaling": {
+    "signature": "(transform:scaling x-scale [y-scale z-scale])",
+    "description": "Creates a scaling transform for use with sdegeo:scale-selected. When only x-scale is supplied, uniform scaling is applied to all three axes. Only positive scale factors are recommended.",
+    "parameters": [
+      {
+        "name": "x-scale",
+        "type": "number",
+        "desc": "The scaling factor for the x-axis direction. For uniform scaling, supply only this argument."
+      },
+      {
+        "name": "y-scale",
+        "type": "number",
+        "desc": "Optional. The scaling factor for the y-axis direction. If omitted with z-scale, uniform scaling is applied."
+      },
+      {
+        "name": "z-scale",
+        "type": "number",
+        "desc": "Optional. The scaling factor for the z-axis direction."
+      }
+    ],
+    "example": "(sde:clear)\n(define mb (sdegeo:create-rectangle (position 0 0 0) (position 1 1 0) \"Silicon\" \"xx\"))\n(define trl (transform:scaling 1.0 2.0 1.0))\n(sdegeo:scale-selected mb trl)"
+  },
+  "transform:translation": {
+    "signature": "(transform:translation gvector)",
+    "description": "Creates a translation transform to move an object by a specified displacement vector. The resulting transform can be used with sdegeo:translate-selected.",
+    "parameters": [
+      {
+        "name": "gvector",
+        "type": "any",
+        "desc": "The displacement vector (gvector) specifying the direction and distance of translation."
+      }
+    ],
+    "example": "(sde:clear)\n(define mb (sdegeo:create-rectangle (position 0 0 0) (position 1 1 0) \"Silicon\" \"xx\"))\n(define tr1 (transform:translation (gvector 3.0 0.0 0.0)))\n(sdegeo:translate-selected mb tr1 #t 5)"
+  },
+  "env:set-tolerance": {
+    "signature": "(env:set-tolerance resabs resnor resfit resmch)",
+    "description": "Sets the system modeling tolerances (resabs, resnor, resfit, resmch). Each argument accepts a REAL value to set it, #f to leave unchanged, or #t to reset to default.",
+    "parameters": [
+      {
+        "name": "resabs",
+        "type": "number",
+        "desc": "Absolute tolerance that determines whether two positions in space are equal. Defines the smallest distance between two distinct points. Default: 1e-6."
+      },
+      {
+        "name": "resnor",
+        "type": "number",
+        "desc": "Normal tolerance that checks a number for equality with 0. Used to determine if vectors are parallel or perpendicular, or to check for zero lengths. Default: 1e-10."
+      },
+      {
+        "name": "resfit",
+        "type": "number",
+        "desc": "Fitting tolerance used when fitting interpolation curves during surface intersection. Default: 1e-3."
+      },
+      {
+        "name": "resmch",
+        "type": "number",
+        "desc": "Machine tolerance used by spline functions for purposes similar to resnor. Default: 1e-11."
+      }
+    ],
+    "example": "(env:set-tolerance 1e-6 1e-10 1e-3 1e-11)"
+  },
+  "env:tolerance": {
+    "signature": "(env:tolerance)",
+    "description": "Returns the current system modeling tolerances as a list of four REAL values in the order: resabs, resnor, resfit, resmch.",
+    "parameters": [],
+    "example": "(env:tolerance)"
+  },
+  "filter:type": {
+    "signature": "(filter:type type-name)",
+    "description": "Creates a filter that specifies the type of entity to be used in another filter operation. If a new type filter is created, it replaces the previously defined type. Calling without arguments displays available filter types.",
+    "parameters": [
+      {
+        "name": "type-name",
+        "type": "string",
+        "desc": "Entity filter type string. Possible values include: \"body?\", \"edge?\", \"edge:circular?\", \"edge:curve?\", \"edge:elliptical?\", \"edge:linear?\", \"edge:spline?\", \"face?\", \"face:conical?\", \"face:cylindrical?\", \"face:planar?\", \"face:spherical?\", \"face:spline?\", \"face:toroidal?\", \"mixed-body?\", \"point?\", \"solid?\", \"text?\", \"vertex?\", \"wcs?\", \"wire?\", \"wire-body?\"."
+      }
+    ],
+    "example": "(filter:type \"face:planar?\")"
+  },
+  "loop:external?": {
+    "signature": "(loop:external? loop)",
+    "description": "Determines whether a loop is external (returns #t) or internal (returns #f). Returns an error if the argument is not a loop.",
+    "parameters": [
+      {
+        "name": "loop",
+        "type": "string",
+        "desc": "A loop object to be queried."
+      }
+    ],
+    "example": "(loop:external? my-loop)"
+  },
+  "render:rebuild": {
+    "signature": "(render:rebuild [clear])",
+    "description": "Refreshes the display list for a view. Use after changing viewing parameters.",
+    "parameters": [
+      {
+        "name": "clear",
+        "type": "boolean",
+        "desc": "Optional. If #t or omitted, the view window is cleared and the wire frame is redisplayed. If #f, the view window is not cleared before redisplaying (no new page is written)."
+      }
+    ],
+    "example": "(render:rebuild)"
+  },
+  "string:head": {
+    "signature": "(string:head string snum)",
+    "description": "Returns a substring starting from the first character of the input string, containing snum characters. If snum is larger than the string length, an empty string is returned.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "The input string to extract from."
+      },
+      {
+        "name": "snum",
+        "type": "int",
+        "desc": "Number of characters to return from the beginning of the string. If larger than the string length, an empty string is returned."
+      }
+    ],
+    "example": "(string:head \"Hello World\" 5)"
+  },
+  "string:tail": {
+    "signature": "(string:tail string snum)",
+    "description": "Returns a substring starting from the snum-th character of the input string to the last character. If snum is larger than the string length, an empty string is returned.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "The input string to extract from."
+      },
+      {
+        "name": "snum",
+        "type": "int",
+        "desc": "The starting character position (1-based) from which to extract the substring. If larger than the string length, an empty string is returned."
+      }
+    ],
+    "example": "(string:tail \"Hello World\" 7)"
+  },
+  "sweep:law": {
+    "signature": "(sweep:law profile {path | distance | vector | axis} [sweep-options])",
+    "description": "Creates a surface or solid by sweeping a profile along a path. The path can be defined as a wire body/edge, a distance, a vector, or an axis (position and vector). May fail if the sweep causes self-intersections.",
+    "parameters": [
+      {
+        "name": "profile",
+        "type": "string",
+        "desc": "A wire body, face, or edge that defines the sweep geometry and becomes the base of the solid or edge of the surface."
+      },
+      {
+        "name": "path",
+        "type": "string",
+        "desc": "Wire body or edge along which the profile is swept. Can be replaced by distance, vector, or axis depending on sweep mode."
+      },
+      {
+        "name": "distance",
+        "type": "number",
+        "desc": "Distance to sweep along the face normal. Used when profile is a planar face."
+      },
+      {
+        "name": "vector",
+        "type": "string",
+        "desc": "Direction and distance to sweep (GVECTOR). Used with \"rail_law\" for no-twist sweep."
+      },
+      {
+        "name": "axis",
+        "type": "string",
+        "desc": "Position and vector defining the revolution axis. The revolution amount is controlled by the \"sweep_angle\" option."
+      },
+      {
+        "name": "sweep-options",
+        "type": "string",
+        "desc": "Optional. Sweep options data structure created by sweep:options. If omitted, default option values are used."
+      }
+    ],
+    "example": "(define edge1 (wire-body (edge:linear (position 10 0 0) (position 10 10 0)))) (sweep:law edge1 (gvector 10 0 0))"
+  },
+  "sweep:options": {
+    "signature": "(sweep:options sweep-option-name {value | location direction})",
+    "description": "Creates a sweep options data structure used by sweep:law. Multiple option-name and value pairs can be specified simultaneously, e.g. (sweep:options \"draft_angle\" 5 \"solid\" #f).",
+    "parameters": [
+      {
+        "name": "sweep-option-name",
+        "type": "string",
+        "desc": "Option name string. Available options: \"draft_angle\" (REAL, draft angle in degrees, default 0), \"gap_type\" (STRING), \"miter\" (STRING), \"rigid\" (STRING), \"sweep_angle\" (REAL, revolution angle for axis sweep). Extreme draft angles may cause self-intersection errors."
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "desc": "Value for the named option. Can be a REAL (no delimiters needed), a law variable name, or a STRING enclosed in double quotes."
+      },
+      {
+        "name": "location",
+        "type": "position",
+        "desc": "Position specifying a location for certain options."
+      },
+      {
+        "name": "direction",
+        "type": "string",
+        "desc": "GVECTOR specifying a direction for certain options."
+      }
+    ],
+    "example": "(sweep:options \"sweep_angle\" 60)"
+  },
+  "system:command": {
+    "signature": "(system:command cmd)",
+    "description": "Executes a system (shell) command from the Scheme command-line. The command results are displayed in the UNIX window. The return value must be processed correctly for Sentaurus Workbench error detection.",
+    "parameters": [
+      {
+        "name": "cmd",
+        "type": "string",
+        "desc": "The system command string to execute."
+      }
+    ],
+    "example": "(system:command \"ls -la\")"
+  },
+  "system:getenv": {
+    "signature": "(system:getenv name-string)",
+    "description": "Returns the value of an environment variable as a string. Returns #f if the variable is not found.",
+    "parameters": [
+      {
+        "name": "name-string",
+        "type": "string",
+        "desc": "Name of the environment variable to query."
+      }
+    ],
+    "example": "(system:getenv \"HOME\")"
+  },
+  "skin:options": {
+    "signature": "(skin:options {skin-option-name value} [skin-options])",
+    "description": "Sets the options in the data structure to be used by skinning and lofting Scheme extensions.",
+    "parameters": [
+      {
+        "name": "skin-option-name",
+        "type": "string",
+        "desc": "Name of a skinning option. Available options: \"align\" (align cross-section curve directions, default #t), \"allow_same_uv\" (allow surfaces with same u/v direction, default #f), \"arc_length\" / \"arc_length_u\" (arc-length vs isoparametric parameterization, default #f), \"closed\" (construct a solid body closed in v/torus, default #f), \"estimate_Loft_tanfacs\" (minimize average radius of curvature, default #f), \"gap_type\" (gap type between faces: \"extended\", \"rounded\", or \"champered\"), \"guidePreference\" (over-constrained guide resolution: \"constrain_to_guide\" or \"constrain_to_tangent\"), \"matchVertices\" (suppress vertex-matching algorithm, default #t), \"merge_wirecoedges\" (merge G1 vertices by merging adjacent coedges/edges, default #t), \"no_new_twistVertices\" (force choosing from existing vertices only, default #f), \"no_twist\" (minimize surface twist, default #t), \"periodic\" (periodic in v, smoothly closed at start/end profiles), \"perpendicular\" (specify take-off vector direction perpendicular to coedge, default #f), \"postprocess_stitch\" (stitch lofting body to original bodies, default #t), \"self_int_test\" (self-intersection check level: 0=off, 1=default, 2=check with warning)."
+      },
+      {
+        "name": "value",
+        "type": "boolean",
+        "desc": "Value of the skinning option (typically #t or #f for boolean options, or a string/integer for specific options)."
+      },
+      {
+        "name": "skin-options",
+        "type": "list",
+        "desc": "Optional. Additional skin-option-name and value pairs."
+      }
+    ],
+    "example": "(skin:options \"no_twist\" #t \"align\" #t)"
+  },
+  "solid:area": {
+    "signature": "(solid:area solid-body [tolerance])",
+    "description": "Returns the surface area of a solid as a pair of values: the total face area and the relative accuracy (absolute accuracy/area).",
+    "parameters": [
+      {
+        "name": "solid-body",
+        "type": "string",
+        "desc": "A solid body. If not explicitly defined, use `(entity # [#])` where the first # is its entity number and the second # is its part number."
+      },
+      {
+        "name": "tolerance",
+        "type": "float",
+        "desc": "Optional. Specifies the accuracy of the calculation. Default is 0.01."
+      }
+    ],
+    "example": "(solid:area (car (body-list)))"
+  },
+  "solid:massprop": {
+    "signature": "(solid:massprop entity [compute-type])",
+    "description": "Analyzes the mass properties of a solid, returning results that depend on the compute-type.",
+    "parameters": [
+      {
+        "name": "entity",
+        "type": "string",
+        "desc": "A solid body to compute the mass properties."
+      },
+      {
+        "name": "compute-type",
+        "type": "int",
+        "desc": "Optional. Type of calculation: 0 = volume and tolerance only; 1 = volume, tolerance, center of mass, principal moments, and principal axes; 2 = volume, center of mass, principal moments, principal axes, and inertial tensor."
+      }
+    ],
+    "example": "(solid:massprop (car (body-list)) 1)"
+  },
+  "sort": {
+    "signature": "(sort sort-criteria sort-list)",
+    "description": "Sorts a supplied list based on the given sort criteria.",
+    "parameters": [
+      {
+        "name": "sort-criteria",
+        "type": "string",
+        "desc": "Sort criteria operator, such as <, <=, >, >=."
+      },
+      {
+        "name": "sort-list",
+        "type": "list",
+        "desc": "The list to be sorted."
+      }
+    ],
+    "example": "(sort < (list 1 2 3 4 9 8 7 6))"
+  },
+  "timer:end": {
+    "signature": "(timer:end)",
+    "description": "Stops the timer. Used together with timer:start, timer:show-time, and timer:get-time to measure CPU time for command execution.",
+    "parameters": [],
+    "example": "(timer:start)\n(sdegeo:create-rectangle (position 0 0 0) (position 10 10 0) \"Silicon\" \"R.Sub\")\n(timer:end)"
+  },
+  "timer:get-time": {
+    "signature": "(timer:get-time)",
+    "description": "Calculates and returns the amount of CPU time elapsed since timer:start was executed. Can be called any number of times throughout a command sequence.",
+    "parameters": [],
+    "example": "(timer:start)\n(sdegeo:create-rectangle (position 0 0 0) (position 10 10 0) \"Silicon\" \"R.Sub\")\n(define elapsed (timer:get-time))"
+  },
+  "timer:show-time": {
+    "signature": "(timer:show-time)",
+    "description": "Calculates and returns the amount of CPU time elapsed since timer:start was executed. Returns zero if timer:start has not been called.",
+    "parameters": [],
+    "example": "(timer:start)\n(sdegeo:create-rectangle (position 0 0 0) (position 10 10 0) \"Silicon\" \"R.Sub\")\n(timer:show-time)"
+  },
+  "timer:start": {
+    "signature": "(timer:start)",
+    "description": "Starts an internal clock or timer for measuring CPU time of subsequent commands.",
+    "parameters": [],
+    "example": "(timer:start)\n(sdegeo:create-rectangle (position 0 0 0) (position 10 10 0) \"Silicon\" \"R.Sub\")\n(timer:show-time)"
+  },
+  "util:make-bot-contact": {
+    "signature": "(util:make-bot-contact contact-name [contact-argument])",
+    "description": "Assigns a contact to the bottom of a 2D or 3D device. In 2D, the bottom edges are defined as contacts; in 3D, the bottom faces are defined as contacts.",
+    "parameters": [
+      {
+        "name": "contact-name",
+        "type": "string",
+        "desc": "Name of the contact. If the contact is not yet defined, it will be created automatically."
+      },
+      {
+        "name": "contact-argument",
+        "type": "string",
+        "desc": "Optional. In 2D: a color (color name or RGB color). In 3D: a face pattern string such as \"solid\", \"##\", \"[/]\", \"*\", \"<><>\", \"[] [ ]\"."
+      }
+    ],
+    "example": "(sdegeo:create-rectangle (position 0 0 0) (position 10 10 0) \"Silicon\" \"R.Sub\")\n(util:make-bot-contact \"c1\" \"Green\")"
+  },
+  "util:make-top-contact": {
+    "signature": "(util:make-top-contact contact-name [contact-argument])",
+    "description": "Assigns a contact to the top of a 2D or 3D device. In 2D, the top edges are defined as contacts; in 3D, the top faces are defined as contacts.",
+    "parameters": [
+      {
+        "name": "contact-name",
+        "type": "string",
+        "desc": "Name of the contact. If the contact is not yet defined, it will be created automatically."
+      },
+      {
+        "name": "contact-argument",
+        "type": "string",
+        "desc": "Optional. In 2D: a color (color name or RGB color). In 3D: a face pattern string such as \"solid\", \"##\", \"[/]\", \"*\", \"<><>\", \"[] [ ]\"."
+      }
+    ],
+    "example": "(sdegeo:create-rectangle (position 0 0 0) (position 10 10 0) \"Silicon\" \"R.Sub\")\n(util:make-top-contact \"c2\" \"Blue\")"
+  },
+  "view:set-point-size": {
+    "signature": "(view:set-point-size vertex-size)",
+    "description": "Sets the size of the rendered vertices in the main window of the GUI.",
+    "parameters": [
+      {
+        "name": "vertex-size",
+        "type": "int",
+        "desc": "Vertex rendering size. Default is 10. Set to 0 to switch off vertex rendering and remove vertex markings."
+      }
+    ],
+    "example": "(view:set-point-size 15)"
+  },
+  "wire:planar?": {
+    "signature": "(wire:planar? object)",
+    "description": "Determines whether a Scheme object is a planar wire.",
+    "parameters": [
+      {
+        "name": "object",
+        "type": "string",
+        "desc": "The Scheme object to be queried."
+      }
+    ],
+    "example": "(wire:planar? my-wire)"
   }
 }
