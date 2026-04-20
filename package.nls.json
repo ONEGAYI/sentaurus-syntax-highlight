@@ -1,0 +1,7 @@
+{
+  "sentaurus.insertSnippet": "Sentaurus: Insert Snippet",
+  "sentaurus.scheme2infix": "Sentaurus: Scheme → Infix",
+  "sentaurus.infix2scheme": "Sentaurus: Infix → Scheme",
+  "sentaurus.exprHelp": "Sentaurus: Expression Help",
+  "sentaurus.testTclWasm": "Sentaurus: Test Tcl WASM Parser"
+}

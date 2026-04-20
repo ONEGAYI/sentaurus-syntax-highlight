@@ -1,0 +1,7 @@
+{
+  "sentaurus.insertSnippet": "Sentaurus: 插入代码片段",
+  "sentaurus.scheme2infix": "Sentaurus: Scheme → 中缀表达式",
+  "sentaurus.infix2scheme": "Sentaurus: 中缀表达式 → Scheme",
+  "sentaurus.exprHelp": "Sentaurus: 表达式帮助",
+  "sentaurus.testTclWasm": "Sentaurus: 测试 Tcl WASM 解析器"
+}
