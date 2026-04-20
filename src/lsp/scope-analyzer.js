@@ -106,6 +106,10 @@ function buildScopeTree(ast) {
                     return;
                 }
             }
+
+            // 空列表（如 ()、(; comment)）没有子节点可处理
+            if (children.length === 0) return;
+
             // (if test consequent [alternative])
             if (children[0].value === 'if' && children.length >= 3) {
                 walk(children[1], parentScope, branchCtx); // test expression

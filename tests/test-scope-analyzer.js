@@ -155,5 +155,26 @@ test('行号在作用域外时只返回全局', () => {
     assert.deepStrictEqual(names, ['f', 'x']);
 });
 
+console.log('\n空列表边界条件（回归 #110/124/139）:');
+
+test('空列表 () 不抛出异常', () => {
+    const tree = treeOf('()');
+    assert.strictEqual(tree.type, 'global');
+    assert.strictEqual(tree.children.length, 0);
+});
+
+test('仅含注释的列表 (; comment) 不抛出异常', () => {
+    const tree = treeOf('(; comment\n)');
+    assert.strictEqual(tree.type, 'global');
+    assert.strictEqual(tree.children.length, 0);
+});
+
+test('空列表与 define 共存不抛出异常', () => {
+    const tree = treeOf('(define x 42)\n()\n(define y 7)');
+    assert.strictEqual(tree.definitions.length, 2);
+    assert.strictEqual(tree.definitions[0].name, 'x');
+    assert.strictEqual(tree.definitions[1].name, 'y');
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);
