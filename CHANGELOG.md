@@ -4,6 +4,14 @@
 
 ---
 
+## [1.6.0] - 2026-04-18
+
+### 新功能
+
+- **SDE KEYWORD2 函数悬停文档**：为 159 个 SDE KEYWORD2 函数（涵盖 `sde:`, `sdegeo:`, `sdedr:`, `sdemesh:`, `sdepe:` 等命名空间）添加英文函数说明文档和中文翻译，悬停时显示函数用途、参数说明和示例代码
+
+---
+
 ## [1.5.1] - 2026-04-18
 
 ### Bug 修复
@@ -501,6 +509,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.6.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.4.2...v1.5.0
 [1.4.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.4.1...v1.4.2
