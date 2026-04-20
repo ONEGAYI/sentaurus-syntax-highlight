@@ -1,5 +1,7 @@
 # Sentaurus TCAD Syntax Highlighting
 
+[English](README.en.md)
+
 为 Synopsys Sentaurus TCAD 工具链提供语法高亮、自动补全和语义功能的 VSCode 扩展。支持 SDE、SDEVICE、SPROCESS、EMW、INSPECT、SVISUAL 六种工具的命令文件。
 
 ## 功能一览
@@ -212,40 +214,3 @@ python scripts/extract_keywords.py
 npm install -g @vscode/vsce
 vsce package
 ```
-
----
-
-> 下面是原 README
-
-This VSCode extension provides syntax highlighting for Synopsys Sentaurus TCAD files.
-
-## Supported File Types
-
-- **Sentaurus Structure Editor (SDE)**: `*_dvs.cmd` and `.scm` files
-- **Sentaurus Device (SDEVICE)**: `*_des.cmd` files
-- **Sentaurus Process (SPROCESS)**: `*_fps.cmd` and `.fps` files
-- **Sentaurus EMW**: `*_eml.cmd` and `*_emw.cmd` files
-- **Sentaurus Inspect**: `*_ins.cmd` files
-- **Sentaurus Visual (SVISUAL)**: `*_vis.cmd` files
-
-## Features
-
-- Syntax highlighting for commands, keywords, functions, and constants
-- AST-based code folding, breadcrumb navigation, and bracket diagnostics (Tcl languages)
-- Proper bracket matching and indentation
-- Comment highlighting
-
-## Development
-
-The syntax highlighting definitions were automatically generated from Sentaurus TCAD mode files using a custom Python script.
-
-To regenerate the syntax files, run:
-
-```bash
-python scripts/extract_keywords.py
-```
-
-## Installation
-
-1. Copy this folder to `~/.vscode/extensions/` (on Windows: `%USERPROFILE%\.vscode\extensions\`)
-2. Restart VSCode
