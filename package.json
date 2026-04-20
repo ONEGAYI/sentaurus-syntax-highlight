@@ -155,23 +155,23 @@
     "commands": [
       {
         "command": "sentaurus.insertSnippet",
-        "title": "Sentaurus: Insert Snippet"
+        "title": "%sentaurus.insertSnippet%"
       },
       {
         "command": "sentaurus.scheme2infix",
-        "title": "Sentaurus: Scheme → Infix"
+        "title": "%sentaurus.scheme2infix%"
       },
       {
         "command": "sentaurus.infix2scheme",
-        "title": "Sentaurus: Infix → Scheme"
+        "title": "%sentaurus.infix2scheme%"
       },
       {
         "command": "sentaurus.exprHelp",
-        "title": "Sentaurus: Expression Help"
+        "title": "%sentaurus.exprHelp%"
       },
       {
         "command": "sentaurus.testTclWasm",
-        "title": "Sentaurus: Test Tcl WASM Parser"
+        "title": "%sentaurus.testTclWasm%"
       }
     ],
     "snippets": [
