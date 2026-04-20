@@ -30,8 +30,11 @@
 ```
 sentaurus-syntax-highlight/
 ├── package.json                                ← 扩展清单：6 种语言注册、贡献点、命令
+├── package.nls.json                            ← 命令面板标题英文默认值
+├── package.nls.zh-cn.json                      ← 命令面板标题中文翻译
 ├── CHANGELOG.md                                ← 版本变更日志
-├── README.md                                   ← 项目说明文档
+├── README.md                                   ← 项目说明文档（中文）
+├── README.en.md                                ← 项目说明文档（英文）
 ├── icon.png                                    ← 扩展图标
 ├── language-configuration.json                 ← 遗留配置（已被 language-configurations/ 取代）
 ├── .vscodeignore                               ← VSIX 打包排除规则

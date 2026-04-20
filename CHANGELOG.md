@@ -4,6 +4,22 @@
 
 ---
 
+## [1.6.2] - 2026-04-20
+
+### 新功能
+
+- **命令面板标题中文本地化**：通过 NLS 机制为 5 个命令添加中英双语标题，中文 VSCode 自动显示中文标题
+
+### Bug 修复
+
+- **修复空列表导致 scope-analyzer 未捕获 TypeError**：`buildScopeTree` 在处理空列表 `()` 或仅含注释的列表 `(; comment)` 时添加空列表保护检查，避免 `children[0].value` 越界访问
+
+### 其他改进
+
+- **添加英文版 README**（`README.en.md`），中文 README 顶部添加语言切换链接，移除底部过时的旧英文段落
+
+---
+
 ## [1.6.1] - 2026-04-20
 
 ### Bug 修复
@@ -517,6 +533,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.6.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.5.0...v1.5.1
