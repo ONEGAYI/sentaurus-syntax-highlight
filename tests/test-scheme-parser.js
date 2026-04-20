@@ -203,6 +203,29 @@ test('AST 跳过注释中的 define', () => {
     assert.strictEqual(result.definitions[0].name, 'real');
 });
 
+test('# 行注释被跳过', () => {
+    const { ast } = parse('# comment\n(define x 1)');
+    assert.strictEqual(ast.body.length, 2);
+    assert.strictEqual(ast.body[0].type, 'Comment');
+});
+
+test('# 装饰行不产生标识符', () => {
+    const { ast } = parse('######### Parameters Definition #########\n(define x 1)');
+    assert.strictEqual(ast.body.length, 2);
+    assert.strictEqual(ast.body[0].type, 'Comment');
+    const list = ast.body[1];
+    assert.strictEqual(list.type, 'List');
+    assert.strictEqual(list.children[1].value, 'x');
+});
+
+test('# 行注释与 ; 注释共存', () => {
+    const { ast } = parse('# header\n; semicolon comment\n(define x 1)');
+    assert.strictEqual(ast.body.length, 3);
+    assert.strictEqual(ast.body[0].type, 'Comment');
+    assert.strictEqual(ast.body[1].type, 'Comment');
+    assert.strictEqual(ast.body[2].type, 'List');
+});
+
 test('AST 跳过字符串中的 define', () => {
     const { ast } = parse('(define x "(define fake 1)")');
     const result = analyze(ast);

@@ -4,6 +4,14 @@
 
 ---
 
+## [1.6.1] - 2026-04-20
+
+### Bug 修复
+
+- **修复 SDE 中 `#` 行注释被误报为未定义变量**：Scheme 解析器新增 `#` 行注释处理，在 `#t`/`#f` 布尔值和预处理器指令检查之后，将其余所有 `#` 开头的内容（如 `######### Parameters Definition #########`）识别为行注释，避免注释中的文字被误检测为未定义变量
+
+---
+
 ## [1.6.0] - 2026-04-18
 
 ### 新功能
@@ -509,6 +517,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.6.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.5.1...v1.6.0
 [1.5.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.4.2...v1.5.0
