@@ -108,6 +108,18 @@ test('预处理指令 #if 条件行被整体跳过', () => {
     assert.strictEqual(tclLeaks.length, 0, 'Tcl 条件代码不应泄露到 Scheme 引用检测中');
 });
 
+test('# 行注释不产生未定义变量警告', () => {
+    const code = '######### Parameters Definition #########\n(define x 1)';
+    const undefs = findUndefRefs(code, new Set());
+    assert.strictEqual(undefs.length, 0, '# 装饰行中的文字不应被检测为未定义变量');
+});
+
+test('# 注释行不产生未定义变量警告', () => {
+    const code = '# This is a comment\n(define x 1)\n# Another comment\n(+ x 1)';
+    const undefs = findUndefRefs(code, new Set(['+']));
+    assert.strictEqual(undefs.length, 0, '# 注释行不应产生任何未定义变量警告');
+});
+
 test('#if 块内的 Scheme 代码仍被检测', () => {
     // #if 和 #endif 之间的 Scheme 代码应正常解析
     const code = '#if 1\n(define x 1)\n#endif\n(+ x 1)';

@@ -85,6 +85,16 @@ function tokenize(text) {
             }
         }
 
+        // SDE 扩展：# 作为行注释符
+        // 在 #t/#f 和预处理指令检查之后，其余所有 # 开头的内容均视为行注释
+        // 例如：######### Parameters Definition #########、# 注释文字
+        if (ch === '#') {
+            const start = i;
+            while (i < text.length && text[i] !== '\n') i++;
+            tokens.push({ type: TokenType.COMMENT, value: text.slice(start + 1, i), start, end: i, line });
+            continue;
+        }
+
         const start = i;
         while (i < text.length && !/[\s()";]/.test(text[i])) i++;
         const raw = text.slice(start, i);
