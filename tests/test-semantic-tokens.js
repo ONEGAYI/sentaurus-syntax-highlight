@@ -69,5 +69,25 @@ test('TOKEN_TYPES 和 TOKEN_MODIFIERS 导出', () => {
     assert.ok(Array.isArray(TOKEN_MODIFIERS));
 });
 
+test('缩写形式定义签名不被误标记', () => {
+    const text = '(define (my-func a b) (+ a b))\n(my-func 1 2)';
+    const { ast } = parse(text);
+    const userFuncNames = new Set(['my-func']);
+    const data = extractSemanticTokens(ast, userFuncNames, text);
+    // 只有调用处 1 个令牌，定义签名中的 my-func 不应被标记
+    assert.strictEqual(data.length, 5);
+    // 第一个令牌应该是调用处（第 2 行），不是定义签名（第 1 行）
+    assert.strictEqual(data[0], 1); // deltaLine=1，说明在第 2 行
+});
+
+test('define 体内的其他函数调用被正确标记', () => {
+    const text = '(define f (lambda (x) x))\n(define g (lambda (y) (f y)))';
+    const { ast } = parse(text);
+    const userFuncNames = new Set(['f', 'g']);
+    const data = extractSemanticTokens(ast, userFuncNames, text);
+    // g 的 define 体内调用了 f，应该被标记
+    assert.strictEqual(data.length, 5); // 只有 (f y) 中的 f
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);

@@ -42,13 +42,13 @@ function extractSemanticTokens(ast, userFuncNames, sourceText) {
                 const pos = offsetToPos(firstEffective.start);
                 tokens.push(pos.line, pos.col, firstEffective.end - firstEffective.start);
             }
-            // define 表达式内部不递归（定义形式不是调用）
-            if (firstEffective && firstEffective.type === 'Identifier' &&
-                firstEffective.value === 'define') {
-                return;
-            }
-            for (const child of children) {
-                walk(child);
+            // define 表达式中跳过 children[1]（变量名或函数签名 List），
+            // 但仍递归 children[2:]（body 中的函数调用需要被标记）
+            const isDefine = firstEffective && firstEffective.type === 'Identifier' &&
+                firstEffective.value === 'define';
+            for (let i = 0; i < children.length; i++) {
+                if (isDefine && i === 1) continue;
+                walk(children[i]);
             }
         } else if (node.type === 'Quote') {
             walk(node.expression);
