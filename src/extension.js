@@ -711,7 +711,7 @@ function activate(context) {
                             } else {
                                 const filter = histParsed.filter.toLowerCase();
                                 if (!filter || entry.toLowerCase().includes(filter)) {
-                                    items.push({ label: entry, description: `#${i + 1}`, _historyIndex: i });
+                                    items.push({ label: entry, description: `#${i + 1}`, alwaysShow: true, _historyIndex: i });
                                 }
                             }
                         }
@@ -731,6 +731,7 @@ function activate(context) {
                                     label: v.name,
                                     description: `${v.kind}, 第${v.line}行`,
                                     detail: v.definitionText ? v.definitionText.substring(0, 80) : undefined,
+                                    alwaysShow: true,
                                     _varName: v.name,
                                 });
                             }
@@ -740,9 +741,20 @@ function activate(context) {
                     if (history.length > 0) {
                         items.push({ label: '最近使用 — 输入 ! 进入历史模式', kind: vscode.QuickPickItemKind.Separator });
                         for (const h of history) {
-                            items.push({ label: h, _historyValue: h });
+                            items.push({ label: h, alwaysShow: true, _historyValue: h });
                         }
                     }
+                }
+
+                // 确认分栏：始终添加，确保 Enter 键可用
+                if (value.trim()) {
+                    items.push({ label: useZh ? '确认输入' : 'Confirm Input', kind: vscode.QuickPickItemKind.Separator });
+                    items.push({
+                        label: value,
+                        description: useZh ? '按 Enter 确认' : 'Press Enter to confirm',
+                        alwaysShow: true,
+                        _confirmInput: true,
+                    });
                 }
 
                 qp.items = items;
@@ -765,7 +777,10 @@ function activate(context) {
                     return; // 保持 QuickPick 打开
                 }
 
-                if (selected && selected._historyIndex !== undefined) {
+                if (selected && selected._confirmInput) {
+                    // 确认项：取输入值
+                    finalValue = qp.value.trim();
+                } else if (selected && selected._historyIndex !== undefined) {
                     // 历史模式选中项
                     finalValue = history[selected._historyIndex];
                 } else if (selected && selected._historyValue) {
