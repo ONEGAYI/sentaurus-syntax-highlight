@@ -432,13 +432,15 @@ function getSupportedOperators() {
 // QuickPick 辅助函数（变量补全 + 历史模式）
 // ────────────────────────────────────────────
 
+const TRAILING_IDENT_RE = /([a-zA-Z_@][a-zA-Z0-9_@]*)$/;
+
 function getLastWordPrefix(value) {
-    const match = value.match(/([a-zA-Z_@][a-zA-Z0-9_@]*)$/);
+    const match = value.match(TRAILING_IDENT_RE);
     return match ? match[1] : '';
 }
 
 function replaceLastWord(value, replacement) {
-    const match = value.match(/([a-zA-Z_@][a-zA-Z0-9_@]*)$/);
+    const match = value.match(TRAILING_IDENT_RE);
     if (match) {
         return value.slice(0, match.index) + replacement;
     }

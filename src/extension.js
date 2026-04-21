@@ -638,10 +638,14 @@ function activate(context) {
     context.subscriptions.push(snippetDisposable);
 
     // ── 表达式转换命令 ──────────────────────────
-    const convertHistories = {
-        'sentaurus.scheme2infix': context.globalState.get('convertHistory.s2i', []),
-        'sentaurus.infix2scheme': context.globalState.get('convertHistory.i2s', []),
+    const HISTORY_KEYS = {
+        'sentaurus.scheme2infix': 'convertHistory.s2i',
+        'sentaurus.infix2scheme': 'convertHistory.i2s',
     };
+    const convertHistories = {};
+    for (const [cmd, key] of Object.entries(HISTORY_KEYS)) {
+        convertHistories[cmd] = context.globalState.get(key, []);
+    }
 
     async function insertResult(editor, result) {
         if (editor) {
@@ -783,7 +787,7 @@ function activate(context) {
                 } else if (selected && selected._historyIndex !== undefined) {
                     // 历史模式选中项
                     finalValue = history[selected._historyIndex];
-                } else if (selected && selected._historyValue) {
+                } else if (selected && selected._historyValue !== undefined) {
                     // 默认模式选中历史项
                     finalValue = selected._historyValue;
                 } else {
@@ -808,7 +812,7 @@ function activate(context) {
                 if (idx !== -1) history.splice(idx, 1);
                 history.unshift(finalValue);
                 if (history.length > 20) history.pop();
-                context.globalState.update('convertHistory.' + (commandId === 'sentaurus.scheme2infix' ? 's2i' : 'i2s'), history);
+                context.globalState.update(HISTORY_KEYS[commandId], history);
 
                 insertResult(editor, result);
             });
