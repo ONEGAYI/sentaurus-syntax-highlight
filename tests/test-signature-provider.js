@@ -246,5 +246,75 @@ test('无注释情况不受影响：正常函数调用', () => {
     assert.ok(result.signatures[0].label.includes('sdegeo:create-circle'));
 });
 
+console.log('\n用户定义函数签名 fallback:');
+
+test('用户函数签名 — define+lambda', () => {
+    const doc = {
+        getText: () => '(define create_trapezoid (lambda (x0 y0 z0 w h) body))\n(create_trapezoid 1 2 3)',
+        uri: { toString: () => 'test.scm' },
+        version: 1,
+    };
+    const defs = require('../src/definitions');
+    defs.clearDefinitionCache();
+    const pos = { line: 1, character: 20 };
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, {}, mockCache, defs);
+    assert.ok(result, '应返回签名结果');
+    assert.strictEqual(result.signatures[0].label, '(create_trapezoid x0 y0 z0 w h)');
+    assert.strictEqual(result.signatures[0].parameters.length, 5);
+    assert.strictEqual(result.signatures[0].parameters[0].label, 'x0');
+});
+
+test('用户函数签名 — activeParameter 正确', () => {
+    const doc = {
+        getText: () => '(define f (lambda (a b c) body))\n(f 1 2 )',
+        uri: { toString: () => 'test2.scm' },
+        version: 1,
+    };
+    const defs = require('../src/definitions');
+    defs.clearDefinitionCache();
+    const pos = { line: 1, character: 6 };
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, {}, mockCache, defs);
+    assert.ok(result);
+    assert.strictEqual(result.activeParameter, 1);
+});
+
+test('内置函数优先于用户定义函数', () => {
+    const doc = {
+        getText: () => '(sdegeo:create-circle (position 0 0 0) 5 "Si" "R")',
+        uri: { toString: () => 'test3.scm' },
+        version: 1,
+    };
+    const defs = require('../src/definitions');
+    defs.clearDefinitionCache();
+    const funcDocs = {
+        'sdegeo:create-circle': {
+            signature: '(sdegeo:create-circle center radius material region)',
+            parameters: [
+                { name: 'center', desc: 'Center' },
+                { name: 'radius', desc: 'Radius' },
+                { name: 'material', desc: 'Material' },
+                { name: 'region', desc: 'Region' },
+            ],
+        },
+    };
+    const pos = { line: 0, character: 10 };
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs, mockCache, defs);
+    assert.ok(result);
+    assert.ok(result.signatures[0].documentation !== '用户定义函数');
+});
+
+test('非函数调用返回 null', () => {
+    const doc = {
+        getText: () => '(define x 42)\n',
+        uri: { toString: () => 'test4.scm' },
+        version: 1,
+    };
+    const defs = require('../src/definitions');
+    defs.clearDefinitionCache();
+    const pos = { line: 0, character: 3 };
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, {}, mockCache, defs);
+    assert.strictEqual(result, null);
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);

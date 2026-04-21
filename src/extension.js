@@ -464,7 +464,7 @@ function activate(context) {
                 return signatureProvider.provideSignatureHelp(
                     document, position, token,
                     modeDispatchTable, langFuncDocs.sde,
-                    schemeCache
+                    schemeCache, defs
                 );
             },
         },
