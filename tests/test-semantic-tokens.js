@@ -73,7 +73,7 @@ test('注释跳过不干扰', () => {
 
 test('TOKEN_TYPES 和 TOKEN_MODIFIERS 导出', () => {
     assert.ok(Array.isArray(TOKEN_TYPES));
-    assert.ok(TOKEN_TYPES.includes('function'));
+    assert.ok(TOKEN_TYPES.includes('userFunctionCall'));
     assert.ok(Array.isArray(TOKEN_MODIFIERS));
 });
 

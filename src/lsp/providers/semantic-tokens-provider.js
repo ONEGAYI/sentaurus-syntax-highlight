@@ -1,6 +1,6 @@
 'use strict';
 
-const TOKEN_TYPES = ['function'];
+const TOKEN_TYPES = ['userFunctionCall'];
 const TOKEN_MODIFIERS = [];
 
 /**
