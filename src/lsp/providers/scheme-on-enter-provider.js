@@ -1,4 +1,10 @@
 const vscode = require('vscode');
+const {
+    countUnmatchedOpenParens,
+    isLastOpenParenEmpty,
+    findClosingParens,
+    CLOSE_PARENS_RE,
+} = require('./scheme-on-enter-logic');
 
 /**
  * Scheme 括号回车自动缩进（含嵌套场景）。
@@ -44,12 +50,14 @@ function onDocumentChange(event) {
     const openCount = countUnmatchedOpenParens(prevText);
     if (openCount === 0) return;
 
-    // 当前行必须有 1+ 个 )（仅闭合括号 + 可选空白/注释）
-    const match = currText.match(/^(\s*)(\){1,})([\s;]*)$/);
+    // 在当前行或下一行查找闭括号（VSCode auto-indent 可能将 ) 推到下一行）
+    const nextText = currLineNum + 1 < event.document.lineCount
+        ? event.document.lineAt(currLineNum + 1).text : undefined;
+    const { match, linesToReplace } = findClosingParens(currText, nextText);
     if (!match) return;
 
-    // 排除空括号
-    if (isLastOpenParenEmpty(prevText)) return;
+    // 仅在单层空括号时跳过多级缩进（嵌套场景即使内层为空也应展开）
+    if (isLastOpenParenEmpty(prevText) && match[2].length <= 1) return;
 
     const editor = vscode.window.activeTextEditor;
     if (!editor || editor.document !== event.document) return;
@@ -86,52 +94,22 @@ function onDocumentChange(event) {
     }
 
     // 应用编辑并定位光标
+    const replaceStart = currLineNum;
+    const replaceEnd = currLineNum + linesToReplace - 1;
     _applying = true;
     editor.edit(editBuilder => {
         editBuilder.replace(
-            new vscode.Range(currLineNum, 0, currLineNum, currText.length),
+            new vscode.Range(replaceStart, 0, replaceEnd, event.document.lineAt(replaceEnd).text.length),
             replacement
         );
     }).then(() => {
         const cursorCol = openCount * indentUnit.length;
-        const newPos = new vscode.Position(currLineNum, cursorCol);
+        const newPos = new vscode.Position(replaceStart, cursorCol);
         editor.selection = new vscode.Selection(newPos, newPos);
         _applying = false;
     }, () => {
         _applying = false;
     });
-}
-
-/**
- * 统计文本中未闭合的 ( 数量。
- */
-function countUnmatchedOpenParens(text) {
-    let count = 0;
-    for (const ch of text) {
-        if (ch === '(') count++;
-        if (ch === ')') count--;
-    }
-    return count;
-}
-
-/**
- * 检查最后一个未闭合的 ( 后是否只有空白（即空括号）。
- */
-function isLastOpenParenEmpty(text) {
-    let depth = 0;
-    let lastOpenIndex = -1;
-    for (let i = text.length - 1; i >= 0; i--) {
-        if (text[i] === ')') depth++;
-        if (text[i] === '(') {
-            if (depth === 0) {
-                lastOpenIndex = i;
-                break;
-            }
-            depth--;
-        }
-    }
-    if (lastOpenIndex === -1) return true;
-    return /^\s*$/.test(text.substring(lastOpenIndex + 1));
 }
 
 module.exports = { activate };
