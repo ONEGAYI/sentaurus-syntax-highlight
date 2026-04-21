@@ -120,6 +120,13 @@
         "configuration": "./language-configurations/tcl.json"
       }
     ],
+    "semanticTokenTypes": [
+      {
+        "id": "function",
+        "superType": "function",
+        "description": "用户定义的函数调用"
+      }
+    ],
     "grammars": [
       {
         "language": "sde",

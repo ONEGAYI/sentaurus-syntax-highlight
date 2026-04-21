@@ -6,6 +6,7 @@ const foldingProviderMod = require('./lsp/providers/folding-provider');
 const bracketDiagnostic = require('./lsp/providers/bracket-diagnostic');
 const scopeAnalyzer = require('./lsp/scope-analyzer');
 const signatureProvider = require('./lsp/providers/signature-provider');
+const semanticTokensMod = require('./lsp/providers/semantic-tokens-provider');
 const expressionConverter = require('./commands/expression-converter');
 const tclParserWasm = require('./lsp/tcl-parser-wasm');
 const astUtils = require('./lsp/tcl-ast-utils');
@@ -440,6 +441,20 @@ function activate(context) {
             )
         );
     }
+
+    // Semantic Tokens (SDE only) — 用户定义函数调用高亮
+    const stLegend = new vscode.SemanticTokensLegend(
+        semanticTokensMod.TOKEN_TYPES,
+        semanticTokensMod.TOKEN_MODIFIERS
+    );
+    const stProvider = semanticTokensMod.createSemanticTokensProvider(schemeCache, defs);
+    context.subscriptions.push(
+        vscode.languages.registerDocumentSemanticTokensProvider(
+            { language: 'sde' },
+            stProvider,
+            stLegend
+        )
+    );
 
     // Signature Help (SDE only)
     const sigHelpDisposable = vscode.languages.registerSignatureHelpProvider(
