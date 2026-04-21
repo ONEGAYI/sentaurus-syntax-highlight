@@ -4,28 +4,31 @@ const TOKEN_TYPES = ['function'];
 const TOKEN_MODIFIERS = [];
 
 /**
+ * 将绝对字符偏移转换为 (0-based line, 0-based col)，利用预计算行首偏移表。
+ * @param {number} absOffset
+ * @param {number[]} lineStarts
+ * @returns {{ line: number, col: number }}
+ */
+function offsetToLineCol(absOffset, lineStarts) {
+    // 二分查找：找最大的 lineStarts[i] <= absOffset
+    let lo = 0, hi = lineStarts.length - 1;
+    while (lo < hi) {
+        const mid = (lo + hi + 1) >> 1;
+        if (lineStarts[mid] <= absOffset) lo = mid;
+        else hi = mid - 1;
+    }
+    return { line: lo, col: absOffset - lineStarts[lo] };
+}
+
+/**
  * 从 AST 中提取所有函数调用位置的语义令牌。
  * @param {object} ast - Parser 产出的 AST 根节点
  * @param {Set<string>} userFuncNames - 用户定义函数名集合
- * @param {string} sourceText - 原始源码文本
+ * @param {number[]} lineStarts - 预计算行首偏移表
  * @returns {number[]} delta 编码的语义令牌数组
  */
-function extractSemanticTokens(ast, userFuncNames, sourceText) {
+function extractSemanticTokens(ast, userFuncNames, lineStarts) {
     const tokens = [];
-
-    function offsetToPos(absOffset) {
-        let line = 0;
-        let col = 0;
-        for (let i = 0; i < absOffset && i < sourceText.length; i++) {
-            if (sourceText[i] === '\n') {
-                line++;
-                col = 0;
-            } else {
-                col++;
-            }
-        }
-        return { line, col };
-    }
 
     function walk(node) {
         if (node.type === 'List') {
@@ -39,7 +42,7 @@ function extractSemanticTokens(ast, userFuncNames, sourceText) {
             }
             if (firstEffective && firstEffective.type === 'Identifier' &&
                 userFuncNames.has(firstEffective.value)) {
-                const pos = offsetToPos(firstEffective.start);
+                const pos = offsetToLineCol(firstEffective.start, lineStarts);
                 tokens.push(pos.line, pos.col, firstEffective.end - firstEffective.start);
             }
             // define 表达式中跳过 children[1]（变量名或函数签名 List），
@@ -80,18 +83,18 @@ function encodeDelta(rawTokens) {
     return result;
 }
 
-function createSemanticTokensProvider(schemeCache, defs) {
+function createSemanticTokensProvider(schemeCache) {
     return {
         provideDocumentSemanticTokens(document) {
-            const { ast } = schemeCache.get(document);
-            const userDefs = defs.getDefinitions(document, 'sde');
+            const { ast, analysis, lineStarts } = schemeCache.get(document);
+            const userDefs = analysis.definitions;
             const userFuncNames = new Set();
             for (const d of userDefs) {
                 if (d.kind === 'function' || d.params) {
                     userFuncNames.add(d.name);
                 }
             }
-            const data = extractSemanticTokens(ast, userFuncNames, document.getText());
+            const data = extractSemanticTokens(ast, userFuncNames, lineStarts);
             return { data };
         },
     };

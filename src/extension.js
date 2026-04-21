@@ -447,7 +447,7 @@ function activate(context) {
         semanticTokensMod.TOKEN_TYPES,
         semanticTokensMod.TOKEN_MODIFIERS
     );
-    const stProvider = semanticTokensMod.createSemanticTokensProvider(schemeCache, defs);
+    const stProvider = semanticTokensMod.createSemanticTokensProvider(schemeCache);
     context.subscriptions.push(
         vscode.languages.registerDocumentSemanticTokensProvider(
             { language: 'sde' },
