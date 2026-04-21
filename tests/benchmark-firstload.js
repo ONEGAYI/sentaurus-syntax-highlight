@@ -39,7 +39,7 @@ const semanticDispatcher = require('../src/lsp/semantic-dispatcher');
 const defs = require('../src/definitions');
 const sigProvider = require('../src/lsp/providers/signature-provider');
 const semanticTokensMod = require('../src/lsp/providers/semantic-tokens-provider');
-const { SchemeParseCache } = require('../src/lsp/parse-cache');
+const { SchemeParseCache, computeLineStarts } = require('../src/lsp/parse-cache');
 
 // ── 阶段 1: 解析管线各步骤耗时 ─────────────────────
 console.log('\n━━ 阶段 1: 管线各步骤首次耗时 ━━━━━━━━━━━━━━━━');
@@ -61,8 +61,7 @@ console.log(`  buildScopeTree:    ${(t3b - t3a).toFixed(2)}ms`);
 
 // lineStarts (computeLineStarts)
 const t4a = performance.now();
-const lineStarts = [0];
-for (let i = 0; i < text.length; i++) { if (text[i] === '\n') lineStarts.push(i + 1); }
+const lineStarts = computeLineStarts(text);
 const t4b = performance.now();
 console.log(`  computeLineStarts: ${(t4b - t4a).toFixed(2)}ms`);
 

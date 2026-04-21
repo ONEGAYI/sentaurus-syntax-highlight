@@ -87,7 +87,7 @@ sentaurus-syntax-highlight/
 │   │   └── providers/                          ← VSCode Provider 实现
 │   │       ├── folding-provider.js             ← Scheme 代码折叠
 │   │       ├── bracket-diagnostic.js           ← Scheme 括号平衡诊断
-│   │       ├── signature-provider.js           ← Scheme 函数签名提示
+│   │       ├── signature-provider.js           ← Scheme 函数签名提示（内置 + 用户定义函数）
 │   │       ├── undef-var-diagnostic.js         ← 未定义/重复定义变量诊断（Scheme + Tcl 双语言）
 │   │       ├── scheme-on-enter-provider.js     ← Scheme 括号内回车多级自动缩进
 │   │       ├── tcl-folding-provider.js         ← Tcl 代码折叠（基于 braced_word）
@@ -98,6 +98,7 @@ sentaurus-syntax-highlight/
 │   │       ├── quote-auto-delete-logic.js      ← 空引号对自动删除判断逻辑
 │   │       ├── quote-auto-delete-provider.js   ← 空引号对自动删除 Provider（6 种语言共用）
 │   │       ├── region-undef-diagnostic.js         ← Region/Material/Contact 未定义语义诊断（Scheme）
+│   │       ├── semantic-tokens-provider.js        ← SDE 用户定义函数调用高亮（Semantic Tokens）
 │   │       ├── symbol-completion.js               ← Region/Material/Contact 符号补全
 │   │       └── symbol-reference-provider.js       ← Find All References（Region/Material/Contact）
 │   │
@@ -112,8 +113,10 @@ sentaurus-syntax-highlight/
 │   ├── test-definitions.js                     ← 用户变量定义提取
 │   ├── test-expression-converter.js            ← 表达式转换
 │   ├── test-scheme-parser.js                   ← Scheme 解析器
+│   ├── test-scheme-analyzer.js                 ← Scheme 定义提取（含 define+lambda params）
 │   ├── test-scope-analyzer.js                  ← 作用域分析
 │   ├── test-semantic-dispatcher.js             ← 语义分发
+│   ├── test-semantic-tokens.js                 ← 语义令牌提取与 delta 编码
 │   ├── test-signature-provider.js              ← 签名提示
 │   ├── test-scheme-undef-diagnostic.js         ← Scheme 未定义变量诊断
 │   ├── test-scheme-dup-def-diagnostic.js       ← Scheme 重复定义检测
@@ -134,6 +137,7 @@ sentaurus-syntax-highlight/
 │   ├── test-symbol-completion.js               ← 符号补全过滤
 │   ├── test-symbol-reference.js                ← Find All References
 │   └── benchmark.js                            ← 性能基准测试工具
+│   └── benchmark-firstload.js                  ← 首次加载性能诊断脚本
 │
 ├── scripts/                                    ← 开发工具脚本
 │   ├── extract_keywords.py                     ← 从 XML mode 文件提取关键词并生成语法
@@ -189,14 +193,15 @@ sentaurus-syntax-highlight/
 
 双解析器架构，按语言方言分治：
 
-- **Scheme（SDE）**：手写解析器（`scheme-parser.js`），生成自定义 AST → `scheme-analyzer.js` 提取定义和折叠范围 → `scope-analyzer.js` 构建词法作用域树 → `semantic-dispatcher.js` 按函数调用模式分发语义 → `symbol-index.js` 根据声明式 symbolParams 配置提取 Region/Material/Contact 的定义和引用（支持 string-append 静态推断和 modeDispatch 动态类型）
+- **Scheme（SDE）**：手写解析器（`scheme-parser.js`），生成自定义 AST → `scheme-analyzer.js` 提取定义（含 define+lambda params 检测）和折叠范围 → `scope-analyzer.js` 构建词法作用域树 → `semantic-dispatcher.js` 按函数调用模式分发语义 → `symbol-index.js` 根据声明式 symbolParams 配置提取 Region/Material/Contact 的定义和引用（支持 string-append 静态推断和 modeDispatch 动态类型）
 - **Tcl（其余 5 种）**：`tree-sitter-tcl` WASM 解析器（`tcl-parser-wasm.js`）→ `tcl-ast-utils.js` 统一 AST 遍历/变量提取/折叠 → `tcl-symbol-configs.js` 配置各工具 section 关键词
 
 共用 Provider（`src/lsp/providers/`）：
 - `undef-var-diagnostic.js` — 跨语言未定义/重复定义变量诊断（Scheme + Tcl）
 - `folding-provider.js` / `tcl-folding-provider.js` — 代码折叠
 - `bracket-diagnostic.js` / `tcl-bracket-diagnostic.js` — 括号平衡诊断
-- `signature-provider.js` — Scheme 函数签名提示
+- `signature-provider.js` — Scheme 函数签名提示（内置 + 用户定义函数 fallback）
+- `semantic-tokens-provider.js` — SDE 用户定义函数调用高亮（Semantic Tokens）
 - `scheme-on-enter-provider.js` — Scheme 括号内回车多级自动缩进（与 `sde.json` onEnterRules 协同）
 - `tcl-document-symbol-provider.js` — Tcl 文档大纲
 - `unit-auto-close-provider.js` — SPROCESS Unit 括号自动配对（含 logic 层判断逻辑）

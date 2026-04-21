@@ -71,8 +71,8 @@ function buildParams(modeData, funcDoc) {
  * @param {object} funcDocs - 函数名 → 文档 的完整映射
  * @returns {object|null} VSCode SignatureHelp 结构（纯对象，不依赖 vscode 模块）
  */
-function provideSignatureHelp(document, position, token, modeDispatchTable, funcDocs, schemeCache, defs) {
-    const { ast, lineStarts } = schemeCache.get(document);
+function provideSignatureHelp(document, position, token, modeDispatchTable, funcDocs, schemeCache) {
+    const { ast, lineStarts, analysis } = schemeCache.get(document);
     const line = position.line + 1;
     const column = position.character;
 
@@ -119,22 +119,19 @@ function provideSignatureHelp(document, position, token, modeDispatchTable, func
         };
     }
 
-    // Fallback: 用户定义函数（define+lambda）
-    if (defs) {
-        const userDefs = defs.getDefinitions(document, 'sde');
-        const userFunc = userDefs.find(d => d.name === functionName && d.params);
-        if (userFunc) {
-            const params = userFunc.params.map(p => ({ label: p, documentation: '' }));
-            return {
-                signatures: [{
-                    label: `(${functionName} ${userFunc.params.join(' ')})`,
-                    parameters: params,
-                    documentation: '用户定义函数',
-                }],
-                activeSignature: 0,
-                activeParameter: Math.min(activeParam, params.length - 1),
-            };
-        }
+    // Fallback: 用户定义函数（define+lambda），从 schemeCache 读取 definitions
+    const userFunc = analysis.definitions.find(d => d.name === functionName && d.params);
+    if (userFunc) {
+        const params = userFunc.params.map(p => ({ label: p, documentation: '' }));
+        return {
+            signatures: [{
+                label: `(${functionName} ${userFunc.params.join(' ')})`,
+                parameters: params,
+                documentation: '用户定义函数',
+            }],
+            activeSignature: 0,
+            activeParameter: Math.min(activeParam, params.length - 1),
+        };
     }
 
     return null;

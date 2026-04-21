@@ -3,19 +3,12 @@
 const assert = require('assert');
 const { parse } = require('../src/lsp/scheme-parser');
 const { extractSemanticTokens, TOKEN_TYPES, TOKEN_MODIFIERS } = require('../src/lsp/providers/semantic-tokens-provider');
+const { computeLineStarts } = require('../src/lsp/parse-cache');
 
 let passed = 0, failed = 0;
 function test(name, fn) {
     try { fn(); passed++; console.log(`  ✓ ${name}`); }
     catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
-
-function computeLineStarts(text) {
-    const starts = [0];
-    for (let i = 0; i < text.length; i++) {
-        if (text[i] === '\n') starts.push(i + 1);
-    }
-    return starts;
 }
 
 console.log('\nsemantic-tokens — extractSemanticTokens:');

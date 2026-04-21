@@ -1,19 +1,7 @@
 // src/lsp/semantic-dispatcher.js
 'use strict';
 
-/**
- * 从文档文本预计算每行的起始字符偏移量。
- * lineStarts[line-1] 即第 line 行（1-based）的首字符在全文中的偏移。
- * @param {string} text
- * @returns {number[]}
- */
-function computeLineStarts(text) {
-    const starts = [0];
-    for (let i = 0; i < text.length; i++) {
-        if (text[i] === '\n') starts.push(i + 1);
-    }
-    return starts;
-}
+const { computeLineStarts } = require('./parse-cache');
 
 /**
  * 将绝对字符偏移转换为行内列位置（0-based）。

@@ -4,6 +4,33 @@
 
 ---
 
+## [1.7.0] - 2026-04-21
+
+### 新功能
+
+- **用户定义函数调用高亮**：通过 Semantic Tokens API 为 `(define name (lambda ...))` 和 `(define (name args) body)` 定义的函数，在调用位置显示函数色高亮（`userFunctionCall` 语义令牌类型），区分于普通变量
+- **用户定义函数签名提示**：调用用户定义函数时，根据 lambda 参数列表提供 Signature Help，显示参数名和活跃参数位置
+
+### Bug 修复
+
+- **修复 define 签名被误标记为函数调用**：Semantic Tokens Provider 跳过 `define` 表达式中的 `children[1]`（变量名/函数签名），避免定义处的名称被错误高亮
+- **修复 define 体内函数调用被跳过**：Semantic Tokens Provider 对 `define` 表达式仅跳过 `children[1]`，仍递归 `children[2:]`（body 中的函数调用）
+- **修复 VSCode 内置 function 冲突导致编辑器冻结**：Semantic Token 类型 ID 从 `function` 改为 `userFunctionCall`（带 `superType: "function"`），避免与 VSCode 内置的 `function` 类型冲突产生负值 delta 导致 UI 冻结
+
+### 其他改进
+
+- **消除 Semantic Tokens Provider 的双重解析**：从 `document.getText()` 逐字符扫描改为使用 `schemeCache` 已缓存的 `lineStarts` 偏移表 + 二分查找，消除每次触发时的 O(n) 遍历
+- **消除签名提示 fallback 的冗余解析**：`provideSignatureHelp` 的用户函数 fallback 直接从 `schemeCache.analysis.definitions` 读取（与 `defs.getDefinitions()` 产出一致），移除冗余的 `defs` 参数和独立解析调用
+- **统一 `computeLineStarts` 实现**：`semantic-dispatcher.js` 和多个测试文件中的重复 `computeLineStarts` 定义统一为 `parse-cache.js` 的导出版本
+
+### 测试
+
+- 新增 `test-scheme-analyzer.js`（define+lambda params 提取测试）
+- 新增 `test-semantic-tokens.js`（语义令牌提取与 delta 编码测试）
+- 新增 `benchmark-firstload.js`（首次加载性能诊断脚本）
+
+---
+
 ## [1.6.3] - 2026-04-21
 
 ### Bug 修复
@@ -542,6 +569,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.7.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.3...v1.7.0
 [1.6.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.2...v1.6.3
 [1.6.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.0...v1.6.1

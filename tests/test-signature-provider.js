@@ -6,6 +6,7 @@ const { parse } = require('../src/lsp/scheme-parser');
 const { analyze } = require('../src/lsp/scheme-analyzer');
 const scopeAnalyzer = require('../src/lsp/scope-analyzer');
 const sigProvider = require('../src/lsp/providers/signature-provider');
+const { computeLineStarts } = require('../src/lsp/parse-cache');
 
 /**
  * 为测试创建一个轻量 mock cache，模拟 SchemeParseCache.get(document) 的行为。
@@ -16,16 +17,11 @@ function createMockCache() {
         get(doc) {
             const text = typeof doc === 'string' ? doc : doc.getText();
             const { ast, errors } = parse(text);
-            const { foldingRanges } = analyze(ast);
+            const analysis = analyze(ast, text);
             const scopeTree = scopeAnalyzer.buildScopeTree(ast);
+            const lineStarts = computeLineStarts(text);
 
-            // 计算行首偏移表
-            const lineStarts = [0];
-            for (let i = 0; i < text.length; i++) {
-                if (text[i] === '\n') lineStarts.push(i + 1);
-            }
-
-            return { version: 1, ast, errors, analysis: { foldingRanges }, scopeTree, text, lineStarts };
+            return { version: 1, ast, errors, analysis, scopeTree, text, lineStarts };
         },
     };
 }
@@ -254,10 +250,8 @@ test('用户函数签名 — define+lambda', () => {
         uri: { toString: () => 'test.scm' },
         version: 1,
     };
-    const defs = require('../src/definitions');
-    defs.clearDefinitionCache();
     const pos = { line: 1, character: 20 };
-    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, {}, mockCache, defs);
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, {}, mockCache);
     assert.ok(result, '应返回签名结果');
     assert.strictEqual(result.signatures[0].label, '(create_trapezoid x0 y0 z0 w h)');
     assert.strictEqual(result.signatures[0].parameters.length, 5);
@@ -270,10 +264,8 @@ test('用户函数签名 — activeParameter 正确', () => {
         uri: { toString: () => 'test2.scm' },
         version: 1,
     };
-    const defs = require('../src/definitions');
-    defs.clearDefinitionCache();
     const pos = { line: 1, character: 6 };
-    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, {}, mockCache, defs);
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, {}, mockCache);
     assert.ok(result);
     assert.strictEqual(result.activeParameter, 1);
 });
@@ -284,8 +276,6 @@ test('内置函数优先于用户定义函数', () => {
         uri: { toString: () => 'test3.scm' },
         version: 1,
     };
-    const defs = require('../src/definitions');
-    defs.clearDefinitionCache();
     const funcDocs = {
         'sdegeo:create-circle': {
             signature: '(sdegeo:create-circle center radius material region)',
@@ -298,7 +288,7 @@ test('内置函数优先于用户定义函数', () => {
         },
     };
     const pos = { line: 0, character: 10 };
-    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs, mockCache, defs);
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, funcDocs, mockCache);
     assert.ok(result);
     assert.ok(result.signatures[0].documentation !== '用户定义函数');
 });
@@ -309,10 +299,8 @@ test('非函数调用返回 null', () => {
         uri: { toString: () => 'test4.scm' },
         version: 1,
     };
-    const defs = require('../src/definitions');
-    defs.clearDefinitionCache();
     const pos = { line: 0, character: 3 };
-    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, {}, mockCache, defs);
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, {}, mockCache);
     assert.strictEqual(result, null);
 });
 
