@@ -106,7 +106,7 @@ function replaceLastWord(value, replacement) {
 ### 确认逻辑
 
 - **Enter，无选中项** — 取 `value` 作为完整表达式进行转换（`!` 模式下取 `!` 后的部分）
-- **Enter，有选中变量项** — 替换最后一个词后作为表达式进行转换
+- **Enter，有选中变量项** — 替换最后一个词，QuickPick 保持打开继续输入
 - **Enter，有选中历史项** — 使用历史项的值进行转换
 
 ### 非 SDE 文件
