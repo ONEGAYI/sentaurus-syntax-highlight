@@ -428,8 +428,40 @@ function getSupportedOperators() {
     ];
 }
 
+// ────────────────────────────────────────────
+// QuickPick 辅助函数（变量补全 + 历史模式）
+// ────────────────────────────────────────────
+
+function getLastWordPrefix(value) {
+    const match = value.match(/([a-zA-Z_@][a-zA-Z0-9_@]*)$/);
+    return match ? match[1] : '';
+}
+
+function replaceLastWord(value, replacement) {
+    const match = value.match(/([a-zA-Z_@][a-zA-Z0-9_@]*)$/);
+    if (match) {
+        return value.slice(0, match.index) + replacement;
+    }
+    return value + replacement;
+}
+
+function parseHistoryInput(value) {
+    if (!value.startsWith('!')) return null;
+    const rest = value.slice(1);
+    if (rest === '') return { mode: 'history', index: null, filter: '' };
+    // "!3" → 精确序号（纯数字）
+    const numMatch = rest.match(/^(\d+)$/);
+    if (numMatch) return { mode: 'history', index: parseInt(numMatch[1], 10), filter: '' };
+    // "! text" 或 "!abc" → 模糊过滤
+    const filter = rest.startsWith(' ') ? rest.slice(1) : rest;
+    return { mode: 'history', index: null, filter };
+}
+
 module.exports = {
     prefixToInfix,
     infixToPrefix,
     getSupportedOperators,
+    getLastWordPrefix,
+    replaceLastWord,
+    parseHistoryInput,
 };
