@@ -679,47 +679,126 @@ function activate(context) {
             }
 
             const history = convertHistories[commandId];
-            let value;
+            const isSde = editor && editor.document.languageId === 'sde';
+            const userVars = isSde
+                ? defs.getDefinitions(editor.document, 'sde')
+                    .filter(d => d.kind === 'variable' || d.kind === 'parameter')
+                : [];
 
-            if (history.length > 0) {
-                // Show QuickPick with history (native ↑/↓ support, compatible with all VSCode versions)
-                const items = history.map(h => ({ label: h }));
-                items.push({ label: '', kind: vscode.QuickPickItemKind.Separator });
-                items.push({ label: '$(edit) 输入新表达式...', alwaysShow: true });
+            const qp = vscode.window.createQuickPick();
+            qp.title = promptText;
+            qp.placeholder = placeHolder;
+            qp.matchOnDescription = false;
+            qp.matchOnDetail = false;
 
-                const picked = await vscode.window.showQuickPick(items, {
-                    placeHolder: placeHolder,
-                    prompt: promptText,
-                });
-                if (!picked) return;
-                if (picked.label.startsWith('$(edit)')) {
-                    value = await vscode.window.showInputBox({ prompt: promptText, placeHolder: placeHolder });
-                    if (!value) return;
+            let _updatingValue = false;
+
+            function updateItems(value) {
+                if (_updatingValue) return;
+                const items = [];
+                const histParsed = expressionConverter.parseHistoryInput(value);
+
+                if (histParsed) {
+                    // 历史模式：只显示历史记录
+                    if (history.length > 0) {
+                        items.push({ label: '历史记录', kind: vscode.QuickPickItemKind.Separator });
+                        for (let i = 0; i < history.length; i++) {
+                            const entry = history[i];
+                            if (histParsed.index !== null) {
+                                if (i + 1 === histParsed.index) {
+                                    items.push({ label: entry, description: `#${i + 1}`, alwaysShow: true, _historyIndex: i });
+                                }
+                            } else {
+                                const filter = histParsed.filter.toLowerCase();
+                                if (!filter || entry.toLowerCase().includes(filter)) {
+                                    items.push({ label: entry, description: `#${i + 1}`, _historyIndex: i });
+                                }
+                            }
+                        }
+                    }
                 } else {
-                    value = picked.label;
+                    // 默认模式：变量优先 + 历史
+                    const prefix = expressionConverter.getLastWordPrefix(value).toLowerCase();
+
+                    if (userVars.length > 0 && prefix) {
+                        const variables = userVars.filter(d => d.kind === 'variable' && d.name.toLowerCase().startsWith(prefix));
+                        const parameters = userVars.filter(d => d.kind === 'parameter' && d.name.toLowerCase().startsWith(prefix));
+                        const shown = [...variables, ...parameters];
+                        if (shown.length > 0) {
+                            items.push({ label: '用户变量', kind: vscode.QuickPickItemKind.Separator });
+                            for (const v of shown) {
+                                items.push({
+                                    label: v.name,
+                                    description: `${v.kind}, 第${v.line}行`,
+                                    detail: v.definitionText ? v.definitionText.substring(0, 80) : undefined,
+                                    _varName: v.name,
+                                });
+                            }
+                        }
+                    }
+
+                    if (history.length > 0) {
+                        items.push({ label: '最近使用 — 输入 ! 进入历史模式', kind: vscode.QuickPickItemKind.Separator });
+                        for (const h of history) {
+                            items.push({ label: h, _historyValue: h });
+                        }
+                    }
                 }
-            } else {
-                value = await vscode.window.showInputBox({ prompt: promptText, placeHolder: placeHolder });
-                if (!value) return;
+
+                qp.items = items;
             }
 
-            const trimmed = value.trim();
-            if (!trimmed) return;
+            qp.onDidChangeValue(updateItems);
+            updateItems('');
 
-            const { result, error } = convertFn(trimmed);
-            if (error) {
-                vscode.window.showErrorMessage(`转换失败: ${error}`);
-                return;
-            }
+            qp.onDidAccept(() => {
+                const selected = qp.selectedItems[0];
+                let finalValue;
 
-            // Save to history (deduplicate)
-            const idx = history.indexOf(trimmed);
-            if (idx !== -1) history.splice(idx, 1);
-            history.unshift(trimmed);
-            if (history.length > 20) history.pop();
-            context.globalState.update('convertHistory.' + (commandId === 'sentaurus.scheme2infix' ? 's2i' : 'i2s'), history);
+                if (selected && selected._varName) {
+                    // 选中变量：替换最后一个词后继续输入（不关闭）
+                    _updatingValue = true;
+                    const newVal = expressionConverter.replaceLastWord(qp.value, selected._varName);
+                    qp.value = newVal;
+                    _updatingValue = false;
+                    updateItems(newVal);
+                    return; // 保持 QuickPick 打开
+                }
 
-            await insertResult(editor, result);
+                if (selected && selected._historyIndex !== undefined) {
+                    // 历史模式选中项
+                    finalValue = history[selected._historyIndex];
+                } else if (selected && selected._historyValue) {
+                    // 默认模式选中历史项
+                    finalValue = selected._historyValue;
+                } else {
+                    // 无选中，取输入值
+                    const raw = qp.value;
+                    const histParsed = expressionConverter.parseHistoryInput(raw);
+                    finalValue = histParsed ? raw.slice(1).trim() : raw.trim();
+                }
+
+                qp.hide();
+
+                if (!finalValue) return;
+
+                const { result, error } = convertFn(finalValue);
+                if (error) {
+                    vscode.window.showErrorMessage(`转换失败: ${error}`);
+                    return;
+                }
+
+                // 保存到历史（去重）
+                const idx = history.indexOf(finalValue);
+                if (idx !== -1) history.splice(idx, 1);
+                history.unshift(finalValue);
+                if (history.length > 20) history.pop();
+                context.globalState.update('convertHistory.' + (commandId === 'sentaurus.scheme2infix' ? 's2i' : 'i2s'), history);
+
+                insertResult(editor, result);
+            });
+
+            qp.show();
         });
     }
 
