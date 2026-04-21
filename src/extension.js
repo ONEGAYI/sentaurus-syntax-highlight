@@ -798,6 +798,7 @@ function activate(context) {
                 insertResult(editor, result);
             });
 
+            qp.onDidHide(() => qp.dispose());
             qp.show();
         });
     }
@@ -841,6 +842,11 @@ function activate(context) {
             label: '数学函数 → 函数调用',
             description: '括号前置 → 函数名(参数)',
             detail: '(sin x) → sin(x),  (min a b c) → min(a, b, c)',
+        });
+        items.push({
+            label: '输入增强',
+            description: 'SDE 文件变量补全与历史记录',
+            detail: 'SDE 文件中输入时自动显示用户变量 | 输入 ! 进入历史模式 | !3 直接选 #3 | ! 文本 过滤历史',
         });
 
         const selected = await vscode.window.showQuickPick(items, {
