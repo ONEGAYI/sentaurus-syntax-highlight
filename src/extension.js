@@ -696,6 +696,9 @@ function activate(context) {
             qp.matchOnDetail = false;
 
             let _updatingValue = false;
+            const historyTitle = useZh
+                ? `${promptText}  —  !N 精确选中 | ! 文本 模糊过滤`
+                : `${promptText}  —  !N select by # | ! text fuzzy filter`;
 
             function updateItems(value) {
                 if (_updatingValue) return;
@@ -703,7 +706,7 @@ function activate(context) {
                 const histParsed = expressionConverter.parseHistoryInput(value);
 
                 if (histParsed) {
-                    // 历史模式：只显示历史记录
+                    if (qp.title !== historyTitle) qp.title = historyTitle;
                     if (history.length > 0) {
                         items.push({ label: '历史记录', kind: vscode.QuickPickItemKind.Separator });
                         for (let i = 0; i < history.length; i++) {
@@ -721,7 +724,7 @@ function activate(context) {
                         }
                     }
                 } else {
-                    // 默认模式：变量优先 + 历史
+                    if (qp.title !== promptText) qp.title = promptText;
                     const prefix = expressionConverter.getLastWordPrefix(value).toLowerCase();
 
                     if (userVars.length > 0 && prefix) {
@@ -742,16 +745,10 @@ function activate(context) {
                         }
                     }
 
-                    if (history.length > 0) {
-                        items.push({ label: '最近使用 — 输入 ! 进入历史模式', kind: vscode.QuickPickItemKind.Separator });
-                        for (const h of history) {
-                            items.push({ label: h, alwaysShow: true, _historyValue: h });
-                        }
-                    }
                 }
 
-                // 确认分栏：始终添加，确保 Enter 键可用
-                if (value.trim()) {
+                // 确认分栏：仅非历史模式下显示
+                if (!histParsed && value.trim()) {
                     items.push({ label: useZh ? '确认输入' : 'Confirm Input', kind: vscode.QuickPickItemKind.Separator });
                     items.push({
                         label: value,
@@ -787,9 +784,6 @@ function activate(context) {
                 } else if (selected && selected._historyIndex !== undefined) {
                     // 历史模式选中项
                     finalValue = history[selected._historyIndex];
-                } else if (selected && selected._historyValue !== undefined) {
-                    // 默认模式选中历史项
-                    finalValue = selected._historyValue;
                 } else {
                     // 无选中，取输入值
                     const raw = qp.value;
@@ -827,13 +821,13 @@ function activate(context) {
             'sentaurus.scheme2infix',
             expressionConverter.prefixToInfix,
             '输入 Scheme 前缀表达式，转换为中缀格式',
-            '↑↓ 浏览历史 | 例: (+ (/ W 2) (/ L 2))'
+            '输入 ! 浏览历史 | 例: (+ (/ W 2) (/ L 2))'
         ),
         registerConvertCommand(
             'sentaurus.infix2scheme',
             expressionConverter.infixToPrefix,
             '输入中缀表达式，转换为 Scheme 前缀格式',
-            '↑↓ 浏览历史 | 例: (W/2 + L/2)'
+            '输入 ! 浏览历史 | 例: (W/2 + L/2)'
         ),
     );
 
