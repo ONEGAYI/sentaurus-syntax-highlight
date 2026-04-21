@@ -89,7 +89,8 @@ sentaurus-syntax-highlight/
 │   │       ├── bracket-diagnostic.js           ← Scheme 括号平衡诊断
 │   │       ├── signature-provider.js           ← Scheme 函数签名提示（内置 + 用户定义函数）
 │   │       ├── undef-var-diagnostic.js         ← 未定义/重复定义变量诊断（Scheme + Tcl 双语言）
-│   │       ├── scheme-on-enter-provider.js     ← Scheme 括号内回车多级自动缩进
+│   │       ├── scheme-on-enter-logic.js        ← Scheme 括号内回车缩进判断逻辑（独立模块）
+│   │       ├── scheme-on-enter-provider.js     ← Scheme 括号内回车多级自动缩进（引用 logic 模块）
 │   │       ├── tcl-folding-provider.js         ← Tcl 代码折叠（基于 braced_word）
 │   │       ├── tcl-bracket-diagnostic.js       ← Tcl 括号诊断（文本级 {} 平衡）
 │   │       ├── tcl-document-symbol-provider.js ← Tcl 文档大纲（Outline 视图）
@@ -110,35 +111,7 @@ sentaurus-syntax-highlight/
 │       └── mesh.js                             ← 网格生成片段
 │
 ├── tests/                                      ← 测试套件（纯 Node.js assert，零外部依赖）
-│   ├── test-definitions.js                     ← 用户变量定义提取
-│   ├── test-expression-converter.js            ← 表达式转换
-│   ├── test-expression-quickpick.js            ← QuickPick 变量补全与历史模式纯函数测试
-│   ├── test-scheme-parser.js                   ← Scheme 解析器
-│   ├── test-scheme-analyzer.js                 ← Scheme 定义提取（含 define+lambda params）
-│   ├── test-scope-analyzer.js                  ← 作用域分析
-│   ├── test-semantic-dispatcher.js             ← 语义分发
-│   ├── test-semantic-tokens.js                 ← 语义令牌提取与 delta 编码
-│   ├── test-signature-provider.js              ← 签名提示
-│   ├── test-scheme-undef-diagnostic.js         ← Scheme 未定义变量诊断
-│   ├── test-scheme-dup-def-diagnostic.js       ← Scheme 重复定义检测
-│   ├── test-scheme-var-refs.js                 ← Scheme 变量引用
-│   ├── test-snippet-prefixes.js                ← 代码片段前缀
-│   ├── test-tcl-ast-utils.js                   ← Tcl AST 工具（14 测试，mock 节点）
-│   ├── test-tcl-ast-variables.js               ← Tcl AST 变量提取
-│   ├── test-tcl-document-symbol.js             ← Tcl 文档大纲
-│   ├── test-tcl-scope-map.js                   ← Tcl 作用域映射
-│   ├── test-tcl-var-refs.js                    ← Tcl 变量引用
-│   ├── test-parse-cache.js                     ← 解析缓存层测试
-│   ├── test-tcl-scope-index.js                 ← ScopeIndex 作用域查询测试
-│   ├── test-undef-var-integration.js           ← 未定义变量诊断集成测试
-│   ├── test-unit-auto-close.js                 ← Unit 括号自动配对测试
-│   ├── test-quote-auto-delete.js               ← 空引号对自动删除测试
-│   ├── test-symbol-index.js                    ← 符号提取引擎（resolveSymbolName + extractSymbols）
-│   ├── test-region-undef-diagnostic.js         ← Region/Material/Contact 未定义诊断
-│   ├── test-symbol-completion.js               ← 符号补全过滤
-│   ├── test-symbol-reference.js                ← Find All References
-│   └── benchmark.js                            ← 性能基准测试工具
-│   └── benchmark-firstload.js                  ← 首次加载性能诊断脚本
+│   └── @docs/file-trees/tests.md               ← 【子文件过多，已折叠，详细目录见子文档】
 │
 ├── scripts/                                    ← 开发工具脚本
 │   ├── extract_keywords.py                     ← 从 XML mode 文件提取关键词并生成语法
@@ -153,6 +126,8 @@ sentaurus-syntax-highlight/
 │   ├── glossary.json                           ← TCAD 术语数据库
 │   ├── 函数文档提取与编写规范.md                 ← 文档编写规范
 │   ├── sde-scopes-and-colors.md                ← SDE scope 与颜色对照
+│   ├── file-trees/                             ← CLAUDE.md 折叠的子文件树
+│   │   └── tests.md                            ← tests/ 目录详细文件树
 │   ├── prompts/i18n/                           ← 国际化 prompt 模板
 │   └── superpowers/                            ← 开发 spec/plan 归档
 │       ├── plans/                              ← 实现计划文档（含 archived/）
@@ -203,7 +178,7 @@ sentaurus-syntax-highlight/
 - `bracket-diagnostic.js` / `tcl-bracket-diagnostic.js` — 括号平衡诊断
 - `signature-provider.js` — Scheme 函数签名提示（内置 + 用户定义函数 fallback）
 - `semantic-tokens-provider.js` — SDE 用户定义函数调用高亮（Semantic Tokens）
-- `scheme-on-enter-provider.js` — Scheme 括号内回车多级自动缩进（与 `sde.json` onEnterRules 协同）
+- `scheme-on-enter-provider.js` — Scheme 括号内回车多级自动缩进（与 `sde.json` onEnterRules 协同，逻辑提取至 `scheme-on-enter-logic.js`）
 - `tcl-document-symbol-provider.js` — Tcl 文档大纲
 - `unit-auto-close-provider.js` — SPROCESS Unit 括号自动配对（含 logic 层判断逻辑）
 - `quote-auto-delete-provider.js` — 空引号对自动删除（6 种语言共用，含 logic 层判断逻辑）

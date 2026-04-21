@@ -4,6 +4,22 @@
 
 ---
 
+## [1.8.1] - 2026-04-22
+
+### Bug 修复
+
+- **修复 Scheme 嵌套空括号回车缩进失效**：当光标在嵌套空括号内（如 `(let (|))`）按回车时，VSCode auto-indent 会将闭括号推到下一行，导致多级缩进逻辑因当前行不含 `)` 而跳过。提取 `scheme-on-enter-logic.js` 独立模块，新增 `findClosingParens` 函数检查下一行闭括号，并放宽空括号排除条件为仅单层场景
+
+### 其他改进
+
+- **表达式转换 QuickPick 历史模式优化**：默认模式仅显示变量补全和确认输入，不再直接展示历史记录列表；输入 `!` 进入历史模式时通过标题显示用法提示，历史模式下不显示确认分栏，选择即执行；预计算标题字符串并添加脏检查避免击键热路径中的冗余赋值
+
+### 测试
+
+- 新增 `test-scheme-on-enter.js`（空括号检测、开括号计数、跨行闭括号查找、排除条件判断，19 个测试用例）
+
+---
+
 ## [1.8.0] - 2026-04-21
 
 ### 新功能
@@ -588,6 +604,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.8.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.3...v1.7.0
 [1.6.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.2...v1.6.3
