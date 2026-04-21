@@ -4,6 +4,15 @@
 
 ---
 
+## [1.6.3] - 2026-04-21
+
+### Bug 修复
+
+- **修复 lambda 参数被误报为未定义变量**：`scope-analyzer.js` 的 `(define var val)` 分支在注册变量后直接返回，跳过了值表达式的遍历，导致 `(define f (lambda (x) ...))` 中 lambda 参数未进入作用域树。修复后值表达式中的 lambda/let 等嵌套作用域被正确构建
+- **修复 lambda 参数缺少悬停提示和跳转定义**：`scheme-analyzer.js` 的 `extractDefinitionsFromList` 未识别 `(lambda (params...) body...)` 形式，lambda 参数不会被提取为定义。修复后 lambda 参数与 define/let 变量行为一致，支持悬停提示和跳转定义
+
+---
+
 ## [1.6.2] - 2026-04-20
 
 ### 新功能
@@ -533,6 +542,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.6.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.2...v1.6.3
 [1.6.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.5.1...v1.6.0

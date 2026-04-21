@@ -103,6 +103,22 @@ function extractDefinitionsFromList(listNode, definitions, sourceText) {
                 }
             }
         }
+        return;
+    }
+
+    // (lambda (params...) body...)
+    if (first.value === 'lambda' && children.length >= 2 && children[1].type === 'List') {
+        for (const param of children[1].children) {
+            if (param.type === 'Identifier') {
+                definitions.push({
+                    name: param.value,
+                    line: listNode.line,
+                    endLine: listNode.endLine,
+                    definitionText: defText,
+                    kind: 'parameter',
+                });
+            }
+        }
     }
 }
 

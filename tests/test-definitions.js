@@ -105,10 +105,13 @@ test('let* 绑定提取', () => {
 test('letrec 绑定提取', () => {
     const text = '(letrec ((even? (lambda (n) n)) (odd? (lambda (n) n))) (even? 10))';
     const defs = extractSchemeDefinitions(text);
-    assert.strictEqual(defs.length, 2);
-    assert.strictEqual(defs[0].name, 'even?');
-    assert.strictEqual(defs[1].name, 'odd?');
-    assert.strictEqual(defs[0].kind, 'variable');
+    assert.strictEqual(defs.length, 4);
+    const names = defs.map(d => d.name);
+    assert.ok(names.includes('even?'), '应包含 even?');
+    assert.ok(names.includes('odd?'), '应包含 odd?');
+    const params = defs.filter(d => d.kind === 'parameter');
+    assert.strictEqual(params.length, 2, '应有 2 个 lambda 参数');
+    assert.strictEqual(params.every(p => p.name === 'n'), true, 'lambda 参数名均为 n');
 });
 
 test('跳过注释中的 define', () => {
@@ -150,6 +153,41 @@ test('definitionText 包含行末注释', () => {
     const defs = extractSchemeDefinitions(text);
     assert.strictEqual(defs.length, 1);
     assert.ok(defs[0].definitionText.includes('; length of gate'));
+});
+
+test('lambda 参数提取', () => {
+    const text = '(lambda (x y) (+ x y))';
+    const defs = extractSchemeDefinitions(text);
+    assert.strictEqual(defs.length, 2);
+    assert.strictEqual(defs[0].name, 'x');
+    assert.strictEqual(defs[0].kind, 'parameter');
+    assert.strictEqual(defs[1].name, 'y');
+    assert.strictEqual(defs[1].kind, 'parameter');
+});
+
+test('(define f (lambda ...)) 提取 lambda 参数', () => {
+    const text = '(define f (lambda (a b c) (+ a b c)))';
+    const defs = extractSchemeDefinitions(text);
+    assert.strictEqual(defs.length, 4);
+    assert.strictEqual(defs[0].name, 'f');
+    assert.strictEqual(defs[0].kind, 'variable');
+    assert.strictEqual(defs[1].name, 'a');
+    assert.strictEqual(defs[1].kind, 'parameter');
+    assert.strictEqual(defs[2].name, 'b');
+    assert.strictEqual(defs[3].name, 'c');
+});
+
+test('letrec 中 lambda 参数提取', () => {
+    const text = '(letrec ((f (lambda (n) n))) (f 10))';
+    const defs = extractSchemeDefinitions(text);
+    assert.ok(defs.some(d => d.name === 'f'), '应包含 letrec 绑定的 f');
+    assert.ok(defs.some(d => d.name === 'n' && d.kind === 'parameter'), '应包含 lambda 参数 n');
+});
+
+test('lambda 无参数不提取', () => {
+    const text = '(lambda () 42)';
+    const defs = extractSchemeDefinitions(text);
+    assert.strictEqual(defs.length, 0);
 });
 
 console.log('\nextractTclDefinitionsAst:');

@@ -52,6 +52,10 @@ function buildScopeTree(ast) {
                     // (define var val) — simple variable binding
                     if (children[1].type === 'Identifier') {
                         parentScope.definitions.push({ name: children[1].value, kind: 'variable', line: children[1].line, start: children[1].start, end: children[1].end, ...branchCtx });
+                        // 遍历值表达式（如 lambda），使嵌套作用域被正确构建
+                        for (let i = 2; i < children.length; i++) {
+                            walk(children[i], parentScope, branchCtx);
+                        }
                         return;
                     }
                 }

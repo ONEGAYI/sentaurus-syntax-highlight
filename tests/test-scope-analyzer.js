@@ -155,6 +155,51 @@ test('行号在作用域外时只返回全局', () => {
     assert.deepStrictEqual(names, ['f', 'x']);
 });
 
+console.log('\ndefine + lambda 作用域（回归 define-lambda-param）:');
+
+test('(define f (lambda ...)) 注册 lambda 参数', () => {
+    const tree = treeOf('(define f (lambda (x y) (+ x y)))');
+    assert.strictEqual(tree.definitions.length, 1);
+    assert.strictEqual(tree.definitions[0].name, 'f');
+    assert.strictEqual(tree.children.length, 1);
+    const lambdaScope = tree.children[0];
+    assert.strictEqual(lambdaScope.type, 'lambda');
+    assert.strictEqual(lambdaScope.definitions.length, 2);
+    assert.strictEqual(lambdaScope.definitions[0].name, 'x');
+    assert.strictEqual(lambdaScope.definitions[0].kind, 'parameter');
+    assert.strictEqual(lambdaScope.definitions[1].name, 'y');
+});
+
+test('(define f (lambda ...)) 参数在 lambda 体内可见', () => {
+    const tree = treeOf('(define f (lambda (x y)\n  (+ x y)))');
+    const visible = getVisibleDefinitions(tree, 2);
+    const names = visible.map(v => v.name).sort();
+    assert.ok(names.includes('f'), `应包含 f，实际: ${names}`);
+    assert.ok(names.includes('x'), `应包含 x，实际: ${names}`);
+    assert.ok(names.includes('y'), `应包含 y，实际: ${names}`);
+});
+
+test('(define f (lambda ...)) 多参数 lambda', () => {
+    const tree = treeOf('(define create_trapezoid\n  (lambda (x0 y0 z0 w h)\n    (+ x0 y0)))');
+    assert.strictEqual(tree.definitions[0].name, 'create_trapezoid');
+    const lambdaScope = tree.children[0];
+    assert.strictEqual(lambdaScope.type, 'lambda');
+    assert.strictEqual(lambdaScope.definitions.length, 5);
+    assert.strictEqual(lambdaScope.definitions[0].name, 'x0');
+    assert.strictEqual(lambdaScope.definitions[4].name, 'h');
+});
+
+test('(define f (lambda ...)) lambda 内嵌套 let', () => {
+    const tree = treeOf('(define f (lambda (x)\n  (let ((y 2))\n    (+ x y))))');
+    const lambdaScope = tree.children[0];
+    assert.strictEqual(lambdaScope.type, 'lambda');
+    assert.strictEqual(lambdaScope.definitions.length, 1);
+    assert.strictEqual(lambdaScope.definitions[0].name, 'x');
+    assert.strictEqual(lambdaScope.children.length, 1);
+    assert.strictEqual(lambdaScope.children[0].type, 'let');
+    assert.strictEqual(lambdaScope.children[0].definitions[0].name, 'y');
+});
+
 console.log('\n空列表边界条件（回归 #110/124/139）:');
 
 test('空列表 () 不抛出异常', () => {
