@@ -56,13 +56,26 @@ function extractDefinitionsFromList(listNode, definitions, sourceText) {
     // (define name ...)
     if (first.value === 'define' && children.length >= 2) {
         if (children[1].type === 'Identifier') {
-            definitions.push({
+            const def = {
                 name: children[1].value,
                 line: listNode.line,
                 endLine: listNode.endLine,
                 definitionText: defText,
                 kind: 'variable',
-            });
+            };
+            // 检测值是否为 lambda 表达式，提取参数列表
+            if (children.length >= 3 && children[2].type === 'List') {
+                const valueFirst = children[2].children[0];
+                if (valueFirst && valueFirst.type === 'Identifier' && valueFirst.value === 'lambda') {
+                    const lambdaParams = children[2].children[1];
+                    if (lambdaParams && lambdaParams.type === 'List') {
+                        def.params = lambdaParams.children
+                            .filter(p => p.type === 'Identifier')
+                            .map(p => p.value);
+                    }
+                }
+            }
+            definitions.push(def);
         } else if (children[1].type === 'List' && children[1].children.length >= 1) {
             definitions.push({
                 name: children[1].children[0].value,
