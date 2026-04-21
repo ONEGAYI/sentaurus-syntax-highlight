@@ -71,7 +71,7 @@ sentaurus-syntax-highlight/
 │   ├── definitions.js                          ← 用户变量补全/悬停/跳转（Scheme + Tcl）
 │   │
 │   ├── commands/                               ← VSCode 命令实现
-│   │   └── expression-converter.js             ← Scheme 前缀 ↔ 中缀表达式双向转换
+│   │   └── expression-converter.js             ← Scheme 前缀 ↔ 中缀表达式双向转换（含 QuickPick 变量补全和历史模式辅助函数）
 │   │
 │   ├── lsp/                                    ← 语义功能核心（AST 解析 + Provider 注册）
 │   │   ├── scheme-parser.js                    ← Scheme 词法分析器 + AST 解析器
@@ -112,6 +112,7 @@ sentaurus-syntax-highlight/
 ├── tests/                                      ← 测试套件（纯 Node.js assert，零外部依赖）
 │   ├── test-definitions.js                     ← 用户变量定义提取
 │   ├── test-expression-converter.js            ← 表达式转换
+│   ├── test-expression-quickpick.js            ← QuickPick 变量补全与历史模式纯函数测试
 │   ├── test-scheme-parser.js                   ← Scheme 解析器
 │   ├── test-scheme-analyzer.js                 ← Scheme 定义提取（含 define+lambda params）
 │   ├── test-scope-analyzer.js                  ← 作用域分析
@@ -227,7 +228,7 @@ sentaurus-syntax-highlight/
 
 ### 表达式转换
 
-`src/commands/expression-converter.js` 实现 Scheme 前缀表示 ↔ 中缀表示的双向转换（算术运算 + 数学函数）。
+`src/commands/expression-converter.js` 实现 Scheme 前缀表示 ↔ 中缀表示的双向转换（算术运算 + 数学函数）。QuickPick 输入框在 SDE 文件中自动补全用户变量，并支持 `!` 历史模式（`!` 浏览全部、`!3` 精确选中、`! 文本` 模糊过滤）。
 
 ## 关键约束
 

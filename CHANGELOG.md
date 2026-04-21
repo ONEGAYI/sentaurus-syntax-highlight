@@ -4,6 +4,25 @@
 
 ---
 
+## [1.8.0] - 2026-04-21
+
+### 新功能
+
+- **表达式转换命令变量补全**：在 SDE 文件中使用表达式转换时，输入过程中自动显示当前文档中用户定义的变量和参数，选中后替换输入中的标识符前缀并保持输入框打开，支持连续补全
+- **表达式转换历史模式**：输入 `!` 进入历史模式浏览全部历史记录；`!3` 直接选中第 3 条；`! 文本` 模糊过滤历史
+
+### 其他改进
+
+- **表达式转换输入改为 QuickPick**：将原来 `showQuickPick`（历史）和 `showInputBox`（新输入）的双步骤交互合并为单一 QuickPick 输入框，支持变量补全、历史浏览和新输入的统一体验
+- **表达式转换确认项国际化**：确认输入的分栏标题根据 VSCode 语言环境自动切换中英文
+- **表达式转换帮助面板新增输入增强说明**：帮助 QuickPick 新增"输入增强"条目，说明变量补全和历史模式用法
+
+### 测试
+
+- 新增 `test-expression-quickpick.js`（变量前缀提取、标识符替换、历史模式解析，18 个测试用例）
+
+---
+
 ## [1.7.0] - 2026-04-21
 
 ### 新功能
@@ -569,6 +588,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.8.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.3...v1.7.0
 [1.6.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.2...v1.6.3
 [1.6.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.1...v1.6.2
