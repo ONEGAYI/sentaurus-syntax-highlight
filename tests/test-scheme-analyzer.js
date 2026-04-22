@@ -51,5 +51,23 @@ test('define+非 lambda 无 params', () => {
     assert.strictEqual(result.definitions[0].params, undefined);
 });
 
+test('define 简写形式提取 params 字段', () => {
+    const { ast } = parse('(define (my-func a b c) (+ a b c))');
+    const result = analyze(ast);
+    const funcDef = result.definitions[0];
+    assert.strictEqual(funcDef.name, 'my-func');
+    assert.strictEqual(funcDef.kind, 'function');
+    assert.deepStrictEqual(funcDef.params, ['a', 'b', 'c']);
+});
+
+test('define 简写形式无参数：params 为 undefined', () => {
+    const { ast } = parse('(define (f) 42)');
+    const result = analyze(ast);
+    const funcDef = result.definitions[0];
+    assert.strictEqual(funcDef.name, 'f');
+    assert.strictEqual(funcDef.kind, 'function');
+    assert.strictEqual(funcDef.params, undefined);
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);
