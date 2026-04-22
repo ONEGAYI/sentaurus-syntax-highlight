@@ -4,6 +4,14 @@
 
 ---
 
+## [1.8.3] - 2026-04-22
+
+### Bug 修复
+
+- **修正 `define-constant-profile-*` 系列函数文档中的 replace 参数**：移除不支持的 `"NoReplace"` 选项，该系列函数（`define-constant-profile-region`、`define-constant-profile-material`、`define-constant-profile-placement`）仅支持 `"Replace"` 和 `"LocalReplace"` 两个值
+
+---
+
 ## [1.8.2] - 2026-04-22
 
 ### Bug 修复
@@ -621,6 +629,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.8.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.2...v1.8.3
 [1.8.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.1...v1.8.2
 [1.8.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.7.0...v1.8.0

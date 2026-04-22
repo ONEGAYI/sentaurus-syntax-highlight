@@ -4545,7 +4545,7 @@
       {
         "name": "replace",
         "type": "string",
-        "desc": "STRING — 可选；\"Replace\" 替换所有先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类；\"NoReplace\" 将新分布叠加到所有先前定义的分布中（默认）"
+        "desc": "STRING — 可选；\"Replace\" 替换所有先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类"
       }
     ],
     "signature": "(sdedr:define-constant-profile-material placement-name definition-name material [decay-length [\"Gauss\"]] [replace])"
@@ -4577,7 +4577,7 @@
       {
         "name": "replace",
         "type": "string",
-        "desc": "STRING — 可选；\"Replace\" 替换所有先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类；\"NoReplace\" 将新分布叠加到所有先前定义的分布中（默认）"
+        "desc": "STRING — 可选；\"Replace\" 替换所有先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类"
       }
     ],
     "signature": "(sdedr:define-constant-profile-placement placement-name definition-name ref-win-name [decay-length [\"Gauss\"]] [replace])"
@@ -4609,7 +4609,7 @@
       {
         "name": "replace",
         "type": "string",
-        "desc": "STRING — 可选；\"Replace\" 替换所有先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类；\"NoReplace\" 将新分布叠加到所有先前定义的分布中（默认）"
+        "desc": "STRING — 可选；\"Replace\" 替换所有先前定义的分布；\"LocalReplace\" 仅替换正在定义的掺杂种类"
       }
     ],
     "signature": "(sdedr:define-constant-profile-region placement-name definition-name region-name [decay-length [\"Gauss\"]] [replace])"

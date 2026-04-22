@@ -2,7 +2,7 @@
   "name": "sentaurus-tcad-syntax",
   "displayName": "Sentaurus TCAD Syntax",
   "description": "Syntax highlighting for Sentaurus TCAD files",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "publisher": "onegayi",
   "icon": "icon.png",
   "repository": {

@@ -5073,7 +5073,7 @@
       {
         "name": "replace",
         "type": "string",
-        "desc": "Optional; \"Replace\" replaces all other previously defined profiles; \"LocalReplace\" replaces only the doping species being defined; \"NoReplace\" adds the new profile to all previously defined profiles (default)"
+        "desc": "Optional; \"Replace\" replaces all other previously defined profiles; \"LocalReplace\" replaces only the doping species being defined"
       }
     ],
     "example": "(sdedr:define-constant-profile-material \"PlaceCD.BG\" \"Const.BG\" \"GaAs\")",
@@ -5112,7 +5112,7 @@
       {
         "name": "replace",
         "type": "string",
-        "desc": "Optional; \"Replace\" replaces all other previously defined profiles; \"LocalReplace\" replaces only the doping species being defined; \"NoReplace\" adds the new profile to all previously defined profiles (default)"
+        "desc": "Optional; \"Replace\" replaces all other previously defined profiles; \"LocalReplace\" replaces only the doping species being defined"
       }
     ],
     "example": "(sdedr:define-constant-profile-placement \"Place1\" \"Const.BG\" \"rw1\" 2 \"Replace\")"
@@ -5144,7 +5144,7 @@
       {
         "name": "replace",
         "type": "string",
-        "desc": "Optional; \"Replace\" replaces all other previously defined profiles; \"LocalReplace\" replaces only the doping species being defined; \"NoReplace\" adds the new profile to all previously defined profiles (default)"
+        "desc": "Optional; \"Replace\" replaces all other previously defined profiles; \"LocalReplace\" replaces only the doping species being defined"
       }
     ],
     "example": "(sdedr:define-constant-profile-region \"PlaceCD.GaAsCap\" \"Const.GaAsCap\" \"R.GaAsCap\" 2 \"Replace\")",
