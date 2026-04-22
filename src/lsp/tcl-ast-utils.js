@@ -306,7 +306,9 @@ class ScopeIndex {
     }
 
     /**
-     * 解析变量名在指定行号（1-based）处的定义来源。
+     * 解析变量名在指定行号（1-based）处可访问的定义来源。
+     * 注意：仅返回当前作用域可达的定义（proc 内未通过 global/upvar/variable
+     * 导入的全局变量视为不可达，返回 null）。
      * @param {string} name - 变量名
      * @param {number} line - 1-based 行号
      * @returns {{ defLine: number, scope: string } | null}
