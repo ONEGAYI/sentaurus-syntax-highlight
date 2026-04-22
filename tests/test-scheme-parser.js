@@ -163,8 +163,11 @@ test('let* 绑定提取', () => {
 test('letrec 绑定提取', () => {
     const { ast } = parse('(letrec ((even? (lambda (n) n))) (even? 10))');
     const result = analyze(ast);
-    assert.strictEqual(result.definitions.length, 1);
+    assert.strictEqual(result.definitions.length, 2);
     assert.strictEqual(result.definitions[0].name, 'even?');
+    assert.strictEqual(result.definitions[0].kind, 'variable');
+    assert.strictEqual(result.definitions[1].name, 'n');
+    assert.strictEqual(result.definitions[1].kind, 'parameter');
 });
 
 test('let 绑定提取 — 注释不干扰', () => {
