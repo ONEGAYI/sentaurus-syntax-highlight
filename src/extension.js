@@ -18,6 +18,7 @@ const schemeOnEnterProvider = require('./lsp/providers/scheme-on-enter-provider'
 const unitAutoClose = require('./lsp/providers/unit-auto-close-provider');
 const quoteAutoDelete = require('./lsp/providers/quote-auto-delete-provider');
 const regionUndefDiagnostic = require('./lsp/providers/region-undef-diagnostic');
+const variableReferenceProvider = require('./lsp/providers/variable-reference-provider');
 const symbolCompletion = require('./lsp/providers/symbol-completion');
 const symbolReferenceProvider = require('./lsp/providers/symbol-reference-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
@@ -477,6 +478,9 @@ function activate(context) {
 
     // Find All References (SDE only) — region/material/contact
     symbolReferenceProvider.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, vscode);
+
+    // Find All References — 用户自定义变量（全部 6 种语言）
+    variableReferenceProvider.activate(context, schemeCache, tclCache, vscode);
 
     const languages = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect', 'svisual'];
     const materialKeywords = allKeywords.MATERIAL || [];
