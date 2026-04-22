@@ -4,6 +4,23 @@
 
 ---
 
+## [1.8.2] - 2026-04-22
+
+### Bug 修复
+
+- **修复用户自定义函数包装的 Region/Material 符号提取**：`(define myFunc (lambda (x) (Region "nwell")))` 等通过用户函数间接调用 Region/Material 的场景，符号索引现在能正确穿透 lambda 体提取声明
+
+### 其他改进
+
+- **define 简写形式全面支持**：`(define (name args) body)` 形式现在与 lambda 形式 `(define name (lambda (args) body))` 行为完全一致，包括参数提取（params 字段）、符号索引注册、签名提示和用户函数调用高亮
+- **lambda 形式空参数守卫对称化**：为 lambda 形式也添加了空参数守卫，两种 define 形式在参数为空时均返回空数组，避免下游不一致
+
+### 测试
+
+- 新增 define 简写形式签名提示测试用例
+
+---
+
 ## [1.8.1] - 2026-04-22
 
 ### Bug 修复
@@ -604,6 +621,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.8.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.1...v1.8.2
 [1.8.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.6.3...v1.7.0
