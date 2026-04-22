@@ -21,6 +21,8 @@ build/
 *_b*_enhanced.json
 temp/
 
+TODOLIST.md
+
 references/*
 !references/
 

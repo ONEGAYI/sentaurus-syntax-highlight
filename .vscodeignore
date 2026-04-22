@@ -3,6 +3,7 @@
 .gitignore
 .git/**
 CLAUDE.md
+TODOLIST.md
 scripts/**
 package-lock.json
 *.vsix
