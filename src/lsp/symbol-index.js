@@ -6,8 +6,6 @@
  * - String 节点 → 直接返回 value
  * - List 节点且首元素为 string-append → 尝试静态拼接全字面量子节点
  * - 其他 → 返回 null（动态名称，无法静态推断）
- * @param {object} node - AST 节点
- * @returns {string|null}
  */
 function resolveSymbolName(node) {
     if (!node) return null;
@@ -45,7 +43,71 @@ function effectiveChildren(listNode) {
 }
 
 /**
+ * 从函数调用的参数中提取符号条目，按 role 分发到 defs/refs。
+ * @param {Array} ec - effectiveChildren 结果
+ * @param {string} funcName - 函数名
+ * @param {Array} params - { index, type, role } 参数描述
+ * @param {Array} defs - 定义收集数组
+ * @param {Array} refs - 引用收集数组
+ * @param {number} offset - 参数索引偏移（普通函数=1, modeDispatch=argIndex+2）
+ */
+function collectEntries(ec, funcName, params, defs, refs, offset) {
+    for (const param of params) {
+        const argIndex = param.index + offset;
+        if (argIndex < ec.length) {
+            const argNode = ec[argIndex];
+            const name = resolveSymbolName(argNode);
+            if (name !== null) {
+                const entry = {
+                    name,
+                    type: param.type,
+                    role: param.role,
+                    line: argNode.line,
+                    start: argNode.start,
+                    end: argNode.end,
+                    functionName: funcName,
+                };
+                (param.role === 'def' ? defs : refs).push(entry);
+            }
+        }
+    }
+}
+
+/**
+ * 扫描 lambda 体内的 SDE 函数调用，找出直接传递 lambda 参数的符号参数位。
+ */
+function scanLambdaBody(bodyNodes, paramNames, symbolParamsTable) {
+    const mapping = [];
+    function scan(node) {
+        if (node.type === 'List') {
+            const ec = effectiveChildren(node);
+            if (ec.length >= 1 && ec[0].type === 'Identifier') {
+                const fn = ec[0].value;
+                const config = symbolParamsTable[fn];
+                if (config && config.symbolParams) {
+                    for (const sp of config.symbolParams) {
+                        const argIdx = sp.index + 1;
+                        if (argIdx < ec.length && ec[argIdx].type === 'Identifier') {
+                            const pIdx = paramNames.indexOf(ec[argIdx].value);
+                            if (pIdx !== -1) {
+                                mapping.push({ index: pIdx, role: sp.role, type: sp.type });
+                            }
+                        }
+                    }
+                }
+            }
+            for (const child of node.children) scan(child);
+        } else if (node.type === 'Quote') {
+            scan(node.expression);
+        }
+    }
+    for (const n of bodyNodes) scan(n);
+    return mapping;
+}
+
+/**
  * 从 AST 提取符号定义和引用。
+ * 支持内置 SDE 函数（通过 symbolParamsTable 配置）和用户自定义函数（自动分析 lambda 体）。
  * @param {object} ast - scheme-parser 生成的 AST (Program 节点)
  * @param {string} sourceText - 源文本
  * @param {object} symbolParamsTable - 函数名 → { symbolParams: [...] } 的映射表
@@ -55,19 +117,39 @@ function effectiveChildren(listNode) {
 function extractSymbols(ast, sourceText, symbolParamsTable, modeDispatchTable) {
     const defs = [];
     const refs = [];
+    const userFuncParams = {};
+
+    function tryRegisterUserFunc(ec) {
+        if (ec[0].value !== 'define' || ec.length < 3 || ec[1].type !== 'Identifier') return;
+        const lambdaNode = ec[2];
+        if (lambdaNode.type !== 'List') return;
+        const lec = effectiveChildren(lambdaNode);
+        if (lec.length < 3 ||
+            lec[0].type !== 'Identifier' || lec[0].value !== 'lambda' ||
+            lec[1].type !== 'List') return;
+        const paramNames = effectiveChildren(lec[1])
+            .filter(c => c.type === 'Identifier')
+            .map(c => c.value);
+        const mapping = scanLambdaBody(lec.slice(2), paramNames, symbolParamsTable);
+        if (mapping.length > 0) {
+            userFuncParams[ec[1].value] = mapping;
+        }
+    }
 
     function walk(node) {
         if (node.type === 'List') {
             const ec = effectiveChildren(node);
             if (ec.length >= 1 && ec[0].type === 'Identifier') {
                 const funcName = ec[0].value;
+
+                tryRegisterUserFunc(ec);
+
+                // 内置 SDE 函数
                 const config = symbolParamsTable[funcName];
                 if (config && config.symbolParams) {
                     const modeDispatchMeta = modeDispatchTable ? modeDispatchTable[funcName] : null;
-
-                    // modeDispatch 分支：需要解析模式关键词以支持 type: auto
                     if (modeDispatchMeta) {
-                        // 解析模式关键词（argIndex+1 跳过函数名）
+                        // 解析模式关键词
                         const modeArgIdx = modeDispatchMeta.argIndex + 1;
                         const modeNode = ec[modeArgIdx];
                         let modeValue = null;
@@ -75,62 +157,19 @@ function extractSymbols(ast, sourceText, symbolParamsTable, modeDispatchTable) {
                             if (modeNode.type === 'String') modeValue = modeNode.value;
                             else if (modeNode.type === 'Identifier') modeValue = modeNode.value;
                         }
-
-                        for (const param of config.symbolParams) {
-                            // +1 跳过函数名，+1 跳过模式关键词
-                            const argIndex = modeDispatchMeta.argIndex + 1 + 1 + param.index;
-                            if (argIndex < ec.length) {
-                                const argNode = ec[argIndex];
-                                const name = resolveSymbolName(argNode);
-                                if (name !== null) {
-                                    // type: auto → 使用模式名作为实际类型
-                                    let actualType = param.type;
-                                    if (actualType === 'auto') {
-                                        actualType = modeValue || param.type;
-                                    }
-                                    const entry = {
-                                        name,
-                                        type: actualType,
-                                        role: param.role,
-                                        line: argNode.line,
-                                        start: argNode.start,
-                                        end: argNode.end,
-                                        functionName: funcName,
-                                    };
-                                    if (param.role === 'def') {
-                                        defs.push(entry);
-                                    } else {
-                                        refs.push(entry);
-                                    }
-                                }
-                            }
-                        }
+                        const params = config.symbolParams.map(p => ({
+                            ...p,
+                            type: p.type === 'auto' ? (modeValue || p.type) : p.type,
+                        }));
+                        collectEntries(ec, funcName, params, defs, refs, modeDispatchMeta.argIndex + 2);
                     } else {
-                        // 普通函数：+1 跳过函数名
-                        for (const param of config.symbolParams) {
-                            const argIndex = param.index + 1;
-                            if (argIndex < ec.length) {
-                                const argNode = ec[argIndex];
-                                const name = resolveSymbolName(argNode);
-                                if (name !== null) {
-                                    const entry = {
-                                        name,
-                                        type: param.type,
-                                        role: param.role,
-                                        line: argNode.line,
-                                        start: argNode.start,
-                                        end: argNode.end,
-                                        functionName: funcName,
-                                    };
-                                    if (param.role === 'def') {
-                                        defs.push(entry);
-                                    } else {
-                                        refs.push(entry);
-                                    }
-                                }
-                            }
-                        }
+                        collectEntries(ec, funcName, config.symbolParams, defs, refs, 1);
                     }
+                }
+
+                // 用户自定义函数
+                if (userFuncParams[funcName]) {
+                    collectEntries(ec, funcName, userFuncParams[funcName], defs, refs, 1);
                 }
             }
             for (const child of node.children) walk(child);

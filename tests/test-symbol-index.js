@@ -325,5 +325,153 @@ test('type auto: offset-interface 多参数 auto', () => {
     assert.strictEqual(refs[1].name, 'Ox');
 });
 
+// --- 用户自定义函数符号提取 ---
+console.log('\n用户自定义函数:');
+
+test('用户函数包装 SDE 函数：提取 region 和 material 定义', () => {
+    const code = `
+(define make-box (lambda (x0 y0 z0 w h l mat rname)
+    (sdegeo:create-cuboid (position x0 y0 z0) (position w h l) mat rname)))
+(make-box 0 0 0 1 1 1 "Silicon" "R.Box")
+`;
+    const { ast } = parse(code);
+    const table = {
+        'sdegeo:create-cuboid': {
+            symbolParams: [
+                { index: 2, role: 'def', type: 'material' },
+                { index: 3, role: 'def', type: 'region' },
+            ],
+        },
+    };
+    const { defs, refs } = extractSymbols(ast, code, table);
+    assert.strictEqual(defs.length, 2);
+    assert.strictEqual(defs[0].name, 'Silicon');
+    assert.strictEqual(defs[0].type, 'material');
+    assert.strictEqual(defs[1].name, 'R.Box');
+    assert.strictEqual(defs[1].type, 'region');
+    assert.strictEqual(defs[1].functionName, 'make-box');
+    assert.strictEqual(refs.length, 0);
+});
+
+test('用户函数多次调用：每次独立提取', () => {
+    const code = `
+(define make-box (lambda (mat rname)
+    (sdegeo:create-cuboid (position 0 0 0) (position 1 1 1) mat rname)))
+(make-box "Silicon" "R.Src")
+(make-box "Oxide" "R.Ox")
+`;
+    const { ast } = parse(code);
+    const table = {
+        'sdegeo:create-cuboid': {
+            symbolParams: [
+                { index: 2, role: 'def', type: 'material' },
+                { index: 3, role: 'def', type: 'region' },
+            ],
+        },
+    };
+    const { defs } = extractSymbols(ast, code, table);
+    assert.strictEqual(defs.length, 4);
+    // 映射按 symbolParams 顺序：material(index 0) 先于 region(index 1)
+    assert.strictEqual(defs[0].name, 'Silicon');
+    assert.strictEqual(defs[1].name, 'R.Src');
+    assert.strictEqual(defs[2].name, 'Oxide');
+    assert.strictEqual(defs[3].name, 'R.Ox');
+});
+
+test('用户函数体内不含 SDE 调用：不生成映射', () => {
+    const code = `
+(define my-func (lambda (x y) (+ x y)))
+(my-func 1 2)
+`;
+    const { ast } = parse(code);
+    const table = {
+        'sdegeo:create-cuboid': {
+            symbolParams: [
+                { index: 2, role: 'def', type: 'material' },
+            ],
+        },
+    };
+    const { defs, refs } = extractSymbols(ast, code, table);
+    assert.strictEqual(defs.length, 0);
+    assert.strictEqual(refs.length, 0);
+});
+
+test('用户函数体内 let* 绑定不影响参数追踪', () => {
+    const code = `
+(define make-poly (lambda (mat rname)
+    (let* (
+        (pts (list (position 0 0 0) (position 1 0 0)))
+        (body (sdegeo:create-polygon pts mat rname))
+    )
+        body)))
+(make-poly "Silicon" "R.Poly")
+`;
+    const { ast } = parse(code);
+    const table = {
+        'sdegeo:create-polygon': {
+            symbolParams: [
+                { index: 1, role: 'def', type: 'material' },
+                { index: 2, role: 'def', type: 'region' },
+            ],
+        },
+    };
+    const { defs } = extractSymbols(ast, code, table);
+    assert.strictEqual(defs.length, 2);
+    assert.strictEqual(defs[0].name, 'Silicon');
+    assert.strictEqual(defs[0].type, 'material');
+    assert.strictEqual(defs[1].name, 'R.Poly');
+    assert.strictEqual(defs[1].type, 'region');
+});
+
+test('用户函数调用点传变量而非字符串：跳过', () => {
+    const code = `
+(define make-box (lambda (mat rname)
+    (sdegeo:create-cuboid (position 0 0 0) (position 1 1 1) mat rname)))
+(define my-mat "Silicon")
+(make-box my-mat "R.Var")
+`;
+    const { ast } = parse(code);
+    const table = {
+        'sdegeo:create-cuboid': {
+            symbolParams: [
+                { index: 2, role: 'def', type: 'material' },
+                { index: 3, role: 'def', type: 'region' },
+            ],
+        },
+    };
+    const { defs } = extractSymbols(ast, code, table);
+    // 只有 region 被提取，material 因 my-mat 是 Identifier 而跳过
+    assert.strictEqual(defs.length, 1);
+    assert.strictEqual(defs[0].name, 'R.Var');
+    assert.strictEqual(defs[0].type, 'region');
+});
+
+test('内置函数和用户函数混合使用', () => {
+    const code = `
+(define make-box (lambda (mat rname)
+    (sdegeo:create-cuboid (position 0 0 0) (position 1 1 1) mat rname)))
+(make-box "Silicon" "R.Wrapper")
+(sdegeo:create-cuboid (position 0 0 0) (position 2 2 2) "Oxide" "R.Direct")
+`;
+    const { ast } = parse(code);
+    const table = {
+        'sdegeo:create-cuboid': {
+            symbolParams: [
+                { index: 2, role: 'def', type: 'material' },
+                { index: 3, role: 'def', type: 'region' },
+            ],
+        },
+    };
+    const { defs } = extractSymbols(ast, code, table);
+    // 用户函数调用: Silicon(def), R.Wrapper(def)
+    // 内置函数调用: Oxide(def), R.Direct(def)
+    assert.strictEqual(defs.length, 4);
+    const names = defs.map(d => d.name);
+    assert.ok(names.includes('Silicon'));
+    assert.ok(names.includes('R.Wrapper'));
+    assert.ok(names.includes('Oxide'));
+    assert.ok(names.includes('R.Direct'));
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);
