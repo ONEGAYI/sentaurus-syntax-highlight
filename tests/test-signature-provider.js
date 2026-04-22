@@ -270,6 +270,20 @@ test('用户函数签名 — activeParameter 正确', () => {
     assert.strictEqual(result.activeParameter, 1);
 });
 
+test('用户函数签名 — define 简写形式', () => {
+    const doc = {
+        getText: () => '(define (create_trapezoid x0 y0 z0 w h) body)\n(create_trapezoid 1 2 3)',
+        uri: { toString: () => 'test-shorthand.scm' },
+        version: 1,
+    };
+    const pos = { line: 1, character: 20 };
+    const result = sigProvider.provideSignatureHelp(doc, pos, null, {}, {}, mockCache);
+    assert.ok(result, '应返回签名结果');
+    assert.strictEqual(result.signatures[0].label, '(create_trapezoid x0 y0 z0 w h)');
+    assert.strictEqual(result.signatures[0].parameters.length, 5);
+    assert.strictEqual(result.signatures[0].parameters[0].label, 'x0');
+});
+
 test('内置函数优先于用户定义函数', () => {
     const doc = {
         getText: () => '(sdegeo:create-circle (position 0 0 0) 5 "Si" "R")',
