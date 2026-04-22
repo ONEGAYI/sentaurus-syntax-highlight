@@ -4,6 +4,14 @@
 
 ---
 
+## [1.8.4] - 2026-04-22
+
+### Bug 修复
+
+- **修复 Scheme 括号内回车关闭括号缩进对齐问题**：在多参数函数调用等场景下，闭括号未能正确对齐到对应开括号列，现在使用制表符对齐并修正光标位置计算
+
+---
+
 ## [1.8.3] - 2026-04-22
 
 ### Bug 修复
@@ -629,6 +637,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.8.4]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.3...v1.8.4
 [1.8.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.2...v1.8.3
 [1.8.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.1...v1.8.2
 [1.8.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.0...v1.8.1
