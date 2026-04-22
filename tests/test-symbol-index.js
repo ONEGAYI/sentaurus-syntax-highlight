@@ -473,5 +473,83 @@ test('内置函数和用户函数混合使用', () => {
     assert.ok(names.includes('R.Direct'));
 });
 
+// --- 简写形式用户函数符号提取 ---
+console.log('\n简写形式用户函数:');
+
+test('简写形式用户函数：提取 region 和 material 定义', () => {
+    const code = `
+(define (make-box mat rname)
+    (sdegeo:create-cuboid (position 0 0 0) (position 1 1 1) mat rname))
+(make-box "Silicon" "R.Box")
+`;
+    const { ast } = parse(code);
+    const table = {
+        'sdegeo:create-cuboid': {
+            symbolParams: [
+                { index: 2, role: 'def', type: 'material' },
+                { index: 3, role: 'def', type: 'region' },
+            ],
+        },
+    };
+    const { defs, refs } = extractSymbols(ast, code, table);
+    assert.strictEqual(defs.length, 2);
+    assert.strictEqual(defs[0].name, 'Silicon');
+    assert.strictEqual(defs[0].type, 'material');
+    assert.strictEqual(defs[1].name, 'R.Box');
+    assert.strictEqual(defs[1].type, 'region');
+    assert.strictEqual(defs[1].functionName, 'make-box');
+    assert.strictEqual(refs.length, 0);
+});
+
+test('简写形式用户函数体内不含 SDE 调用：不生成映射', () => {
+    const code = `
+(define (my-func x y) (+ x y))
+(my-func 1 2)
+`;
+    const { ast } = parse(code);
+    const table = {
+        'sdegeo:create-cuboid': {
+            symbolParams: [
+                { index: 2, role: 'def', type: 'material' },
+            ],
+        },
+    };
+    const { defs, refs } = extractSymbols(ast, code, table);
+    assert.strictEqual(defs.length, 0);
+    assert.strictEqual(refs.length, 0);
+});
+
+test('简写形式与 lambda 形式混合使用', () => {
+    const code = `
+(define (make-box mat rname)
+    (sdegeo:create-cuboid (position 0 0 0) (position 1 1 1) mat rname))
+(define make-sphere (lambda (mat rname)
+    (sdegeo:create-sphere (position 0 0 0) 1.0 mat rname)))
+(make-box "Silicon" "R.Box")
+(make-sphere "Oxide" "R.Sphere")
+`;
+    const { ast } = parse(code);
+    const table = {
+        'sdegeo:create-cuboid': {
+            symbolParams: [
+                { index: 2, role: 'def', type: 'material' },
+                { index: 3, role: 'def', type: 'region' },
+            ],
+        },
+        'sdegeo:create-sphere': {
+            symbolParams: [
+                { index: 2, role: 'def', type: 'material' },
+                { index: 3, role: 'def', type: 'region' },
+            ],
+        },
+    };
+    const { defs } = extractSymbols(ast, code, table);
+    assert.strictEqual(defs.length, 4);
+    assert.strictEqual(defs[0].name, 'Silicon');
+    assert.strictEqual(defs[1].name, 'R.Box');
+    assert.strictEqual(defs[2].name, 'Oxide');
+    assert.strictEqual(defs[3].name, 'R.Sphere');
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);

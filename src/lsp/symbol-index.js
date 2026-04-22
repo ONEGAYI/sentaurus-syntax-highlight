@@ -120,19 +120,39 @@ function extractSymbols(ast, sourceText, symbolParamsTable, modeDispatchTable) {
     const userFuncParams = {};
 
     function tryRegisterUserFunc(ec) {
-        if (ec[0].value !== 'define' || ec.length < 3 || ec[1].type !== 'Identifier') return;
-        const lambdaNode = ec[2];
-        if (lambdaNode.type !== 'List') return;
-        const lec = effectiveChildren(lambdaNode);
-        if (lec.length < 3 ||
-            lec[0].type !== 'Identifier' || lec[0].value !== 'lambda' ||
-            lec[1].type !== 'List') return;
-        const paramNames = effectiveChildren(lec[1])
-            .filter(c => c.type === 'Identifier')
-            .map(c => c.value);
-        const mapping = scanLambdaBody(lec.slice(2), paramNames, symbolParamsTable);
-        if (mapping.length > 0) {
-            userFuncParams[ec[1].value] = mapping;
+        if (ec[0].value !== 'define' || ec.length < 3) return;
+
+        // 形式 1: (define name (lambda (params...) body...))
+        if (ec[1].type === 'Identifier') {
+            const lambdaNode = ec[2];
+            if (lambdaNode.type !== 'List') return;
+            const lec = effectiveChildren(lambdaNode);
+            if (lec.length < 3 ||
+                lec[0].type !== 'Identifier' || lec[0].value !== 'lambda' ||
+                lec[1].type !== 'List') return;
+            const paramNames = effectiveChildren(lec[1])
+                .filter(c => c.type === 'Identifier')
+                .map(c => c.value);
+            const mapping = scanLambdaBody(lec.slice(2), paramNames, symbolParamsTable);
+            if (mapping.length > 0) {
+                userFuncParams[ec[1].value] = mapping;
+            }
+            return;
+        }
+
+        // 形式 2: (define (func-name params...) body...)
+        if (ec[1].type === 'List') {
+            const sigEc = effectiveChildren(ec[1]);
+            if (sigEc.length < 2 || sigEc[0].type !== 'Identifier') return;
+            const funcName = sigEc[0].value;
+            const paramNames = sigEc.slice(1)
+                .filter(c => c.type === 'Identifier')
+                .map(c => c.value);
+            if (paramNames.length === 0) return;
+            const mapping = scanLambdaBody(ec.slice(2), paramNames, symbolParamsTable);
+            if (mapping.length > 0) {
+                userFuncParams[funcName] = mapping;
+            }
         }
     }
 
