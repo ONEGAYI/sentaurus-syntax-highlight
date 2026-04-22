@@ -133,6 +133,7 @@ function extractSymbols(ast, sourceText, symbolParamsTable, modeDispatchTable) {
             const paramNames = effectiveChildren(lec[1])
                 .filter(c => c.type === 'Identifier')
                 .map(c => c.value);
+            if (paramNames.length === 0) return;
             const mapping = scanLambdaBody(lec.slice(2), paramNames, symbolParamsTable);
             if (mapping.length > 0) {
                 userFuncParams[ec[1].value] = mapping;
