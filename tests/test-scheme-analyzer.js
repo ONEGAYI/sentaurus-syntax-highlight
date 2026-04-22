@@ -60,13 +60,13 @@ test('define 简写形式提取 params 字段', () => {
     assert.deepStrictEqual(funcDef.params, ['a', 'b', 'c']);
 });
 
-test('define 简写形式无参数：params 为 undefined', () => {
+test('define 简写形式无参数：params 为空数组', () => {
     const { ast } = parse('(define (f) 42)');
     const result = analyze(ast);
     const funcDef = result.definitions[0];
     assert.strictEqual(funcDef.name, 'f');
     assert.strictEqual(funcDef.kind, 'function');
-    assert.strictEqual(funcDef.params, undefined);
+    assert.deepStrictEqual(funcDef.params, []);
 });
 
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);

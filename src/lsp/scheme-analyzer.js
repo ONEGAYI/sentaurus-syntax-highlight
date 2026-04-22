@@ -84,12 +84,9 @@ function extractDefinitionsFromList(listNode, definitions, sourceText) {
                 definitionText: defText,
                 kind: 'function',
             });
-            const params = children[1].children.slice(1)
+            definitions[definitions.length - 1].params = children[1].children.slice(1)
                 .filter(p => p.type === 'Identifier')
                 .map(p => p.value);
-            if (params.length > 0) {
-                definitions[definitions.length - 1].params = params;
-            }
             // 提取函数参数
             for (let i = 1; i < children[1].children.length; i++) {
                 const param = children[1].children[i];
