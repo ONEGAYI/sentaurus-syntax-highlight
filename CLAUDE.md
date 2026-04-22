@@ -101,6 +101,7 @@ sentaurus-syntax-highlight/
 │   │       ├── region-undef-diagnostic.js         ← Region/Material/Contact 未定义语义诊断（Scheme）
 │   │       ├── semantic-tokens-provider.js        ← SDE 用户定义函数调用高亮（Semantic Tokens）
 │   │       ├── symbol-completion.js               ← Region/Material/Contact 符号补全
+│   │       ├── variable-reference-provider.js     ← 用户变量引用查找（Scheme + Tcl，作用域感知）
 │   │       └── symbol-reference-provider.js       ← Find All References（Region/Material/Contact）
 │   │
 │   └── snippets/                               ← QuickPick 代码片段数据（JS 模块）
@@ -184,6 +185,7 @@ sentaurus-syntax-highlight/
 - `quote-auto-delete-provider.js` — 空引号对自动删除（6 种语言共用，含 logic 层判断逻辑）
 - `region-undef-diagnostic.js` — Region/Material/Contact 未定义语义诊断
 - `symbol-completion.js` — Region/Material/Contact 符号补全（声明式 symbolParams 配置）
+- `variable-reference-provider.js` — 用户变量引用查找（Scheme + Tcl 双语言，作用域感知过滤）
 - `symbol-reference-provider.js` — Find All References（Region/Material/Contact 交叉引用）
 
 **内存管理**：WASM `tree` 对象使用后必须 `tree.delete()` 释放，由 `parse-cache.js` 的 `TclParseCache` 统一管理生命周期。
@@ -218,7 +220,7 @@ sentaurus-syntax-highlight/
 
 ### 步骤
 
-1. **更新 CHANGELOG**：回顾 `git log <上次release-tag>..HEAD --oneline`，将所有提交归纳为 CHANGELOG 条目。新增版本段落置于文件顶部，格式与已有条目保持一致（`### 新功能` / `### Bug 修复` / `### 其他改进`）。同时在底部 `<!-- 变更链接 -->`（建议使用 Grep 快速定位行）添加新版本的 compare 链接
+1. **更新 CHANGELOG**：回顾 `git log <上次release-tag>..HEAD --oneline`，将所有提交归纳为 CHANGELOG 条目（当提交信息过于简略，必要时应当使用 git diff 等命令归纳总结）。新增版本段落置于文件顶部，格式与已有条目保持一致（`### 新功能` / `### Bug 修复` / `### 其他改进`）。同时在底部 `<!-- 变更链接 -->`（建议使用 Grep 快速定位行）添加新版本的 compare 链接
    - 当同一个发布内，有全新功能并有其初版本的修复提交，这样的修复不需要暴露在CHANGELOG和release中，因为对于用户他们看见的是全新的功能，对修复无感知。但该全新功能的介绍应以最后定案为准。
 2. **更新 CLAUDE.md**: 主要更新文件树及被折叠的子文档（必须，如果有）和架构的内容。架构的更新需要言简意赅。文件树需要严格对照 git 历史变更，如果已有文件功能发生改变，也需要适当的反映在文件树中。
 3. **提交 CHANGELOG**

@@ -13,7 +13,8 @@ A VSCode extension providing syntax highlighting, auto-completion, and semantic 
 | Syntax Highlighting | Color-coded display for keywords, functions, tags, constants, numbers, variables, etc. |
 | Auto-Completion | Keyword suggestions on typing, sorted by category with icons, **functions/commands include parameter descriptions**, **real-time completion for user-defined variables** |
 | Hover Documentation | Hovering over a function/command shows its signature, parameter descriptions, and example code; **user variables display their definition text** |
-| Go to Definition | **F12 / Ctrl+Click to jump to the definition line of user-defined variables** |
+| Go to Definition | **F12 / Ctrl+Click to jump to the definition line of user-defined variables** (scope-aware, precise for same-name variables) |
+| Find All References | **Shift+F12 to find all reference locations of user-defined variables** (Scheme + Tcl, scope-aware filtering) |
 
 ### Semantic Features
 

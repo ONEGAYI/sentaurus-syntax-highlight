@@ -22,6 +22,7 @@ sentaurus-syntax-highlight/
 │   ├── test-tcl-var-refs.js                    ← Tcl 变量引用
 │   ├── test-parse-cache.js                     ← 解析缓存层测试
 │   ├── test-tcl-scope-index.js                 ← ScopeIndex 作用域查询测试
+│   ├── test-variable-reference.js              ← 用户变量引用查找（Scheme + Tcl）
 │   ├── test-undef-var-integration.js           ← 未定义变量诊断集成测试
 │   ├── test-unit-auto-close.js                 ← Unit 括号自动配对测试
 │   ├── test-quote-auto-delete.js               ← 空引号对自动删除测试

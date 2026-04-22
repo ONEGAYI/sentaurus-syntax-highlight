@@ -4,6 +4,24 @@
 
 ---
 
+## [1.9.0] - 2026-04-23
+
+### 新功能
+
+- **用户变量引用查找**：Shift+F12 查找用户自定义变量的所有引用位置，覆盖全部 6 种语言（Scheme + Tcl 双方言），通过词法作用域树精确过滤同名变量在不同作用域中的引用
+- **跳转定义作用域感知**：F12 跳转用户变量定义现在基于词法作用域解析（Scheme 通过 `buildScopeTree` + `getVisibleDefinitions`，Tcl 通过 `buildScopeIndex` + `resolveDefinition`），同名变量在不同作用域中可精确定位，跳转目标也从整行缩进为精确的标识符范围
+
+### Bug 修复
+
+- **修正 Tcl `*` 注释正则导致乘法被误吞**：SDEVICE、SPROCESS、EMW、Inspect、Svisual 五个语法文件中的 `*` 行注释匹配模式缺少行首锚定（`^`），导致行内 `*` 乘法运算符被错误识别为注释开头
+
+### 测试
+
+- 新增 `test-variable-reference.js`（Scheme + Tcl 变量引用查找，含作用域隔离和跨作用域过滤）
+- 新增 `test-tcl-scope-index.js`（ScopeIndex `resolveDefinition` 作用域解析）
+
+---
+
 ## [1.8.4] - 2026-04-22
 
 ### Bug 修复
@@ -637,6 +655,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.9.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.4...v1.9.0
 [1.8.4]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.3...v1.8.4
 [1.8.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.2...v1.8.3
 [1.8.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.1...v1.8.2
