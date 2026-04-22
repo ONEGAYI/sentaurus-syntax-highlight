@@ -234,5 +234,70 @@ test('buildScopeMap 委托给 ScopeIndex 并返回兼容的 Map', () => {
         'buildScopeMap 和 ScopeIndex.getVisibleAt 应产生相同结果');
 });
 
+console.log('\n=== ScopeIndex.resolveDefinition 测试 ===\n');
+
+test('resolveDefinition: 全局 set 变量', () => {
+    const setNode = makeNode('set', 'set x 42', [
+        makeNode('simple_word', 'set', [], 0, 0, 0, 3),
+        makeNode('id', 'x', [], 0, 4, 0, 5),
+        makeNode('simple_word', '42', [], 0, 6, 0, 8),
+    ], 0, 0, 0, 8);
+    const root = makeNode('program', '', [setNode], 0, 0, 0, 8);
+    const index = ast.buildScopeIndex(root);
+
+    const result = index.resolveDefinition('x', 2);
+    assert.ok(result, '应找到 x 的定义');
+    assert.strictEqual(result.defLine, 1, 'x 在第 1 行定义');
+    assert.strictEqual(result.scope, 'global');
+});
+
+test('resolveDefinition: 全局作用域未定义变量返回 null', () => {
+    const root = makeNode('program', '', [], 0, 0, 0, 0);
+    const index = ast.buildScopeIndex(root);
+    assert.strictEqual(index.resolveDefinition('unknown', 1), null);
+});
+
+test('resolveDefinition: proc 内局部 set 变量', () => {
+    const localSet = makeNode('set', 'set y 5', [
+        makeNode('simple_word', 'set', [], 3, 2, 3, 5),
+        makeNode('id', 'y', [], 3, 6, 3, 7),
+        makeNode('simple_word', '5', [], 3, 8, 3, 9),
+    ], 3, 2, 3, 9);
+    const bodyNode = makeNode('braced_word', '{ set y 5 }', [localSet], 2, 15, 4, 1);
+    const argsNode = makeNode('arguments', 'arg1', [
+        makeNode('argument', 'arg1', [], 2, 7, 2, 11),
+    ], 2, 6, 2, 12);
+    const procNode = makeNode('procedure', 'proc myFunc { arg1 } { body }', [
+        makeNode('simple_word', 'proc', [], 2, 0, 2, 4),
+        makeNode('simple_word', 'myFunc', [], 2, 5, 2, 11),
+        argsNode,
+        bodyNode,
+    ], 2, 0, 4, 1);
+    const root = makeNode('program', '', [procNode], 0, 0, 4, 1);
+    const index = ast.buildScopeIndex(root);
+
+    const argResult = index.resolveDefinition('arg1', 3);
+    assert.ok(argResult, '应找到 arg1 参数定义');
+    assert.strictEqual(argResult.scope, 'local');
+
+    const yResult = index.resolveDefinition('y', 3);
+    assert.ok(yResult, '应找到 y 的局部定义');
+    assert.strictEqual(yResult.scope, 'local');
+});
+
+test('resolveDefinition: proc 内未定义变量返回 null', () => {
+    const bodyNode = makeNode('braced_word', '{ puts $z }', [], 3, 0, 3, 12);
+    const procNode = makeNode('procedure', 'proc f {} { body }', [
+        makeNode('simple_word', 'proc', [], 2, 0, 2, 4),
+        makeNode('word', 'f', [], 2, 5, 2, 6),
+        makeNode('braced_word', '{}', [], 2, 7, 2, 9),
+        bodyNode,
+    ], 2, 0, 3, 12);
+    const root = makeNode('program', '', [procNode], 2, 0, 3, 12);
+    const index = ast.buildScopeIndex(root);
+
+    assert.strictEqual(index.resolveDefinition('z', 3), null);
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 if (failed > 0) process.exit(1);

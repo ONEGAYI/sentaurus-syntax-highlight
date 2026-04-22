@@ -304,6 +304,44 @@ class ScopeIndex {
 
         return visible;
     }
+
+    /**
+     * 解析变量名在指定行号（1-based）处的定义来源。
+     * @param {string} name - 变量名
+     * @param {number} line - 1-based 行号
+     * @returns {{ defLine: number, scope: string } | null}
+     */
+    resolveDefinition(name, line) {
+        const proc = this._procScopes.find(p => line >= p.startLine && line <= p.endLine);
+
+        if (proc) {
+            // 检查 proc 参数（视为局部定义，定义行为 proc body 起始行）
+            if (proc.params.includes(name)) {
+                return { defLine: proc.startLine, scope: 'local' };
+            }
+
+            const local = proc.localDefs.find(d => d.name === name);
+            if (local) return { defLine: local.defLine, scope: 'local' };
+
+            if (proc.scopeImports.includes(name)) {
+                const globalDef = this._globalDefs.find(d => d.name === name);
+                if (globalDef) return { defLine: globalDef.defLine, scope: 'imported' };
+            }
+
+            const globalProc = this._globalDefs.find(d => d.name === name && d.isProc);
+            if (globalProc) return { defLine: globalProc.defLine, scope: 'global-proc' };
+
+            return null;
+        }
+
+        const globalDef = this._globalDefs.find(d => d.name === name);
+        if (globalDef) return { defLine: globalDef.defLine, scope: 'global' };
+
+        const globalProc = this._globalDefs.find(d => d.name === name && d.isProc);
+        if (globalProc) return { defLine: globalProc.defLine, scope: 'global-proc' };
+
+        return null;
+    }
 }
 
 /**
