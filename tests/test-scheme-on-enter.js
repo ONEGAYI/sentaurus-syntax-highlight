@@ -4,6 +4,7 @@ const {
     countUnmatchedOpenParens,
     isLastOpenParenEmpty,
     findClosingParens,
+    findUnmatchedOpenParenColumns,
 } = require('../src/lsp/providers/scheme-on-enter-logic');
 
 let passed = 0, failed = 0;
@@ -92,6 +93,33 @@ test('currText 含多个 ) → 直接匹配', () => {
     const result = findClosingParens(')))', undefined);
     assert.ok(result.match);
     assert.strictEqual(result.match[2], ')))');
+});
+
+// ─── findUnmatchedOpenParenColumns ─────────
+console.log('\nfindUnmatchedOpenParenColumns:');
+
+test('简单 (foo → [0]', () => {
+    assert.deepStrictEqual(findUnmatchedOpenParenColumns('(foo '), [0]);
+});
+
+test('缩进 (foo → [4]', () => {
+    assert.deepStrictEqual(findUnmatchedOpenParenColumns('    (foo '), [4]);
+});
+
+test('嵌套 (foo (bar → [4, 9]', () => {
+    assert.deepStrictEqual(findUnmatchedOpenParenColumns('    (foo (bar'), [4, 9]);
+});
+
+test('配对后剩余 (foo (bar baz → [0, 5]', () => {
+    assert.deepStrictEqual(findUnmatchedOpenParenColumns('(foo (bar baz'), [0, 5]);
+});
+
+test('完全配对 (foo bar) → []', () => {
+    assert.deepStrictEqual(findUnmatchedOpenParenColumns('(foo bar)'), []);
+});
+
+test('三层嵌套 ((foo → [0, 1]', () => {
+    assert.deepStrictEqual(findUnmatchedOpenParenColumns('((foo'), [0, 1]);
 });
 
 // ─── 空括号排除条件 ────────────────────────

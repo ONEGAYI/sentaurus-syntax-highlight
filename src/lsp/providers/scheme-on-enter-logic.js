@@ -55,4 +55,22 @@ function findClosingParens(currText, nextText) {
     return { match: null, linesToReplace: 0 };
 }
 
-module.exports = { countUnmatchedOpenParens, isLastOpenParenEmpty, findClosingParens, CLOSE_PARENS_RE };
+/**
+ * 找到文本中所有未闭合的 ( 的列索引。
+ * 返回数组按出现顺序排列，可用于精确对齐关闭括号。
+ */
+function findUnmatchedOpenParenColumns(text) {
+    const columns = [];
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === '(') {
+            columns.push(i);
+        } else if (text[i] === ')') {
+            if (columns.length > 0) {
+                columns.pop();
+            }
+        }
+    }
+    return columns;
+}
+
+module.exports = { countUnmatchedOpenParens, isLastOpenParenEmpty, findClosingParens, findUnmatchedOpenParenColumns, CLOSE_PARENS_RE };

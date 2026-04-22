@@ -1,8 +1,8 @@
 const vscode = require('vscode');
 const {
-    countUnmatchedOpenParens,
     isLastOpenParenEmpty,
     findClosingParens,
+    findUnmatchedOpenParenColumns,
     CLOSE_PARENS_RE,
 } = require('./scheme-on-enter-logic');
 
@@ -46,9 +46,9 @@ function onDocumentChange(event) {
     // 排除注释行
     if (/^\s*;/.test(prevText)) return;
 
-    // 统计上一行未闭合的 ( 数量
-    const openCount = countUnmatchedOpenParens(prevText);
-    if (openCount === 0) return;
+    // 找到上一行所有未闭合 ( 的列位置
+    const openCols = findUnmatchedOpenParenColumns(prevText);
+    if (openCols.length === 0) return;
 
     // 在当前行或下一行查找闭括号（VSCode auto-indent 可能将 ) 推到下一行）
     const nextText = currLineNum + 1 < event.document.lineCount
@@ -70,20 +70,29 @@ function onDocumentChange(event) {
     const totalClose = match[2].length;
     const trailing = match[3];
 
+    const lastOpenCol = openCols[openCols.length - 1];
+    const baseIndent = prevText.match(/^(\s*)/)[1];
+
+    // 缩进策略：若 ( 位于纯空白前缀中，用精确列对齐；否则按深度缩进（保持 tab 对齐）
+    function indentForColIdx(colIdx) {
+        const col = openCols[colIdx];
+        const prefix = prevText.substring(0, col);
+        if (/^\s*$/.test(prefix)) return prefix;
+        return baseIndent + indentUnit.repeat(colIdx);
+    }
+
     // 构建替换文本
     let replacement = '';
 
-    // 光标行：openCount 级缩进
-    for (let i = 0; i < openCount; i++) {
-        replacement += indentUnit;
-    }
-    replacement += '\n';
+    // 光标行：最内层 ( 的缩进再深一级
+    const bodyIndent = indentForColIdx(openCols.length - 1);
+    replacement += bodyIndent + indentUnit + '\n';
 
-    // 每个 ) 单独一行，从内到外递减缩进
+    // 每个 ) 单独一行，对齐到对应的 (
     for (let i = 0; i < totalClose; i++) {
-        const depth = openCount - 1 - i;
-        for (let j = 0; j < Math.max(0, depth); j++) {
-            replacement += indentUnit;
+        const colIdx = openCols.length - 1 - i;
+        if (colIdx >= 0) {
+            replacement += indentForColIdx(colIdx);
         }
         replacement += ')';
         if (i < totalClose - 1) {
@@ -103,7 +112,7 @@ function onDocumentChange(event) {
             replacement
         );
     }).then(() => {
-        const cursorCol = openCount * indentUnit.length;
+        const cursorCol = bodyIndent.length + indentUnit.length;
         const newPos = new vscode.Position(replaceStart, cursorCol);
         editor.selection = new vscode.Selection(newPos, newPos);
         _applying = false;
