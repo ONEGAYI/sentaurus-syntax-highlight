@@ -160,7 +160,7 @@
     },
     {
       "name": "comment.line.asterisk",
-      "match": "\\*.*$"
+      "match": "^\\s*\\*.*$"
     },
     {
       "name": "string.quoted.double",
