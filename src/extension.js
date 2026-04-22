@@ -584,25 +584,56 @@ function activate(context) {
         );
         context.subscriptions.push(hoverDisposable);
 
-        // Register DefinitionProvider for user-defined variables
+        // Register DefinitionProvider for user-defined variables (scope-aware)
         const definitionDisposable = vscode.languages.registerDefinitionProvider(
             { language: langId },
             {
                 provideDefinition(document, position) {
                     if (isInComment(document, position)) return null;
-                    const range = document.getWordRangeAtPosition(position, /[\w:.\-<>?!+*/=]+/);
+                    const cursorLine = position.line + 1; // 1-based
+
+                    if (langId === 'sde') {
+                        // Scheme: scope-aware via buildScopeTree + getVisibleDefinitions
+                        const range = document.getWordRangeAtPosition(position, /[\w:.\-<>?!+*/=]+/);
+                        if (!range) return null;
+                        const word = document.getText(range);
+                        const entry = schemeCache.get(document);
+                        if (!entry) return null;
+                        const { scopeTree, lineStarts } = entry;
+                        const visibleDefs = scopeAnalyzer.getVisibleDefinitions(scopeTree, cursorLine);
+                        const def = visibleDefs.find(d => d.name === word);
+                        if (!def) return null;
+                        const defStartCol = def.start - lineStarts[def.line - 1];
+                        const defEndCol = def.end - lineStarts[def.line - 1];
+                        return new vscode.Location(
+                            document.uri,
+                            new vscode.Range(def.line - 1, defStartCol, def.line - 1, defEndCol)
+                        );
+                    }
+
+                    // Tcl: scope-aware via buildScopeIndex + resolveDefinition
+                    const dollarRange = document.getWordRangeAtPosition(position, /\$[\w:]+/);
+                    const plainRange = document.getWordRangeAtPosition(position, /[\w:]+/);
+                    const range = dollarRange || plainRange;
                     if (!range) return null;
-                    const word = document.getText(range);
+                    let word = document.getText(range);
+                    if (word.startsWith('$')) word = word.slice(1);
+                    if (!word) return null;
 
-                    const userDefs = defs.getDefinitions(document, langId);
-                    const def = userDefs.find(d => d.name === word);
-                    if (!def) return null;
+                    const entry = tclCache.get(document);
+                    if (!entry || !entry.tree) return null;
+                    const scopeIndex = astUtils.buildScopeIndex(entry.tree.rootNode);
+                    const targetDef = scopeIndex.resolveDefinition(word, cursorLine);
+                    if (!targetDef) return null;
 
-                    const targetLine = def.line - 1; // 0-indexed
-                    const lineLength = document.lineAt(targetLine).text.length;
+                    const defLine0 = targetDef.defLine - 1;
+                    const defLineText = document.lineAt(defLine0).text;
+                    const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+                    const match = re.exec(defLineText);
+                    if (!match) return null;
                     return new vscode.Location(
                         document.uri,
-                        new vscode.Range(targetLine, 0, targetLine, lineLength)
+                        new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
                     );
                 },
             }

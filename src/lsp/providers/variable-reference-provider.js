@@ -1,8 +1,8 @@
 // src/lsp/providers/variable-reference-provider.js
 'use strict';
 
-const { buildScopeTree, getSchemeRefs, getVisibleDefinitions } = require('../scope-analyzer');
-const { getVariableRefs, buildScopeIndex } = require('../tcl-ast-utils');
+const { getSchemeRefs, getVisibleDefinitions } = require('../scope-analyzer');
+const { getVariableRefs, buildScopeIndex, TCL_LANGS } = require('../tcl-ast-utils');
 
 let schemeCache;
 let tclCache;
@@ -13,7 +13,7 @@ function activate(context, schemeCacheInstance, tclCacheInstance, vscodeRef) {
     tclCache = tclCacheInstance;
     vscode = vscodeRef;
 
-    const langIds = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect', 'svisual'];
+    const langIds = ['sde', ...Array.from(TCL_LANGS)];
 
     for (const langId of langIds) {
         const capturedLangId = langId;
@@ -38,9 +38,8 @@ function provideSchemeReferences(document, position, options) {
     const entry = schemeCache.get(document);
     if (!entry) return null;
 
-    const { ast, text, lineStarts } = entry;
+    const { ast, scopeTree, lineStarts } = entry;
 
-    // Extract word at cursor
     const range = document.getWordRangeAtPosition(position, /[\w:.\-<>?!+*/=]+/);
     if (!range) return null;
     const word = document.getText(range);
@@ -55,12 +54,11 @@ function provideSchemeReferences(document, position, options) {
     }
 
     const cursorLine = position.line + 1;
-    const scopeTree = buildScopeTree(ast);
     const visibleDefs = getVisibleDefinitions(scopeTree, cursorLine);
     const targetDef = visibleDefs.find(d => d.name === word);
     if (!targetDef) return null;
 
-    const refs = getSchemeRefs(ast, new Set());
+    const refs = getSchemeRefs(ast);
     const locations = [];
 
     // Add definition location
@@ -130,15 +128,16 @@ function provideTclReferences(document, position, options) {
     const refs = getVariableRefs(root);
     const locations = [];
 
-    // Add definition location
+    // Add definition location (use word-boundary matching for precise column)
     if (options.includeDeclaration !== false) {
         const defLine0 = targetDef.defLine - 1;
         const defLineText = document.lineAt(defLine0).text;
-        const nameIdx = defLineText.indexOf(word);
-        if (nameIdx >= 0) {
+        const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+        const match = re.exec(defLineText);
+        if (match) {
             locations.push(new vscode.Location(
                 document.uri,
-                new vscode.Range(defLine0, nameIdx, defLine0, nameIdx + word.length)
+                new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
             ));
         }
     }
