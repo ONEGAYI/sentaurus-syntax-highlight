@@ -176,6 +176,7 @@ const SCOPE_TYPE_LABELS = {
     global: '全局',
     function: '函数',
     let: 'let',
+    do: 'do',
     lambda: 'lambda',
 };
 

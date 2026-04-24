@@ -73,6 +73,24 @@ test('letrec 产生 let 作用域', () => {
     assert.strictEqual(tree.children[0].definitions[0].name, 'f');
 });
 
+test('do 产生 do 作用域', () => {
+    const tree = treeOf('(do ((i 1 (+ i 1))) ((>= i 10)) (display i))');
+    assert.strictEqual(tree.children.length, 1);
+    const doScope = tree.children[0];
+    assert.strictEqual(doScope.type, 'do');
+    assert.strictEqual(doScope.definitions.length, 1);
+    assert.strictEqual(doScope.definitions[0].name, 'i');
+});
+
+test('do 多变量作用域', () => {
+    const tree = treeOf('(do ((i 0 (+ i 1)) (j 10 (- j 1))) ((= i j)) (display i))');
+    const doScope = tree.children[0];
+    assert.strictEqual(doScope.type, 'do');
+    assert.strictEqual(doScope.definitions.length, 2);
+    assert.strictEqual(doScope.definitions[0].name, 'i');
+    assert.strictEqual(doScope.definitions[1].name, 'j');
+});
+
 test('函数体内嵌套 let', () => {
     const tree = treeOf('(define (calc x)\n  (let ((y (* x 2)))\n    (+ x y)))');
     assert.strictEqual(tree.children.length, 1);
@@ -140,6 +158,21 @@ test('函数参数和 let 绑定同时可见', () => {
     assert.deepStrictEqual(names, ['f', 'result', 'temp']);
     assert.strictEqual(visible.find(v => v.name === 'temp').kind, 'parameter');
     assert.strictEqual(visible.find(v => v.name === 'result').scopeType, 'let');
+});
+
+test('do 循环变量在体内可见', () => {
+    const tree = treeOf('(do ((i 1 (+ i 1)))\n  ((>= i 10))\n  (display i))');
+    const visible = getVisibleDefinitions(tree, 3);
+    const iDef = visible.find(v => v.name === 'i');
+    assert.ok(iDef, 'do 变量 i 应在体内可见');
+    assert.strictEqual(iDef.scopeType, 'do');
+});
+
+test('do 变量与全局定义同时可见', () => {
+    const tree = treeOf('(define x 1)\n(do ((i 0 (+ i 1))) ((= i x)) i)');
+    const visible = getVisibleDefinitions(tree, 2);
+    const names = visible.map(v => v.name).sort();
+    assert.deepStrictEqual(names, ['i', 'x']);
 });
 
 test('空文档无可见定义', () => {

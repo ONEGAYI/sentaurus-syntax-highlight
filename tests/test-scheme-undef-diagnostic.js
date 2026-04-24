@@ -53,6 +53,18 @@ test('let 绑定在 body 内可见', () => {
     assert.strictEqual(undefs.length, 0, 'let 绑定的变量应可见');
 });
 
+test('do 循环变量在体内可见', () => {
+    const code = '(do ((i 1 (+ i 1))) ((>= i 10)) (display i))';
+    const undefs = findUndefRefs(code, new Set(['+', '>=', 'display']));
+    assert.strictEqual(undefs.length, 0, 'do 循环变量应在体内可见');
+});
+
+test('do 多变量循环不误报', () => {
+    const code = '(do ((i 0 (+ i 1)) (j 10 (- j 1))) ((= i j)) (display i))';
+    const undefs = findUndefRefs(code, new Set(['+', '-', '>=', '=', 'display']));
+    assert.strictEqual(undefs.length, 0, 'do 多变量均应可见');
+});
+
 test('函数参数在 body 内可见', () => {
     const code = '(define (f x) (+ x 1))';
     const undefs = findUndefRefs(code, new Set(['+']));

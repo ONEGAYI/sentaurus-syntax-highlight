@@ -11,6 +11,21 @@ function test(name, fn) {
 
 console.log('\nanalyze — define+lambda params:');
 
+test('do 循环变量被提取', () => {
+    const { ast } = parse('(do ((i 1 (+ i 1))) ((>= i 10)) (display i))');
+    const result = analyze(ast);
+    const doVar = result.definitions.find(d => d.name === 'i');
+    assert.ok(doVar, 'do 循环变量 i 应被提取');
+    assert.strictEqual(doVar.kind, 'variable');
+});
+
+test('do 多个循环变量被提取', () => {
+    const { ast } = parse('(do ((i 0 (+ i 1)) (j 10 (- j 1))) ((= i j)) (display i))');
+    const result = analyze(ast);
+    assert.ok(result.definitions.find(d => d.name === 'i'), 'do 变量 i');
+    assert.ok(result.definitions.find(d => d.name === 'j'), 'do 变量 j');
+});
+
 test('define+lambda 提取 params 字段', () => {
     const { ast } = parse('(define create_trapezoid (lambda (x0 y0 z0 w h) body))');
     const result = analyze(ast);

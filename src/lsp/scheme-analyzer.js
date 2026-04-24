@@ -104,8 +104,8 @@ function extractDefinitionsFromList(listNode, definitions, sourceText) {
         return;
     }
 
-    // (let/let*/letrec ((var val) ...) body...)
-    if ((first.value === 'let' || first.value === 'let*' || first.value === 'letrec') && children.length >= 2) {
+    // (let/let*/letrec/do ((var val) ...) body...)
+    if ((first.value === 'let' || first.value === 'let*' || first.value === 'letrec' || first.value === 'do') && children.length >= 2) {
         if (children[1].type === 'List') {
             for (const binding of children[1].children) {
                 if (binding.type === 'List' && binding.children.length >= 1 && binding.children[0].type === 'Identifier') {

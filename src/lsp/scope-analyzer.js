@@ -60,10 +60,10 @@ function buildScopeTree(ast) {
                     }
                 }
 
-                // (let/let*/letrec ((var val) ...) body...)
-                if (children[0].value === 'let' || children[0].value === 'let*' || children[0].value === 'letrec') {
-                    const letScope = {
-                        type: 'let',
+                // (let/let*/letrec/do ((var val) ...) body...)
+                if (children[0].value === 'let' || children[0].value === 'let*' || children[0].value === 'letrec' || children[0].value === 'do') {
+                    const bindingScope = {
+                        type: children[0].value === 'do' ? 'do' : 'let',
                         startLine: node.line,
                         endLine: node.endLine,
                         definitions: [],
@@ -72,17 +72,17 @@ function buildScopeTree(ast) {
                     if (children[1] && children[1].type === 'List') {
                         for (const binding of children[1].children) {
                             if (binding.type === 'List' && binding.children.length >= 1 && binding.children[0].type === 'Identifier') {
-                                letScope.definitions.push({ name: binding.children[0].value, kind: 'variable', line: binding.children[0].line, start: binding.children[0].start, end: binding.children[0].end, ...branchCtx });
+                                bindingScope.definitions.push({ name: binding.children[0].value, kind: 'variable', line: binding.children[0].line, start: binding.children[0].start, end: binding.children[0].end, ...branchCtx });
                                 // 遍历绑定值表达式（如 lambda），使参数进入作用域
                                 for (let j = 1; j < binding.children.length; j++) {
-                                    walk(binding.children[j], letScope, branchCtx);
+                                    walk(binding.children[j], bindingScope, branchCtx);
                                 }
                             }
                         }
                     }
-                    parentScope.children.push(letScope);
+                    parentScope.children.push(bindingScope);
                     for (let i = 2; i < children.length; i++) {
-                        walk(children[i], letScope, branchCtx);
+                        walk(children[i], bindingScope, branchCtx);
                     }
                     return;
                 }

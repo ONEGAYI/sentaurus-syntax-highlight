@@ -4,6 +4,14 @@
 
 ---
 
+## [1.9.1] - 2026-04-24
+
+### Bug 修复
+
+- **修复 Scheme `do` 循环变量定义未被识别**：`do` 循环的变量绑定（如 `(do ((i 1 (+ i 1))) ...)` 中的 `i`）未被纳入作用域树和定义提取，导致变量被误报为未定义。现在 `scheme-analyzer.js`、`scope-analyzer.js` 和 `undef-var-diagnostic.js` 均正确支持 `do` 语句的变量绑定
+
+---
+
 ## [1.9.0] - 2026-04-23
 
 ### 新功能
@@ -655,6 +663,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.9.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.4...v1.9.0
 [1.8.4]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.3...v1.8.4
 [1.8.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.2...v1.8.3
