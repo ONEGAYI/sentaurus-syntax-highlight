@@ -451,6 +451,7 @@ class CursorTracker {
         this._prevValue = '';
     }
 
+    // 公共前缀+后缀启发式推断，对称编辑可能偏移 1，足够 QuickPick 词定位
     _inferCursor(oldVal, newVal) {
         if (oldVal === newVal) return newVal.length;
 
@@ -475,6 +476,7 @@ class CursorTracker {
 const IDENT_CHAR_RE = /[a-zA-Z0-9_@]/;
 
 function getWordAtPosition(value, cursorPos) {
+    if (cursorPos < 0 || cursorPos > value.length) return null;
     let start = cursorPos;
     while (start > 0 && IDENT_CHAR_RE.test(value[start - 1])) start--;
 
