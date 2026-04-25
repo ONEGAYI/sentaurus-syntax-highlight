@@ -481,6 +481,55 @@ test('中缀→前缀→中缀: 函数调用', () => {
     assert.strictEqual(back, original);
 });
 
+test('前缀→中缀→前缀: 连字符标识符加法', () => {
+    const original = '(+ my-var W)';
+    const infix = prefixToInfix(original).result;
+    const back = infixToPrefix(infix).result;
+    assert.strictEqual(back, original);
+});
+
+test('前缀→中缀→前缀: 连字符标识符嵌套', () => {
+    const original = '(* (+ my-var L-length) 2)';
+    const infix = prefixToInfix(original).result;
+    const back = infixToPrefix(infix).result;
+    assert.strictEqual(back, original);
+});
+
+test('前缀→中缀→前缀: 连字符标识符函数', () => {
+    const original = '(sin my-var)';
+    const infix = prefixToInfix(original).result;
+    const back = infixToPrefix(infix).result;
+    assert.strictEqual(back, original);
+});
+
+test('前缀→中缀→前缀: 混合普通和连字符标识符', () => {
+    const original = '(+ W-doping W)';
+    const infix = prefixToInfix(original).result;
+    const back = infixToPrefix(infix).result;
+    assert.strictEqual(back, original);
+});
+
+test('中缀→前缀→中缀: 尖括号连字符变量', () => {
+    const original = '<my-var> + 1';
+    const prefix = infixToPrefix(original).result;
+    const back = prefixToInfix(prefix).result;
+    assert.strictEqual(back, original);
+});
+
+test('中缀→前缀→中缀: 多个尖括号变量', () => {
+    const original = '<W-doping> + <L-length>';
+    const prefix = infixToPrefix(original).result;
+    const back = prefixToInfix(prefix).result;
+    assert.strictEqual(back, original);
+});
+
+test('中缀→前缀→中缀: 尖括号变量嵌套运算', () => {
+    const original = '(<my-var> + W) * 2';
+    const prefix = infixToPrefix(original).result;
+    const back = prefixToInfix(prefix).result;
+    assert.strictEqual(back, original);
+});
+
 // ─── 汇总 ───────────────────────────────────
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 process.exit(failed > 0 ? 1 : 0);
