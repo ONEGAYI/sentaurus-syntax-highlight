@@ -517,12 +517,11 @@ function getWordAtPosition(value, cursorPos) {
     if (bracketStart !== -1 && bracketStart < value.length - 1) {
         const contentStart = bracketStart + 1;
         const closeIdx = value.indexOf('>', contentStart);
-        if (closeIdx !== -1) {
-            const content = value.slice(contentStart, closeIdx);
-            if (content.length > 0) {
-                const prefix = value.slice(contentStart, Math.min(cursorPos, closeIdx));
-                return { prefix, start: contentStart, end: closeIdx, inAngleBrackets: true };
-            }
+        const endIdx = closeIdx !== -1 ? closeIdx : value.length;
+        const content = value.slice(contentStart, endIdx);
+        if (content.length > 0) {
+            const prefix = value.slice(contentStart, Math.min(cursorPos, endIdx));
+            return { prefix, start: contentStart, end: endIdx, inAngleBrackets: true };
         }
     }
 

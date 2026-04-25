@@ -174,6 +174,21 @@ test('光标在普通标识符上 — 不受尖括号影响', () => {
     assert.deepStrictEqual(result, { prefix: '', start: 0, end: 1 });
 });
 
+test('未闭合尖括号 <my-v — 视为尖括号区域', () => {
+    const result = getWordAtPosition('<my-v', 5);
+    assert.deepStrictEqual(result, { prefix: 'my-v', start: 1, end: 5, inAngleBrackets: true });
+});
+
+test('未闭合尖括号 <my — 光标在变量中间', () => {
+    const result = getWordAtPosition('<my', 3);
+    assert.deepStrictEqual(result, { prefix: 'my', start: 1, end: 3, inAngleBrackets: true });
+});
+
+test('未闭合尖括号 < — 空内容返回 null', () => {
+    const result = getWordAtPosition('<', 1);
+    assert.strictEqual(result, null);
+});
+
 // ─── replaceWordAtPosition ───────────────────
 console.log('\nreplaceWordAtPosition:');
 
