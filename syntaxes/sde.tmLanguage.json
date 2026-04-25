@@ -494,7 +494,7 @@
             "name": "constant.character.format.placeholder"
         },
         {
-            "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
+            "match": "\\b[A-Za-z_][A-Za-z0-9_\\-!?]*(?![A-Za-z0-9_\\-!?])",
             "name": "variable.other"
         }
     ],

@@ -612,8 +612,8 @@ function activate(context) {
                     }
 
                     // Tcl: scope-aware via buildScopeIndex + resolveDefinition
-                    const dollarRange = document.getWordRangeAtPosition(position, /\$[\w:]+/);
-                    const plainRange = document.getWordRangeAtPosition(position, /[\w:]+/);
+                    const dollarRange = document.getWordRangeAtPosition(position, /\$[\w:-]+/);
+                    const plainRange = document.getWordRangeAtPosition(position, /[\w:-]+/);
                     const range = dollarRange || plainRange;
                     if (!range) return null;
                     let word = document.getText(range);

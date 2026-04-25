@@ -129,8 +129,13 @@ def create_textmate_grammar(mode_name, keywords):
     })
 
     # Catch-all: any remaining identifier → variable (bright blue in most themes)
+    # SDE (Scheme) 允许 -!? 作为标识符字符；Tcl 方言允许 -
+    if mode_name == 'sde':
+        fallback = "\\b[A-Za-z_][A-Za-z0-9_\\-!?]*(?![A-Za-z0-9_\\-!?])"
+    else:
+        fallback = "\\b[A-Za-z_][A-Za-z0-9_\\-]*(?![A-Za-z0-9_\\-])"
     grammar["patterns"].append({
-        "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\b",
+        "match": fallback,
         "name": "variable.other"
     })
 

@@ -102,8 +102,8 @@ function provideTclReferences(document, position, options) {
     const root = tree.rootNode;
 
     // Extract word — try $varName first, then plain word
-    const dollarRange = document.getWordRangeAtPosition(position, /\$[\w:]+/);
-    const plainRange = document.getWordRangeAtPosition(position, /[\w:]+/);
+    const dollarRange = document.getWordRangeAtPosition(position, /\$[\w:-]+/);
+    const plainRange = document.getWordRangeAtPosition(position, /[\w:-]+/);
     const range = dollarRange || plainRange;
     if (!range) return null;
 
