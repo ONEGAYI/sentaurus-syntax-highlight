@@ -71,7 +71,7 @@ sentaurus-syntax-highlight/
 │   ├── definitions.js                          ← 用户变量补全/悬停/跳转（Scheme + Tcl）
 │   │
 │   ├── commands/                               ← VSCode 命令实现
-│   │   └── expression-converter.js             ← Scheme 前缀 ↔ 中缀表达式双向转换（含 QuickPick 变量补全和历史模式辅助函数）
+│   │   └── expression-converter.js             ← Scheme 前缀 ↔ 中缀表达式双向转换（含 CursorTracker 光标位置感知、尖括号连字符变量语法、QuickPick 变量补全和历史模式）
 │   │
 │   ├── lsp/                                    ← 语义功能核心（AST 解析 + Provider 注册）
 │   │   ├── scheme-parser.js                    ← Scheme 词法分析器 + AST 解析器
@@ -205,7 +205,7 @@ sentaurus-syntax-highlight/
 
 ### 表达式转换
 
-`src/commands/expression-converter.js` 实现 Scheme 前缀表示 ↔ 中缀表示的双向转换（算术运算 + 数学函数）。QuickPick 输入框在 SDE 文件中自动补全用户变量，并支持 `!` 历史模式（`!` 浏览全部、`!3` 精确选中、`! 文本` 模糊过滤）。
+`src/commands/expression-converter.js` 实现 Scheme 前缀表示 ↔ 中缀表示的双向转换（算术运算 + 数学函数）。连字符标识符（如 `W-doping`）在中缀表达式中通过 `<var-name>` 尖括号语法消除与减号的歧义——`tokenizeInfix` 解析尖括号为标识符 token，`astToInfix` 自动包裹连字符标识符。QuickPick 输入框通过 `CursorTracker` 启发式推断光标位置，实现光标位置感知补全（含尖括号区域感知），并支持 `!` 历史模式（`!` 浏览全部、`!3` 精确选中、`! 文本` 模糊过滤）。
 
 ## 关键约束
 

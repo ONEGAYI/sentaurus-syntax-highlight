@@ -4,6 +4,30 @@
 
 ---
 
+## [1.10.0] - 2026-04-26
+
+### 新功能
+
+- **表达式转换器光标位置感知补全**：QuickPick 输入框中变量补全不再仅匹配末尾单词，而是基于光标实际位置精确定位。引入 `CursorTracker` 类通过公共前后缀启发式推断光标位置，替换原有的 `getLastWordPrefix`/`replaceLastWord` 为更精确的 `getWordAtPosition`/`replaceWordAtPosition`，支持在表达式中间位置补全变量
+- **尖括号连字符变量语法**：Sentaurus 常用连字符标识符（如 `W-doping`、`L-length`）在中缀表达式中与减号运算符存在歧义。通过引入 `<var-name>` 尖括号语法消除歧义：`tokenizeInfix` 支持 `<my-var>` 解析为标识符 token、`astToInfix` 自动为连字符标识符添加尖括号包裹、QuickPick 选择连字符变量时自动插入尖括号并在 `<>` 内补全
+
+### Bug 修复
+
+- **修复连字符标识符被 TextMate 高亮切割**：SDE 语法中标识符正则仅匹配 `\w` 字符，导致 `my-var` 被切割为 `my` 和 `var` 两个 token。现在标识符正则包含连字符、感叹号和问号，6 种语言的语法文件均已同步更新
+- **修复连字符标识符变量的跳转定义和引用查找**：`extension.js` 和 `variable-reference-provider.js` 中的词匹配正则未包含连字符，导致含连字符的变量名无法被识别为跳转/引用目标
+
+### 其他改进
+
+- **QuickPick 确认输入预览**：确认项现在显示转换结果预览（`detail` 字段），若表达式存在语法错误则显示错误信息（`⚠` 前缀）
+- **语言配置 wordPattern**：为 SDE 和 Tcl 语言配置添加 `wordPattern`，使 VSCode 的双击选词、Ctrl+D 等原生功能正确识别连字符标识符
+
+### 测试
+
+- 新增连字符标识符前缀→中缀转换测试（6 个用例）、尖括号变量中缀→前缀转换测试（8 个用例）、往返一致性测试（7 个用例）
+- QuickPick 测试从 `getLastWordPrefix`/`replaceLastWord` 迁移为 `CursorTracker`/`getWordAtPosition`/`replaceWordAtPosition`（43 个用例），新增尖括号区域感知测试
+
+---
+
 ## [1.9.1] - 2026-04-24
 
 ### Bug 修复
@@ -663,6 +687,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.10.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.4...v1.9.0
 [1.8.4]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.3...v1.8.4
