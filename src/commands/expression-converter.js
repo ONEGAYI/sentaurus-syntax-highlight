@@ -432,19 +432,62 @@ function getSupportedOperators() {
 // QuickPick 辅助函数（变量补全 + 历史模式）
 // ────────────────────────────────────────────
 
-const TRAILING_IDENT_RE = /([a-zA-Z_@][a-zA-Z0-9_@]*)$/;
+class CursorTracker {
+    constructor() {
+        this._prevValue = '';
+    }
 
-function getLastWordPrefix(value) {
-    const match = value.match(TRAILING_IDENT_RE);
-    return match ? match[1] : '';
+    update(newValue) {
+        const cursor = this._inferCursor(this._prevValue, newValue);
+        this._prevValue = newValue;
+        return cursor;
+    }
+
+    sync(value) {
+        this._prevValue = value;
+    }
+
+    reset() {
+        this._prevValue = '';
+    }
+
+    _inferCursor(oldVal, newVal) {
+        if (oldVal === newVal) return newVal.length;
+
+        let prefixLen = 0;
+        const minLen = Math.min(oldVal.length, newVal.length);
+        while (prefixLen < minLen && oldVal[prefixLen] === newVal[prefixLen]) {
+            prefixLen++;
+        }
+
+        const oldRem = oldVal.length - prefixLen;
+        const newRem = newVal.length - prefixLen;
+        let suffixLen = 0;
+        while (suffixLen < oldRem && suffixLen < newRem &&
+               oldVal[oldVal.length - 1 - suffixLen] === newVal[newVal.length - 1 - suffixLen]) {
+            suffixLen++;
+        }
+
+        return newVal.length - suffixLen;
+    }
 }
 
-function replaceLastWord(value, replacement) {
-    const match = value.match(TRAILING_IDENT_RE);
-    if (match) {
-        return value.slice(0, match.index) + replacement;
-    }
-    return value + replacement;
+const IDENT_CHAR_RE = /[a-zA-Z0-9_@]/;
+
+function getWordAtPosition(value, cursorPos) {
+    let start = cursorPos;
+    while (start > 0 && IDENT_CHAR_RE.test(value[start - 1])) start--;
+
+    let end = cursorPos;
+    while (end < value.length && IDENT_CHAR_RE.test(value[end])) end++;
+
+    if (start === end) return null;
+
+    return { prefix: value.slice(start, cursorPos), start, end };
+}
+
+function replaceWordAtPosition(value, wordInfo, replacement) {
+    return value.slice(0, wordInfo.start) + replacement + value.slice(wordInfo.end);
 }
 
 function parseHistoryInput(value) {
@@ -463,7 +506,8 @@ module.exports = {
     prefixToInfix,
     infixToPrefix,
     getSupportedOperators,
-    getLastWordPrefix,
-    replaceLastWord,
+    CursorTracker,
+    getWordAtPosition,
+    replaceWordAtPosition,
     parseHistoryInput,
 };
