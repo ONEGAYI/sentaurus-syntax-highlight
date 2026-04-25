@@ -521,7 +521,7 @@ function getWordAtPosition(value, cursorPos) {
         const content = value.slice(contentStart, endIdx);
         if (content.length > 0) {
             const prefix = value.slice(contentStart, Math.min(cursorPos, endIdx));
-            return { prefix, start: contentStart, end: endIdx, inAngleBrackets: true };
+            return { prefix, start: contentStart, end: endIdx, inAngleBrackets: true, bracketClosed: closeIdx !== -1 };
         }
     }
 

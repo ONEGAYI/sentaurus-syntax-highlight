@@ -823,7 +823,8 @@ function activate(context) {
                     if (_lastWordInfo) {
                         if (_lastWordInfo.inAngleBrackets) {
                             // 场景 3：已在 <> 内，替换括号内容
-                            insertText = expressionConverter.replaceWordAtPosition(qp.value, _lastWordInfo, varName);
+                            const replacement = _lastWordInfo.bracketClosed ? varName : `${varName}>`;
+                            insertText = expressionConverter.replaceWordAtPosition(qp.value, _lastWordInfo, replacement);
                         } else if (hasHyphen) {
                             // 场景 2：普通标识符位置，变量含连字符 → 替换为 <var>
                             const replacement = `<${varName}>`;

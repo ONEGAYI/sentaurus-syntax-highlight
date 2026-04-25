@@ -141,22 +141,22 @@ test('多个运算符后的标识符', () => {
 
 test('尖括号内变量 — 光标在变量中间', () => {
     const result = getWordAtPosition('<my-var> + 1', 4);
-    assert.deepStrictEqual(result, { prefix: 'my-', start: 1, end: 7, inAngleBrackets: true });
+    assert.deepStrictEqual(result, { prefix: 'my-', start: 1, end: 7, inAngleBrackets: true, bracketClosed: true });
 });
 
 test('尖括号内变量 — 光标在变量开头', () => {
     const result = getWordAtPosition('<my-var> + 1', 1);
-    assert.deepStrictEqual(result, { prefix: '', start: 1, end: 7, inAngleBrackets: true });
+    assert.deepStrictEqual(result, { prefix: '', start: 1, end: 7, inAngleBrackets: true, bracketClosed: true });
 });
 
 test('尖括号内变量 — 光标在变量末尾', () => {
     const result = getWordAtPosition('<my-var> + 1', 7);
-    assert.deepStrictEqual(result, { prefix: 'my-var', start: 1, end: 7, inAngleBrackets: true });
+    assert.deepStrictEqual(result, { prefix: 'my-var', start: 1, end: 7, inAngleBrackets: true, bracketClosed: true });
 });
 
 test('光标在开括号上 — 视为进入尖括号', () => {
     const result = getWordAtPosition('<my-var> + 1', 0);
-    assert.deepStrictEqual(result, { prefix: '', start: 1, end: 7, inAngleBrackets: true });
+    assert.deepStrictEqual(result, { prefix: '', start: 1, end: 7, inAngleBrackets: true, bracketClosed: true });
 });
 
 test('光标在闭括号后 — 正常行为', () => {
@@ -176,12 +176,12 @@ test('光标在普通标识符上 — 不受尖括号影响', () => {
 
 test('未闭合尖括号 <my-v — 视为尖括号区域', () => {
     const result = getWordAtPosition('<my-v', 5);
-    assert.deepStrictEqual(result, { prefix: 'my-v', start: 1, end: 5, inAngleBrackets: true });
+    assert.deepStrictEqual(result, { prefix: 'my-v', start: 1, end: 5, inAngleBrackets: true, bracketClosed: false });
 });
 
 test('未闭合尖括号 <my — 光标在变量中间', () => {
     const result = getWordAtPosition('<my', 3);
-    assert.deepStrictEqual(result, { prefix: 'my', start: 1, end: 3, inAngleBrackets: true });
+    assert.deepStrictEqual(result, { prefix: 'my', start: 1, end: 3, inAngleBrackets: true, bracketClosed: false });
 });
 
 test('未闭合尖括号 < — 空内容返回 null', () => {
