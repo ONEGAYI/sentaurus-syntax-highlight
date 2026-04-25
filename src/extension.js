@@ -730,13 +730,14 @@ function activate(context) {
             qp.matchOnDescription = false;
             qp.matchOnDetail = false;
 
+            const tracker = new expressionConverter.CursorTracker();
             let _updatingValue = false;
+            let _lastWordInfo = null;
             const historyTitle = useZh
                 ? `${promptText}  —  !N 精确选中 | ! 文本 模糊过滤`
                 : `${promptText}  —  !N select by # | ! text fuzzy filter`;
 
             function updateItems(value) {
-                if (_updatingValue) return;
                 const items = [];
                 const histParsed = expressionConverter.parseHistoryInput(value);
 
@@ -760,7 +761,9 @@ function activate(context) {
                     }
                 } else {
                     if (qp.title !== promptText) qp.title = promptText;
-                    const prefix = expressionConverter.getLastWordPrefix(value).toLowerCase();
+                    const cursor = tracker.update(value);
+                    _lastWordInfo = expressionConverter.getWordAtPosition(value, cursor);
+                    const prefix = _lastWordInfo ? _lastWordInfo.prefix.toLowerCase() : '';
 
                     if (userVars.length > 0 && prefix) {
                         const variables = userVars.filter(d => d.kind === 'variable' && d.name.toLowerCase().startsWith(prefix));
@@ -804,13 +807,15 @@ function activate(context) {
                 let finalValue;
 
                 if (selected && selected._varName) {
-                    // 选中变量：替换最后一个词后继续输入（不关闭）
                     _updatingValue = true;
-                    const newVal = expressionConverter.replaceLastWord(qp.value, selected._varName);
+                    const newVal = _lastWordInfo
+                        ? expressionConverter.replaceWordAtPosition(qp.value, _lastWordInfo, selected._varName)
+                        : qp.value + selected._varName;
                     qp.value = newVal;
+                    tracker.sync(newVal);
                     _updatingValue = false;
                     updateItems(newVal);
-                    return; // 保持 QuickPick 打开
+                    return;
                 }
 
                 if (selected && selected._confirmInput) {
@@ -846,7 +851,10 @@ function activate(context) {
                 insertResult(editor, result);
             });
 
-            qp.onDidHide(() => qp.dispose());
+            qp.onDidHide(() => {
+                tracker.reset();
+                qp.dispose();
+            });
             qp.show();
         });
     }
