@@ -445,6 +445,12 @@ function getSupportedOperators() {
                 { scheme: 'max', infix: 'max()', description: '最大值（支持多参数）', example_scheme: '(max a b c)', example_infix: 'max(a, b, c)' },
             ],
         },
+        {
+            category: '变量语法',
+            items: [
+                { scheme: 'my-var', infix: '<my-var>', description: '连字符变量 — 中缀表达式中用尖括号包裹，避免与减号混淆' },
+            ],
+        },
     ];
 }
 

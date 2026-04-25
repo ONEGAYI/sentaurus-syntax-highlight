@@ -790,9 +790,15 @@ function activate(context) {
                 // 确认分栏：仅非历史模式下显示
                 if (!histParsed && value.trim()) {
                     items.push({ label: useZh ? '确认输入' : 'Confirm Input', kind: vscode.QuickPickItemKind.Separator });
+                    // 预览转换结果
+                    const preview = convertFn(value);
+                    const desc = preview.error
+                        ? `⚠ ${preview.error}`
+                        : (useZh ? '按 Enter 确认' : 'Press Enter to confirm');
                     items.push({
                         label: value,
-                        description: useZh ? '按 Enter 确认' : 'Press Enter to confirm',
+                        description: desc,
+                        detail: preview.result || undefined,
                         alwaysShow: true,
                         _confirmInput: true,
                     });
@@ -810,9 +816,27 @@ function activate(context) {
 
                 if (selected && selected._varName) {
                     _updatingValue = true;
-                    const newVal = _lastWordInfo
-                        ? expressionConverter.replaceWordAtPosition(qp.value, _lastWordInfo, selected._varName)
-                        : qp.value + selected._varName;
+                    let insertText;
+                    const varName = selected._varName;
+                    const hasHyphen = /[-]/.test(varName);
+
+                    if (_lastWordInfo) {
+                        if (_lastWordInfo.inAngleBrackets) {
+                            // 场景 3：已在 <> 内，替换括号内容
+                            insertText = expressionConverter.replaceWordAtPosition(qp.value, _lastWordInfo, varName);
+                        } else if (hasHyphen) {
+                            // 场景 2：普通标识符位置，变量含连字符 → 替换为 <var>
+                            const replacement = `<${varName}>`;
+                            insertText = expressionConverter.replaceWordAtPosition(qp.value, _lastWordInfo, replacement);
+                        } else {
+                            insertText = expressionConverter.replaceWordAtPosition(qp.value, _lastWordInfo, varName);
+                        }
+                    } else {
+                        // 无 wordInfo，在末尾追加
+                        insertText = hasHyphen ? qp.value + `<${varName}>` : qp.value + varName;
+                    }
+
+                    const newVal = insertText;
                     qp.value = newVal;
                     tracker.sync(newVal);
                     _updatingValue = false;
@@ -872,7 +896,7 @@ function activate(context) {
             'sentaurus.infix2scheme',
             expressionConverter.infixToPrefix,
             '输入中缀表达式，转换为 Scheme 前缀格式',
-            '输入 ! 浏览历史 | 例: (W/2 + L/2)'
+            '输入 ! 浏览历史 | <连字符变量> | 例: (<W-doping>/2 + <L-length>/2)'
         ),
     );
 
