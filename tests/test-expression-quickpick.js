@@ -139,6 +139,41 @@ test('多个运算符后的标识符', () => {
     assert.deepStrictEqual(result, { prefix: 'Wid', start: 8, end: 11 });
 });
 
+test('尖括号内变量 — 光标在变量中间', () => {
+    const result = getWordAtPosition('<my-var> + 1', 4);
+    assert.deepStrictEqual(result, { prefix: 'my-', start: 1, end: 7, inAngleBrackets: true });
+});
+
+test('尖括号内变量 — 光标在变量开头', () => {
+    const result = getWordAtPosition('<my-var> + 1', 1);
+    assert.deepStrictEqual(result, { prefix: '', start: 1, end: 7, inAngleBrackets: true });
+});
+
+test('尖括号内变量 — 光标在变量末尾', () => {
+    const result = getWordAtPosition('<my-var> + 1', 7);
+    assert.deepStrictEqual(result, { prefix: 'my-var', start: 1, end: 7, inAngleBrackets: true });
+});
+
+test('光标在开括号上 — 视为进入尖括号', () => {
+    const result = getWordAtPosition('<my-var> + 1', 0);
+    assert.deepStrictEqual(result, { prefix: '', start: 1, end: 7, inAngleBrackets: true });
+});
+
+test('光标在闭括号后 — 正常行为', () => {
+    const result = getWordAtPosition('<my-var> + 1', 8);
+    assert.strictEqual(result, null);
+});
+
+test('开括号后无内容 — 光标在开括号后一位', () => {
+    const result = getWordAtPosition('<> + 1', 1);
+    assert.strictEqual(result, null);
+});
+
+test('光标在普通标识符上 — 不受尖括号影响', () => {
+    const result = getWordAtPosition('a + <my-var>', 0);
+    assert.deepStrictEqual(result, { prefix: '', start: 0, end: 1 });
+});
+
 // ─── replaceWordAtPosition ───────────────────
 console.log('\nreplaceWordAtPosition:');
 

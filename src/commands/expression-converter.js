@@ -493,10 +493,34 @@ class CursorTracker {
     }
 }
 
-const IDENT_CHAR_RE = /[a-zA-Z0-9_@]/;
+const IDENT_CHAR_RE = /[a-zA-Z0-9_@\-]/;
 
 function getWordAtPosition(value, cursorPos) {
     if (cursorPos < 0 || cursorPos > value.length) return null;
+
+    // 检查光标是否在 <...> 区域内（含光标在 < 或 > 上）
+    let bracketStart = -1;
+    let scanStart = Math.min(cursorPos, value.length - 1);
+    // 光标在 > 上时从 > 前一位开始扫描（视为区域内）
+    if (scanStart > 0 && value[scanStart] === '>') scanStart--;
+    for (let i = scanStart; i >= 0; i--) {
+        if (value[i] === '>') break;       // 遇到闭括号说明不在区域内
+        if (value[i] === '<') { bracketStart = i; break; }
+    }
+
+    if (bracketStart !== -1 && bracketStart < value.length - 1) {
+        const contentStart = bracketStart + 1;
+        const closeIdx = value.indexOf('>', contentStart);
+        if (closeIdx !== -1) {
+            const content = value.slice(contentStart, closeIdx);
+            if (content.length > 0) {
+                const prefix = value.slice(contentStart, Math.min(cursorPos, closeIdx));
+                return { prefix, start: contentStart, end: closeIdx, inAngleBrackets: true };
+            }
+        }
+    }
+
+    // 常规标识符匹配
     let start = cursorPos;
     while (start > 0 && IDENT_CHAR_RE.test(value[start - 1])) start--;
 
