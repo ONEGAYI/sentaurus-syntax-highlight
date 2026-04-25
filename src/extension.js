@@ -738,10 +738,12 @@ function activate(context) {
                 : `${promptText}  —  !N select by # | ! text fuzzy filter`;
 
             function updateItems(value) {
+                if (_updatingValue) return;
                 const items = [];
                 const histParsed = expressionConverter.parseHistoryInput(value);
 
                 if (histParsed) {
+                    _lastWordInfo = null;
                     if (qp.title !== historyTitle) qp.title = historyTitle;
                     if (history.length > 0) {
                         items.push({ label: '历史记录', kind: vscode.QuickPickItemKind.Separator });
