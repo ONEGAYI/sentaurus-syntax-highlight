@@ -181,6 +181,24 @@ function tokenizeInfix(text) {
             }
         }
 
+        // 尖括号变量 <var-name>：连字符标识符在中缀表达式中的消歧语法
+        if (ch === '<') {
+            const contentStart = i + 1;
+            let j = contentStart;
+            let foundClose = false;
+            while (j < text.length) {
+                if (text[j] === '>') { foundClose = true; break; }
+                if (text[j] === '<') throw new Error(`嵌套尖括号（位置 ${i}）`);
+                j++;
+            }
+            if (!foundClose) throw new Error(`未闭合的尖括号（位置 ${i}）`);
+            const content = text.slice(contentStart, j);
+            if (content.length === 0) throw new Error(`空尖括号（位置 ${i}）`);
+            tokens.push({ type: INFIX_TOKEN_TYPE.IDENT, value: content });
+            i = j + 1;
+            continue;
+        }
+
         if ('+-*/%^'.includes(ch)) {
             tokens.push({ type: INFIX_TOKEN_TYPE.OP, value: ch });
             i++;

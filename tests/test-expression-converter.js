@@ -272,6 +272,59 @@ test('复杂嵌套表达式', () => {
     assert.ok(r.result.startsWith('(/ '));
 });
 
+// ─── infixToPrefix 尖括号连字符变量 ───────────
+console.log('\ninfixToPrefix - 尖括号连字符变量:');
+
+test('<my-var> 作为单个标识符', () => {
+    const r = infixToPrefix('<my-var> + 1');
+    assert.strictEqual(r.result, '(+ my-var 1)');
+});
+
+test('<var-name> 参与乘法', () => {
+    const r = infixToPrefix('<W-doping> * 2');
+    assert.strictEqual(r.result, '(* W-doping 2)');
+});
+
+test('混合普通变量和尖括号变量', () => {
+    const r = infixToPrefix('a + <my-var> * b');
+    assert.strictEqual(r.result, '(+ a (* my-var b))');
+});
+
+test('尖括号变量嵌套在函数中', () => {
+    const r = infixToPrefix('sin(<my-var>)');
+    assert.strictEqual(r.result, '(sin my-var)');
+});
+
+test('多个尖括号变量', () => {
+    const r = infixToPrefix('<W-doping> + <L-length>');
+    assert.strictEqual(r.result, '(+ W-doping L-length)');
+});
+
+test('尖括号变量作为幂运算底数', () => {
+    const r = infixToPrefix('<my-var> ^ 2');
+    assert.strictEqual(r.result, '(expt my-var 2)');
+});
+
+test('未闭合尖括号报错', () => {
+    const r = infixToPrefix('<my-var + 1');
+    assert.ok(r.error);
+});
+
+test('嵌套尖括号报错', () => {
+    const r = infixToPrefix('<<nested>> + 1');
+    assert.ok(r.error);
+});
+
+test('空尖括号报错', () => {
+    const r = infixToPrefix('<> + 1');
+    assert.ok(r.error);
+});
+
+test('孤立右尖括号不影响解析', () => {
+    const r = infixToPrefix('a + b>');
+    assert.strictEqual(r.result, '(+ a b)');
+});
+
 // ─── infixToPrefix 同级运算符展平 ───────────
 console.log('\ninfixToPrefix - 同级运算符展平:');
 
