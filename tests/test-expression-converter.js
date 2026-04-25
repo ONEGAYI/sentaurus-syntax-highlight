@@ -137,6 +137,39 @@ test('非数学表达式原样返回', () => {
     assert.strictEqual(r.result, '(define x 42)');
 });
 
+// ─── prefixToInfix 连字符标识符 ───────────────
+console.log('\nprefixToInfix - 连字符标识符:');
+
+test('连字符标识符自动包裹尖括号', () => {
+    const r = prefixToInfix('(+ my-var 1)');
+    assert.strictEqual(r.result, '<my-var> + 1');
+});
+
+test('普通标识符不包裹尖括号', () => {
+    const r = prefixToInfix('(+ myVar 1)');
+    assert.strictEqual(r.result, 'myVar + 1');
+});
+
+test('多个连字符标识符', () => {
+    const r = prefixToInfix('(+ W-doping L-length)');
+    assert.strictEqual(r.result, '<W-doping> + <L-length>');
+});
+
+test('连字符标识符在函数中', () => {
+    const r = prefixToInfix('(sin my-var)');
+    assert.strictEqual(r.result, 'sin(<my-var>)');
+});
+
+test('连字符标识符在嵌套表达式中', () => {
+    const r = prefixToInfix('(* (+ my-var W) 2)');
+    assert.strictEqual(r.result, '(<my-var> + W) * 2');
+});
+
+test('单个连字符标识符', () => {
+    const r = prefixToInfix('my-var');
+    assert.strictEqual(r.result, '<my-var>');
+});
+
 // ─── infixToPrefix 基础 ─────────────────────
 console.log('\ninfixToPrefix - 基础运算:');
 

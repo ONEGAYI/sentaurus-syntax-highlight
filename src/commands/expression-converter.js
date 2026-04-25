@@ -67,7 +67,9 @@ function getNodePrecedence(node) {
 
 function astToInfix(node, parentPrecedence = 0) {
     if (node.type === 'Number') return String(node.value);
-    if (node.type === 'Identifier') return node.value;
+    if (node.type === 'Identifier') {
+        return /[-!?]/.test(node.value) ? `<${node.value}>` : node.value;
+    }
     if (node.type === 'Boolean') return node.value ? '#t' : '#f';
     if (node.type === 'String') return `"${node.value}"`;
 
