@@ -100,9 +100,173 @@ function getSectionStack(text, targetLine, sectionKeywords) {
     return stack.map(s => s.name);
 }
 
+/**
+ * Scan entire text, return section stack snapshot per line.
+ * @param {string} text
+ * @param {Set<string>} sectionKeywords
+ * @returns {Array<string[]>} stacksPerLine[lineIdx] = ['Solve', 'Coupled']
+ */
+function scanStacksPerLine(text, sectionKeywords) {
+    const lines = text.split('\n');
+    const result = new Array(lines.length);
+    const stack = [];
+    let depth = 0;
+    let lineIdx = 0;
+    let i = 0;
+
+    function snapshot() {
+        while (lineIdx < result.length && result[lineIdx] === undefined) {
+            result[lineIdx] = stack.map(s => s.name);
+            lineIdx++;
+        }
+    }
+
+    while (i < text.length) {
+        const ch = text[i];
+
+        if (ch === '\n') {
+            snapshot();
+            lineIdx++;
+            i++;
+            continue;
+        }
+
+        if (ch === '#') {
+            while (i < text.length && text[i] !== '\n') i++;
+            continue;
+        }
+
+        if (ch === '"') {
+            i++;
+            while (i < text.length && text[i] !== '"') {
+                if (text[i] === '\\') i++;
+                i++;
+            }
+            i++;
+            continue;
+        }
+
+        if (ch === '{') {
+            // Snapshot current line BEFORE pushing the new section,
+            // so the section name line sees the outer stack (not itself).
+            if (result[lineIdx] === undefined) {
+                result[lineIdx] = stack.map(s => s.name);
+            }
+            let j = i - 1;
+            while (j >= 0 && text[j] === ' ') j--;
+            let end = j + 1;
+            while (j >= 0 && /[\w]/.test(text[j])) j--;
+            const ident = text.slice(j + 1, end);
+            if (sectionKeywords.has(ident)) {
+                stack.push({ name: ident, depth });
+            }
+            depth++;
+            i++;
+            continue;
+        }
+
+        if (ch === '}') {
+            depth--;
+            while (stack.length > 0 && stack[stack.length - 1].depth >= depth) {
+                stack.pop();
+            }
+            i++;
+            continue;
+        }
+
+        i++;
+    }
+    snapshot();
+
+    // Fill any remaining undefined lines
+    for (let li = 0; li < result.length; li++) {
+        if (result[li] === undefined) result[li] = [];
+    }
+
+    return result;
+}
+
+/**
+ * Extract sdevice semantic tokens from text.
+ * @param {string} text - Document full text
+ * @param {Map<string, Set<string>>} keywordIndex - keyword → Set<section>
+ * @param {Set<string>} sectionKeywords - Section name keywords
+ * @returns {number[]} Delta-encoded semantic token array
+ */
+function extractSdeviceTokens(text, keywordIndex, sectionKeywords) {
+    const tokens = [];
+    const lines = text.split('\n');
+    const lineStarts = [0];
+    for (let i = 0; i < text.length; i++) {
+        if (text[i] === '\n') lineStarts.push(i + 1);
+    }
+
+    const stacksPerLine = scanStacksPerLine(text, sectionKeywords);
+
+    const identRe = /\b([A-Za-z_][A-Za-z0-9_]*)\b/g;
+
+    for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+        const lineText = lines[lineIdx];
+        const stack = stacksPerLine[lineIdx];
+
+        // Skip comment lines
+        const trimmed = lineText.trimStart();
+        if (trimmed.startsWith('#') || trimmed.startsWith('*')) continue;
+
+        let m;
+        identRe.lastIndex = 0;
+        while ((m = identRe.exec(lineText)) !== null) {
+            const word = m[1];
+            if (!keywordIndex.has(word)) continue;
+
+            const col = m.index;
+
+            if (stack.length === 0) {
+                // Not inside any section
+                if (sectionKeywords.has(word)) {
+                    // Check if followed by {
+                    const after = lineText.slice(col + word.length).trimStart();
+                    if (after.startsWith('{')) {
+                        tokens.push({ line: lineIdx, col, len: word.length, type: 0 }); // sectionName
+                    }
+                }
+            } else {
+                // Inside section(s), check if word belongs to any stack level
+                const wordSections = keywordIndex.get(word);
+                let matched = false;
+                for (let si = stack.length - 1; si >= 0; si--) {
+                    if (wordSections.has(stack[si])) {
+                        matched = true;
+                        break;
+                    }
+                }
+                if (matched) {
+                    tokens.push({ line: lineIdx, col, len: word.length, type: 1 }); // sectionKeyword
+                }
+            }
+        }
+    }
+
+    return encodeDelta(tokens);
+}
+
+function encodeDelta(tokens) {
+    const result = [];
+    let prevLine = 0, prevCol = 0;
+    for (const t of tokens) {
+        const deltaLine = t.line - prevLine;
+        const deltaCol = deltaLine === 0 ? t.col - prevCol : t.col;
+        result.push(deltaLine, deltaCol, t.len, t.type, 0);
+        prevLine = t.line;
+        prevCol = t.col;
+    }
+    return result;
+}
+
 module.exports = {
     buildKeywordSectionIndex,
     getSectionStack,
+    extractSdeviceTokens,
     TOKEN_TYPES,
     TOKEN_MODIFIERS,
 };

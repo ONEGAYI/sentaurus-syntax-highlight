@@ -15,7 +15,7 @@ function test(name, fn) {
     catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
 }
 
-const { buildKeywordSectionIndex, getSectionStack } = require('../src/lsp/providers/sdevice-semantic-provider');
+const { buildKeywordSectionIndex, getSectionStack, extractSdeviceTokens } = require('../src/lsp/providers/sdevice-semantic-provider');
 
 console.log('\nsdevice-semantic — buildKeywordSectionIndex:');
 
@@ -87,6 +87,82 @@ test('braces inside comments are ignored', () => {
     const text = 'File {\n  # Plot {\n  Plot="x"\n}';
     const stack = getSectionStack(text, 1, new Set(['Plot', 'File']));
     assert.deepStrictEqual(stack, ['File']);
+});
+
+console.log('\nsdevice-semantic — extractSdeviceTokens:');
+
+test('Plot inside File is sectionKeyword (type 1)', () => {
+    const text = 'File {\n  Plot="x"\n}';
+    const index = buildKeywordSectionIndex(docs);
+    const sectionKws = new Set(['File', 'Plot', 'Solve', 'Coupled']);
+    const data = extractSdeviceTokens(text, index, sectionKws);
+    assert.ok(data.length > 0, 'Should produce tokens');
+    let curLine = 0, curCol = 0;
+    let foundFileToken = false, foundPlotToken = false;
+    for (let i = 0; i < data.length; i += 5) {
+        curLine += data[i];
+        curCol = data[i] === 0 ? curCol + data[i+1] : data[i+1];
+        const len = data[i+2];
+        const typeIdx = data[i+3];
+        const word = text.split('\n')[curLine].slice(curCol, curCol + len);
+        if (word === 'File') {
+            assert.strictEqual(typeIdx, 0, 'File should be sectionName (type 0)');
+            foundFileToken = true;
+        }
+        if (word === 'Plot' && curLine === 1) {
+            assert.strictEqual(typeIdx, 1, 'Plot inside File should be sectionKeyword (type 1)');
+            foundPlotToken = true;
+        }
+    }
+    assert.ok(foundFileToken, 'Should find File token');
+    assert.ok(foundPlotToken, 'Should find Plot token inside File');
+});
+
+test('Top-level Plot is sectionName (type 0)', () => {
+    const text = 'Plot {\n  ElectricField\n}';
+    const index = buildKeywordSectionIndex(docs);
+    const sectionKws = new Set(['File', 'Plot', 'Solve']);
+    const data = extractSdeviceTokens(text, index, sectionKws);
+    let curLine = 0, curCol = 0;
+    for (let i = 0; i < data.length; i += 5) {
+        curLine += data[i];
+        curCol = data[i] === 0 ? curCol + data[i+1] : data[i+1];
+        const len = data[i+2];
+        const typeIdx = data[i+3];
+        const word = text.split('\n')[curLine].slice(curCol, curCol + len);
+        if (word === 'Plot' && curLine === 0) {
+            assert.strictEqual(typeIdx, 0, 'Top-level Plot should be sectionName (type 0)');
+        }
+    }
+});
+
+test('Plot inside nested Solve>Coupled is sectionKeyword', () => {
+    const text = 'Solve {\n  Coupled {\n    Plot\n  }\n}';
+    const index = buildKeywordSectionIndex(docs);
+    const sectionKws = new Set(['File', 'Plot', 'Solve', 'Coupled']);
+    const data = extractSdeviceTokens(text, index, sectionKws);
+    let curLine = 0, curCol = 0;
+    let foundPlotToken = false;
+    for (let i = 0; i < data.length; i += 5) {
+        curLine += data[i];
+        curCol = data[i] === 0 ? curCol + data[i+1] : data[i+1];
+        const len = data[i+2];
+        const typeIdx = data[i+3];
+        const word = text.split('\n')[curLine].slice(curCol, curCol + len);
+        if (word === 'Plot' && curLine === 2) {
+            assert.strictEqual(typeIdx, 1, 'Plot inside Coupled should be sectionKeyword');
+            foundPlotToken = true;
+        }
+    }
+    assert.ok(foundPlotToken, 'Should find Plot token inside Coupled');
+});
+
+test('Non-keyword text produces no tokens', () => {
+    const text = 'set x 1\nset y 2';
+    const index = buildKeywordSectionIndex(docs);
+    const sectionKws = new Set(['File', 'Plot']);
+    const data = extractSdeviceTokens(text, index, sectionKws);
+    assert.strictEqual(data.length, 0, 'No tokens for non-keyword text');
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);
