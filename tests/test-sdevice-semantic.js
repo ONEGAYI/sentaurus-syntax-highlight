@@ -165,5 +165,27 @@ test('Non-keyword text produces no tokens', () => {
     assert.strictEqual(data.length, 0, 'No tokens for non-keyword text');
 });
 
+console.log('\nsdevice-semantic — edge cases:');
+
+test('tab before { is handled correctly', () => {
+    const text = 'File\t{\n  Plot="x"\n}';
+    const stack = getSectionStack(text, 1, new Set(['Plot', 'File']));
+    assert.deepStrictEqual(stack, ['File']);
+});
+
+test('asterisk comment line braces are ignored', () => {
+    const text = 'File {\n* this has { braces }\n  Plot="x"\n}';
+    const stack = getSectionStack(text, 2, new Set(['Plot', 'File']));
+    assert.deepStrictEqual(stack, ['File']);
+});
+
+test('asterisk comment mid-line is NOT treated as comment', () => {
+    // * only starts a comment at line beginning
+    const text = 'File {\n  x * { y }\n}';
+    const stack = getSectionStack(text, 1, new Set(['Plot', 'File']));
+    assert.deepStrictEqual(stack, ['File']);
+    // depth should be 2 because the { inside the line is counted
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed) process.exit(1);

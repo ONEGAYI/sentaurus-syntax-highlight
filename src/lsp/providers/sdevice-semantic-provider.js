@@ -47,17 +47,22 @@ function getSectionStack(text, targetLine, sectionKeywords) {
     let depth = 0;
     let i = 0;
     let line = 0;
+    let lineStart = true;
 
     while (i < text.length && line < targetLine) {
         const ch = text[i];
 
-        if (ch === '\n') { line++; i++; continue; }
+        if (ch === '\n') { line++; i++; lineStart = true; continue; }
 
-        // Skip comments
-        if (ch === '#') {
+        if (/\s/.test(ch)) { i++; continue; }
+
+        // Skip comments: # anywhere, * at line start
+        if (ch === '#' || (ch === '*' && lineStart)) {
             while (i < text.length && text[i] !== '\n') i++;
             continue;
         }
+
+        lineStart = false;
 
         // Skip strings
         if (ch === '"') {
@@ -71,9 +76,9 @@ function getSectionStack(text, targetLine, sectionKeywords) {
         }
 
         if (ch === '{') {
-            // Look back for identifier
+            // Look back for identifier (skip whitespace including tabs)
             let j = i - 1;
-            while (j >= 0 && text[j] === ' ') j--;
+            while (j >= 0 && /\s/.test(text[j])) j--;
             let end = j + 1;
             while (j >= 0 && /[\w]/.test(text[j])) j--;
             const ident = text.slice(j + 1, end);
@@ -111,6 +116,7 @@ function scanStacksPerLine(text, sectionKeywords) {
     const result = new Array(lines.length);
     const stack = [];
     let depth = 0;
+    let lineStart = true;
     let lineIdx = 0;
     let i = 0;
 
@@ -128,13 +134,19 @@ function scanStacksPerLine(text, sectionKeywords) {
             snapshot();
             lineIdx++;
             i++;
+            lineStart = true;
             continue;
         }
 
-        if (ch === '#') {
+        if (/\s/.test(ch)) { i++; continue; }
+
+        // Skip comments: # anywhere, * at line start
+        if (ch === '#' || (ch === '*' && lineStart)) {
             while (i < text.length && text[i] !== '\n') i++;
             continue;
         }
+
+        lineStart = false;
 
         if (ch === '"') {
             i++;
@@ -153,7 +165,7 @@ function scanStacksPerLine(text, sectionKeywords) {
                 result[lineIdx] = stack.map(s => s.name);
             }
             let j = i - 1;
-            while (j >= 0 && text[j] === ' ') j--;
+            while (j >= 0 && /\s/.test(text[j])) j--;
             let end = j + 1;
             while (j >= 0 && /[\w]/.test(text[j])) j--;
             const ident = text.slice(j + 1, end);
