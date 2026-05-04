@@ -29,6 +29,7 @@ const { getSdeviceAllSectionKeywords } = require('./lsp/tcl-symbol-configs');
 let schemeCache;
 /** @type {TclParseCache} */
 let tclCache;
+let sdeviceStProvider;
 
 /** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
 function decodeHtml(str) {
@@ -282,6 +283,7 @@ function activate(context) {
             defs.invalidateDefinitionCache(uri);
             schemeCache.invalidate(uri);
             tclCache.invalidate(uri);
+            if (sdeviceStProvider) sdeviceStProvider.invalidate(uri);
         })
     );
 
@@ -466,7 +468,7 @@ function activate(context) {
         sdeviceSemanticMod.TOKEN_TYPES,
         sdeviceSemanticMod.TOKEN_MODIFIERS
     );
-    const sdeviceStProvider = sdeviceSemanticMod.createSdeviceSemanticProvider(
+    sdeviceStProvider = sdeviceSemanticMod.createSdeviceSemanticProvider(
         sdeviceDocs, sdeviceSectionKws
     );
     context.subscriptions.push(
@@ -1009,6 +1011,7 @@ function activate(context) {
 function deactivate() {
     schemeCache.dispose();
     tclCache.dispose();
+    if (sdeviceStProvider) sdeviceStProvider.dispose();
     defs.clearDefinitionCache();
     tclParserWasm.dispose();
 }
