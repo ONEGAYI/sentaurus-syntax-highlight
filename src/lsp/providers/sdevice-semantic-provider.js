@@ -48,6 +48,18 @@ function getSectionStack(text, targetLine, sectionKeywords) {
     return stacks[targetLine] || [];
 }
 
+function isWs(c) {
+    return c === ' ' || c === '\t' || c === '\r' || c === '\n';
+}
+
+function isWord(c) {
+    const code = c.charCodeAt(0);
+    return (code >= 48 && code <= 57) ||   // 0-9
+           (code >= 65 && code <= 90) ||   // A-Z
+           (code >= 97 && code <= 122) ||  // a-z
+           code === 95;                    // _
+}
+
 /**
  * Scan entire text, return section stack snapshot per line.
  * @param {string} text
@@ -80,7 +92,7 @@ function scanStacksPerLine(text, sectionKeywords, preSplitLines) {
             continue;
         }
 
-        if (/\s/.test(ch)) { i++; continue; }
+        if (isWs(ch)) { i++; continue; }
 
         // Skip comments: # anywhere, * at line start
         if (ch === '#' || (ch === '*' && lineStart)) {
@@ -107,9 +119,9 @@ function scanStacksPerLine(text, sectionKeywords, preSplitLines) {
                 result[lineIdx] = stack.map(s => s.name);
             }
             let j = i - 1;
-            while (j >= 0 && /\s/.test(text[j])) j--;
+            while (j >= 0 && isWs(text[j])) j--;
             let end = j + 1;
-            while (j >= 0 && /[\w]/.test(text[j])) j--;
+            while (j >= 0 && isWord(text[j])) j--;
             const ident = text.slice(j + 1, end);
             if (sectionKeywords.has(ident)) {
                 stack.push({ name: ident, depth });
