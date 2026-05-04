@@ -257,6 +257,14 @@ class ScopeIndex {
     }
 
     /**
+     * 返回全局变量定义数组。
+     * @returns {Array<{name: string, defLine: number, isProc: boolean}>}
+     */
+    getGlobalDefs() {
+        return this._globalDefs;
+    }
+
+    /**
      * 查询指定行号（1-based）的可见变量集。
      * @param {number} line - 1-based 行号
      * @returns {Set<string>} 可见变量名集合
