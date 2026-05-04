@@ -190,6 +190,42 @@ test('asterisk comment mid-line is NOT treated as comment', () => {
     // depth should be 2 because the { inside the line is counted
 });
 
+test('multi-line string does not cause lineIdx drift', () => {
+    const text = 'File {\n  Output = "line1\nline2"\n  Plot="x"\n}';
+    const stack = getSectionStack(text, 3, new Set(['Plot', 'File']));
+    assert.deepStrictEqual(stack, ['File'], 'Line after multi-line string should be inside File');
+});
+
+test('inline # comment does not produce false tokens', () => {
+    const text = 'File {\n  FileName = "output.tdr"   # see Plot section\n}';
+    const index = buildKeywordSectionIndex(docs);
+    const sectionKws = new Set(['File', 'Plot', 'Solve']);
+    const data = extractSdeviceTokens(text, index, sectionKws);
+    let curLine = 0, curCol = 0;
+    for (let i = 0; i < data.length; i += 5) {
+        curLine += data[i];
+        curCol = data[i] === 0 ? curCol + data[i+1] : data[i+1];
+        const len = data[i+2];
+        const word = text.split('\n')[curLine].slice(curCol, curCol + len);
+        assert.notStrictEqual(word, 'Plot', 'Plot inside inline comment should not be tokenized');
+    }
+});
+
+test('keyword inside string is not tokenized', () => {
+    const text = 'File {\n  Plot="ElectricField is cool"\n}';
+    const index = buildKeywordSectionIndex(docs);
+    const sectionKws = new Set(['File', 'Plot', 'Solve']);
+    const data = extractSdeviceTokens(text, index, sectionKws);
+    let curLine = 0, curCol = 0;
+    for (let i = 0; i < data.length; i += 5) {
+        curLine += data[i];
+        curCol = data[i] === 0 ? curCol + data[i+1] : data[i+1];
+        const len = data[i+2];
+        const word = text.split('\n')[curLine].slice(curCol, curCol + len);
+        assert.notStrictEqual(word, 'ElectricField', 'ElectricField inside string should not be tokenized');
+    }
+});
+
 console.log('\nsdevice-semantic — cache:');
 
 test('extractTokensFromStacks matches extractSdeviceTokens', () => {

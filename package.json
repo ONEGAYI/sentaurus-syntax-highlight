@@ -125,6 +125,16 @@
         "id": "userFunctionCall",
         "superType": "function",
         "description": "用户定义的函数调用"
+      },
+      {
+        "id": "sectionName",
+        "superType": "keyword",
+        "description": "sdevice 顶层 section 块名（如 File、Plot）"
+      },
+      {
+        "id": "sectionKeyword",
+        "superType": "type",
+        "description": "sdevice section 内匹配的参数或关键词"
       }
     ],
     "grammars": [

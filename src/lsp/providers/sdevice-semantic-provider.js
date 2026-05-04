@@ -106,7 +106,8 @@ function scanStacksPerLine(text, sectionKeywords, preSplitLines) {
         if (ch === '"') {
             i++;
             while (i < text.length && text[i] !== '"') {
-                if (text[i] === '\\') i++;
+                if (text[i] === '\\') { i++; i++; continue; }
+                if (text[i] === '\n') { snapshot(); lineIdx++; lineStart = true; }
                 i++;
             }
             i++;
@@ -173,9 +174,27 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
         const trimmed = lineText.trimStart();
         if (trimmed.startsWith('#') || trimmed.startsWith('*')) continue;
 
+        // 预处理：将字符串内容和内联注释替换为等长空格，保持列位置对应
+        let scanText = '';
+        let inStr = false;
+        for (let ci = 0; ci < lineText.length; ci++) {
+            const c = lineText[ci];
+            if (inStr) {
+                if (c === '\\') { scanText += '  '; ci++; }
+                else if (c === '"') { inStr = false; scanText += ' '; }
+                else { scanText += ' '; }
+            } else if (c === '"') {
+                inStr = true; scanText += ' ';
+            } else if (c === '#') {
+                scanText += ' '.repeat(lineText.length - ci); break;
+            } else {
+                scanText += c;
+            }
+        }
+
         let m;
         identRe.lastIndex = 0;
-        while ((m = identRe.exec(lineText)) !== null) {
+        while ((m = identRe.exec(scanText)) !== null) {
             const word = m[1];
             const wordSections = keywordIndex.get(word);
             if (!wordSections) continue;
