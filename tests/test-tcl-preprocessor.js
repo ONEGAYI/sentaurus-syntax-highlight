@@ -141,5 +141,27 @@ test('生成正确的折叠范围', () => {
     assert.strictEqual(foldingRanges[0].endLine, 4);   // 0-based
 });
 
+console.log('\ncheckTclDuplicateDefs (via buildPpBlocks):');
+
+test('不同分支的同名 set 的 branchKey 不同', () => {
+    const code = '#if NMOS\nset doping Boron\n#else\nset doping Phosphorus\n#endif';
+    const { branchMap } = buildPpBlocks(code);
+    // 第 2 行和第 4 行属于不同分支
+    assert.notStrictEqual(branchMap.get(2), branchMap.get(4));
+});
+
+test('同分支内的同名 set 的 branchKey 相同', () => {
+    const code = '#if 1\nset x 1\nset x 2\n#endif';
+    const { branchMap } = buildPpBlocks(code);
+    assert.strictEqual(branchMap.get(2), branchMap.get(3));
+});
+
+test('非 #if 块内同名 set 的 branchKey 均为 undefined', () => {
+    const code = 'set x 1\nset x 2';
+    const { branchMap } = buildPpBlocks(code);
+    assert.strictEqual(branchMap.get(1), undefined);
+    assert.strictEqual(branchMap.get(2), undefined);
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);
