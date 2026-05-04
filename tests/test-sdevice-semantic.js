@@ -15,7 +15,7 @@ function test(name, fn) {
     catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
 }
 
-const { buildKeywordSectionIndex } = require('../src/lsp/providers/sdevice-semantic-provider');
+const { buildKeywordSectionIndex, getSectionStack } = require('../src/lsp/providers/sdevice-semantic-provider');
 
 console.log('\nsdevice-semantic — buildKeywordSectionIndex:');
 
@@ -44,6 +44,49 @@ test('Non-existent keyword returns undefined', () => {
 test('Index contains many keywords', () => {
     const index = buildKeywordSectionIndex(docs);
     assert.ok(index.size > 300, `Expected >300 keywords, got ${index.size}`);
+});
+
+console.log('\nsdevice-semantic — getSectionStack:');
+
+test('empty text returns empty stack', () => {
+    const stack = getSectionStack('', 0, new Set(['Plot', 'File']));
+    assert.deepStrictEqual(stack, []);
+});
+
+test('no section returns empty stack', () => {
+    const text = 'set x 1\nset y 2';
+    const stack = getSectionStack(text, 0, new Set(['Plot', 'File']));
+    assert.deepStrictEqual(stack, []);
+});
+
+test('inside File section returns [File]', () => {
+    const text = 'File {\n  Plot="x"\n}';
+    const stack = getSectionStack(text, 1, new Set(['Plot', 'File', 'Solve']));
+    assert.deepStrictEqual(stack, ['File']);
+});
+
+test('nested section returns multi-level stack', () => {
+    const text = 'Solve {\n  Coupled {\n    Plot\n  }\n}';
+    const stack = getSectionStack(text, 2, new Set(['Plot', 'File', 'Solve', 'Coupled']));
+    assert.deepStrictEqual(stack, ['Solve', 'Coupled']);
+});
+
+test('outside braces returns empty stack', () => {
+    const text = 'File {\n  Plot="x"\n}\nPlot {';
+    const stack = getSectionStack(text, 3, new Set(['Plot', 'File']));
+    assert.deepStrictEqual(stack, []);
+});
+
+test('braces inside string are ignored', () => {
+    const text = 'File {\n  Plot="a{b}c"\n}';
+    const stack = getSectionStack(text, 1, new Set(['Plot', 'File']));
+    assert.deepStrictEqual(stack, ['File']);
+});
+
+test('braces inside comments are ignored', () => {
+    const text = 'File {\n  # Plot {\n  Plot="x"\n}';
+    const stack = getSectionStack(text, 1, new Set(['Plot', 'File']));
+    assert.deepStrictEqual(stack, ['File']);
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);

@@ -35,8 +35,74 @@ function buildKeywordSectionIndex(docs) {
     return index;
 }
 
+/**
+ * 计算文档中指定行号的 section 上下文栈。
+ * @param {string} text - 文档全文
+ * @param {number} targetLine - 0-based 目标行号
+ * @param {Set<string>} sectionKeywords - section 名关键词集合
+ * @returns {string[]} section 栈（从外到内）
+ */
+function getSectionStack(text, targetLine, sectionKeywords) {
+    const stack = [];
+    let depth = 0;
+    let i = 0;
+    let line = 0;
+
+    while (i < text.length && line < targetLine) {
+        const ch = text[i];
+
+        if (ch === '\n') { line++; i++; continue; }
+
+        // Skip comments
+        if (ch === '#') {
+            while (i < text.length && text[i] !== '\n') i++;
+            continue;
+        }
+
+        // Skip strings
+        if (ch === '"') {
+            i++;
+            while (i < text.length && text[i] !== '"') {
+                if (text[i] === '\\') i++;
+                i++;
+            }
+            i++;
+            continue;
+        }
+
+        if (ch === '{') {
+            // Look back for identifier
+            let j = i - 1;
+            while (j >= 0 && text[j] === ' ') j--;
+            let end = j + 1;
+            while (j >= 0 && /[\w]/.test(text[j])) j--;
+            const ident = text.slice(j + 1, end);
+            if (sectionKeywords.has(ident)) {
+                stack.push({ name: ident, depth });
+            }
+            depth++;
+            i++;
+            continue;
+        }
+
+        if (ch === '}') {
+            depth--;
+            while (stack.length > 0 && stack[stack.length - 1].depth >= depth) {
+                stack.pop();
+            }
+            i++;
+            continue;
+        }
+
+        i++;
+    }
+
+    return stack.map(s => s.name);
+}
+
 module.exports = {
     buildKeywordSectionIndex,
+    getSectionStack,
     TOKEN_TYPES,
     TOKEN_MODIFIERS,
 };
