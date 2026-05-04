@@ -4,6 +4,7 @@
 const vscode = require('vscode');
 const astUtils = require('../tcl-ast-utils');
 const scopeAnalyzer = require('../scope-analyzer');
+const ppUtils = require('../pp-utils');
 
 const DEBOUNCE_MS = 500;
 
@@ -187,38 +188,7 @@ const SCOPE_TYPE_LABELS = {
  * @returns {Map<number, number>} 行号 → 分支 ID
  */
 function buildPpBranchMap(text) {
-    const map = new Map();
-    const lines = text.split('\n');
-    const stack = []; // { branchId }
-    let nextId = 0;
-
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        const lineNum = i + 1;
-
-        if (/^#(if|ifdef|ifndef)\b/.test(line)) {
-            const id = nextId++;
-            stack.push({ branchId: id });
-        } else if (/^#elif\b/.test(line)) {
-            if (stack.length > 0) {
-                const id = nextId++;
-                stack[stack.length - 1].branchId = id;
-            }
-        } else if (/^#else\b/.test(line)) {
-            if (stack.length > 0) {
-                const id = nextId++;
-                stack[stack.length - 1].branchId = id;
-            }
-        } else if (/^#endif\b/.test(line)) {
-            if (stack.length > 0) stack.pop();
-        }
-
-        if (stack.length > 0) {
-            map.set(lineNum, stack[stack.length - 1].branchId);
-        }
-    }
-
-    return map;
+    return ppUtils.buildPpBlocks(text).branchMap;
 }
 
 /**
