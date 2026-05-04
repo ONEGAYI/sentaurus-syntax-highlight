@@ -24,8 +24,7 @@ function createTclFoldingProvider(tclCache) {
             const ranges = astUtils.getFoldingRanges(entry.tree.rootNode);
 
             // 追加预处理器块折叠范围
-            const text = document.getText();
-            const { foldingRanges: ppRanges } = ppUtils.buildPpBlocks(text);
+            const { foldingRanges: ppRanges } = ppUtils.buildPpBlocks(entry.text);
             for (const r of ppRanges) {
                 ranges.push(r);
             }

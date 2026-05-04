@@ -4,6 +4,7 @@
 const assert = require('assert');
 const { parse } = require('../src/lsp/scheme-parser');
 const { buildScopeTree } = require('../src/lsp/scope-analyzer');
+const { buildPpBlocks } = require('../src/lsp/pp-utils');
 
 let passed = 0, failed = 0;
 function test(name, fn) {
@@ -13,32 +14,8 @@ function test(name, fn) {
 
 console.log('\n=== Scheme 重复定义检测测试 ===\n');
 
-/**
- * 构建预处理指令分支映射（与生产代码逻辑一致）。
- */
 function buildPpBranchMap(text) {
-    const map = new Map();
-    const lines = text.split('\n');
-    const stack = [];
-    let nextId = 0;
-
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        const lineNum = i + 1;
-
-        if (/^#(if|ifdef|ifndef)\b/.test(line)) {
-            stack.push({ branchId: nextId++ });
-        } else if (/^#(elif|else)\b/.test(line)) {
-            if (stack.length > 0) stack[stack.length - 1].branchId = nextId++;
-        } else if (/^#endif\b/.test(line)) {
-            if (stack.length > 0) stack.pop();
-        }
-
-        if (stack.length > 0) {
-            map.set(lineNum, stack[stack.length - 1].branchId);
-        }
-    }
-    return map;
+    return buildPpBlocks(text).branchMap;
 }
 
 /**

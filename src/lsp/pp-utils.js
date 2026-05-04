@@ -21,12 +21,7 @@ function buildPpBlocks(text) {
         if (/^#(if|ifdef|ifndef)\b/.test(line)) {
             const id = nextId++;
             stack.push({ branchId: id, startLine: i });
-        } else if (/^#elif\b/.test(line)) {
-            if (stack.length > 0) {
-                const id = nextId++;
-                stack[stack.length - 1].branchId = id;
-            }
-        } else if (/^#else\b/.test(line)) {
+        } else if (/^#(elif|else)\b/.test(line)) {
             if (stack.length > 0) {
                 const id = nextId++;
                 stack[stack.length - 1].branchId = id;
