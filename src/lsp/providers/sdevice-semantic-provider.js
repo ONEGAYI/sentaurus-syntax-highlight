@@ -37,72 +37,15 @@ function buildKeywordSectionIndex(docs) {
 
 /**
  * 计算文档中指定行号的 section 上下文栈。
+ * 复用 scanStacksPerLine 的结果，避免重复扫描逻辑。
  * @param {string} text - 文档全文
  * @param {number} targetLine - 0-based 目标行号
  * @param {Set<string>} sectionKeywords - section 名关键词集合
  * @returns {string[]} section 栈（从外到内）
  */
 function getSectionStack(text, targetLine, sectionKeywords) {
-    const stack = [];
-    let depth = 0;
-    let i = 0;
-    let line = 0;
-    let lineStart = true;
-
-    while (i < text.length && line < targetLine) {
-        const ch = text[i];
-
-        if (ch === '\n') { line++; i++; lineStart = true; continue; }
-
-        if (/\s/.test(ch)) { i++; continue; }
-
-        // Skip comments: # anywhere, * at line start
-        if (ch === '#' || (ch === '*' && lineStart)) {
-            while (i < text.length && text[i] !== '\n') i++;
-            continue;
-        }
-
-        lineStart = false;
-
-        // Skip strings
-        if (ch === '"') {
-            i++;
-            while (i < text.length && text[i] !== '"') {
-                if (text[i] === '\\') i++;
-                i++;
-            }
-            i++;
-            continue;
-        }
-
-        if (ch === '{') {
-            // Look back for identifier (skip whitespace including tabs)
-            let j = i - 1;
-            while (j >= 0 && /\s/.test(text[j])) j--;
-            let end = j + 1;
-            while (j >= 0 && /[\w]/.test(text[j])) j--;
-            const ident = text.slice(j + 1, end);
-            if (sectionKeywords.has(ident)) {
-                stack.push({ name: ident, depth });
-            }
-            depth++;
-            i++;
-            continue;
-        }
-
-        if (ch === '}') {
-            depth--;
-            while (stack.length > 0 && stack[stack.length - 1].depth >= depth) {
-                stack.pop();
-            }
-            i++;
-            continue;
-        }
-
-        i++;
-    }
-
-    return stack.map(s => s.name);
+    const stacks = scanStacksPerLine(text, sectionKeywords);
+    return stacks[targetLine] || [];
 }
 
 /**
@@ -111,8 +54,8 @@ function getSectionStack(text, targetLine, sectionKeywords) {
  * @param {Set<string>} sectionKeywords
  * @returns {Array<string[]>} stacksPerLine[lineIdx] = ['Solve', 'Coupled']
  */
-function scanStacksPerLine(text, sectionKeywords) {
-    const lines = text.split('\n');
+function scanStacksPerLine(text, sectionKeywords, preSplitLines) {
+    const lines = preSplitLines || text.split('\n');
     const result = new Array(lines.length);
     const stack = [];
     let depth = 0;
@@ -121,9 +64,8 @@ function scanStacksPerLine(text, sectionKeywords) {
     let i = 0;
 
     function snapshot() {
-        while (lineIdx < result.length && result[lineIdx] === undefined) {
+        if (lineIdx < result.length && result[lineIdx] === undefined) {
             result[lineIdx] = stack.map(s => s.name);
-            lineIdx++;
         }
     }
 
@@ -190,8 +132,8 @@ function scanStacksPerLine(text, sectionKeywords) {
     }
     snapshot();
 
-    // Fill any remaining undefined lines
-    for (let li = 0; li < result.length; li++) {
+    // Fill any remaining undefined lines after last snapshot
+    for (let li = lineIdx; li < result.length; li++) {
         if (result[li] === undefined) result[li] = [];
     }
 
@@ -208,12 +150,8 @@ function scanStacksPerLine(text, sectionKeywords) {
 function extractSdeviceTokens(text, keywordIndex, sectionKeywords) {
     const tokens = [];
     const lines = text.split('\n');
-    const lineStarts = [0];
-    for (let i = 0; i < text.length; i++) {
-        if (text[i] === '\n') lineStarts.push(i + 1);
-    }
 
-    const stacksPerLine = scanStacksPerLine(text, sectionKeywords);
+    const stacksPerLine = scanStacksPerLine(text, sectionKeywords, lines);
 
     const identRe = /\b([A-Za-z_][A-Za-z0-9_]*)\b/g;
 
