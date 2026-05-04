@@ -141,7 +141,7 @@ test('生成正确的折叠范围', () => {
     assert.strictEqual(foldingRanges[0].endLine, 4);   // 0-based
 });
 
-console.log('\ncheckTclDuplicateDefs (via buildPpBlocks):');
+console.log('\nbranchMap 分支区分验证:');
 
 test('不同分支的同名 set 的 branchKey 不同', () => {
     const code = '#if NMOS\nset doping Boron\n#else\nset doping Phosphorus\n#endif';

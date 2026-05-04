@@ -133,11 +133,6 @@ function checkTclUndefVars(document) {
         }
     }
 
-    // 检测全局作用域的重复定义（分支感知）
-    const text = document.getText();
-    const ppBranchMap = buildPpBranchMap(text);
-    diagnostics.push(...checkTclDuplicateDefs(scopeIndex.getGlobalDefs(), ppBranchMap, text));
-
     return diagnostics;
 }
 
@@ -294,45 +289,6 @@ function checkSchemeUndefVars(document) {
 }
 
 /**
- * 检查 Tcl 代码中的重复定义（分支感知）。
- * 不同 #if 分支内的同名定义不视为重复。
- * @param {Array<{name: string, defLine: number, isProc: boolean}>} globalDefs
- * @param {Map<number, number>} ppBranchMap - buildPpBranchMap 返回的分支映射
- * @param {string} text - 文档原始文本
- * @returns {vscode.Diagnostic[]}
- */
-function checkTclDuplicateDefs(globalDefs, ppBranchMap, text) {
-    const diagnostics = [];
-    const seen = new Map();
-    const lines = text.split('\n');
-
-    for (const def of globalDefs) {
-        const branchKey = ppBranchMap ? (ppBranchMap.get(def.defLine) ?? '') : '';
-        const key = `${def.name}@${branchKey}`;
-
-        if (seen.has(key)) {
-            const first = seen.get(key);
-            const lineText = lines[def.defLine - 1] || '';
-            const range = new vscode.Range(
-                def.defLine - 1, 0,
-                def.defLine - 1, lineText.length
-            );
-            const diagnostic = new vscode.Diagnostic(
-                range,
-                `重复定义: '${def.name}' 已在第 ${first.defLine} 行定义`,
-                vscode.DiagnosticSeverity.Warning
-            );
-            diagnostic.source = 'dup-def';
-            diagnostics.push(diagnostic);
-        } else {
-            seen.set(key, def);
-        }
-    }
-
-    return diagnostics;
-}
-
-/**
  * 重新扫描所有已打开的文档。
  * 用于 WASM 解析器异步初始化完成后，补充初始扫描遗漏的 Tcl 文档。
  */
@@ -345,4 +301,4 @@ function refreshAll() {
     }
 }
 
-module.exports = { activate, refreshAll, checkTclUndefVars, checkSchemeUndefVars, checkSchemeDuplicateDefs, checkTclDuplicateDefs, TCL_BUILTIN_VARS, SCHEME_BUILTIN_VARS };
+module.exports = { activate, refreshAll, checkTclUndefVars, checkSchemeUndefVars, checkSchemeDuplicateDefs, TCL_BUILTIN_VARS, SCHEME_BUILTIN_VARS };
