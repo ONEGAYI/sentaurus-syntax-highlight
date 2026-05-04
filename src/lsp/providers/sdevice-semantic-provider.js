@@ -61,9 +61,10 @@ function isWord(c) {
 }
 
 /**
- * Scan entire text, return section stack snapshot per line.
+ * 扫描全文，返回每行的 section 栈快照。
  * @param {string} text
  * @param {Set<string>} sectionKeywords
+ * @param {string[]} [preSplitLines]
  * @returns {Array<string[]>} stacksPerLine[lineIdx] = ['Solve', 'Coupled']
  */
 function scanStacksPerLine(text, sectionKeywords, preSplitLines) {
@@ -169,7 +170,6 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
         const lineText = lines[lineIdx];
         const stack = stacksPerLine[lineIdx];
 
-        // Skip comment lines
         const trimmed = lineText.trimStart();
         if (trimmed.startsWith('#') || trimmed.startsWith('*')) continue;
 
@@ -183,16 +183,11 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
             const col = m.index;
 
             if (stack.length === 0) {
-                // Not inside any section
-                if (sectionKeywords.has(word)) {
-                    // Check if followed by {
-                    const after = lineText.slice(col + word.length).trimStart();
-                    if (after.startsWith('{')) {
-                        tokens.push({ line: lineIdx, col, len: word.length, type: 0 }); // sectionName
-                    }
-                }
+                if (!sectionKeywords.has(word)) continue;
+                const after = lineText.slice(col + word.length).trimStart();
+                if (!after.startsWith('{')) continue;
+                tokens.push({ line: lineIdx, col, len: word.length, type: 0 });
             } else {
-                // Inside section(s), check if word belongs to any stack level
                 let matched = false;
                 for (let si = stack.length - 1; si >= 0; si--) {
                     if (wordSections.has(stack[si])) {
@@ -201,7 +196,7 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
                     }
                 }
                 if (matched) {
-                    tokens.push({ line: lineIdx, col, len: word.length, type: 1 }); // sectionKeyword
+                    tokens.push({ line: lineIdx, col, len: word.length, type: 1 });
                 }
             }
         }
@@ -245,7 +240,7 @@ function createSdeviceSemanticProvider(docs, sectionKeywords) {
     const keywordIndex = buildKeywordSectionIndex(docs);
     /** @type {Map<string, { version: number, stacksPerLine: Array<string[]>, tokenData: number[] }>} */
     const cache = new Map();
-    const MAX_CACHE = 20;
+    const MAX_CACHE = 20; // 近似 LRU：Map.set 对已有 key 更新时移至末尾
 
     function getCacheEntry(document) {
         const uri = document.uri.toString();
