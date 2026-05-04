@@ -336,7 +336,20 @@
           ]
         }
       }
-    }
+    },
+    "semanticTokenScopes": [
+      {
+        "language": "sdevice",
+        "scopes": {
+          "sectionName": [
+            "keyword.control.sdevice"
+          ],
+          "sectionKeyword": [
+            "entity.name.tag.sdevice"
+          ]
+        }
+      }
+    ]
   },
   "dependencies": {
     "web-tree-sitter": "^0.22.6"
