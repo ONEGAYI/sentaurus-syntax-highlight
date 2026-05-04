@@ -7,6 +7,7 @@ const bracketDiagnostic = require('./lsp/providers/bracket-diagnostic');
 const scopeAnalyzer = require('./lsp/scope-analyzer');
 const signatureProvider = require('./lsp/providers/signature-provider');
 const semanticTokensMod = require('./lsp/providers/semantic-tokens-provider');
+const sdeviceSemanticMod = require('./lsp/providers/sdevice-semantic-provider');
 const expressionConverter = require('./commands/expression-converter');
 const tclParserWasm = require('./lsp/tcl-parser-wasm');
 const astUtils = require('./lsp/tcl-ast-utils');
@@ -454,6 +455,31 @@ function activate(context) {
             { language: 'sde' },
             stProvider,
             stLegend
+        )
+    );
+
+    // Semantic Tokens (sdevice) — section 上下文感知着色
+    const sdeviceDocs = loadDocsJson('sdevice_command_docs.json', false) || {};
+    const sdeviceSectionKws = new Set([
+        'File', 'Device', 'Electrode', 'Physics', 'Math', 'Plot',
+        'Solve', 'System', 'Thermode', 'CurrentPlot', 'GainPlot',
+        'FarFieldPlot', 'VCSELNearFieldPlot', 'NoisePlot',
+        'hSHEDistributionPlot', 'eSHEDistributionPlot',
+        'BandstructurePlot', 'TensorPlot',
+        'Coupled', 'Transient', 'QuasiStationary', 'CoupledPrevious',
+    ]);
+    const sdeviceLegend = new vscode.SemanticTokensLegend(
+        sdeviceSemanticMod.TOKEN_TYPES,
+        sdeviceSemanticMod.TOKEN_MODIFIERS
+    );
+    const sdeviceStProvider = sdeviceSemanticMod.createSdeviceSemanticProvider(
+        sdeviceDocs, sdeviceSectionKws
+    );
+    context.subscriptions.push(
+        vscode.languages.registerDocumentSemanticTokensProvider(
+            { language: 'sdevice' },
+            sdeviceStProvider,
+            sdeviceLegend
         )
     );
 

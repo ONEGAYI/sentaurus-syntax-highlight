@@ -263,10 +263,28 @@ function encodeDelta(tokens) {
     return result;
 }
 
+/**
+ * 创建 sdevice Semantic Tokens Provider。
+ * @param {Object} docs - sdevice_command_docs.json data
+ * @param {Set<string>} sectionKeywords - section name keywords
+ */
+function createSdeviceSemanticProvider(docs, sectionKeywords) {
+    const keywordIndex = buildKeywordSectionIndex(docs);
+
+    return {
+        provideDocumentSemanticTokens(document) {
+            const text = document.getText();
+            const data = extractSdeviceTokens(text, keywordIndex, sectionKeywords);
+            return { data };
+        },
+    };
+}
+
 module.exports = {
     buildKeywordSectionIndex,
     getSectionStack,
     extractSdeviceTokens,
+    createSdeviceSemanticProvider,
     TOKEN_TYPES,
     TOKEN_MODIFIERS,
 };
