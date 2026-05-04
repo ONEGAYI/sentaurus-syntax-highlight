@@ -590,6 +590,39 @@ function activate(context) {
 
                     // 1. 查函数文档（优先，仅限当前语言的文档）
                     const docs = getDocs(langId) || {};
+
+                    // sdevice: 上下文感知文档查找
+                    if (langId === 'sdevice') {
+                        const stack = sdeviceSemanticMod.getSectionStack(
+                            document.getText(), position.line, sdeviceSectionKws
+                        );
+                        if (stack.length > 0) {
+                            for (let si = stack.length - 1; si >= 0; si--) {
+                                const secName = stack[si];
+                                const secDoc = docs[secName];
+                                if (!secDoc) continue;
+                                if (Array.isArray(secDoc.parameters)) {
+                                    const param = secDoc.parameters.find(p =>
+                                        (typeof p === 'object' ? p.name : p) === word
+                                    );
+                                    if (param && typeof param === 'object') {
+                                        const md = new vscode.MarkdownString();
+                                        md.appendMarkdown(`**${word}** (${secName} 参数)\n\n`);
+                                        md.appendCodeblock(`${word} = <${param.type}>`, langId);
+                                        md.appendMarkdown(`\n${param.desc}`);
+                                        return new vscode.Hover(md, range);
+                                    }
+                                }
+                                if (Array.isArray(secDoc.keywords) && secDoc.keywords.includes(word)) {
+                                    const kwDoc = docs[word];
+                                    if (kwDoc) {
+                                        return new vscode.Hover(formatDoc(kwDoc, langId), range);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     const doc = docs[word] || docs[decodeHtml(word)];
                     if (doc) return new vscode.Hover(formatDoc(doc, langId), range);
 
