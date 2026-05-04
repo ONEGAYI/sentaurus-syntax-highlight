@@ -163,5 +163,58 @@ test('非 #if 块内同名 set 的 branchKey 均为 undefined', () => {
     assert.strictEqual(branchMap.get(2), undefined);
 });
 
+console.log('\n预处理器折叠范围:');
+
+test('简单 #if/#endif 生成一个折叠范围', () => {
+    const code = '#if 1\nset x 1\nset y 2\n#endif';
+    const { foldingRanges } = buildPpBlocks(code);
+
+    assert.strictEqual(foldingRanges.length, 1);
+    assert.strictEqual(foldingRanges[0].startLine, 0);
+    assert.strictEqual(foldingRanges[0].endLine, 3);
+});
+
+test('嵌套 #if 生成多个折叠范围', () => {
+    const code = [
+        '#if 1',
+        '  #if 2',
+        '  set x 1',
+        '  #endif',
+        '#endif',
+    ].join('\n');
+    const { foldingRanges } = buildPpBlocks(code);
+
+    assert.strictEqual(foldingRanges.length, 2);
+    // 内层先闭合
+    assert.strictEqual(foldingRanges[0].startLine, 1);
+    assert.strictEqual(foldingRanges[0].endLine, 3);
+    // 外层后闭合
+    assert.strictEqual(foldingRanges[1].startLine, 0);
+    assert.strictEqual(foldingRanges[1].endLine, 4);
+});
+
+test('#elif 和 #else 不产生独立折叠范围', () => {
+    const code = '#if 1\nset x 1\n#else\nset x 2\n#endif';
+    const { foldingRanges } = buildPpBlocks(code);
+
+    assert.strictEqual(foldingRanges.length, 1);
+    assert.strictEqual(foldingRanges[0].startLine, 0);
+    assert.strictEqual(foldingRanges[0].endLine, 4);
+});
+
+test('未闭合的 #if 不产生折叠范围', () => {
+    const code = '#if 1\nset x 1\n';
+    const { foldingRanges } = buildPpBlocks(code);
+
+    assert.strictEqual(foldingRanges.length, 0);
+});
+
+test('没有 #if 的代码不产生折叠范围', () => {
+    const code = 'set x 1\nset y 2\n';
+    const { foldingRanges } = buildPpBlocks(code);
+
+    assert.strictEqual(foldingRanges.length, 0);
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);

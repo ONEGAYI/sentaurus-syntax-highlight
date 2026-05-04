@@ -3,6 +3,7 @@
 
 const vscode = require('vscode');
 const astUtils = require('../tcl-ast-utils');
+const ppUtils = require('../pp-utils');
 
 /**
  * 创建 VSCode FoldingRangeProvider for Tcl-based Sentaurus languages.
@@ -21,6 +22,14 @@ function createTclFoldingProvider(tclCache) {
             if (!entry) return [];
 
             const ranges = astUtils.getFoldingRanges(entry.tree.rootNode);
+
+            // 追加预处理器块折叠范围
+            const text = document.getText();
+            const { foldingRanges: ppRanges } = ppUtils.buildPpBlocks(text);
+            for (const r of ppRanges) {
+                ranges.push(r);
+            }
+
             return ranges.map(r => new vscode.FoldingRange(r.startLine, r.endLine));
         },
     };
