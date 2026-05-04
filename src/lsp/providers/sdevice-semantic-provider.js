@@ -141,18 +141,16 @@ function scanStacksPerLine(text, sectionKeywords, preSplitLines) {
 }
 
 /**
- * Extract sdevice semantic tokens from text.
- * @param {string} text - Document full text
+ * 从已扫描的 stacksPerLine 和行数组中提取 token。
+ * 被 extractSdeviceTokens 和缓存层共用。
+ * @param {string[]} lines - 按行拆分的文档文本
+ * @param {Array<string[]>} stacksPerLine - scanStacksPerLine 的结果
  * @param {Map<string, Set<string>>} keywordIndex - keyword → Set<section>
  * @param {Set<string>} sectionKeywords - Section name keywords
  * @returns {number[]} Delta-encoded semantic token array
  */
-function extractSdeviceTokens(text, keywordIndex, sectionKeywords) {
+function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords) {
     const tokens = [];
-    const lines = text.split('\n');
-
-    const stacksPerLine = scanStacksPerLine(text, sectionKeywords, lines);
-
     const identRe = /\b([A-Za-z_][A-Za-z0-9_]*)\b/g;
 
     for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
@@ -167,7 +165,8 @@ function extractSdeviceTokens(text, keywordIndex, sectionKeywords) {
         identRe.lastIndex = 0;
         while ((m = identRe.exec(lineText)) !== null) {
             const word = m[1];
-            if (!keywordIndex.has(word)) continue;
+            const wordSections = keywordIndex.get(word);
+            if (!wordSections) continue;
 
             const col = m.index;
 
@@ -182,7 +181,6 @@ function extractSdeviceTokens(text, keywordIndex, sectionKeywords) {
                 }
             } else {
                 // Inside section(s), check if word belongs to any stack level
-                const wordSections = keywordIndex.get(word);
                 let matched = false;
                 for (let si = stack.length - 1; si >= 0; si--) {
                     if (wordSections.has(stack[si])) {
@@ -200,6 +198,19 @@ function extractSdeviceTokens(text, keywordIndex, sectionKeywords) {
     return encodeDelta(tokens);
 }
 
+/**
+ * Extract sdevice semantic tokens from text.
+ * @param {string} text - Document full text
+ * @param {Map<string, Set<string>>} keywordIndex - keyword → Set<section>
+ * @param {Set<string>} sectionKeywords - Section name keywords
+ * @returns {number[]} Delta-encoded semantic token array
+ */
+function extractSdeviceTokens(text, keywordIndex, sectionKeywords) {
+    const lines = text.split('\n');
+    const stacksPerLine = scanStacksPerLine(text, sectionKeywords, lines);
+    return extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords);
+}
+
 function encodeDelta(tokens) {
     const result = [];
     let prevLine = 0, prevCol = 0;
@@ -214,26 +225,66 @@ function encodeDelta(tokens) {
 }
 
 /**
- * 创建 sdevice Semantic Tokens Provider。
+ * 创建 sdevice Semantic Tokens Provider（含 document.version 缓存）。
  * @param {Object} docs - sdevice_command_docs.json data
  * @param {Set<string>} sectionKeywords - section name keywords
  */
 function createSdeviceSemanticProvider(docs, sectionKeywords) {
     const keywordIndex = buildKeywordSectionIndex(docs);
+    /** @type {Map<string, { version: number, stacksPerLine: Array<string[]>, tokenData: number[] }>} */
+    const cache = new Map();
+    const MAX_CACHE = 20;
+
+    function getCacheEntry(document) {
+        const uri = document.uri.toString();
+        const version = document.version;
+        const cached = cache.get(uri);
+        if (cached && cached.version === version) return cached;
+
+        const text = document.getText();
+        const lines = text.split('\n');
+        const stacksPerLine = scanStacksPerLine(text, sectionKeywords, lines);
+        const tokenData = extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords);
+
+        const entry = { version, stacksPerLine, tokenData };
+        cache.set(uri, entry);
+
+        if (cache.size > MAX_CACHE) {
+            cache.delete(cache.keys().next().value);
+        }
+        return entry;
+    }
 
     return {
         provideDocumentSemanticTokens(document) {
-            const text = document.getText();
-            const data = extractSdeviceTokens(text, keywordIndex, sectionKeywords);
-            return { data };
+            const entry = getCacheEntry(document);
+            return { data: entry.tokenData };
+        },
+        /**
+         * 获取文档指定行的 section 栈（缓存版，供 hover 使用）。
+         * @param {vscode.TextDocument} document
+         * @param {number} targetLine - 0-based 行号
+         * @returns {string[]}
+         */
+        getSectionStackForDocument(document, targetLine) {
+            const entry = getCacheEntry(document);
+            return entry.stacksPerLine[targetLine] || [];
+        },
+        invalidate(uri) {
+            cache.delete(uri);
+        },
+        dispose() {
+            cache.clear();
         },
     };
 }
 
 module.exports = {
     buildKeywordSectionIndex,
+    scanStacksPerLine,
     getSectionStack,
     extractSdeviceTokens,
+    extractTokensFromStacks,
     createSdeviceSemanticProvider,
     TOKEN_TYPES,
     TOKEN_MODIFIERS,

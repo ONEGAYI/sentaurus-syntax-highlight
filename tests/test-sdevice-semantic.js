@@ -15,7 +15,7 @@ function test(name, fn) {
     catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
 }
 
-const { buildKeywordSectionIndex, getSectionStack, extractSdeviceTokens } = require('../src/lsp/providers/sdevice-semantic-provider');
+const { buildKeywordSectionIndex, getSectionStack, scanStacksPerLine, extractSdeviceTokens } = require('../src/lsp/providers/sdevice-semantic-provider');
 
 console.log('\nsdevice-semantic — buildKeywordSectionIndex:');
 
@@ -185,6 +185,98 @@ test('asterisk comment mid-line is NOT treated as comment', () => {
     const stack = getSectionStack(text, 1, new Set(['Plot', 'File']));
     assert.deepStrictEqual(stack, ['File']);
     // depth should be 2 because the { inside the line is counted
+});
+
+console.log('\nsdevice-semantic — cache:');
+
+test('extractTokensFromStacks matches extractSdeviceTokens', () => {
+    const { extractTokensFromStacks } = require('../src/lsp/providers/sdevice-semantic-provider');
+    const text = 'File {\n  Plot="x"\n}';
+    const index = buildKeywordSectionIndex(docs);
+    const sectionKws = new Set(['File', 'Plot', 'Solve', 'Coupled']);
+    const fullResult = extractSdeviceTokens(text, index, sectionKws);
+    const lines = text.split('\n');
+    const stacks = scanStacksPerLine(text, sectionKws, lines);
+    const fromStacks = extractTokensFromStacks(lines, stacks, index, sectionKws);
+    assert.deepStrictEqual(fullResult, fromStacks, 'Both paths should produce identical tokens');
+});
+
+test('createSdeviceSemanticProvider returns provider with expected methods', () => {
+    const { createSdeviceSemanticProvider } = require('../src/lsp/providers/sdevice-semantic-provider');
+    const provider = createSdeviceSemanticProvider(docs, new Set(['File', 'Plot', 'Solve']));
+    assert.strictEqual(typeof provider.provideDocumentSemanticTokens, 'function');
+    assert.strictEqual(typeof provider.getSectionStackForDocument, 'function');
+    assert.strictEqual(typeof provider.invalidate, 'function');
+    assert.strictEqual(typeof provider.dispose, 'function');
+});
+
+test('provider caches results for same document version', () => {
+    const { createSdeviceSemanticProvider } = require('../src/lsp/providers/sdevice-semantic-provider');
+    const provider = createSdeviceSemanticProvider(docs, new Set(['File', 'Plot', 'Solve']));
+    let callCount = 0;
+    const mockDoc = {
+        uri: { toString: () => 'file:///test.cmd' },
+        version: 1,
+        getText: () => { callCount++; return 'File {\n  Plot="x"\n}'; }
+    };
+    // 第一次调用触发计算
+    const result1 = provider.provideDocumentSemanticTokens(mockDoc);
+    assert.strictEqual(callCount, 1);
+    // 第二次调用应命中缓存
+    const result2 = provider.provideDocumentSemanticTokens(mockDoc);
+    assert.strictEqual(callCount, 1, 'Should not recompute on cache hit');
+    assert.deepStrictEqual(result1.data, result2.data);
+});
+
+test('provider recomputes on version change', () => {
+    const { createSdeviceSemanticProvider } = require('../src/lsp/providers/sdevice-semantic-provider');
+    const provider = createSdeviceSemanticProvider(docs, new Set(['File', 'Plot', 'Solve']));
+    let text = 'File {\n  Plot="x"\n}';
+    const mockDoc = {
+        uri: { toString: () => 'file:///test2.cmd' },
+        version: 1,
+        getText: () => text
+    };
+    provider.provideDocumentSemanticTokens(mockDoc);
+    // 修改版本号
+    mockDoc.version = 2;
+    text = 'Plot {\n  ElectricField\n}';
+    const result = provider.provideDocumentSemanticTokens(mockDoc);
+    assert.ok(result.data.length > 0, 'Should recompute on version change');
+});
+
+test('provider getSectionStackForDocument uses cache', () => {
+    const { createSdeviceSemanticProvider } = require('../src/lsp/providers/sdevice-semantic-provider');
+    const provider = createSdeviceSemanticProvider(docs, new Set(['File', 'Plot', 'Solve']));
+    let callCount = 0;
+    const mockDoc = {
+        uri: { toString: () => 'file:///test3.cmd' },
+        version: 1,
+        getText: () => { callCount++; return 'File {\n  Plot="x"\n}'; }
+    };
+    // 先触发 semantic tokens（会计算一次）
+    provider.provideDocumentSemanticTokens(mockDoc);
+    assert.strictEqual(callCount, 1);
+    // hover 调用 getSectionStackForDocument 应命中缓存
+    const stack = provider.getSectionStackForDocument(mockDoc, 1);
+    assert.strictEqual(callCount, 1, 'Hover should reuse cache');
+    assert.deepStrictEqual(stack, ['File']);
+});
+
+test('invalidate clears cache entry', () => {
+    const { createSdeviceSemanticProvider } = require('../src/lsp/providers/sdevice-semantic-provider');
+    const provider = createSdeviceSemanticProvider(docs, new Set(['File', 'Plot', 'Solve']));
+    let callCount = 0;
+    const mockDoc = {
+        uri: { toString: () => 'file:///test4.cmd' },
+        version: 1,
+        getText: () => { callCount++; return 'File {\n  Plot="x"\n}'; }
+    };
+    provider.provideDocumentSemanticTokens(mockDoc);
+    assert.strictEqual(callCount, 1);
+    provider.invalidate('file:///test4.cmd');
+    provider.provideDocumentSemanticTokens(mockDoc);
+    assert.strictEqual(callCount, 2, 'Should recompute after invalidation');
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);

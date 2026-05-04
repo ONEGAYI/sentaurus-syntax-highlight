@@ -585,10 +585,10 @@ function activate(context) {
                     // 1. 查函数文档（优先，仅限当前语言的文档）
                     const docs = getDocs(langId) || {};
 
-                    // sdevice: 上下文感知文档查找
+                    // sdevice: 上下文感知文档查找（复用语义 token 缓存）
                     if (langId === 'sdevice') {
-                        const stack = sdeviceSemanticMod.getSectionStack(
-                            document.getText(), position.line, sdeviceSectionKws
+                        const stack = sdeviceStProvider.getSectionStackForDocument(
+                            document, position.line
                         );
                         if (stack.length > 0) {
                             for (let si = stack.length - 1; si >= 0; si--) {
