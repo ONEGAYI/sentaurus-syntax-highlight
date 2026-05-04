@@ -23,6 +23,7 @@ const variableReferenceProvider = require('./lsp/providers/variable-reference-pr
 const symbolCompletion = require('./lsp/providers/symbol-completion');
 const symbolReferenceProvider = require('./lsp/providers/symbol-reference-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
+const { getSdeviceAllSectionKeywords } = require('./lsp/tcl-symbol-configs');
 
 /** @type {SchemeParseCache} */
 let schemeCache;
@@ -460,14 +461,7 @@ function activate(context) {
 
     // Semantic Tokens (sdevice) — section 上下文感知着色
     const sdeviceDocs = loadDocsJson('sdevice_command_docs.json', false) || {};
-    const sdeviceSectionKws = new Set([
-        'File', 'Device', 'Electrode', 'Physics', 'Math', 'Plot',
-        'Solve', 'System', 'Thermode', 'CurrentPlot', 'GainPlot',
-        'FarFieldPlot', 'VCSELNearFieldPlot', 'NoisePlot',
-        'hSHEDistributionPlot', 'eSHEDistributionPlot',
-        'BandstructurePlot', 'TensorPlot',
-        'Coupled', 'Transient', 'QuasiStationary', 'CoupledPrevious',
-    ]);
+    const sdeviceSectionKws = getSdeviceAllSectionKeywords();
     const sdeviceLegend = new vscode.SemanticTokensLegend(
         sdeviceSemanticMod.TOKEN_TYPES,
         sdeviceSemanticMod.TOKEN_MODIFIERS
