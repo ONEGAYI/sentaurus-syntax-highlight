@@ -155,6 +155,26 @@
       ]
     },
     {
+      "name": "meta.preprocessor.tcl",
+      "begin": "^\\s*(#\\s*(?:if|ifdef|ifndef|elif|else|endif|define|undef|include|error|set))\\b",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.preprocessor.tcl"
+        }
+      },
+      "end": "$",
+      "patterns": [
+        {
+          "match": "\\b(defined|TRUE|FALSE)\\b",
+          "name": "keyword.control.preprocessor.tcl"
+        },
+        {
+          "match": "\"[^\"]*\"",
+          "name": "string.quoted.double.tcl"
+        }
+      ]
+    },
+    {
       "name": "comment.line.hash",
       "match": "#.*$"
     },
