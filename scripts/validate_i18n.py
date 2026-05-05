@@ -30,7 +30,7 @@ DOC_PAIRS = {
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 
 # 跳过比较的字段名（允许中英文不同或仅英文存在）
-SKIP_FIELDS = {"desc", "description", "modeDispatch"}
+SKIP_FIELDS = {"desc", "description", "modeDispatch", "contexts", "example"}
 
 
 def load_json(rel_path):

@@ -612,6 +612,24 @@ function activate(context) {
                                 if (Array.isArray(secDoc.keywords) && secDoc.keywords.includes(word)) {
                                     const kwDoc = docs[word];
                                     if (kwDoc) {
+                                        // 优先查 contexts[当前 section] 的上下文描述
+                                        const ctxDesc = kwDoc.contexts && kwDoc.contexts[secName];
+                                        if (ctxDesc) {
+                                            const md = new vscode.MarkdownString();
+                                            md.appendMarkdown(`**${word}** (${secName})\n\n`);
+                                            md.appendMarkdown(ctxDesc);
+                                            if (kwDoc.parameters && kwDoc.parameters.length) {
+                                                md.appendMarkdown('\n\n**Parameters:**\n');
+                                                for (const p of kwDoc.parameters) {
+                                                    md.appendMarkdown(`- \`${p.name}\` (\`${p.type}\`) — ${p.desc}\n`);
+                                                }
+                                            }
+                                            if (kwDoc.example) {
+                                                md.appendMarkdown('\n**Example:**\n');
+                                                md.appendCodeblock(kwDoc.example, langId);
+                                            }
+                                            return new vscode.Hover(md, range);
+                                        }
                                         return new vscode.Hover(formatDoc(kwDoc, langId), range);
                                     }
                                 }
