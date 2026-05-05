@@ -84,6 +84,20 @@ function isSectionCommand(commandName, langId) {
     return keywords ? keywords.has(commandName) : false;
 }
 
+/**
+ * 获取 sdevice 完整 section 关键词集合（含嵌套块名）。
+ * 用于 Semantic Tokens 和 Hover 的上下文追踪。
+ * @returns {Set<string>}
+ */
+function getSdeviceAllSectionKeywords() {
+    const all = new Set(SECTION_KEYWORDS.sdevice);
+    for (const kw of ['Coupled', 'Transient', 'QuasiStationary', 'CoupledPrevious']) {
+        all.add(kw);
+    }
+    return all;
+}
+
 module.exports = {
     isSectionCommand,
+    getSdeviceAllSectionKeywords,
 };

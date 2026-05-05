@@ -7,6 +7,7 @@ const bracketDiagnostic = require('./lsp/providers/bracket-diagnostic');
 const scopeAnalyzer = require('./lsp/scope-analyzer');
 const signatureProvider = require('./lsp/providers/signature-provider');
 const semanticTokensMod = require('./lsp/providers/semantic-tokens-provider');
+const sdeviceSemanticMod = require('./lsp/providers/sdevice-semantic-provider');
 const expressionConverter = require('./commands/expression-converter');
 const tclParserWasm = require('./lsp/tcl-parser-wasm');
 const astUtils = require('./lsp/tcl-ast-utils');
@@ -22,11 +23,13 @@ const variableReferenceProvider = require('./lsp/providers/variable-reference-pr
 const symbolCompletion = require('./lsp/providers/symbol-completion');
 const symbolReferenceProvider = require('./lsp/providers/symbol-reference-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
+const { getSdeviceAllSectionKeywords } = require('./lsp/tcl-symbol-configs');
 
 /** @type {SchemeParseCache} */
 let schemeCache;
 /** @type {TclParseCache} */
 let tclCache;
+let sdeviceStProvider;
 
 /** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
 function decodeHtml(str) {
@@ -280,6 +283,7 @@ function activate(context) {
             defs.invalidateDefinitionCache(uri);
             schemeCache.invalidate(uri);
             tclCache.invalidate(uri);
+            if (sdeviceStProvider) sdeviceStProvider.invalidate(uri);
         })
     );
 
@@ -457,6 +461,24 @@ function activate(context) {
         )
     );
 
+    // Semantic Tokens (sdevice) — section 上下文感知着色
+    const sdeviceDocs = loadDocsJson('sdevice_command_docs.json', false) || {};
+    const sdeviceSectionKws = getSdeviceAllSectionKeywords();
+    const sdeviceLegend = new vscode.SemanticTokensLegend(
+        sdeviceSemanticMod.TOKEN_TYPES,
+        sdeviceSemanticMod.TOKEN_MODIFIERS
+    );
+    sdeviceStProvider = sdeviceSemanticMod.createSdeviceSemanticProvider(
+        sdeviceDocs, sdeviceSectionKws
+    );
+    context.subscriptions.push(
+        vscode.languages.registerDocumentSemanticTokensProvider(
+            { language: 'sdevice' },
+            sdeviceStProvider,
+            sdeviceLegend
+        )
+    );
+
     // Signature Help (SDE only)
     const sigHelpDisposable = vscode.languages.registerSignatureHelpProvider(
         { language: 'sde' },
@@ -564,6 +586,39 @@ function activate(context) {
 
                     // 1. 查函数文档（优先，仅限当前语言的文档）
                     const docs = getDocs(langId) || {};
+
+                    // sdevice: 上下文感知文档查找（复用语义 token 缓存）
+                    if (langId === 'sdevice') {
+                        const stack = sdeviceStProvider.getSectionStackForDocument(
+                            document, position.line
+                        );
+                        if (stack.length > 0) {
+                            for (let si = stack.length - 1; si >= 0; si--) {
+                                const secName = stack[si];
+                                const secDoc = docs[secName];
+                                if (!secDoc) continue;
+                                if (Array.isArray(secDoc.parameters)) {
+                                    const param = secDoc.parameters.find(p =>
+                                        (typeof p === 'object' ? p.name : p) === word
+                                    );
+                                    if (param && typeof param === 'object') {
+                                        const md = new vscode.MarkdownString();
+                                        md.appendMarkdown(`**${word}** (${secName} 参数)\n\n`);
+                                        md.appendCodeblock(`${word} = <${param.type}>`, langId);
+                                        md.appendMarkdown(`\n${param.desc}`);
+                                        return new vscode.Hover(md, range);
+                                    }
+                                }
+                                if (Array.isArray(secDoc.keywords) && secDoc.keywords.includes(word)) {
+                                    const kwDoc = docs[word];
+                                    if (kwDoc) {
+                                        return new vscode.Hover(formatDoc(kwDoc, langId), range);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     const doc = docs[word] || docs[decodeHtml(word)];
                     if (doc) return new vscode.Hover(formatDoc(doc, langId), range);
 
@@ -956,6 +1011,7 @@ function activate(context) {
 function deactivate() {
     schemeCache.dispose();
     tclCache.dispose();
+    if (sdeviceStProvider) sdeviceStProvider.dispose();
     defs.clearDefinitionCache();
     tclParserWasm.dispose();
 }
