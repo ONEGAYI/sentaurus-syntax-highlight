@@ -1,4 +1,4 @@
-// scripts/prepare-doc-batches.js
+// scripts/docs/prepare-doc-batches.js
 'use strict';
 
 /**

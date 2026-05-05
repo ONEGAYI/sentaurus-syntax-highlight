@@ -13,7 +13,7 @@
 
 - **从 Sentaurus XML mode 文件重新生成语法文件**：
   ```bash
-  python scripts/extract_keywords.py
+  python scripts/syntax/extract_keywords.py
   ```
   注意：脚本中输入/输出路径是硬编码的（`d:\pydemo\modes` 和 `d:\pydemo\sentaurus-tcad-syntax\syntaxes`），运行前需修改 `main()` 中的路径。
 
@@ -115,13 +115,18 @@ sentaurus-syntax-highlight/
 │   └── @docs/file-trees/tests.md               ← 【子文件过多，已折叠，详细目录见子文档】
 │
 ├── scripts/                                    ← 开发工具脚本
-│   ├── extract_keywords.py                     ← 从 XML mode 文件提取关键词并生成语法
-│   ├── split_long_matches.py                   ← 拆分超长正则匹配模式（可读性优化）
-│   ├── translate_docs.py                       ← 函数文档机器翻译 + 人工校对流程
-│   ├── validate_i18n.py                        ← 中英文文档一致性校验
-│   ├── merge_i18n.py                           ← 合并翻译结果
-│   ├── fix_examples.py                         ← 修复文档中的代码示例
-│   └── extract_svisual_sections.js             ← 提取 Svisual section 信息
+│   ├── syntax/                                 ← 语法生成与维护
+│   │   ├── extract_keywords.py                 ← 从 XML mode 文件提取关键词并生成语法
+│   │   ├── split_long_matches.py               ← 拆分超长正则匹配模式（可读性优化）
+│   │   └── audit-sdevice-keywords.js           ← SDEVICE 关键词审计（扫描官方手册）
+│   └── docs/                                   ← 文档翻译、校验与处理
+│       ├── translate_docs.py                   ← 函数文档机器翻译 + 人工校对流程
+│       ├── validate_i18n.py                    ← 中英文文档一致性校验
+│       ├── merge_i18n.py                       ← 合并翻译结果
+│       ├── fix_examples.py                     ← 修复文档中的代码示例
+│       ├── merge-sdevice-docs.js               ← 合并 SDEVICE AI 产出的文档片段
+│       ├── prepare-doc-batches.js              ← 准备文档翻译批次
+│       └── extract_svisual_sections.js         ← 提取 Svisual section 信息
 │
 ├── docs/                                       ← 项目文档与术语表
 │   ├── glossary.json                           ← TCAD 术语数据库
@@ -131,8 +136,8 @@ sentaurus-syntax-highlight/
 │   │   └── tests.md                            ← tests/ 目录详细文件树
 │   ├── prompts/i18n/                           ← 国际化 prompt 模板
 │   └── superpowers/                            ← 开发 spec/plan 归档
-│       ├── plans/                              ← 实现计划文档（含 archived/）
-│       └── specs/                              ← 设计规范文档（含 archived/）
+│       ├── plans/archived/                     ← 已完成的实现计划 (Working/Archived: 0/42)
+│       └── specs/archived/                     ← 已完成的设计规范 (Working/Archived: 0/33)
 │
 ├── benchmarks/                                 ← 性能基准测试输出（JSON）
 ├── display_test/                               ← 功能展示测试文件
@@ -158,7 +163,7 @@ sentaurus-syntax-highlight/
 | `inspect` | Inspect | Tcl | `*_ins.cmd` | `tcl.json` |
 | `svisual` | Sentaurus Visual | Tcl | `*_vis.cmd` | `tcl.json` |
 
-每个语法文件按首匹配胜出规则依次包含：注释 → 字符串 → 数值 → `@Var@` SWB 参数 → 兜底标识符。关键词从 XML mode 文件提取（`scripts/extract_keywords.py`），XML 标签映射为 TextMate scope（KEYWORD1→`keyword.control`, KEYWORD2→`keyword.other`, KEYWORD3→`entity.name.tag`, KEYWORD4→`support.class`, FUNCTION→`entity.name.function`）。
+每个语法文件按首匹配胜出规则依次包含：注释 → 字符串 → 数值 → `@Var@` SWB 参数 → 兜底标识符。关键词从 XML mode 文件提取（`scripts/syntax/extract_keywords.py`），XML 标签映射为 TextMate scope（KEYWORD1→`keyword.control`, KEYWORD2→`keyword.other`, KEYWORD3→`entity.name.tag`, KEYWORD4→`support.class`, FUNCTION→`entity.name.function`）。
 
 ### 第二层：关键词补全与文档悬停
 
@@ -211,7 +216,7 @@ sentaurus-syntax-highlight/
 
 - 多种语言共用 `.cmd` 扩展名——文件关联完全依赖 `filenamePatterns`，而非 `extensions`
 - TextMate 语法遵循首匹配胜出规则——兜底模式必须放在最后
-- `scripts/extract_keywords.py` 路径硬编码，跨环境使用前必须修改 `main()` 中的路径
+- `scripts/syntax/extract_keywords.py` 路径硬编码，跨环境使用前必须修改 `main()` 中的路径
 - `*.Identifier` 文件已被 gitignore
 - 使用中文编写文档、提交和发布
 - 兼容性目标：CentOS 7 / VSCode v1.85.2 / GLIBC 2.17（无 TypeScript、无构建步骤、无原生二进制）
@@ -220,13 +225,10 @@ sentaurus-syntax-highlight/
 
 ### 步骤
 
-1. **更新 CHANGELOG**：回顾 `git log <上次release-tag>..HEAD --oneline`，将所有提交归纳为 CHANGELOG 条目（当提交信息过于简略，必要时应当使用 git diff 等命令归纳总结）。新增版本段落置于文件顶部，格式与已有条目保持一致（`### 新功能` / `### Bug 修复` / `### 其他改进`）。同时在底部 `<!-- 变更链接 -->`（建议使用 Grep 快速定位行）添加新版本的 compare 链接
-   - 当同一个发布内，有全新功能并有其初版本的修复提交，这样的修复不需要暴露在CHANGELOG和release中，因为对于用户他们看见的是全新的功能，对修复无感知。但该全新功能的介绍应以最后定案为准。
-2. **更新 CLAUDE.md**: 主要更新文件树及被折叠的子文档（必须，如果有）和架构的内容。架构的更新需要言简意赅。文件树需要严格对照 git 历史变更，如果已有文件功能发生改变，也需要适当的反映在文件树中。
-3. **提交 CHANGELOG**
-4. **打包**：`npx vsce package`
-5. **推送**：`git push origin main`
-6. **双平台发布**：
+{{Release Workflow in Global CLAUDE.md}}
+5. **打包**：`npx vsce package`
+6. **推送**：`git push origin main`
+7. **双平台发布**：
    - GitHub Release：`gh release create v<version> sentaurus-tcad-syntax-<version>.vsix --title "v<version>" --notes "..."`，notes 内容直接复用 CHANGELOG 该版本的正文
    - VS Code Marketplace：`npx vsce publish`
 

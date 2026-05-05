@@ -206,7 +206,7 @@ This project's keyword extraction scripts and TextMate grammar foundations refer
 Syntax files are auto-generated from Sentaurus TCAD's jEdit XML mode files using a Python script:
 
 ```bash
-python scripts/extract_keywords.py
+python scripts/syntax/extract_keywords.py
 ```
 
 Package the extension:

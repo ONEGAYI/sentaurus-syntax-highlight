@@ -11,7 +11,7 @@
  * - 所有条目移除 _audit 字段
  * - 输出按 key 排序
  *
- * 用法：node scripts/merge-sdevice-docs.js
+ * 用法：node scripts/docs/merge-sdevice-docs.js
  */
 
 'use strict';

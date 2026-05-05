@@ -6,13 +6,13 @@
 使用 OpenAI 兼容 API（如 DeepSeek）。
 
 用法：
-    python scripts/translate_docs.py \
+    python scripts/docs/translate_docs.py \
         --source syntaxes/sde_function_docs.json \
         --target syntaxes/sde_function_docs.zh-CN.json \
         --api-key sk-xxx
 
     # 批量模式（每批 10 个函数，减少 system prompt 重复消耗）
-    python scripts/translate_docs.py \
+    python scripts/docs/translate_docs.py \
         --source syntaxes/sde_function_docs.json \
         --target syntaxes/sde_function_docs.zh-CN.json \
         --batch-size 10

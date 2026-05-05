@@ -5,10 +5,10 @@
 （键名、键值、数量、顺序）完全匹配。
 
 用法:
-    python scripts/validate_i18n.py              # 校验所有已知的文档对
-    python scripts/validate_i18n.py sde           # 仅校验 sde
-    python scripts/validate_i18n.py sdevice       # 仅校验 sdevice
-    python scripts/validate_i18n.py scheme        # 仅校验 scheme
+    python scripts/docs/validate_i18n.py              # 校验所有已知的文档对
+    python scripts/docs/validate_i18n.py sde           # 仅校验 sde
+    python scripts/docs/validate_i18n.py sdevice       # 仅校验 sdevice
+    python scripts/docs/validate_i18n.py scheme        # 仅校验 scheme
 
 退出码:
     0 — 全部通过

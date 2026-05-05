@@ -206,7 +206,7 @@ which code
 语法文件通过 Python 脚本从 Sentaurus TCAD 的 jEdit XML mode 文件自动生成：
 
 ```bash
-python scripts/extract_keywords.py
+python scripts/syntax/extract_keywords.py
 ```
 
 打包扩展：

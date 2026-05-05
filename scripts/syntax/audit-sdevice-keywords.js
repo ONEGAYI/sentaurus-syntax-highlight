@@ -7,7 +7,7 @@
  * 产出 build/sdevice-keyword-audit.json。
  *
  * 用法：
- *   node scripts/audit-sdevice-keywords.js [refs-dir]
+ *   node scripts/syntax/audit-sdevice-keywords.js [refs-dir]
  *
  * refs-dir 默认为 <repo-root>/references
  */

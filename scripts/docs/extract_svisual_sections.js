@@ -1,4 +1,4 @@
-// scripts/extract_svisual_sections.js
+// scripts/docs/extract_svisual_sections.js
 'use strict';
 
 /**

@@ -2,7 +2,7 @@
 Merge per-prefix translated JSON files into a single sde_function_docs.zh-CN.json.
 
 Usage:
-    python scripts/merge_i18n.py
+    python scripts/docs/merge_i18n.py
 
 Reads all *.zh-CN.json files from syntaxes/_i18n_split/ and merges them
 into syntaxes/sde_function_docs.zh-CN.json, preserving key order.
