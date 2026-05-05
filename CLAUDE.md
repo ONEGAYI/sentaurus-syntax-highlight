@@ -131,7 +131,7 @@ sentaurus-syntax-highlight/
 ├── docs/                                       ← 项目文档与术语表
 │   ├── glossary.json                           ← TCAD 术语数据库
 │   ├── 函数文档提取与编写规范.md                 ← 文档编写规范
-│   ├── sde-scopes-and-colors.md                ← SDE scope 与颜色对照
+│   ├── scope-color-reference.md                ← 全语言 Scope + Color + KeywordType 查询表
 │   ├── file-trees/                             ← CLAUDE.md 折叠的子文件树
 │   │   └── tests.md                            ← tests/ 目录详细文件树
 │   ├── prompts/i18n/                           ← 国际化 prompt 模板
