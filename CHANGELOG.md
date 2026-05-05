@@ -4,6 +4,28 @@
 
 ---
 
+## [1.11.0] - 2026-05-05
+
+### 新功能
+
+- **SDEVICE Section 上下文感知着色与悬停**（#1）：新增 `sdevice-semantic-provider.js`，通过 Semantic Tokens 追踪 `{}` 嵌套栈，为顶层 section 名（如 `Math`、`Solve`）和 section 内关键词（如 `Plot`、`Coupled`）分配不同 token 类型（`sectionName`/`sectionKeyword`）。HoverProvider 增加 sdevice 上下文感知文档查找——根据光标所在 section 栈优先匹配当前 section 的参数和关键词文档。`File { Plot= }` 中的 `Plot` 参数与顶层 `Plot {}` section 不再串色、串文档。性能优化：`document.version` 缓存消除重复全文扫描（hover 从 O(n) 降至 <1ms），`charCode` 直接比较替代正则提升字符扫描速度约 30-40%
+- **SDEVICE 全量文档审计与补全 + 中文翻译**（#2）：函数文档从 341 扩展到 2117 条目，含多场景 `contexts` 语义描述（同一关键词在不同 section 中的含义差异），全量中文翻译同步更新
+- **Tcl 预处理器指令语法高亮**：为 5 种 Tcl 语言（SDEVICE/SPROCESS/EMW/Inspect/Svisual）添加 `#if`/`#ifdef`/`#else`/`#elif`/`#endif`/`#define`/`#set` 等预处理指令的 TextMate 高亮规则（`keyword.control.preprocessor`），折叠 Provider 支持 `#if`/`#endif` 块折叠
+- **Tcl 分支感知重复定义检测**：新增 `pp-utils.js` 共享模块提供预处理器分支分析（`buildPpBranchMap`），`checkTclDuplicateDefs` 根据 `#if`/`#endif` 分支信息过滤条件块内的同名变量定义，消除预处理器条件导致的误报
+
+### 其他改进
+
+- 脚本按功能分类归入子目录：`scripts/syntax/`（3 个语法生成脚本）和 `scripts/docs/`（7 个文档处理脚本），同步更新各脚本内部路径引用
+- `docs/superpowers/` 下所有活跃的 spec/plan 文件归档入 `archived/`（plans 0/42, specs 0/33）
+- 新增 `docs/scope-color-reference.md`：全语言 Scope + Color + KeywordType 查询表（替代原 SDE 单语言文档 `sde-scopes-and-colors.md`）
+
+### 测试
+
+- 新增 `test-sdevice-semantic.js`（section 栈追踪、语义 token 提取、上下文感知着色）
+- 新增 `test-tcl-preprocessor.js`（pp-utils 分支分析、`#if`/`#endif` 折叠范围）
+
+---
+
 ## [1.10.0] - 2026-04-26
 
 ### 新功能
@@ -687,6 +709,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.11.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.8.4...v1.9.0

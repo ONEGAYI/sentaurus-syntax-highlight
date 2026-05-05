@@ -50,7 +50,7 @@ sentaurus-syntax-highlight/
 │   ├── tree-sitter-tcl.wasm                    ← tree-sitter-tcl WASM 字节码
 │   ├── sde_function_docs.{json,zh-CN.json}     ← SDE 函数文档（中英文双语，565 API）
 │   ├── scheme_function_docs.{json,zh-CN.json}  ← Scheme 内置函数文档（中英文双语，191 函数）
-│   ├── sdevice_command_docs.{json,zh-CN.json}  ← SDEVICE 命令文档（中英文双语，341 关键词）
+│   ├── sdevice_command_docs.{json,zh-CN.json}  ← SDEVICE 命令文档（中英文双语，2117 关键词）
 │   ├── svisual_command_docs.{json,zh-CN.json}  ← Svisual 命令文档（中英文双语）
 │   └── tcl_command_docs.{json,zh-CN.json}      ← Tcl 核心命令文档（中英文双语，43 命令）
 │
@@ -82,6 +82,7 @@ sentaurus-syntax-highlight/
 │   │   ├── tcl-parser-wasm.js                  ← Tcl WASM 解析器接口（单例模式）
 │   │   ├── tcl-ast-utils.js                    ← Tcl AST 遍历/查询/折叠/变量提取
 │   │   ├── tcl-symbol-configs.js               ← Tcl 工具 section 关键词配置
+│   │   ├── pp-utils.js                         ← 预处理器分支分析共享模块（#if/#endif 块映射）
 │   │   ├── parse-cache.js                      ← 统一解析缓存层（SchemeParseCache + TclParseCache）
 │   │   │
 │   │   └── providers/                          ← VSCode Provider 实现
@@ -100,6 +101,7 @@ sentaurus-syntax-highlight/
 │   │       ├── quote-auto-delete-provider.js   ← 空引号对自动删除 Provider（6 种语言共用）
 │   │       ├── region-undef-diagnostic.js         ← Region/Material/Contact 未定义语义诊断（Scheme）
 │   │       ├── semantic-tokens-provider.js        ← SDE 用户定义函数调用高亮（Semantic Tokens）
+│   │       ├── sdevice-semantic-provider.js    ← SDEVICE section 上下文语义 token（嵌套栈追踪 + 着色）
 │   │       ├── symbol-completion.js               ← Region/Material/Contact 符号补全
 │   │       ├── variable-reference-provider.js     ← 用户变量引用查找（Scheme + Tcl，作用域感知）
 │   │       └── symbol-reference-provider.js       ← Find All References（Region/Material/Contact）
@@ -167,7 +169,7 @@ sentaurus-syntax-highlight/
 
 ### 第二层：关键词补全与文档悬停
 
-`src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（565 API）、Scheme 内置（191 函数）、SDEVICE（341 关键词）、Tcl 核心命令（43 命令）、Svisual（中英文双语）。文档 JSON 按语言懒加载，激活时仅加载当前语言所需文档。
+`src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（565 API）、Scheme 内置（191 函数）、SDEVICE（2117 关键词）、Tcl 核心命令（43 命令）、Svisual（中英文双语）。文档 JSON 按语言懒加载，激活时仅加载当前语言所需文档。SDEVICE 的 HoverProvider 支持 section 上下文感知文档查找，根据光标所在 section 栈优先匹配当前 section 的参数和关键词。
 
 `src/definitions.js` 独立提供用户自定义变量的补全、悬停和跳转定义，通过 `document.version` 惰性缓存避免重复扫描。definitionText 扩展到行尾包含行末注释，并通过 `truncateDefinitionText` 工具函数按 `sentaurus.definitionMaxWidth` 设置截断过长文本。
 
@@ -176,7 +178,9 @@ sentaurus-syntax-highlight/
 双解析器架构，按语言方言分治：
 
 - **Scheme（SDE）**：手写解析器（`scheme-parser.js`），生成自定义 AST → `scheme-analyzer.js` 提取定义（含 define+lambda params 检测）和折叠范围 → `scope-analyzer.js` 构建词法作用域树 → `semantic-dispatcher.js` 按函数调用模式分发语义 → `symbol-index.js` 根据声明式 symbolParams 配置提取 Region/Material/Contact 的定义和引用（支持 string-append 静态推断和 modeDispatch 动态类型）
-- **Tcl（其余 5 种）**：`tree-sitter-tcl` WASM 解析器（`tcl-parser-wasm.js`）→ `tcl-ast-utils.js` 统一 AST 遍历/变量提取/折叠 → `tcl-symbol-configs.js` 配置各工具 section 关键词
+- **Tcl（其余 5 种）**：`tree-sitter-tcl` WASM 解析器（`tcl-parser-wasm.js`）→ `tcl-ast-utils.js` 统一 AST 遍历/变量提取/折叠 → `tcl-symbol-configs.js` 配置各工具 section 关键词 → `pp-utils.js` 提供预处理器分支分析（`#if`/`#endif` 块映射）
+
+SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依赖 WASM，通过文本扫描追踪 `{}` 嵌套栈构建 section 上下文，为顶层 section 名分配 `sectionName` token、为 section 内关键词分配 `sectionKeyword` token，并缓存至 `document.version` 避免重复扫描。
 
 共用 Provider（`src/lsp/providers/`）：
 - `undef-var-diagnostic.js` — 跨语言未定义/重复定义变量诊断（Scheme + Tcl）
@@ -184,6 +188,7 @@ sentaurus-syntax-highlight/
 - `bracket-diagnostic.js` / `tcl-bracket-diagnostic.js` — 括号平衡诊断
 - `signature-provider.js` — Scheme 函数签名提示（内置 + 用户定义函数 fallback）
 - `semantic-tokens-provider.js` — SDE 用户定义函数调用高亮（Semantic Tokens）
+- `sdevice-semantic-provider.js` — SDEVICE section 上下文语义着色（sectionName/sectionKeyword token 类型，纯文本栈追踪 + document.version 缓存）
 - `scheme-on-enter-provider.js` — Scheme 括号内回车多级自动缩进（与 `sde.json` onEnterRules 协同，逻辑提取至 `scheme-on-enter-logic.js`）
 - `tcl-document-symbol-provider.js` — Tcl 文档大纲
 - `unit-auto-close-provider.js` — SPROCESS Unit 括号自动配对（含 logic 层判断逻辑）
