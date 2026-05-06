@@ -167,7 +167,7 @@ function scanStacksPerLine(text, sectionKeywords, preSplitLines) {
  * @param {Set<string>} sectionKeywords - Section name keywords
  * @returns {number[]} Delta-encoded semantic token array
  */
-function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords, ppDefines) {
+function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords, ppDefines = []) {
     const tokens = [];
     const identRe = /\b([A-Za-z_][A-Za-z0-9_]*)\b/g;
     const vectorRe = /\b([A-Za-z_][A-Za-z0-9_]*)\/(Vector|vector|SpecialVector)\b/g;
