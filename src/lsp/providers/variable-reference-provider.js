@@ -3,6 +3,7 @@
 
 const { getSchemeRefs, getVisibleDefinitions } = require('../scope-analyzer');
 const { getVariableRefs, buildScopeIndex, TCL_LANGS } = require('../tcl-ast-utils');
+const ppUtils = require('../pp-utils');
 
 let schemeCache;
 let tclCache;
@@ -155,6 +156,25 @@ function provideTclReferences(document, position, options) {
             new vscode.Range(ref.line - 1, ref.startCol, ref.line - 1, ref.endCol)
         ));
     }
+
+        // #define 裸词引用
+        const ppDefs = ppUtils.extractPpDefines(document.getText());
+        const ppDef = ppDefs.find(d => d.name === word);
+        if (ppDef) {
+            const ppRefs = ppUtils.findPpDefineRefs(document.getText(), ppDefs.filter(d => d.name === word));
+            for (const ref of ppRefs) {
+                const isDup = locations.some(loc =>
+                    loc.range.start.line === ref.line - 1 &&
+                    loc.range.start.character === ref.startCol
+                );
+                if (!isDup) {
+                    locations.push(new vscode.Location(
+                        document.uri,
+                        new vscode.Range(ref.line - 1, ref.startCol, ref.line - 1, ref.startCol + word.length)
+                    ));
+                }
+            }
+        }
 
     return locations.length > 0 ? locations : null;
 }
