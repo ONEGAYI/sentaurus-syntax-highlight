@@ -91,5 +91,95 @@ test('无 #undef 返回空数组', () => {
     assert.strictEqual(undefs.length, 0);
 });
 
+const { findPpDefineRefs } = require('../src/lsp/pp-utils');
+
+console.log('\nfindPpDefineRefs:');
+
+test('#ifdef NAME 被识别为引用', () => {
+    const text = '#define FLAG\n#ifdef FLAG\nset x 1\n#endif\n';
+    const defs = extractPpDefines(text);
+    const refs = findPpDefineRefs(text, defs);
+    const ifdefRefs = refs.filter(r => r.line === 2);
+    assert.strictEqual(ifdefRefs.length, 1);
+    assert.strictEqual(ifdefRefs[0].name, 'FLAG');
+    assert.strictEqual(ifdefRefs[0].refType, 'ifdef');
+});
+
+test('#ifndef NAME 被识别为引用', () => {
+    const text = '#define FLAG\n#ifndef FLAG\nset x 1\n#endif\n';
+    const defs = extractPpDefines(text);
+    const refs = findPpDefineRefs(text, defs);
+    const ifndefRefs = refs.filter(r => r.line === 2);
+    assert.strictEqual(ifndefRefs.length, 1);
+    assert.strictEqual(ifndefRefs[0].refType, 'ifndef');
+});
+
+test('#undef NAME 被识别为引用', () => {
+    const text = '#define A 1\n#undef A\n';
+    const defs = extractPpDefines(text);
+    const refs = findPpDefineRefs(text, defs);
+    const undefRefs = refs.filter(r => r.line === 2);
+    assert.strictEqual(undefRefs.length, 1);
+    assert.strictEqual(undefRefs[0].refType, 'undef');
+});
+
+test('普通代码行裸词被识别为引用', () => {
+    const text = '#define THICKNESS 0.1\nset x THICKNESS\n';
+    const defs = extractPpDefines(text);
+    const refs = findPpDefineRefs(text, defs);
+    const codeRefs = refs.filter(r => r.line === 2 && r.refType === 'usage');
+    assert.strictEqual(codeRefs.length, 1);
+    assert.strictEqual(codeRefs[0].name, 'THICKNESS');
+    assert.ok(codeRefs[0].startCol >= 0);
+});
+
+test('$NAME 不被识别为 #define 引用', () => {
+    const text = '#define VAR 1\nputs $VAR\n';
+    const defs = extractPpDefines(text);
+    const refs = findPpDefineRefs(text, defs);
+    const usageRefs = refs.filter(r => r.refType === 'usage');
+    assert.strictEqual(usageRefs.length, 0);
+});
+
+test('字符串内的 NAME 不被识别为引用', () => {
+    const text = '#define NAME 1\nputs "NAME is here"\n';
+    const defs = extractPpDefines(text);
+    const refs = findPpDefineRefs(text, defs);
+    const usageRefs = refs.filter(r => r.refType === 'usage');
+    assert.strictEqual(usageRefs.length, 0);
+});
+
+test('定义行之前的同名标识符不被识别', () => {
+    const text = 'set x THICKNESS\n#define THICKNESS 0.1\n';
+    const defs = extractPpDefines(text);
+    const refs = findPpDefineRefs(text, defs);
+    assert.strictEqual(refs.length, 0);
+});
+
+test('#undef 之后裸词不被识别（存活区间）', () => {
+    const text = '#define A 1\nset x A\n#undef A\nset y A\n';
+    const defs = extractPpDefines(text);
+    const refs = findPpDefineRefs(text, defs);
+    const line2Refs = refs.filter(r => r.line === 2);
+    const line4Refs = refs.filter(r => r.line === 4);
+    assert.strictEqual(line2Refs.length, 1);
+    assert.strictEqual(line4Refs.length, 0);
+});
+
+test('#define 行的 NAME 定义位置不作为引用', () => {
+    const text = '#define FLAG\n';
+    const defs = extractPpDefines(text);
+    const refs = findPpDefineRefs(text, defs);
+    assert.strictEqual(refs.length, 0);
+});
+
+test('注释行中的 NAME 不被识别为引用', () => {
+    const text = '#define FLAG\n# FLAG is important\n';
+    const defs = extractPpDefines(text);
+    const refs = findPpDefineRefs(text, defs);
+    const usageRefs = refs.filter(r => r.refType === 'usage');
+    assert.strictEqual(usageRefs.length, 0);
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);
