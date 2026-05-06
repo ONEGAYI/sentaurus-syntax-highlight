@@ -8,6 +8,7 @@ scripts/**
 package-lock.json
 *.vsix
 assets/**
+.coderabbit.yaml
 # claude code local
 .claude/**
 

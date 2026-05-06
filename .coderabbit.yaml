@@ -1,0 +1,35 @@
+# .coderabbit.yaml
+reviews:
+  path_filters:
+    # 打包排除项
+    - "!dist/**"
+    - "!**/*.lock"
+    - "!**/*.vsix"
+
+    # 文档与参考
+    - "!docs/**"
+    - "!references/**"
+    - "!*.md"
+
+    # 测试 — 仅排除非代码的展示/基准
+    - "!display_test/**"
+    - "!benchmarks/**"
+
+    # 生成/构建产物
+    - "!build/**"
+    - "!scripts/**"
+    - "!temp/**"
+
+    # 机器生成的语法文件 & 二进制
+    - "!syntaxes/*.tmLanguage.json"
+    - "!syntaxes/tree-sitter-tcl.wasm"
+
+    # 工具配置（非业务代码）
+    - "!.vscode/**"
+    - "!.claude/**"
+    - "!.serena/**"
+    - "!.gitignore"
+    - "!.coderabbit.yaml"
+    - "!language-configuration.json"
+    - "!language-configurations/**"
+    - "!snippets/*.json"
