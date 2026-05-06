@@ -152,7 +152,6 @@
         "id": "declaration",
         "description": "宏定义声明位置"
       }
-      }
     ],
     "grammars": [
       {
@@ -374,13 +373,11 @@
           "sectionKeyword": [
             "entity.name.tag.sdevice"
           ],
-<<<<<<< HEAD
           "subSection": [
             "entity.name.type"
           ],
           "macro": [
             "variable.other.constant.preprocessor"
-          ]
           ]
         }
       }

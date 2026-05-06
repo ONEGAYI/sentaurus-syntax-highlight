@@ -736,6 +736,7 @@ function activate(context) {
                     // 2. 查用户变量定义
                     const userDefs = defs.getDefinitions(document, langId);
                     let def = userDefs.find(d => d.name === word);
+                    let hoverRange = range;
 
                     // Fallback: broad regex may over-capture (e.g. "Voltage=_Vds_"), try \w+ only
                     let hoverWord = word;
@@ -744,6 +745,7 @@ function activate(context) {
                         if (narrowRange) {
                             hoverWord = document.getText(narrowRange);
                             def = userDefs.find(d => d.name === hoverWord);
+                            if (def) hoverRange = narrowRange;
                         }
                     }
 
@@ -753,7 +755,7 @@ function activate(context) {
                         const typeLabel = def.kind === 'ppDefine' ? '预处理宏' : '用户变量';
                         md.appendMarkdown(`**${def.name}** (${typeLabel}, 第 ${def.line} 行)\n\n`);
                         md.appendCodeblock(defs.truncateDefinitionText(def.definitionText, hoverMaxWidth, langId), langId);
-                        return new vscode.Hover(md, range);
+                        return new vscode.Hover(md, hoverRange);
                     }
 
                     return null;
@@ -800,7 +802,7 @@ function activate(context) {
 
                     // #define 宏定义 fallback（不依赖 WASM）
                     const userDefs = defs.getDefinitions(document, langId);
-                    const ppDef = userDefs.find(d => d.kind === 'ppDefine' && d.name === word && d.line <= cursorLine);
+                    const ppDef = [...userDefs].reverse().find(d => d.kind === 'ppDefine' && d.name === word && d.line <= cursorLine);
                     if (ppDef) {
                         const defLine0 = ppDef.line - 1;
                         const defLineText = document.lineAt(defLine0).text;

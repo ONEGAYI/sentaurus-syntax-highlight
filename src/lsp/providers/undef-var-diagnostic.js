@@ -139,12 +139,11 @@ function checkTclUndefVars(document) {
     const definedNames = new Set(ppDefs.map(d => d.name));
     const lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
-        const match = lines[i].match(/^#\s*(ifdef|ifndef)\s+(\w+)/);
+        const match = lines[i].match(/^\s*#\s*(ifdef|ifndef)\s+(\w+)/);
         if (match) {
             const macroName = match[2];
             if (!definedNames.has(macroName)) {
-                const kwEnd = lines[i].indexOf(match[1]) + match[1].length;
-                const nameStart = lines[i].indexOf(macroName, kwEnd);
+                const nameStart = lines[i].indexOf(macroName, match.index + match[0].indexOf(macroName));
                 const range = new vscode.Range(
                     i, nameStart,
                     i, nameStart + macroName.length

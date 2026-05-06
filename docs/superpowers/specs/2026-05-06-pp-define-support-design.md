@@ -139,7 +139,7 @@ function extractTclDefinitionsAst(text) {
 
 将 `#define`、`#undef`、`#ifdef`/`#ifndef` 拆分为独立模式，为宏名分配 `variable.other.constant.preprocessor.tcl` scope：
 
-```
+```text
 #define THICKNESS 0.1
 ^^^^^^^ keyword.control.preprocessor.tcl
         ^^^^^^^^^ variable.other.constant.preprocessor.tcl

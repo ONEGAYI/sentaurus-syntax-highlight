@@ -132,24 +132,24 @@ function findPpDefineRefs(text, defines) {
 
             const line = lines[i];
 
-            // 精确提取：#ifdef / #ifndef
-            const ifdefMatch = line.match(/^#\s*(ifdef|ifndef)\s+(\w+)/);
+            // 精确提取：#ifdef / #ifndef（允许前导空格，与 extractPpDefines 一致）
+            const ifdefMatch = line.match(/^\s*#\s*(ifdef|ifndef)\s+(\w+)/);
             if (ifdefMatch && ifdefMatch[2] === def.name) {
-                const nameStart = line.indexOf(def.name, line.indexOf(ifdefMatch[1]) + ifdefMatch[1].length);
+                const nameStart = line.indexOf(def.name, ifdefMatch.index + ifdefMatch[0].indexOf(def.name));
                 refs.push({ name: def.name, line: lineNum, startCol: nameStart, refType: ifdefMatch[1] });
                 continue;
             }
 
-            // 精确提取：#undef
-            const undefMatch = line.match(/^#\s*undef\s+(\w+)/);
+            // 精确提取：#undef（允许前导空格）
+            const undefMatch = line.match(/^\s*#\s*undef\s+(\w+)/);
             if (undefMatch && undefMatch[1] === def.name) {
-                const nameStart = line.indexOf(def.name, 5);
+                const nameStart = line.indexOf(def.name, undefMatch.index + undefMatch[0].indexOf(def.name));
                 refs.push({ name: def.name, line: lineNum, startCol: nameStart, refType: 'undef' });
                 continue;
             }
 
-            // #define 定义行本身：跳过
-            const defineMatch = line.match(/^#\s*define\s+(\w+)/);
+            // #define 定义行本身：跳过（允许前导空格）
+            const defineMatch = line.match(/^\s*#\s*define\s+(\w+)/);
             if (defineMatch && defineMatch[1] === def.name) continue;
 
             // 纯注释行 → 跳过
@@ -192,9 +192,9 @@ function buildPpDefineTokens(text) {
     for (const def of defines) {
         const lineIdx = def.line - 1;
         const line = lines[lineIdx];
-        const match = line.match(/^(\s*)#\s*define\s+(\w+)/);
+        const match = line.match(/^(\s*#\s*define\s+)(\w+)/);
         if (match) {
-            const nameCol = line.indexOf(def.name, match[1].length + 7);
+            const nameCol = match[1].length;
             tokens.push({ line: lineIdx, col: nameCol, len: def.name.length, type: 0, modifier: 1 });
         }
     }
