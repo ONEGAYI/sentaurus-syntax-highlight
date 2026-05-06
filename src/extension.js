@@ -25,6 +25,7 @@ const symbolCompletion = require('./lsp/providers/symbol-completion');
 const symbolReferenceProvider = require('./lsp/providers/symbol-reference-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
 const { getSdeviceAllSectionKeywords } = require('./lsp/tcl-symbol-configs');
+const ppUtils = require('./lsp/pp-utils');
 
 /** @type {SchemeParseCache} */
 let schemeCache;
@@ -547,6 +548,10 @@ function activate(context) {
                             itemKind = vscode.CompletionItemKind.Function;
                             detail = 'User Function';
                         }
+                        if (d.kind === 'ppDefine') {
+                            itemKind = vscode.CompletionItemKind.Constant;
+                            detail = d.value ? `#define = ${d.value}` : '#define';
+                        }
                         const item = new vscode.CompletionItem(d.name, itemKind);
                         item.detail = detail;
                         item.sortText = '4' + d.name;
@@ -691,7 +696,8 @@ function activate(context) {
                     if (def) {
                         const hoverMaxWidth = vscode.workspace.getConfiguration('sentaurus').get('definitionMaxWidth', 60);
                         const md = new vscode.MarkdownString();
-                        md.appendMarkdown(`**${def.name}** (用户变量, 第 ${def.line} 行)\n\n`);
+                        const typeLabel = def.kind === 'ppDefine' ? '预处理宏' : '用户变量';
+                        md.appendMarkdown(`**${def.name}** (${typeLabel}, 第 ${def.line} 行)\n\n`);
                         md.appendCodeblock(defs.truncateDefinitionText(def.definitionText, hoverMaxWidth, langId), langId);
                         return new vscode.Hover(md, range);
                     }
@@ -741,8 +747,26 @@ function activate(context) {
                     const entry = tclCache.get(document);
                     if (!entry || !entry.tree) return null;
                     const scopeIndex = astUtils.buildScopeIndex(entry.tree.rootNode);
-                    const targetDef = scopeIndex.resolveDefinition(word, cursorLine);
-                    if (!targetDef) return null;
+                    let targetDef = scopeIndex.resolveDefinition(word, cursorLine);
+
+                    // Fallback: 检查 #define 宏定义
+                    if (!targetDef) {
+                        const ppDefs = ppUtils.extractPpDefines(document.getText());
+                        const ppDef = ppDefs.find(d => d.name === word && d.line <= cursorLine);
+                        if (ppDef) {
+                            const defLine0 = ppDef.line - 1;
+                            const defLineText = document.lineAt(defLine0).text;
+                            const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+                            const match = re.exec(defLineText);
+                            if (match) {
+                                return new vscode.Location(
+                                    document.uri,
+                                    new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
+                                );
+                            }
+                        }
+                        return null;
+                    }
 
                     const defLine0 = targetDef.defLine - 1;
                     const defLineText = document.lineAt(defLine0).text;
