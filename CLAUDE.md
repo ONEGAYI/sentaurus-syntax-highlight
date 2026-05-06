@@ -81,15 +81,15 @@ sentaurus-syntax-highlight/
 │   │   ├── symbol-index.js                    ← 符号提取引擎（Region/Material/Contact 声明式配置）
 │   │   ├── tcl-parser-wasm.js                  ← Tcl WASM 解析器接口（单例模式）
 │   │   ├── tcl-ast-utils.js                    ← Tcl AST 遍历/查询/折叠/变量提取
-│   │   ├── tcl-symbol-configs.js               ← Tcl 工具 section 关键词配置
-│   │   ├── pp-utils.js                         ← 预处理器分支分析共享模块（#if/#endif 块映射）
+│   │   ├── tcl-symbol-configs.js               ← Tcl 工具 section 关键词 + 子 section 配置
+│   │   ├── pp-utils.js                         ← 预处理器分支分析 + #define 宏定义提取共享模块
 │   │   ├── parse-cache.js                      ← 统一解析缓存层（SchemeParseCache + TclParseCache）
 │   │   │
 │   │   └── providers/                          ← VSCode Provider 实现
 │   │       ├── folding-provider.js             ← Scheme 代码折叠
 │   │       ├── bracket-diagnostic.js           ← Scheme 括号平衡诊断
 │   │       ├── signature-provider.js           ← Scheme 函数签名提示（内置 + 用户定义函数）
-│   │       ├── undef-var-diagnostic.js         ← 未定义/重复定义变量诊断（Scheme + Tcl 双语言）
+│   │       ├── undef-var-diagnostic.js         ← 未定义/重复定义变量诊断（Scheme + Tcl 双语言）+ 未定义宏诊断
 │   │       ├── scheme-on-enter-logic.js        ← Scheme 括号内回车缩进判断逻辑（独立模块）
 │   │       ├── scheme-on-enter-provider.js     ← Scheme 括号内回车多级自动缩进（引用 logic 模块）
 │   │       ├── tcl-folding-provider.js         ← Tcl 代码折叠（基于 braced_word）
@@ -101,9 +101,10 @@ sentaurus-syntax-highlight/
 │   │       ├── quote-auto-delete-provider.js   ← 空引号对自动删除 Provider（6 种语言共用）
 │   │       ├── region-undef-diagnostic.js         ← Region/Material/Contact 未定义语义诊断（Scheme）
 │   │       ├── semantic-tokens-provider.js        ← SDE 用户定义函数调用高亮（Semantic Tokens）
-│   │       ├── sdevice-semantic-provider.js    ← SDEVICE section 上下文语义 token（嵌套栈追踪 + 着色）
+│   │       ├── sdevice-semantic-provider.js    ← SDEVICE 语义 token（section/subSection/keyword/macro/vector）
+│   │       ├── sdevice-vector-keywords.js      ← SDEVICE 矢量关键词数据（57 基础词 + 3 后缀）
 │   │       ├── symbol-completion.js               ← Region/Material/Contact 符号补全
-│   │       ├── variable-reference-provider.js     ← 用户变量引用查找（Scheme + Tcl，作用域感知）
+│   │       ├── variable-reference-provider.js     ← 用户变量 + #define 宏引用查找（Scheme + Tcl）
 │   │       └── symbol-reference-provider.js       ← Find All References（Region/Material/Contact）
 │   │
 │   └── snippets/                               ← QuickPick 代码片段数据（JS 模块）
@@ -138,8 +139,8 @@ sentaurus-syntax-highlight/
 │   │   └── tests.md                            ← tests/ 目录详细文件树
 │   ├── prompts/i18n/                           ← 国际化 prompt 模板
 │   └── superpowers/                            ← 开发 spec/plan 归档
-│       ├── plans/archived/                     ← 已完成的实现计划 (Working/Archived: 0/42)
-│       └── specs/archived/                     ← 已完成的设计规范 (Working/Archived: 0/33)
+│       ├── plans/archived/                     ← 已完成的实现计划 (Working/Total: 1/43)
+│       └── specs/archived/                     ← 已完成的设计规范 (Working/Total: 1/34)
 │
 ├── benchmarks/                                 ← 性能基准测试输出（JSON）
 ├── display_test/                               ← 功能展示测试文件
@@ -178,24 +179,25 @@ sentaurus-syntax-highlight/
 双解析器架构，按语言方言分治：
 
 - **Scheme（SDE）**：手写解析器（`scheme-parser.js`），生成自定义 AST → `scheme-analyzer.js` 提取定义（含 define+lambda params 检测）和折叠范围 → `scope-analyzer.js` 构建词法作用域树 → `semantic-dispatcher.js` 按函数调用模式分发语义 → `symbol-index.js` 根据声明式 symbolParams 配置提取 Region/Material/Contact 的定义和引用（支持 string-append 静态推断和 modeDispatch 动态类型）
-- **Tcl（其余 5 种）**：`tree-sitter-tcl` WASM 解析器（`tcl-parser-wasm.js`）→ `tcl-ast-utils.js` 统一 AST 遍历/变量提取/折叠 → `tcl-symbol-configs.js` 配置各工具 section 关键词 → `pp-utils.js` 提供预处理器分支分析（`#if`/`#endif` 块映射）
+- **Tcl（其余 5 种）**：`tree-sitter-tcl` WASM 解析器（`tcl-parser-wasm.js`）→ `tcl-ast-utils.js` 统一 AST 遍历/变量提取/折叠 → `tcl-symbol-configs.js` 配置各工具 section 关键词和子 section → `pp-utils.js` 提供预处理器分支分析（`#if`/`#endif` 块映射）和 #define 宏定义提取/引用查找
 
-SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依赖 WASM，通过文本扫描追踪 `{}` 嵌套栈构建 section 上下文，为顶层 section 名分配 `sectionName` token、为 section 内关键词分配 `sectionKeyword` token，并缓存至 `document.version` 避免重复扫描。
+SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依赖 WASM，通过文本扫描追踪 `{}` 嵌套栈构建 section 上下文，为顶层 section 名分配 `sectionName` token、为子 section（Quasistationary/Coupled 等）分配 `subSection` token、为 section 内关键词分配 `sectionKeyword` token、为 #define 宏分配 `macro` token，并缓存至 `document.version` 避免重复扫描。`sdevice-vector-keywords.js` 提供 Plot/CurrentPlot section 中 57 个矢量基础关键词和 3 种后缀的数据模块。
 
 共用 Provider（`src/lsp/providers/`）：
-- `undef-var-diagnostic.js` — 跨语言未定义/重复定义变量诊断（Scheme + Tcl）
+- `undef-var-diagnostic.js` — 跨语言未定义/重复定义变量诊断（Scheme + Tcl）+ 未定义 #define 宏诊断
 - `folding-provider.js` / `tcl-folding-provider.js` — 代码折叠
 - `bracket-diagnostic.js` / `tcl-bracket-diagnostic.js` — 括号平衡诊断
 - `signature-provider.js` — Scheme 函数签名提示（内置 + 用户定义函数 fallback）
 - `semantic-tokens-provider.js` — SDE 用户定义函数调用高亮（Semantic Tokens）
-- `sdevice-semantic-provider.js` — SDEVICE section 上下文语义着色（sectionName/sectionKeyword token 类型，纯文本栈追踪 + document.version 缓存）
+- `sdevice-semantic-provider.js` — SDEVICE 语义着色（sectionName/subSection/sectionKeyword/macro/vector token，纯文本栈追踪 + 三阶段扫描 + document.version 缓存）
+- `sdevice-vector-keywords.js` — SDEVICE Plot/CurrentPlot 矢量关键词数据模块（57 基础词 + 3 后缀）
 - `scheme-on-enter-provider.js` — Scheme 括号内回车多级自动缩进（与 `sde.json` onEnterRules 协同，逻辑提取至 `scheme-on-enter-logic.js`）
 - `tcl-document-symbol-provider.js` — Tcl 文档大纲
 - `unit-auto-close-provider.js` — SPROCESS Unit 括号自动配对（含 logic 层判断逻辑）
 - `quote-auto-delete-provider.js` — 空引号对自动删除（6 种语言共用，含 logic 层判断逻辑）
 - `region-undef-diagnostic.js` — Region/Material/Contact 未定义语义诊断
 - `symbol-completion.js` — Region/Material/Contact 符号补全（声明式 symbolParams 配置）
-- `variable-reference-provider.js` — 用户变量引用查找（Scheme + Tcl 双语言，作用域感知过滤）
+- `variable-reference-provider.js` — 用户变量 + #define 宏引用查找（Scheme + Tcl 双语言，作用域感知过滤）
 - `symbol-reference-provider.js` — Find All References（Region/Material/Contact 交叉引用）
 
 **内存管理**：WASM `tree` 对象使用后必须 `tree.delete()` 释放，由 `parse-cache.js` 的 `TclParseCache` 统一管理生命周期。

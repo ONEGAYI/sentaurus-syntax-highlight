@@ -24,6 +24,10 @@ sentaurus-syntax-highlight/
 │   ├── test-tcl-scope-index.js                 ← ScopeIndex 作用域查询测试
 │   ├── test-variable-reference.js              ← 用户变量引用查找（Scheme + Tcl）
 │   ├── test-undef-var-integration.js           ← 未定义变量诊断集成测试
+│   ├── test-tcl-preprocessor.js                ← Tcl 预处理器分支分析（pp-utils）
+│   ├── test-sdevice-semantic.js                ← SDEVICE section 语义 token 测试
+│   ├── test-sdevice-vector-keywords.js         ← SDEVICE 矢量关键词扫描与匹配测试
+│   ├── test-pp-define.js                       ← #define 宏语义支持测试（补全/悬停/跳转/引用/诊断）
 │   ├── test-unit-auto-close.js                 ← Unit 括号自动配对测试
 │   ├── test-quote-auto-delete.js               ← 空引号对自动删除测试
 │   ├── test-symbol-index.js                    ← 符号提取引擎（resolveSymbolName + extractSymbols）

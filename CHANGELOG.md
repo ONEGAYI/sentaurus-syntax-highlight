@@ -4,6 +4,30 @@
 
 ---
 
+## [1.12.0] - 2026-05-06
+
+### 新功能
+
+- **#define 预处理变量语义支持**（#4）：为 5 种 Tcl 工具添加 `#define` 宏的完整语义支持——自动补全、Hover 文档、跳转定义、查找引用、未定义宏诊断（`#ifdef` 引用未定义宏时显示警告）、语义着色（`variable.other.constant.preprocessor` scope）。`pp-utils.js` 扩展宏定义提取和引用查找，6 种工具的 CompletionItemProvider/HoverProvider/DefinitionProvider/ReferenceProvider 统一支持 #define 宏
+- **SDEVICE Plot/CurrentPlot 矢量关键词补全、高亮与悬停**（#3）：支持 Table 196 全量 55 个矢量基础关键词 + Table 197 的 2 个 SpecialVector 在 Plot/CurrentPlot section 中的完整语法高亮、自动补全和文档悬停。新增 `sdevice-vector-keywords.js` 矢量关键词数据模块（57 个基础词 + 3 种后缀），输入 `Keyword/` 触发后缀补全，三阶段扫描算法（矢量整体 → 标准标识符 → 矢量 token）
+- **SDEVICE Solve 子 section 关键词语义着色**：为 Solve 下的 Quasistationary/Coupled/Transient/ACCoupled/Goal 五个子 section 关键词添加独立的 `subSection` 语义 token 类型，映射到 `entity.name.type` scope（多数主题中显示为青绿色）。子 section 检测支持跨行 `(options)` 括号和嵌套块，最多向后查找 5 行。补齐 ACCoupled/Goal 到 section 栈追踪
+
+### Bug 修复
+
+- **修复字符串内 @ 符号后退格误删闭合引号**：在 `"Profile_@n"` 等含 SWB 参数的字符串中，退格删除到 `@` 时 `isBoundary` 错误返回 true，导致闭合引号被空引号对自动删除逻辑吃掉。将 `@` 加入 isBoundary 排除列表
+
+### 其他改进
+
+- 新增 `.coderabbit.yaml` AI 代码审查配置
+- 新增 `.vscodeignore` 排除 `.coderabbit.yaml` 和 `.serena/` 目录
+
+### 测试
+
+- 新增 `test-pp-define.js`（#define 宏补全、悬停、跳转、引用、诊断、语义 token，含 CRLF 兼容性）
+- 新增 `test-sdevice-vector-keywords.js`（矢量关键词扫描、后缀匹配、无效组合过滤、回归测试）
+
+---
+
 ## [1.11.0] - 2026-05-05
 
 ### 新功能
@@ -709,6 +733,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.12.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.9.0...v1.9.1

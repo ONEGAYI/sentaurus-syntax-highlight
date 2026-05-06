@@ -23,10 +23,6 @@ temp/
 
 TODOLIST.md
 
+# references but not md files
 references/*
-!references/
-
-!references/sense_ug_N-2017.09.pdf.md
-!references/assets/
-references/assets/*
-!references/assets/sense_ug_N-2017.09.pdf/
+!references/*.md
