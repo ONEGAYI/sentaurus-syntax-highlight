@@ -8,7 +8,8 @@
  * 3. 删除位置前为边界：linePrefix 为空或尾字符为分隔符
  * 4. 剩余引号后为边界：charAfterNext 为空或为分隔符
  *
- * 边界 = 行首/行尾、空白符、或非引号的非单词字符
+ * 边界 = 行首/行尾、空白符、或非引号非@的非单词字符
+ * （@ 为 SWB 参数分隔符，不应视为边界，防止 "Profile_@|" 退格误删闭合引号）
  */
 
 /**
@@ -20,7 +21,7 @@
  * @returns {boolean}
  */
 function isBoundary(ch) {
-    return ch === '' || (!/\w/.test(ch) && !/['"`]/.test(ch));
+    return ch === '' || (!/\w/.test(ch) && !/['"`@]/.test(ch));
 }
 
 /**

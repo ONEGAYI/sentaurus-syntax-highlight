@@ -104,6 +104,11 @@ assert.strictEqual(shouldDelete({ text: '', rangeLength: 1 }, 'set x ', '"', '1'
 assert.strictEqual(shouldDelete({ text: '', rangeLength: 1 }, 'set x ', "'", '_'), false,
     "set x '|_ → 不触发（_ 不是边界）");
 
+// @ 符号不算边界（SWB 参数分隔符，如 @n@）
+assert.strictEqual(isBoundary('@'), false, '@ 不是边界（SWB 参数分隔符）');
+assert.strictEqual(shouldDelete({ text: '', rangeLength: 1 }, '"Profile_@', '"', ''), false,
+    '"Profile_@|" → 不触发（@ 是 SWB 参数分隔符，不是边界）');
+
 // 连续引号场景（引号字符不算边界）
 assert.strictEqual(shouldDelete({ text: '', rangeLength: 1 }, 'set x ', '"', '"'), false,
     'set x "|"" → 不触发（" 后紧跟 " 不是边界）');
