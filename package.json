@@ -135,6 +135,11 @@
         "id": "sectionKeyword",
         "superType": "type",
         "description": "sdevice section 内匹配的参数或关键词"
+      },
+      {
+        "id": "subSection",
+        "superType": "keyword",
+        "description": "sdevice Solve 子 section 块名（如 Quasistationary、Coupled、Transient）"
       }
     ],
     "grammars": [
@@ -356,6 +361,9 @@
           ],
           "sectionKeyword": [
             "entity.name.tag.sdevice"
+          ],
+          "subSection": [
+            "entity.name.type"
           ]
         }
       }

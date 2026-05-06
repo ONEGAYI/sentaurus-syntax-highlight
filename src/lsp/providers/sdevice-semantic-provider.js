@@ -2,8 +2,9 @@
 'use strict';
 
 const { BASE_TO_SUFFIXES, VECTOR_SECTIONS } = require('./sdevice-vector-keywords');
+const { SDEVICE_SUB_SECTIONS } = require('../tcl-symbol-configs');
 
-const TOKEN_TYPES = ['sectionName', 'sectionKeyword'];
+const TOKEN_TYPES = ['sectionName', 'sectionKeyword', 'subSection'];
 const TOKEN_MODIFIERS = [];
 
 /**
@@ -217,6 +218,40 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
             const wordEnd = col + word.length;
 
             if (vectorRanges.some(r => col >= r.start && wordEnd <= r.end)) continue;
+
+            // 子 section 关键词（后跟可选 (...) 和 {）→ subSection 青绿色 token
+            if (SDEVICE_SUB_SECTIONS.has(word.toLowerCase())) {
+                let rest = scanText.slice(wordEnd);
+                // 向后拼接直到 ( 平衡且出现 {（跳过嵌套块如 Goal { ... }）
+                const MAX_LOOKAHEAD = 5;
+                let nextLine = lineIdx + 1;
+                while (nextLine < lines.length && nextLine <= lineIdx + MAX_LOOKAHEAD) {
+                    let pd = 0, hasBrace = false;
+                    for (const c of rest) {
+                        if (c === '(') pd++;
+                        else if (c === ')') pd--;
+                        else if (c === '{') hasBrace = true;
+                    }
+                    if (pd <= 0 && hasBrace) break;
+                    const nt = lines[nextLine++].trimStart();
+                    if (nt === '' || nt[0] === '#' || nt[0] === '*') continue;
+                    const ci = nt.indexOf('#');
+                    rest += ' ' + (ci >= 0 ? nt.slice(0, ci) : nt);
+                }
+                rest = rest.replace(/\s+/g, ' ').trimStart();
+                if (rest[0] === '(') {
+                    let depth = 0, j = 0;
+                    for (; j < rest.length; j++) {
+                        if (rest[j] === '(') depth++;
+                        else if (rest[j] === ')') { depth--; if (depth === 0) { j++; break; } }
+                    }
+                    rest = rest.slice(j).replace(/^\s+/, '');
+                }
+                if (rest[0] === '{') {
+                    tokens.push({ line: lineIdx, col, len: word.length, type: 2 });
+                    continue;
+                }
+            }
 
             const wordSections = keywordIndex.get(word);
             if (!wordSections) continue;

@@ -89,9 +89,15 @@ function isSectionCommand(commandName, langId) {
  * 用于 Semantic Tokens 和 Hover 的上下文追踪。
  * @returns {Set<string>}
  */
+/** sdevice Solve 下的子 section 关键词（小写），需要独立着色为青绿色。Tcl 大小写不敏感。 */
+const SDEVICE_SUB_SECTIONS = new Set([
+    'quasistationary', 'coupled', 'transient', 'accoupled', 'goal',
+]);
+
 function getSdeviceAllSectionKeywords() {
     const all = new Set(SECTION_KEYWORDS.sdevice);
-    for (const kw of ['Coupled', 'Transient', 'QuasiStationary', 'CoupledPrevious']) {
+    for (const kw of ['Coupled', 'Transient', 'QuasiStationary', 'CoupledPrevious',
+        'ACCoupled', 'Goal']) {
         all.add(kw);
     }
     return all;
@@ -100,4 +106,5 @@ function getSdeviceAllSectionKeywords() {
 module.exports = {
     isSectionCommand,
     getSdeviceAllSectionKeywords,
+    SDEVICE_SUB_SECTIONS,
 };
