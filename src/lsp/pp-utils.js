@@ -43,4 +43,47 @@ function buildPpBlocks(text) {
     return { branchMap, foldingRanges };
 }
 
-module.exports = { buildPpBlocks };
+/**
+ * 从文本中提取 #define 宏定义。
+ * @param {string} text - 文档全文
+ * @returns {Array<{name: string, value: string, line: number, endLine: number, definitionText: string, kind: string}>}
+ */
+function extractPpDefines(text) {
+    const defines = [];
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+        const match = lines[i].match(/^\s*#\s*define\s+(\w+)(?:\s+(.*))?$/);
+        if (match) {
+            const rawValue = match[2];
+            const value = rawValue !== undefined ? rawValue.trim() : '';
+            defines.push({
+                name: match[1],
+                value,
+                line: i + 1,
+                endLine: i + 1,
+                definitionText: lines[i].trim(),
+                kind: 'ppDefine',
+            });
+        }
+    }
+    return defines;
+}
+
+/**
+ * 从文本中提取 #undef 指令。
+ * @param {string} text - 文档全文
+ * @returns {Array<{name: string, line: number}>}
+ */
+function extractPpUndefs(text) {
+    const undefs = [];
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+        const match = lines[i].match(/^\s*#\s*undef\s+(\w+)/);
+        if (match) {
+            undefs.push({ name: match[1], line: i + 1 });
+        }
+    }
+    return undefs;
+}
+
+module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs };
