@@ -173,4 +173,51 @@ function findPpDefineRefs(text, defines) {
     return refs;
 }
 
-module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs };
+/**
+ * 构建全文的 #define 相关 semantic token。
+ * 供非 SDEVICE 的 Tcl 工具使用（轻量级 semantic provider）。
+ * @param {string} text - 文档全文
+ * @returns {number[]} Delta-encoded semantic token array
+ */
+function buildPpDefineTokens(text) {
+    const defines = extractPpDefines(text);
+    if (defines.length === 0) return [];
+
+    const refs = findPpDefineRefs(text, defines);
+    const lines = text.split('\n');
+    const tokens = [];
+
+    // 定义位置
+    for (const def of defines) {
+        const lineIdx = def.line - 1;
+        const line = lines[lineIdx];
+        const match = line.match(/^(\s*)#\s*define\s+(\w+)/);
+        if (match) {
+            const nameCol = line.indexOf(def.name, match[1].length + 7);
+            tokens.push({ line: lineIdx, col: nameCol, len: def.name.length, type: 0, modifier: 1 });
+        }
+    }
+
+    // 引用位置
+    for (const ref of refs) {
+        tokens.push({ line: ref.line - 1, col: ref.startCol, len: ref.name.length, type: 0, modifier: 0 });
+    }
+
+    tokens.sort((a, b) => a.line !== b.line ? a.line - b.line : a.col - b.col);
+    return encodePpTokenDelta(tokens);
+}
+
+function encodePpTokenDelta(tokens) {
+    const result = [];
+    let prevLine = 0, prevCol = 0;
+    for (const t of tokens) {
+        const deltaLine = t.line - prevLine;
+        const deltaCol = deltaLine === 0 ? t.col - prevCol : t.col;
+        result.push(deltaLine, deltaCol, t.len, t.type, t.modifier);
+        prevLine = t.line;
+        prevCol = t.col;
+    }
+    return result;
+}
+
+module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens };

@@ -481,6 +481,39 @@ function activate(context) {
         )
     );
 
+    // Semantic Tokens (其他 Tcl 工具) — #define 宏着色（含 document.version 缓存）
+    const tclPpLangs = ['sprocess', 'emw', 'inspect', 'svisual'];
+    const ppDefineLegend = new vscode.SemanticTokensLegend(
+        ['macro'],
+        ['declaration']
+    );
+    const ppTokenCache = new Map();
+    for (const ppLang of tclPpLangs) {
+        context.subscriptions.push(
+            vscode.languages.registerDocumentSemanticTokensProvider(
+                { language: ppLang },
+                {
+                    provideDocumentSemanticTokens(document) {
+                        const uri = document.uri.toString();
+                        const cached = ppTokenCache.get(uri);
+                        if (cached && cached.version === document.version) {
+                            return { data: cached.data };
+                        }
+                        const data = ppUtils.buildPpDefineTokens(document.getText());
+                        ppTokenCache.set(uri, { version: document.version, data });
+                        return { data };
+                    },
+                },
+                ppDefineLegend
+            )
+        );
+    }
+    context.subscriptions.push(
+        vscode.workspace.onDidCloseTextDocument(doc => {
+            ppTokenCache.delete(doc.uri.toString());
+        })
+    );
+
     // Signature Help (SDE only)
     const sigHelpDisposable = vscode.languages.registerSignatureHelpProvider(
         { language: 'sde' },
