@@ -3,7 +3,7 @@
 
 const { BASE_TO_SUFFIXES, VECTOR_SECTIONS } = require('./sdevice-vector-keywords');
 const { SDEVICE_SUB_SECTIONS } = require('../tcl-symbol-configs');
-const { extractPpDefines } = require('../pp-utils');
+const { extractPpDefines, encodeTokenDelta } = require('../pp-utils');
 
 const TOKEN_TYPES = ['sectionName', 'sectionKeyword', 'subSection', 'macro'];
 const TOKEN_MODIFIERS = ['declaration'];
@@ -308,9 +308,13 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
         }
     }
 
+<<<<<<< HEAD
     // 按 (line, col) 排序（矢量 token 与标识符 token 可能交错）
     tokens.sort((a, b) => a.line !== b.line ? a.line - b.line : a.col - b.col);
     return encodeDelta(tokens);
+=======
+    return encodeTokenDelta(tokens);
+>>>>>>> cacdc8a (refactor: 代码审查修复 — 消除重复、复用缓存、添加上限)
 }
 
 /**
@@ -327,18 +331,6 @@ function extractSdeviceTokens(text, keywordIndex, sectionKeywords) {
     return extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords, ppDefines);
 }
 
-function encodeDelta(tokens) {
-    const result = [];
-    let prevLine = 0, prevCol = 0;
-    for (const t of tokens) {
-        const deltaLine = t.line - prevLine;
-        const deltaCol = deltaLine === 0 ? t.col - prevCol : t.col;
-        result.push(deltaLine, deltaCol, t.len, t.type, t.modifier || 0);
-        prevLine = t.line;
-        prevCol = t.col;
-    }
-    return result;
-}
 
 /**
  * 创建 sdevice Semantic Tokens Provider（含 document.version 缓存）。

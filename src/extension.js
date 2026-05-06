@@ -488,6 +488,7 @@ function activate(context) {
         ['declaration']
     );
     const ppTokenCache = new Map();
+    const PP_TOKEN_MAX_CACHE = 20;
     for (const ppLang of tclPpLangs) {
         context.subscriptions.push(
             vscode.languages.registerDocumentSemanticTokensProvider(
@@ -501,6 +502,9 @@ function activate(context) {
                         }
                         const data = ppUtils.buildPpDefineTokens(document.getText());
                         ppTokenCache.set(uri, { version: document.version, data });
+                        if (ppTokenCache.size > PP_TOKEN_MAX_CACHE) {
+                            ppTokenCache.delete(ppTokenCache.keys().next().value);
+                        }
                         return { data };
                     },
                 },
@@ -784,12 +788,12 @@ function activate(context) {
 
                     // Fallback: 检查 #define 宏定义
                     if (!targetDef) {
-                        const ppDefs = ppUtils.extractPpDefines(document.getText());
-                        const ppDef = ppDefs.find(d => d.name === word && d.line <= cursorLine);
+                        const userDefs = defs.getDefinitions(document, langId);
+                        const ppDef = userDefs.find(d => d.kind === 'ppDefine' && d.name === word && d.line <= cursorLine);
                         if (ppDef) {
                             const defLine0 = ppDef.line - 1;
                             const defLineText = document.lineAt(defLine0).text;
-                            const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+                            const re = new RegExp('\\b' + ppUtils.escapeRegex(word) + '\\b');
                             const match = re.exec(defLineText);
                             if (match) {
                                 return new vscode.Location(
@@ -803,7 +807,7 @@ function activate(context) {
 
                     const defLine0 = targetDef.defLine - 1;
                     const defLineText = document.lineAt(defLine0).text;
-                    const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+                    const re = new RegExp('\\b' + ppUtils.escapeRegex(word) + '\\b');
                     const match = re.exec(defLineText);
                     if (!match) return null;
                     return new vscode.Location(

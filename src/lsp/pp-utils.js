@@ -204,20 +204,20 @@ function buildPpDefineTokens(text) {
     }
 
     tokens.sort((a, b) => a.line !== b.line ? a.line - b.line : a.col - b.col);
-    return encodePpTokenDelta(tokens);
+    return encodeTokenDelta(tokens);
 }
 
-function encodePpTokenDelta(tokens) {
+function encodeTokenDelta(tokens) {
     const result = [];
     let prevLine = 0, prevCol = 0;
     for (const t of tokens) {
         const deltaLine = t.line - prevLine;
         const deltaCol = deltaLine === 0 ? t.col - prevCol : t.col;
-        result.push(deltaLine, deltaCol, t.len, t.type, t.modifier);
+        result.push(deltaLine, deltaCol, t.len, t.type, t.modifier || 0);
         prevLine = t.line;
         prevCol = t.col;
     }
     return result;
 }
 
-module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens };
+module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens, escapeRegex, encodeTokenDelta };
