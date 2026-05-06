@@ -3,9 +3,10 @@
 
 const { BASE_TO_SUFFIXES, VECTOR_SECTIONS } = require('./sdevice-vector-keywords');
 const { SDEVICE_SUB_SECTIONS } = require('../tcl-symbol-configs');
+const { extractPpDefines } = require('../pp-utils');
 
-const TOKEN_TYPES = ['sectionName', 'sectionKeyword', 'subSection'];
-const TOKEN_MODIFIERS = [];
+const TOKEN_TYPES = ['sectionName', 'sectionKeyword', 'subSection', 'macro'];
+const TOKEN_MODIFIERS = ['declaration'];
 
 /**
  * 从 sdevice_command_docs.json 构建关键词→所属 section 集合的索引。
@@ -166,7 +167,7 @@ function scanStacksPerLine(text, sectionKeywords, preSplitLines) {
  * @param {Set<string>} sectionKeywords - Section name keywords
  * @returns {number[]} Delta-encoded semantic token array
  */
-function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords) {
+function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords, ppDefines) {
     const tokens = [];
     const identRe = /\b([A-Za-z_][A-Za-z0-9_]*)\b/g;
     const vectorRe = /\b([A-Za-z_][A-Za-z0-9_]*)\/(Vector|vector|SpecialVector)\b/g;
@@ -211,6 +212,22 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
 
         // 标准标识符扫描（跳过已被矢量范围覆盖的部分）
         let m;
+
+        // #define / #ifdef / #ifndef / #undef 行的宏名 token
+        const ppMatch = lineText.match(/^(\s*)(#\s*(?:define|undef|ifdef|ifndef))\s+(\w+)/);
+        if (ppMatch) {
+            const ppKwCol = ppMatch[1].length;
+            const nameCol = lineText.indexOf(ppMatch[3], ppKwCol + ppMatch[2].length);
+            const isDefine = /^#\s*define\b/.test(ppMatch[2]);
+            tokens.push({
+                line: lineIdx,
+                col: nameCol,
+                len: ppMatch[3].length,
+                type: 2, // macro
+                modifier: isDefine ? 1 : 0, // declaration
+            });
+        }
+
         identRe.lastIndex = 0;
         while ((m = identRe.exec(scanText)) !== null) {
             const word = m[1];
@@ -254,7 +271,15 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
             }
 
             const wordSections = keywordIndex.get(word);
-            if (!wordSections) continue;
+            if (!wordSections) {
+                if (ppDefines) {
+                    const ppDef = ppDefines.find(d => d.name === word && d.line <= lineIdx + 1);
+                    if (ppDef) {
+                        tokens.push({ line: lineIdx, col, len: word.length, type: 2, modifier: 0 });
+                    }
+                }
+                continue;
+            }
 
             if (stack.length === 0) {
                 if (!sectionKeywords.has(word)) continue;
@@ -298,7 +323,8 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
 function extractSdeviceTokens(text, keywordIndex, sectionKeywords) {
     const lines = text.split('\n');
     const stacksPerLine = scanStacksPerLine(text, sectionKeywords, lines);
-    return extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords);
+    const ppDefines = extractPpDefines(text);
+    return extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords, ppDefines);
 }
 
 function encodeDelta(tokens) {
@@ -307,7 +333,7 @@ function encodeDelta(tokens) {
     for (const t of tokens) {
         const deltaLine = t.line - prevLine;
         const deltaCol = deltaLine === 0 ? t.col - prevCol : t.col;
-        result.push(deltaLine, deltaCol, t.len, t.type, 0);
+        result.push(deltaLine, deltaCol, t.len, t.type, t.modifier || 0);
         prevLine = t.line;
         prevCol = t.col;
     }
@@ -334,7 +360,8 @@ function createSdeviceSemanticProvider(docs, sectionKeywords) {
         const text = document.getText();
         const lines = text.split('\n');
         const stacksPerLine = scanStacksPerLine(text, sectionKeywords, lines);
-        const tokenData = extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords);
+        const ppDefines = extractPpDefines(text);
+        const tokenData = extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords, ppDefines);
 
         const entry = { version, stacksPerLine, tokenData };
         cache.set(uri, entry);
