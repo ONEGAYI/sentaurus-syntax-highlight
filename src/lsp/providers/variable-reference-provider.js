@@ -3,6 +3,7 @@
 
 const { getSchemeRefs, getVisibleDefinitions } = require('../scope-analyzer');
 const { getVariableRefs, buildScopeIndex, TCL_LANGS } = require('../tcl-ast-utils');
+const ppUtils = require('../pp-utils');
 
 let schemeCache;
 let tclCache;
@@ -95,12 +96,6 @@ function provideSchemeReferences(document, position, options) {
 }
 
 function provideTclReferences(document, position, options) {
-    const entry = tclCache.get(document);
-    if (!entry || !entry.tree) return null;
-
-    const { tree } = entry;
-    const root = tree.rootNode;
-
     // Extract word — try $varName first, then plain word
     const dollarRange = document.getWordRangeAtPosition(position, /\$[\w:-]+/);
     const plainRange = document.getWordRangeAtPosition(position, /[\w:-]+/);
@@ -121,39 +116,87 @@ function provideTclReferences(document, position, options) {
     }
 
     const cursorLine = position.line + 1;
-    const scopeIndex = buildScopeIndex(root);
-    const targetDef = scopeIndex.resolveDefinition(word, cursorLine);
-    if (!targetDef) return null;
-
-    const refs = getVariableRefs(root);
     const locations = [];
 
-    // Add definition location (use word-boundary matching for precise column)
-    if (options.includeDeclaration !== false) {
-        const defLine0 = targetDef.defLine - 1;
-        const defLineText = document.lineAt(defLine0).text;
-        const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
-        const match = re.exec(defLineText);
-        if (match) {
-            locations.push(new vscode.Location(
-                document.uri,
-                new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
-            ));
+    // #define 裸词引用（不依赖 WASM/AST）
+    const ppDefs = ppUtils.extractPpDefines(document.getText());
+    const ppDef = [...ppDefs].reverse().find(d => d.name === word && d.line <= cursorLine);
+    if (ppDef) {
+        if (options.includeDeclaration !== false) {
+            const defLine0 = ppDef.line - 1;
+            const defLineText = document.lineAt(defLine0).text;
+            const re = new RegExp('\\b' + ppUtils.escapeRegex(word) + '\\b');
+            const match = re.exec(defLineText);
+            if (match) {
+                locations.push(new vscode.Location(
+                    document.uri,
+                    new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
+                ));
+            }
+        }
+        const ppRefs = ppUtils.findPpDefineRefs(document.getText(), ppDefs.filter(d => d.name === word));
+        for (const ref of ppRefs) {
+            const isDup = locations.some(loc =>
+                loc.range.start.line === ref.line - 1 &&
+                loc.range.start.character === ref.startCol
+            );
+            if (!isDup) {
+                locations.push(new vscode.Location(
+                    document.uri,
+                    new vscode.Range(ref.line - 1, ref.startCol, ref.line - 1, ref.startCol + word.length)
+                ));
+            }
         }
     }
 
-    // Filter references — only include refs that resolve to the same definition
-    for (const ref of refs) {
-        if (ref.name !== word) continue;
-        const refDef = scopeIndex.resolveDefinition(ref.name, ref.line);
-        if (!refDef || refDef.defLine !== targetDef.defLine) continue;
-        // Skip refs on the definition line itself (avoid duplicating the definition site)
-        if (ref.line === targetDef.defLine) continue;
+    // Tcl 变量引用（需要 WASM）
+    const entry = tclCache.get(document);
+    if (entry && entry.tree) {
+        const root = entry.tree.rootNode;
+        const scopeIndex = buildScopeIndex(root);
+        const targetDef = scopeIndex.resolveDefinition(word, cursorLine);
 
-        locations.push(new vscode.Location(
-            document.uri,
-            new vscode.Range(ref.line - 1, ref.startCol, ref.line - 1, ref.endCol)
-        ));
+        if (targetDef) {
+            // Add definition location
+            if (options.includeDeclaration !== false) {
+                const defLine0 = targetDef.defLine - 1;
+                const defLineText = document.lineAt(defLine0).text;
+                const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+                const match = re.exec(defLineText);
+                if (match) {
+                    const isDup = locations.some(loc =>
+                        loc.range.start.line === defLine0 &&
+                        loc.range.start.character === match.index
+                    );
+                    if (!isDup) {
+                        locations.push(new vscode.Location(
+                            document.uri,
+                            new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
+                        ));
+                    }
+                }
+            }
+
+            // Filter references — only include refs that resolve to the same definition
+            const refs = getVariableRefs(root);
+            for (const ref of refs) {
+                if (ref.name !== word) continue;
+                const refDef = scopeIndex.resolveDefinition(ref.name, ref.line);
+                if (!refDef || refDef.defLine !== targetDef.defLine) continue;
+                if (ref.line === targetDef.defLine) continue;
+
+                const isDup = locations.some(loc =>
+                    loc.range.start.line === ref.line - 1 &&
+                    loc.range.start.character === ref.startCol
+                );
+                if (!isDup) {
+                    locations.push(new vscode.Location(
+                        document.uri,
+                        new vscode.Range(ref.line - 1, ref.startCol, ref.line - 1, ref.endCol)
+                    ));
+                }
+            }
+        }
     }
 
     return locations.length > 0 ? locations : null;

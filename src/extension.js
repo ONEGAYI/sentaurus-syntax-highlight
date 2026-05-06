@@ -25,6 +25,7 @@ const symbolCompletion = require('./lsp/providers/symbol-completion');
 const symbolReferenceProvider = require('./lsp/providers/symbol-reference-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
 const { getSdeviceAllSectionKeywords } = require('./lsp/tcl-symbol-configs');
+const ppUtils = require('./lsp/pp-utils');
 
 /** @type {SchemeParseCache} */
 let schemeCache;
@@ -480,6 +481,43 @@ function activate(context) {
         )
     );
 
+    // Semantic Tokens (其他 Tcl 工具) — #define 宏着色（含 document.version 缓存）
+    const tclPpLangs = ['sprocess', 'emw', 'inspect', 'svisual'];
+    const ppDefineLegend = new vscode.SemanticTokensLegend(
+        ['macro'],
+        ['declaration']
+    );
+    const ppTokenCache = new Map();
+    const PP_TOKEN_MAX_CACHE = 20;
+    for (const ppLang of tclPpLangs) {
+        context.subscriptions.push(
+            vscode.languages.registerDocumentSemanticTokensProvider(
+                { language: ppLang },
+                {
+                    provideDocumentSemanticTokens(document) {
+                        const uri = document.uri.toString();
+                        const cached = ppTokenCache.get(uri);
+                        if (cached && cached.version === document.version) {
+                            return { data: cached.data };
+                        }
+                        const data = ppUtils.buildPpDefineTokens(document.getText());
+                        ppTokenCache.set(uri, { version: document.version, data });
+                        if (ppTokenCache.size > PP_TOKEN_MAX_CACHE) {
+                            ppTokenCache.delete(ppTokenCache.keys().next().value);
+                        }
+                        return { data };
+                    },
+                },
+                ppDefineLegend
+            )
+        );
+    }
+    context.subscriptions.push(
+        vscode.workspace.onDidCloseTextDocument(doc => {
+            ppTokenCache.delete(doc.uri.toString());
+        })
+    );
+
     // Signature Help (SDE only)
     const sigHelpDisposable = vscode.languages.registerSignatureHelpProvider(
         { language: 'sde' },
@@ -547,6 +585,10 @@ function activate(context) {
                             itemKind = vscode.CompletionItemKind.Function;
                             detail = 'User Function';
                         }
+                        if (d.kind === 'ppDefine') {
+                            itemKind = vscode.CompletionItemKind.Constant;
+                            detail = d.value ? `#define = ${d.value}` : '#define';
+                        }
                         const item = new vscode.CompletionItem(d.name, itemKind);
                         item.detail = detail;
                         item.sortText = '4' + d.name;
@@ -609,7 +651,13 @@ function activate(context) {
             for (let i = 0; i < col; i++) {
                 const ch = lineText[i];
                 if (ch === '"') { i++; while (i < col && lineText[i] !== '"') { if (lineText[i] === '\\') i++; i++; } continue; }
-                if (ch === commentChars) return true;
+                if (ch === commentChars) {
+                    // Tcl: # 开头后跟 define/ifdef/ifndef/undef/endif/elif/else/set/seth/include/error/rem/verbatim 是预处理器指令，不是注释
+                    if (langId !== 'sde' && /^\s*#\s*(define|undef|ifdef|ifndef|endif|elif|else|if\b|set|seth|include|error|rem|verbatim)\b/.test(lineText)) {
+                        return false;
+                    }
+                    return true;
+                }
                 if (langId !== 'sde' && ch === '*' && (i === 0 || lineText.slice(0, i).trim() === '')) return true;
             }
             return false;
@@ -687,13 +735,27 @@ function activate(context) {
 
                     // 2. 查用户变量定义
                     const userDefs = defs.getDefinitions(document, langId);
-                    const def = userDefs.find(d => d.name === word);
+                    let def = userDefs.find(d => d.name === word);
+                    let hoverRange = range;
+
+                    // Fallback: broad regex may over-capture (e.g. "Voltage=_Vds_"), try \w+ only
+                    let hoverWord = word;
+                    if (!def) {
+                        const narrowRange = document.getWordRangeAtPosition(position, /[\w]+/);
+                        if (narrowRange) {
+                            hoverWord = document.getText(narrowRange);
+                            def = userDefs.find(d => d.name === hoverWord);
+                            if (def) hoverRange = narrowRange;
+                        }
+                    }
+
                     if (def) {
                         const hoverMaxWidth = vscode.workspace.getConfiguration('sentaurus').get('definitionMaxWidth', 60);
                         const md = new vscode.MarkdownString();
-                        md.appendMarkdown(`**${def.name}** (用户变量, 第 ${def.line} 行)\n\n`);
+                        const typeLabel = def.kind === 'ppDefine' ? '预处理宏' : '用户变量';
+                        md.appendMarkdown(`**${def.name}** (${typeLabel}, 第 ${def.line} 行)\n\n`);
                         md.appendCodeblock(defs.truncateDefinitionText(def.definitionText, hoverMaxWidth, langId), langId);
-                        return new vscode.Hover(md, range);
+                        return new vscode.Hover(md, hoverRange);
                     }
 
                     return null;
@@ -738,15 +800,31 @@ function activate(context) {
                     if (word.startsWith('$')) word = word.slice(1);
                     if (!word) return null;
 
+                    // #define 宏定义 fallback（不依赖 WASM）
+                    const userDefs = defs.getDefinitions(document, langId);
+                    const ppDef = [...userDefs].reverse().find(d => d.kind === 'ppDefine' && d.name === word && d.line <= cursorLine);
+                    if (ppDef) {
+                        const defLine0 = ppDef.line - 1;
+                        const defLineText = document.lineAt(defLine0).text;
+                        const re = new RegExp('\\b' + ppUtils.escapeRegex(word) + '\\b');
+                        const match = re.exec(defLineText);
+                        if (match) {
+                            return new vscode.Location(
+                                document.uri,
+                                new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
+                            );
+                        }
+                    }
+
                     const entry = tclCache.get(document);
                     if (!entry || !entry.tree) return null;
                     const scopeIndex = astUtils.buildScopeIndex(entry.tree.rootNode);
-                    const targetDef = scopeIndex.resolveDefinition(word, cursorLine);
+                    let targetDef = scopeIndex.resolveDefinition(word, cursorLine);
                     if (!targetDef) return null;
 
                     const defLine0 = targetDef.defLine - 1;
                     const defLineText = document.lineAt(defLine0).text;
-                    const re = new RegExp('\\b' + word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b');
+                    const re = new RegExp('\\b' + ppUtils.escapeRegex(word) + '\\b');
                     const match = re.exec(defLineText);
                     if (!match) return null;
                     return new vscode.Location(

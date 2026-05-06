@@ -140,6 +140,17 @@
         "id": "subSection",
         "superType": "keyword",
         "description": "sdevice Solve 子 section 块名（如 Quasistationary、Coupled、Transient）"
+      },
+      {
+        "id": "macro",
+        "superType": "variable",
+        "description": "预处理器宏引用"
+      }
+    ],
+    "semanticTokenModifiers": [
+      {
+        "id": "declaration",
+        "description": "宏定义声明位置"
       }
     ],
     "grammars": [
@@ -364,6 +375,9 @@
           ],
           "subSection": [
             "entity.name.type"
+          ],
+          "macro": [
+            "variable.other.constant.preprocessor"
           ]
         }
       }

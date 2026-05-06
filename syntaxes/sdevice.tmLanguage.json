@@ -327,24 +327,47 @@
       ]
     },
     {
-      "name": "meta.preprocessor.tcl",
-      "begin": "^\\s*(#\\s*(?:if|ifdef|ifndef|elif|else|endif|define|undef|include|error|set))\\b",
-      "beginCaptures": {
-        "1": {
-          "name": "keyword.control.preprocessor.tcl"
+      "name": "meta.preprocessor.define.tcl",
+      "match": "^\\s*(#\\s*define)\\b\\s+(\\w+)(\\s+.*)?$",
+      "captures": {
+        "1": { "name": "keyword.control.preprocessor.tcl" },
+        "2": { "name": "variable.other.constant.preprocessor.tcl" },
+        "3": {
+          "patterns": [
+            { "match": "\"[^\"]*\"", "name": "string.quoted.double.tcl" },
+            { "match": "\\b(defined|TRUE|FALSE)\\b", "name": "keyword.control.preprocessor.tcl" }
+          ]
         }
-      },
-      "end": "$",
-      "patterns": [
-        {
-          "match": "\\b(defined|TRUE|FALSE)\\b",
-          "name": "keyword.control.preprocessor.tcl"
-        },
-        {
-          "match": "\"[^\"]*\"",
-          "name": "string.quoted.double.tcl"
+      }
+    },
+    {
+      "name": "meta.preprocessor.undef.tcl",
+      "match": "^\\s*(#\\s*undef)\\b\\s+(\\w+)",
+      "captures": {
+        "1": { "name": "keyword.control.preprocessor.tcl" },
+        "2": { "name": "variable.other.constant.preprocessor.tcl" }
+      }
+    },
+    {
+      "name": "meta.preprocessor.ifdef.tcl",
+      "match": "^\\s*(#\\s*(?:ifdef|ifndef))\\b\\s+(\\w+)",
+      "captures": {
+        "1": { "name": "keyword.control.preprocessor.tcl" },
+        "2": { "name": "variable.other.constant.preprocessor.tcl" }
+      }
+    },
+    {
+      "name": "meta.preprocessor.other.tcl",
+      "match": "^\\s*(#\\s*(?:if|elif|else|endif|include|error|set))\\b(.*$)",
+      "captures": {
+        "1": { "name": "keyword.control.preprocessor.tcl" },
+        "2": {
+          "patterns": [
+            { "match": "\\b(defined|TRUE|FALSE)\\b", "name": "keyword.control.preprocessor.tcl" },
+            { "match": "\"[^\"]*\"", "name": "string.quoted.double.tcl" }
+          ]
         }
-      ]
+      }
     },
     {
       "name": "comment.line.hash",

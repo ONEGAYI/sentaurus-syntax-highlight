@@ -133,6 +133,32 @@ function checkTclUndefVars(document) {
         }
     }
 
+    // #ifdef / #ifndef 未定义宏诊断
+    const text = document.getText();
+    const ppDefs = ppUtils.extractPpDefines(text);
+    const definedNames = new Set(ppDefs.map(d => d.name));
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+        const match = lines[i].match(/^\s*#\s*(ifdef|ifndef)\s+(\w+)/);
+        if (match) {
+            const macroName = match[2];
+            if (!definedNames.has(macroName)) {
+                const nameStart = lines[i].indexOf(macroName, match.index + match[0].indexOf(macroName));
+                const range = new vscode.Range(
+                    i, nameStart,
+                    i, nameStart + macroName.length
+                );
+                const diagnostic = new vscode.Diagnostic(
+                    range,
+                    `未定义的宏: ${macroName}`,
+                    vscode.DiagnosticSeverity.Hint
+                );
+                diagnostic.source = 'undef-macro';
+                diagnostics.push(diagnostic);
+            }
+        }
+    }
+
     return diagnostics;
 }
 

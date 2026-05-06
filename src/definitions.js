@@ -4,6 +4,7 @@
 const { parse } = require('./lsp/scheme-parser');
 const { analyze } = require('./lsp/scheme-analyzer');
 const tclAstUtils = require('./lsp/tcl-ast-utils');
+const { extractPpDefines } = require('./lsp/pp-utils');
 
 /**
  * 从 startPos 开始，找到匹配的闭括号位置。
@@ -47,13 +48,16 @@ function extractSchemeDefinitions(text) {
  * @returns {{ name: string, line: number, endLine: number, definitionText: string, kind: string }[]}
  */
 function extractTclDefinitionsAst(text) {
+    const results = [];
+    results.push(...extractPpDefines(text));
     const tree = tclAstUtils.parseSafe(text);
-    if (!tree) return [];
+    if (!tree) return results;
     try {
-        return tclAstUtils.getVariables(tree.rootNode, text);
+        results.push(...tclAstUtils.getVariables(tree.rootNode, text));
     } finally {
         tree.delete();
     }
+    return results;
 }
 
 /** Scheme 语言 ID 集合 */
