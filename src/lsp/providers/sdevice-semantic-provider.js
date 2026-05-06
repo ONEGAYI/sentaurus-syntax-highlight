@@ -177,6 +177,22 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
         const stack = stacksPerLine[lineIdx];
 
         const trimmed = lineText.trimStart();
+
+        // #define / #ifdef / #ifndef / #undef 行的宏名 token（必须在 continue 之前）
+        const ppMatch = lineText.match(/^(\s*)(#\s*(?:define|undef|ifdef|ifndef))\s+(\w+)/);
+        if (ppMatch) {
+            const ppKwCol = ppMatch[1].length;
+            const nameCol = lineText.indexOf(ppMatch[3], ppKwCol + ppMatch[2].length);
+            const isDefine = /^#\s*define\b/.test(ppMatch[2]);
+            tokens.push({
+                line: lineIdx,
+                col: nameCol,
+                len: ppMatch[3].length,
+                type: 2, // macro
+                modifier: isDefine ? 1 : 0, // declaration
+            });
+        }
+
         if (trimmed.startsWith('#') || trimmed.startsWith('*')) continue;
 
         // 预处理：将字符串内容和内联注释替换为等长空格，保持列位置对应
@@ -212,21 +228,6 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
 
         // 标准标识符扫描（跳过已被矢量范围覆盖的部分）
         let m;
-
-        // #define / #ifdef / #ifndef / #undef 行的宏名 token
-        const ppMatch = lineText.match(/^(\s*)(#\s*(?:define|undef|ifdef|ifndef))\s+(\w+)/);
-        if (ppMatch) {
-            const ppKwCol = ppMatch[1].length;
-            const nameCol = lineText.indexOf(ppMatch[3], ppKwCol + ppMatch[2].length);
-            const isDefine = /^#\s*define\b/.test(ppMatch[2]);
-            tokens.push({
-                line: lineIdx,
-                col: nameCol,
-                len: ppMatch[3].length,
-                type: 2, // macro
-                modifier: isDefine ? 1 : 0, // declaration
-            });
-        }
 
         identRe.lastIndex = 0;
         while ((m = identRe.exec(scanText)) !== null) {
@@ -270,6 +271,7 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
                 }
             }
 
+
             const wordSections = keywordIndex.get(word);
             if (!wordSections) {
                 if (ppDefines) {
@@ -308,13 +310,9 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
         }
     }
 
-<<<<<<< HEAD
     // 按 (line, col) 排序（矢量 token 与标识符 token 可能交错）
     tokens.sort((a, b) => a.line !== b.line ? a.line - b.line : a.col - b.col);
-    return encodeDelta(tokens);
-=======
     return encodeTokenDelta(tokens);
->>>>>>> cacdc8a (refactor: 代码审查修复 — 消除重复、复用缓存、添加上限)
 }
 
 /**

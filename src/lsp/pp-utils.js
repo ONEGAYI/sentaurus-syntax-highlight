@@ -52,7 +52,8 @@ function extractPpDefines(text) {
     const defines = [];
     const lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
-        const match = lines[i].match(/^\s*#\s*define\s+(\w+)(?:\s+(.*))?$/);
+        const line = lines[i].replace(/\r$/, '');
+        const match = line.match(/^\s*#\s*define\s+(\w+)(?:\s+(.*))?$/);
         if (match) {
             const rawValue = match[2];
             const value = rawValue !== undefined ? rawValue.trim() : '';
@@ -61,7 +62,7 @@ function extractPpDefines(text) {
                 value,
                 line: i + 1,
                 endLine: i + 1,
-                definitionText: lines[i].trim(),
+                definitionText: line.trim(),
                 kind: 'ppDefine',
             });
         }

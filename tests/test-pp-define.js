@@ -75,6 +75,15 @@ test('#define 前导空格被容许', () => {
     assert.strictEqual(defs[0].name, 'INDENTED');
 });
 
+test('CRLF 行尾正确提取', () => {
+    const text = '#define THICKNESS 0.1\r\nset x THICKNESS\r\n';
+    const defs = extractPpDefines(text);
+    assert.strictEqual(defs.length, 1);
+    assert.strictEqual(defs[0].name, 'THICKNESS');
+    assert.strictEqual(defs[0].value, '0.1');
+    assert.strictEqual(defs[0].definitionText, '#define THICKNESS 0.1');
+});
+
 console.log('\nextractPpUndefs:');
 
 test('#undef NAME 正确提取', () => {

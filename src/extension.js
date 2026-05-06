@@ -651,7 +651,13 @@ function activate(context) {
             for (let i = 0; i < col; i++) {
                 const ch = lineText[i];
                 if (ch === '"') { i++; while (i < col && lineText[i] !== '"') { if (lineText[i] === '\\') i++; i++; } continue; }
-                if (ch === commentChars) return true;
+                if (ch === commentChars) {
+                    // Tcl: # 开头后跟 define/ifdef/ifndef/undef/endif/elif/else/set/seth/include/error/rem/verbatim 是预处理器指令，不是注释
+                    if (langId !== 'sde' && /^\s*#\s*(define|undef|ifdef|ifndef|endif|elif|else|if\b|set|seth|include|error|rem|verbatim)\b/.test(lineText)) {
+                        return false;
+                    }
+                    return true;
+                }
                 if (langId !== 'sde' && ch === '*' && (i === 0 || lineText.slice(0, i).trim() === '')) return true;
             }
             return false;
@@ -729,7 +735,18 @@ function activate(context) {
 
                     // 2. 查用户变量定义
                     const userDefs = defs.getDefinitions(document, langId);
-                    const def = userDefs.find(d => d.name === word);
+                    let def = userDefs.find(d => d.name === word);
+
+                    // Fallback: broad regex may over-capture (e.g. "Voltage=_Vds_"), try \w+ only
+                    let hoverWord = word;
+                    if (!def) {
+                        const narrowRange = document.getWordRangeAtPosition(position, /[\w]+/);
+                        if (narrowRange) {
+                            hoverWord = document.getText(narrowRange);
+                            def = userDefs.find(d => d.name === hoverWord);
+                        }
+                    }
+
                     if (def) {
                         const hoverMaxWidth = vscode.workspace.getConfiguration('sentaurus').get('definitionMaxWidth', 60);
                         const md = new vscode.MarkdownString();
@@ -781,29 +798,27 @@ function activate(context) {
                     if (word.startsWith('$')) word = word.slice(1);
                     if (!word) return null;
 
+                    // #define 宏定义 fallback（不依赖 WASM）
+                    const userDefs = defs.getDefinitions(document, langId);
+                    const ppDef = userDefs.find(d => d.kind === 'ppDefine' && d.name === word && d.line <= cursorLine);
+                    if (ppDef) {
+                        const defLine0 = ppDef.line - 1;
+                        const defLineText = document.lineAt(defLine0).text;
+                        const re = new RegExp('\\b' + ppUtils.escapeRegex(word) + '\\b');
+                        const match = re.exec(defLineText);
+                        if (match) {
+                            return new vscode.Location(
+                                document.uri,
+                                new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
+                            );
+                        }
+                    }
+
                     const entry = tclCache.get(document);
                     if (!entry || !entry.tree) return null;
                     const scopeIndex = astUtils.buildScopeIndex(entry.tree.rootNode);
                     let targetDef = scopeIndex.resolveDefinition(word, cursorLine);
-
-                    // Fallback: 检查 #define 宏定义
-                    if (!targetDef) {
-                        const userDefs = defs.getDefinitions(document, langId);
-                        const ppDef = userDefs.find(d => d.kind === 'ppDefine' && d.name === word && d.line <= cursorLine);
-                        if (ppDef) {
-                            const defLine0 = ppDef.line - 1;
-                            const defLineText = document.lineAt(defLine0).text;
-                            const re = new RegExp('\\b' + ppUtils.escapeRegex(word) + '\\b');
-                            const match = re.exec(defLineText);
-                            if (match) {
-                                return new vscode.Location(
-                                    document.uri,
-                                    new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
-                                );
-                            }
-                        }
-                        return null;
-                    }
+                    if (!targetDef) return null;
 
                     const defLine0 = targetDef.defLine - 1;
                     const defLineText = document.lineAt(defLine0).text;
