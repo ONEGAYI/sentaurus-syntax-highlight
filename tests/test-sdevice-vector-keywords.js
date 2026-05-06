@@ -163,6 +163,14 @@ function decodeTokens(text, data) {
     assert.ok(ev, 'eCurrent/Vector 应为整体 token');
 }
 
+// Test: 后缀不匹配不应生成矢量 token（如 ElectricField 只支持 /Vector，不支持 /SpecialVector）
+{
+    const data = extractSdeviceTokens('Plot {\n  ElectricField/SpecialVector\n}', index, sectionKeywords);
+    const tokens = decodeTokens('Plot {\n  ElectricField/SpecialVector\n}', data);
+    const vf = tokens.find(t => t.word === 'ElectricField/SpecialVector');
+    assert.strictEqual(vf, undefined, 'ElectricField/SpecialVector 不应为矢量 token');
+}
+
 // Test: 注释中的矢量关键词不应被匹配
 {
     const data = extractSdeviceTokens('Plot {\n  # ElectricField/Vector\n}', index, sectionKeywords);

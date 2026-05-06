@@ -1,7 +1,7 @@
 // src/lsp/providers/sdevice-semantic-provider.js
 'use strict';
 
-const { BASE_TO_SUFFIXES, VECTOR_SECTIONS, VALID_SUFFIXES } = require('./sdevice-vector-keywords');
+const { BASE_TO_SUFFIXES, VECTOR_SECTIONS } = require('./sdevice-vector-keywords');
 
 const TOKEN_TYPES = ['sectionName', 'sectionKeyword'];
 const TOKEN_MODIFIERS = [];
@@ -202,7 +202,8 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
         while ((vm = vectorRe.exec(scanText)) !== null) {
             const base = vm[1];
             const suffix = '/' + vm[2];
-            if (BASE_TO_SUFFIXES.has(base) && VALID_SUFFIXES.has(suffix)) {
+            const allowedSuffixes = BASE_TO_SUFFIXES.get(base);
+            if (allowedSuffixes && allowedSuffixes.includes(suffix)) {
                 vectorRanges.push({ start: vm.index, end: vm.index + vm[0].length });
             }
         }
