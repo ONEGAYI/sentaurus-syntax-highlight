@@ -1,6 +1,8 @@
 // src/lsp/providers/sdevice-semantic-provider.js
 'use strict';
 
+const { BASE_TO_SUFFIXES, VECTOR_SECTIONS, VALID_SUFFIXES } = require('./sdevice-vector-keywords');
+
 const TOKEN_TYPES = ['sectionName', 'sectionKeyword'];
 const TOKEN_MODIFIERS = [];
 
@@ -166,6 +168,7 @@ function scanStacksPerLine(text, sectionKeywords, preSplitLines) {
 function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords) {
     const tokens = [];
     const identRe = /\b([A-Za-z_][A-Za-z0-9_]*)\b/g;
+    const vectorRe = /\b([A-Za-z_][A-Za-z0-9_]*)\/(Vector|vector|SpecialVector)\b/g;
 
     for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
         const lineText = lines[lineIdx];
@@ -192,14 +195,30 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
             }
         }
 
+        // 矢量关键词范围（阶段 2 跳过这些区间，阶段 3 为其生成整体 token）
+        const vectorRanges = [];
+        let vm;
+        vectorRe.lastIndex = 0;
+        while ((vm = vectorRe.exec(scanText)) !== null) {
+            const base = vm[1];
+            const suffix = '/' + vm[2];
+            if (BASE_TO_SUFFIXES.has(base) && VALID_SUFFIXES.has(suffix)) {
+                vectorRanges.push({ start: vm.index, end: vm.index + vm[0].length });
+            }
+        }
+
+        // 标准标识符扫描（跳过已被矢量范围覆盖的部分）
         let m;
         identRe.lastIndex = 0;
         while ((m = identRe.exec(scanText)) !== null) {
             const word = m[1];
+            const col = m.index;
+            const wordEnd = col + word.length;
+
+            if (vectorRanges.some(r => col >= r.start && wordEnd <= r.end)) continue;
+
             const wordSections = keywordIndex.get(word);
             if (!wordSections) continue;
-
-            const col = m.index;
 
             if (stack.length === 0) {
                 if (!sectionKeywords.has(word)) continue;
@@ -219,8 +238,17 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
                 }
             }
         }
+
+        // 矢量关键词整体 token（仅在 Plot/CurrentPlot section 内）
+        if (vectorRanges.length > 0 && stack.some(s => VECTOR_SECTIONS.has(s))) {
+            for (const range of vectorRanges) {
+                tokens.push({ line: lineIdx, col: range.start, len: range.end - range.start, type: 1 });
+            }
+        }
     }
 
+    // 按 (line, col) 排序（矢量 token 与标识符 token 可能交错）
+    tokens.sort((a, b) => a.line !== b.line ? a.line - b.line : a.col - b.col);
     return encodeDelta(tokens);
 }
 

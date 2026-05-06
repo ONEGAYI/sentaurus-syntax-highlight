@@ -386,6 +386,10 @@
       "name": "support.function.sdevice"
     },
     {
+      "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\/(Vector|vector|SpecialVector)(?![A-Za-z0-9_])",
+      "name": "entity.name.tag.sdevice"
+    },
+    {
       "match": "\\b[A-Za-z_][A-Za-z0-9_\\-]*(?![A-Za-z0-9_\\-])",
       "name": "variable.other"
     }
