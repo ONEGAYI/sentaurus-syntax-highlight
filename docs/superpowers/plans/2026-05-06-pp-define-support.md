@@ -566,7 +566,7 @@ let targetDef = scopeIndex.resolveDefinition(word, cursorLine);
 
 // Fallback: 检查 #define 宏定义
 if (!targetDef) {
-    const ppDefs = defs.extractPpDefinitionsText(document.getText());
+    const ppDefs = ppUtils.extractPpDefines(document.getText());
     const ppDef = ppDefs.find(d => d.name === word && d.line <= cursorLine);
     if (ppDef) {
         const defLine0 = ppDef.line - 1;
@@ -584,18 +584,7 @@ if (!targetDef) {
 }
 ```
 
-同时需要在 `definitions.js` 中导出一个直接调用的函数（供 extension.js 跳转使用）：
-
-在 `src/definitions.js` 的 `module.exports` 中添加：
-
-```javascript
-/** 直接提取 #define 定义（供跳转 fallback 使用） */
-function extractPpDefinitionsText(text) {
-    return extractPpDefines(text);
-}
-```
-
-并在 `module.exports` 中导出 `extractPpDefinitionsText`。在 `src/extension.js` 顶部 `defs` 已指向 `definitions.js`，无需额外 import。
+注意：直接使用 `ppUtils.extractPpDefines(document.getText())`，无需在 `definitions.js` 中添加包装函数。Task 9 已在 `extension.js` 顶部 import 了 `ppUtils`。
 
 - [ ] **Step 4: 提交**
 
@@ -887,6 +876,28 @@ function extractSdeviceTokens(text, keywordIndex, sectionKeywords) {
 }
 ```
 
+同步修改 `getCacheEntry` 闭包内的 `extractTokensFromStacks` 调用：
+
+```javascript
+function getCacheEntry(document) {
+    const uri = document.uri.toString();
+    const version = document.version;
+    const cached = cache.get(uri);
+    if (cached && cached.version === version) return cached;
+
+    const text = document.getText();
+    const lines = text.split('\n');
+    const stacksPerLine = scanStacksPerLine(text, sectionKeywords, lines);
+    const ppDefines = extractPpDefines(text);
+    const tokenData = extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords, ppDefines);
+
+    const entry = { version, stacksPerLine, tokenData };
+    cache.set(uri, entry);
+    // ... cache eviction
+    return entry;
+}
+```
+
 在文件顶部添加 import：
 
 ```javascript
@@ -967,22 +978,29 @@ module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefin
 
 - [ ] **Step 2: 在 extension.js 中注册轻量级 Tcl semantic provider**
 
-在 `src/extension.js` 的 SDEVICE semantic provider 注册之后（约第 481 行），添加：
+在 `src/extension.js` 的 SDEVICE semantic provider 注册之后（约第 481 行），添加带缓存的轻量级 Tcl semantic provider：
 
 ```javascript
-// Semantic Tokens (其他 Tcl 工具) — #define 宏着色
+// Semantic Tokens (其他 Tcl 工具) — #define 宏着色（含 document.version 缓存）
 const tclPpLangs = ['sprocess', 'emw', 'inspect', 'svisual'];
 const ppDefineLegend = new vscode.SemanticTokensLegend(
     ['macro'],
     ['declaration']
 );
+const ppTokenCache = new Map();  // uri → { version, data }
 for (const ppLang of tclPpLangs) {
     context.subscriptions.push(
         vscode.languages.registerDocumentSemanticTokensProvider(
             { language: ppLang },
             {
                 provideDocumentSemanticTokens(document) {
+                    const uri = document.uri.toString();
+                    const cached = ppTokenCache.get(uri);
+                    if (cached && cached.version === document.version) {
+                        return { data: cached.data };
+                    }
                     const data = ppUtils.buildPpDefineTokens(document.getText());
+                    ppTokenCache.set(uri, { version: document.version, data });
                     return { data };
                 },
             },
@@ -990,6 +1008,12 @@ for (const ppLang of tclPpLangs) {
         )
     );
 }
+// 文档关闭时清理缓存
+context.subscriptions.push(
+    vscode.workspace.onDidCloseTextDocument(doc => {
+        ppTokenCache.delete(doc.uri.toString());
+    })
+);
 ```
 
 在 `src/extension.js` 顶部添加 import：
