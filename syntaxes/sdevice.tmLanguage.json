@@ -11,6 +11,10 @@
       "name": "keyword.other.sdevice"
     },
     {
+      "match": "\\b[A-Za-z_][A-Za-z0-9_]*\\/(Vector|vector|SpecialVector)(?![A-Za-z0-9_])",
+      "name": "entity.name.tag.sdevice"
+    },
+    {
       "patterns": [
         {
           "match": "\\b(Absorption|AcceptorConcentration|ACCompute|ACPlot|ActiveVertex|Add2TotalDoping|Affinity|Angular|Aniso|Auger|AvaHomotopy|Average|AxisAligned2d|AxisAligned3d|BalMob|Band2Band|BandEdgeShift|BandGap|BandgapNarrowing|Bandstructure|Barrier|BarrierTunneling|BarrierType|BE|Bidirectional|Blocked|Boundary|Box|BPM|Broadening)(?![A-Za-z0-9_:-])",

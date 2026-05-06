@@ -18,6 +18,7 @@ const tclDocSymbolMod = require('./lsp/providers/tcl-document-symbol-provider');
 const schemeOnEnterProvider = require('./lsp/providers/scheme-on-enter-provider');
 const unitAutoClose = require('./lsp/providers/unit-auto-close-provider');
 const quoteAutoDelete = require('./lsp/providers/quote-auto-delete-provider');
+const vectorKW = require('./lsp/providers/sdevice-vector-keywords');
 const regionUndefDiagnostic = require('./lsp/providers/region-undef-diagnostic');
 const variableReferenceProvider = require('./lsp/providers/variable-reference-provider');
 const symbolCompletion = require('./lsp/providers/symbol-completion');
@@ -559,6 +560,46 @@ function activate(context) {
         );
         context.subscriptions.push(completionDisposable);
 
+        // SDEVICE: 矢量关键词后缀补全（Plot/CurrentPlot section 内，/ 触发）
+        if (langId === 'sdevice') {
+            const vectorCompDisposable = vscode.languages.registerCompletionItemProvider(
+                { language: 'sdevice' },
+                {
+                    provideCompletionItems(document, position) {
+                        const lineText = document.lineAt(position.line).text;
+                        const col = position.character;
+                        if (col < 1 || lineText[col - 1] !== '/') return undefined;
+
+                        // 提取 / 前面的基础关键词
+                        let end = col - 1;
+                        let start = end;
+                        while (start > 0 && /[A-Za-z0-9_]/.test(lineText[start - 1])) start--;
+                        const baseKeyword = lineText.slice(start, end);
+
+                        const suffixes = vectorKW.getSuffixesForBase(baseKeyword);
+                        if (!suffixes) return undefined;
+
+                        // 检查 section 上下文
+                        const stack = sdeviceStProvider.getSectionStackForDocument(document, position.line);
+                        if (!stack.some(s => vectorKW.VECTOR_SECTIONS.has(s))) return undefined;
+
+                        return suffixes.map(suffix => {
+                            const suffixPart = suffix.slice(1);
+                            const item = new vscode.CompletionItem(suffixPart, vscode.CompletionItemKind.Unit);
+                            item.detail = 'Vector suffix';
+                            item.insertText = suffixPart;
+                            item.sortText = '0' + suffixPart;
+                            item.label = baseKeyword + suffix;
+                            item.filterText = suffixPart;
+                            return item;
+                        });
+                    },
+                },
+                '/'
+            );
+            context.subscriptions.push(vectorCompDisposable);
+        }
+
         // 辅助函数：判断光标是否在注释行中
         function isInComment(document, position) {
             const lineText = document.lineAt(position.line).text;
@@ -583,6 +624,10 @@ function activate(context) {
                     const range = document.getWordRangeAtPosition(position, /[\w:.\-<>?!+*/=]+/);
                     if (!range) return null;
                     const word = document.getText(range);
+
+                    // 矢量关键词回退：ElectricField/Vector → 查找 ElectricField 文档
+                    const vectorBase = vectorKW.resolveBaseKeyword(word);
+                    const effectiveWord = vectorBase || word;
 
                     // 1. 查函数文档（优先，仅限当前语言的文档）
                     const docs = getDocs(langId) || {};
@@ -609,8 +654,8 @@ function activate(context) {
                                         return new vscode.Hover(md, range);
                                     }
                                 }
-                                if (Array.isArray(secDoc.keywords) && secDoc.keywords.includes(word)) {
-                                    const kwDoc = docs[word];
+                                if (Array.isArray(secDoc.keywords) && secDoc.keywords.includes(effectiveWord)) {
+                                    const kwDoc = docs[effectiveWord];
                                     if (kwDoc) {
                                         // 优先查 contexts[当前 section] 的上下文描述
                                         const ctxDesc = kwDoc.contexts && kwDoc.contexts[secName];
@@ -637,7 +682,7 @@ function activate(context) {
                         }
                     }
 
-                    const doc = docs[word] || docs[decodeHtml(word)];
+                    const doc = docs[effectiveWord] || docs[decodeHtml(effectiveWord)];
                     if (doc) return new vscode.Hover(formatDoc(doc, langId), range);
 
                     // 2. 查用户变量定义
