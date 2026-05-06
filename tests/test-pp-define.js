@@ -181,5 +181,54 @@ test('注释行中的 NAME 不被识别为引用', () => {
     assert.strictEqual(usageRefs.length, 0);
 });
 
+console.log('\nProvider 集成:');
+
+const definitions = require('../src/definitions');
+
+test('extractTclDefinitionsAst 合并 #define 定义', () => {
+    const text = '#define THICKNESS 0.1\nset x 1\n';
+    const defs = definitions.extractTclDefinitionsAst(text);
+    const ppDefs = defs.filter(d => d.kind === 'ppDefine');
+    assert.strictEqual(ppDefs.length, 1);
+    assert.strictEqual(ppDefs[0].name, 'THICKNESS');
+    // WASM 可用时还应包含 set x 的 Tcl 变量；不可用时只有 ppDefine
+    const tclDefs = defs.filter(d => d.kind !== 'ppDefine');
+    assert.ok(tclDefs.length === 0 || tclDefs.length === 1, `expected 0 or 1 tcl defs, got ${tclDefs.length}`);
+});
+
+test('WASM 不可用时仍返回 #define 定义', () => {
+    const text = '#define FLAG\n';
+    const defs = definitions.extractTclDefinitionsAst(text);
+    assert.strictEqual(defs.length, 1);
+    assert.strictEqual(defs[0].kind, 'ppDefine');
+});
+
+console.log('\nbuildPpDefineTokens:');
+
+const { buildPpDefineTokens } = require('../src/lsp/pp-utils');
+
+test('buildPpDefineTokens 返回正确的 delta 编码', () => {
+    const text = '#define THICKNESS 0.1\nset x THICKNESS\n';
+    const data = buildPpDefineTokens(text);
+    assert.ok(Array.isArray(data));
+    assert.ok(data.length > 0);
+    // 每个 token 5 个值: [deltaLine, deltaCol, len, type, modifier]
+    assert.strictEqual(data.length % 5, 0);
+});
+
+test('buildPpDefineTokens 无 #define 时返回空数组', () => {
+    const text = 'set x 1\nputs $x\n';
+    const data = buildPpDefineTokens(text);
+    assert.strictEqual(data.length, 0);
+});
+
+test('buildPpDefineTokens 定义位置带 declaration modifier', () => {
+    const text = '#define FLAG\n#ifdef FLAG\nset x 1\n#endif\n';
+    const data = buildPpDefineTokens(text);
+    // 第一个 token 应该是定义位置 (modifier=1)
+    // [deltaLine=0, deltaCol, len, type=0, modifier=1]
+    assert.strictEqual(data[4], 1); // declaration modifier
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 process.exit(failed > 0 ? 1 : 0);
