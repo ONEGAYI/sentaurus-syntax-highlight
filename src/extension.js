@@ -24,7 +24,7 @@ const variableReferenceProvider = require('./lsp/providers/variable-reference-pr
 const symbolCompletion = require('./lsp/providers/symbol-completion');
 const symbolReferenceProvider = require('./lsp/providers/symbol-reference-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
-const { getSdeviceAllSectionKeywords, getSdeviceAllSectionKeywordsLower } = require('./lsp/tcl-symbol-configs');
+const { getSdeviceAllSectionKeywordsLower } = require('./lsp/tcl-symbol-configs');
 const ppUtils = require('./lsp/pp-utils');
 
 /** @type {SchemeParseCache} */
@@ -681,6 +681,8 @@ function activate(context) {
                     // 矢量关键词回退：ElectricField/Vector → 查找 ElectricField 文档
                     const vectorBase = vectorKW.resolveBaseKeywordCI(word);
                     const effectiveWord = vectorBase || word;
+                    const wordLower = word.toLowerCase();
+                    const effectiveWordLower = effectiveWord.toLowerCase();
 
                     // 1. 查函数文档（优先，仅限当前语言的文档）
                     const docs = getDocs(langId) || {};
@@ -698,7 +700,7 @@ function activate(context) {
                                 if (!secDoc) continue;
                                 if (Array.isArray(secDoc.parameters)) {
                                     const param = secDoc.parameters.find(p =>
-                                        (typeof p === 'object' ? p.name : p).toLowerCase() === word.toLowerCase()
+                                        (typeof p === 'object' ? p.name : p).toLowerCase() === wordLower
                                     );
                                     if (param && typeof param === 'object') {
                                         const md = new vscode.MarkdownString();
@@ -708,8 +710,8 @@ function activate(context) {
                                         return new vscode.Hover(md, range);
                                     }
                                 }
-                                if (Array.isArray(secDoc.keywords) && secDoc.keywords.some(k => k.toLowerCase() === effectiveWord.toLowerCase())) {
-                                    const kwCanon = sdeviceLowerToCanon.get(effectiveWord.toLowerCase());
+                                if (Array.isArray(secDoc.keywords) && secDoc.keywords.some(k => k.toLowerCase() === effectiveWordLower)) {
+                                    const kwCanon = sdeviceLowerToCanon.get(effectiveWordLower);
                                     const kwDoc = kwCanon ? docs[kwCanon] : docs[effectiveWord];
                                     if (kwDoc) {
                                         // 优先查 contexts[当前 section] 的上下文描述
@@ -737,7 +739,7 @@ function activate(context) {
                         }
                     }
 
-                    const canonKey = sdeviceLowerToCanon.get(effectiveWord.toLowerCase());
+                    const canonKey = sdeviceLowerToCanon.get(effectiveWordLower);
                     const doc = (canonKey && docs[canonKey]) || docs[effectiveWord] || docs[decodeHtml(effectiveWord)];
                     if (doc) return new vscode.Hover(formatDoc(doc, langId), range);
 

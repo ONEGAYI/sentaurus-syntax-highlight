@@ -94,12 +94,11 @@ const SDEVICE_SUB_SECTIONS = new Set([
     'quasistationary', 'coupled', 'transient', 'accoupled', 'goal',
 ]);
 
+const SDEVICE_EXTRA_SECTIONS = ['Coupled', 'Transient', 'QuasiStationary', 'CoupledPrevious', 'ACCoupled', 'Goal'];
+
 function getSdeviceAllSectionKeywords() {
     const all = new Set(SECTION_KEYWORDS.sdevice);
-    for (const kw of ['Coupled', 'Transient', 'QuasiStationary', 'CoupledPrevious',
-        'ACCoupled', 'Goal']) {
-        all.add(kw);
-    }
+    for (const kw of SDEVICE_EXTRA_SECTIONS) all.add(kw);
     return all;
 }
 
@@ -110,15 +109,7 @@ function getSdeviceAllSectionKeywords() {
  * @returns {Set<string>}
  */
 function getSdeviceAllSectionKeywordsLower() {
-    const all = new Set();
-    for (const kw of SECTION_KEYWORDS.sdevice) {
-        all.add(kw.toLowerCase());
-    }
-    for (const kw of ['Coupled', 'Transient', 'QuasiStationary', 'CoupledPrevious',
-        'ACCoupled', 'Goal']) {
-        all.add(kw.toLowerCase());
-    }
-    return all;
+    return new Set([...getSdeviceAllSectionKeywords()].map(k => k.toLowerCase()));
 }
 
 module.exports = {

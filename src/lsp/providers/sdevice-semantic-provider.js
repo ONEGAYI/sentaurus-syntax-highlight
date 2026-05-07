@@ -239,11 +239,12 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
             const word = m[1];
             const col = m.index;
             const wordEnd = col + word.length;
+            const wordLower = word.toLowerCase();
 
             if (vectorRanges.some(r => col >= r.start && wordEnd <= r.end)) continue;
 
             // 子 section 关键词（后跟可选 (...) 和 {）→ subSection 青绿色 token
-            if (SDEVICE_SUB_SECTIONS.has(word.toLowerCase())) {
+            if (SDEVICE_SUB_SECTIONS.has(wordLower)) {
                 let rest = scanText.slice(wordEnd);
                 // 向后拼接直到 ( 平衡且出现 {（跳过嵌套块如 Goal { ... }）
                 const MAX_LOOKAHEAD = 5;
@@ -277,7 +278,7 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
             }
 
 
-            const wordSections = keywordIndex.get(word.toLowerCase());
+            const wordSections = keywordIndex.get(wordLower);
             if (!wordSections) {
                 if (ppDefines) {
                     const ppDef = ppDefines.find(d => d.name === word && d.line <= lineIdx + 1);
@@ -289,7 +290,7 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
             }
 
             if (stack.length === 0) {
-                if (!sectionKeywords.has(word.toLowerCase())) continue;
+                if (!sectionKeywords.has(wordLower)) continue;
                 const after = lineText.slice(col + word.length).trimStart();
                 if (!after.startsWith('{')) continue;
                 tokens.push({ line: lineIdx, col, len: word.length, type: 0 });
