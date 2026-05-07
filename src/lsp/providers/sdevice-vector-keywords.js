@@ -126,10 +126,10 @@ function resolveBaseKeywordCI(word) {
     const slashIdx = word.indexOf('/');
     if (slashIdx === -1) return null;
     const base = word.slice(0, slashIdx);
-    const suffix = word.slice(slashIdx);
+    const suffix = word.slice(slashIdx).toLowerCase();
     const suffixes = BASE_TO_SUFFIXES_LOWER.get(base.toLowerCase());
     if (!suffixes) return null;
-    return suffixes.includes(suffix) ? base : null;
+    return suffixes.some(s => s.toLowerCase() === suffix) ? base : null;
 }
 
 function getSuffixesForBaseCI(keyword) {

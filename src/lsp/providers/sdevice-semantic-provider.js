@@ -175,7 +175,7 @@ function scanStacksPerLine(text, sectionKeywords, preSplitLines) {
 function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeywords, ppDefines = []) {
     const tokens = [];
     const identRe = /\b([A-Za-z_][A-Za-z0-9_]*)\b/g;
-    const vectorRe = /\b([A-Za-z_][A-Za-z0-9_]*)\/(Vector|vector|SpecialVector)\b/g;
+    const vectorRe = /\b([A-Za-z_][A-Za-z0-9_]*)\/(Vector|vector|SpecialVector)\b/gi;
 
     for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
         const lineText = lines[lineIdx];
@@ -224,9 +224,9 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
         vectorRe.lastIndex = 0;
         while ((vm = vectorRe.exec(scanText)) !== null) {
             const base = vm[1];
-            const suffix = '/' + vm[2];
+            const suffix = '/' + vm[2].toLowerCase();
             const allowedSuffixes = BASE_TO_SUFFIXES_LOWER.get(base.toLowerCase());
-            if (allowedSuffixes && allowedSuffixes.includes(suffix)) {
+            if (allowedSuffixes && allowedSuffixes.some(s => s.toLowerCase() === suffix)) {
                 vectorRanges.push({ start: vm.index, end: vm.index + vm[0].length });
             }
         }
