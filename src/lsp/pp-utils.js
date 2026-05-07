@@ -221,4 +221,26 @@ function encodeTokenDelta(tokens) {
     return result;
 }
 
-module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens, escapeRegex, encodeTokenDelta };
+/**
+ * 扫描 #ifdef/#ifndef 指令中引用的未定义宏。
+ * @param {string} text - 文档全文
+ * @param {Set<string>} definedNames - 已定义的宏名集合
+ * @returns {Array<{line: number, startCol: number, endCol: number, name: string}>}
+ */
+function findUndefPpMacroRefs(text, definedNames) {
+    const results = [];
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+        const match = lines[i].match(/^\s*#\s*(ifdef|ifndef)\s+(\w+)/);
+        if (match) {
+            const name = match[2];
+            if (!definedNames.has(name)) {
+                const nameStart = lines[i].indexOf(name, match.index + match[0].indexOf(name));
+                results.push({ line: i, startCol: nameStart, endCol: nameStart + name.length, name });
+            }
+        }
+    }
+    return results;
+}
+
+module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens, escapeRegex, encodeTokenDelta, findUndefPpMacroRefs };

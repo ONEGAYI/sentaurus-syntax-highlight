@@ -137,26 +137,14 @@ function checkTclUndefVars(document) {
     const text = document.getText();
     const ppDefs = ppUtils.extractPpDefines(text);
     const definedNames = new Set(ppDefs.map(d => d.name));
-    const lines = text.split('\n');
-    for (let i = 0; i < lines.length; i++) {
-        const match = lines[i].match(/^\s*#\s*(ifdef|ifndef)\s+(\w+)/);
-        if (match) {
-            const macroName = match[2];
-            if (!definedNames.has(macroName)) {
-                const nameStart = lines[i].indexOf(macroName, match.index + match[0].indexOf(macroName));
-                const range = new vscode.Range(
-                    i, nameStart,
-                    i, nameStart + macroName.length
-                );
-                const diagnostic = new vscode.Diagnostic(
-                    range,
-                    `未定义的宏: ${macroName}`,
-                    vscode.DiagnosticSeverity.Hint
-                );
-                diagnostic.source = 'undef-macro';
-                diagnostics.push(diagnostic);
-            }
-        }
+    for (const u of ppUtils.findUndefPpMacroRefs(text, definedNames)) {
+        const diagnostic = new vscode.Diagnostic(
+            new vscode.Range(u.line, u.startCol, u.line, u.endCol),
+            `未定义的预处理宏: ${u.name}`,
+            vscode.DiagnosticSeverity.Hint
+        );
+        diagnostic.source = 'undef-macro';
+        diagnostics.push(diagnostic);
     }
 
     return diagnostics;
@@ -286,8 +274,13 @@ function checkSchemeUndefVars(document) {
     const knownNames = getSchemeKnownNames();
     const refs = scopeAnalyzer.getSchemeRefs(ast, knownNames);
 
+    // 收集 #define 宏名，避免将宏引用误报为未定义变量
+    const ppDefs = ppUtils.extractPpDefines(text);
+    const ppMacroNames = new Set(ppDefs.map(d => d.name));
+
     const diagnostics = [];
     for (const ref of refs) {
+        if (ppMacroNames.has(ref.name)) continue;
         // 跳过已知名称（内置函数等已在 getSchemeRefs 中过滤）
         // 这里额外检查作用域内可见性
         const visible = scopeAnalyzer.getVisibleDefinitions(scopeTree, ref.line);
@@ -310,6 +303,17 @@ function checkSchemeUndefVars(document) {
 
     // 检测同作用域内的重复定义
     diagnostics.push(...checkSchemeDuplicateDefs(scopeTree, text));
+
+    // #ifdef / #ifndef 未定义宏诊断（SDE）
+    for (const u of ppUtils.findUndefPpMacroRefs(text, ppMacroNames)) {
+        const diagnostic = new vscode.Diagnostic(
+            new vscode.Range(u.line, u.startCol, u.line, u.endCol),
+            `未定义的预处理宏: ${u.name}`,
+            vscode.DiagnosticSeverity.Hint
+        );
+        diagnostic.source = 'undef-macro';
+        diagnostics.push(diagnostic);
+    }
 
     return diagnostics;
 }

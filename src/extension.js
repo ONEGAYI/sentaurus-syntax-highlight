@@ -792,7 +792,26 @@ function activate(context) {
                         const { scopeTree, lineStarts } = entry;
                         const visibleDefs = scopeAnalyzer.getVisibleDefinitions(scopeTree, cursorLine);
                         const def = visibleDefs.find(d => d.name === word);
-                        if (!def) return null;
+                        if (!def) {
+                            // #define 宏定义 fallback（不依赖 Scheme AST）
+                            const userDefs = defs.getDefinitions(document, langId);
+                            const ppDef = [...userDefs].reverse().find(
+                                d => d.kind === 'ppDefine' && d.name === word && d.line <= cursorLine
+                            );
+                            if (ppDef) {
+                                const defLine0 = ppDef.line - 1;
+                                const defLineText = document.lineAt(defLine0).text;
+                                const re = new RegExp('\\b' + ppUtils.escapeRegex(word) + '\\b');
+                                const match = re.exec(defLineText);
+                                if (match) {
+                                    return new vscode.Location(
+                                        document.uri,
+                                        new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
+                                    );
+                                }
+                            }
+                            return null;
+                        }
                         const defStartCol = def.start - lineStarts[def.line - 1];
                         const defEndCol = def.end - lineStarts[def.line - 1];
                         return new vscode.Location(

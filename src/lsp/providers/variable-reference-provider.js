@@ -55,6 +55,41 @@ function provideSchemeReferences(document, position, options) {
     }
 
     const cursorLine = position.line + 1;
+
+    // #define 宏引用查找（优先于作用域变量，不依赖 AST）
+    const docText = document.getText();
+    const ppDefs = ppUtils.extractPpDefines(docText);
+    const ppDef = [...ppDefs].reverse().find(d => d.name === word && d.line <= cursorLine);
+    if (ppDef) {
+        const locations = [];
+        if (options.includeDeclaration !== false) {
+            const defLine0 = ppDef.line - 1;
+            const defLineText = document.lineAt(defLine0).text;
+            const re = new RegExp('\\b' + ppUtils.escapeRegex(word) + '\\b');
+            const match = re.exec(defLineText);
+            if (match) {
+                locations.push(new vscode.Location(
+                    document.uri,
+                    new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
+                ));
+            }
+        }
+        const ppRefs = ppUtils.findPpDefineRefs(docText, ppDefs.filter(d => d.name === word));
+        for (const ref of ppRefs) {
+            const isDup = locations.some(loc =>
+                loc.range.start.line === ref.line - 1 &&
+                loc.range.start.character === ref.startCol
+            );
+            if (!isDup) {
+                locations.push(new vscode.Location(
+                    document.uri,
+                    new vscode.Range(ref.line - 1, ref.startCol, ref.line - 1, ref.startCol + word.length)
+                ));
+            }
+        }
+        if (locations.length > 0) return locations;
+    }
+
     const visibleDefs = getVisibleDefinitions(scopeTree, cursorLine);
     const targetDef = visibleDefs.find(d => d.name === word);
     if (!targetDef) return null;
