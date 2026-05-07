@@ -133,11 +133,9 @@ function checkTclUndefVars(document) {
         }
     }
 
-    // #ifdef / #ifndef 未定义宏诊断
-    const text = document.getText();
-    const ppDefs = ppUtils.extractPpDefines(text);
-    const definedNames = new Set(ppDefs.map(d => d.name));
-    for (const u of ppUtils.findUndefPpMacroRefs(text, definedNames)) {
+    // #ifdef / #ifndef 未定义宏诊断 — 使用缓存的 ppDefs
+    const definedNames = new Set(entry.ppDefs.map(d => d.name));
+    for (const u of ppUtils.findUndefPpMacroRefs(entry.text, definedNames)) {
         const diagnostic = new vscode.Diagnostic(
             new vscode.Range(u.line, u.startCol, u.line, u.endCol),
             `未定义的预处理宏: ${u.name}`,
@@ -268,14 +266,13 @@ function checkSchemeDuplicateDefs(scopeTree, text) {
  * @returns {vscode.Diagnostic[]}
  */
 function checkSchemeUndefVars(document) {
-    const { ast, scopeTree, text } = schemeCache.get(document);
+    const { ast, scopeTree, text, ppDefs } = schemeCache.get(document);
     if (!ast) return [];
 
     const knownNames = getSchemeKnownNames();
     const refs = scopeAnalyzer.getSchemeRefs(ast, knownNames);
 
     // 收集 #define 宏名，避免将宏引用误报为未定义变量
-    const ppDefs = ppUtils.extractPpDefines(text);
     const ppMacroNames = new Set(ppDefs.map(d => d.name));
 
     const diagnostics = [];

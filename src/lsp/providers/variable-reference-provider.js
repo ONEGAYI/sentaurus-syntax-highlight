@@ -39,7 +39,7 @@ function provideSchemeReferences(document, position, options) {
     const entry = schemeCache.get(document);
     if (!entry) return null;
 
-    const { ast, scopeTree, lineStarts, text: docText } = entry;
+    const { ast, scopeTree, lineStarts, text: docText, ppDefs } = entry;
 
     const range = document.getWordRangeAtPosition(position, /[\w:.\-<>?!+*/=]+/);
     if (!range) return null;
@@ -57,23 +57,17 @@ function provideSchemeReferences(document, position, options) {
     const cursorLine = position.line + 1;
 
     // #define 宏引用查找（优先于作用域变量，不依赖 AST）
-    const ppDefs = ppUtils.extractPpDefines(docText);
-    const ppDef = [...ppDefs].reverse().find(d => d.name === word && d.line <= cursorLine);
+    // 从缓存 entry 获取 ppDefs（已在上面从 schemeCache.get 获取）
+    const ppDef = [...entry.ppDefs].reverse().find(d => d.name === word && d.line <= cursorLine);
     if (ppDef) {
         const locations = [];
         if (options.includeDeclaration !== false) {
-            const defLine0 = ppDef.line - 1;
-            const defLineText = document.lineAt(defLine0).text;
-            const re = new RegExp('\\b' + ppUtils.escapeRegex(word) + '\\b');
-            const match = re.exec(defLineText);
-            if (match) {
-                locations.push(new vscode.Location(
-                    document.uri,
-                    new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
-                ));
-            }
+            locations.push(new vscode.Location(
+                document.uri,
+                new vscode.Range(ppDef.line - 1, ppDef.startCol, ppDef.line - 1, ppDef.startCol + word.length)
+            ));
         }
-        const ppRefs = ppUtils.findPpDefineRefs(docText, ppDefs.filter(d => d.name === word));
+        const ppRefs = ppUtils.findPpDefineRefs(docText, entry.ppDefs.filter(d => d.name === word));
         for (const ref of ppRefs) {
             const isDup = locations.some(loc =>
                 loc.range.start.line === ref.line - 1 &&
@@ -153,22 +147,18 @@ function provideTclReferences(document, position, options) {
     const locations = [];
 
     // #define 裸词引用（不依赖 WASM/AST）
-    const ppDefs = ppUtils.extractPpDefines(document.getText());
+    // entry 在前面获取，以便后续 WASM 段复用
+    const entry = tclCache.get(document);
+    const ppDefs = entry ? entry.ppDefs : [];
     const ppDef = [...ppDefs].reverse().find(d => d.name === word && d.line <= cursorLine);
     if (ppDef) {
         if (options.includeDeclaration !== false) {
-            const defLine0 = ppDef.line - 1;
-            const defLineText = document.lineAt(defLine0).text;
-            const re = new RegExp('\\b' + ppUtils.escapeRegex(word) + '\\b');
-            const match = re.exec(defLineText);
-            if (match) {
-                locations.push(new vscode.Location(
-                    document.uri,
-                    new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
-                ));
-            }
+            locations.push(new vscode.Location(
+                document.uri,
+                new vscode.Range(ppDef.line - 1, ppDef.startCol, ppDef.line - 1, ppDef.startCol + word.length)
+            ));
         }
-        const ppRefs = ppUtils.findPpDefineRefs(document.getText(), ppDefs.filter(d => d.name === word));
+        const ppRefs = ppUtils.findPpDefineRefs(entry.text, ppDefs.filter(d => d.name === word));
         for (const ref of ppRefs) {
             const isDup = locations.some(loc =>
                 loc.range.start.line === ref.line - 1 &&
@@ -184,7 +174,6 @@ function provideTclReferences(document, position, options) {
     }
 
     // Tcl 变量引用（需要 WASM）
-    const entry = tclCache.get(document);
     if (entry && entry.tree) {
         const root = entry.tree.rootNode;
         const scopeIndex = buildScopeIndex(root);
