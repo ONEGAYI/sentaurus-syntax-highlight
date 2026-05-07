@@ -350,6 +350,10 @@
       }
     },
     {
+      "match": "\\b([A-Z][A-Z0-9_]{2,})\\b",
+      "name": "variable.other.constant.preprocessor.tcl"
+    },
+    {
       "name": "comment.line.hash",
       "match": "#.*$"
     },
