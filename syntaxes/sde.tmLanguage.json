@@ -439,28 +439,55 @@
             ]
         },
         {
-            "name": "meta.preprocessor.sde",
-            "begin": "^\\s*(#\\s*(?:if|ifdef|ifndef|elif|else|endif|define|undef|include|error|set))\\b",
-            "beginCaptures": {
-                "1": {
-                    "name": "keyword.control.preprocessor.sde"
+            "name": "meta.preprocessor.define.sde",
+            "match": "^\\s*(#\\s*define)\\b\\s+(\\w+)(\\s+.*)?$",
+            "captures": {
+                "1": { "name": "keyword.control.preprocessor.sde" },
+                "2": { "name": "variable.other.constant.preprocessor.sde" },
+                "3": {
+                    "patterns": [
+                        { "match": "\"[^\"]*\"", "name": "string.quoted.double.sde" },
+                        { "match": "\\b(defined|TRUE|FALSE)\\b", "name": "keyword.control.preprocessor.sde" }
+                    ]
                 }
-            },
-            "end": "$",
-            "patterns": [
-                {
-                    "match": "\\b(defined|TRUE|FALSE)\\b",
-                    "name": "keyword.control.preprocessor.sde"
-                },
-                {
-                    "match": "\"[^\"]*\"",
-                    "name": "string.quoted.double"
+            }
+        },
+        {
+            "name": "meta.preprocessor.undef.sde",
+            "match": "^\\s*(#\\s*undef)\\b\\s+(\\w+)",
+            "captures": {
+                "1": { "name": "keyword.control.preprocessor.sde" },
+                "2": { "name": "variable.other.constant.preprocessor.sde" }
+            }
+        },
+        {
+            "name": "meta.preprocessor.ifdef.sde",
+            "match": "^\\s*(#\\s*(?:ifdef|ifndef))\\b\\s+(\\w+)",
+            "captures": {
+                "1": { "name": "keyword.control.preprocessor.sde" },
+                "2": { "name": "variable.other.constant.preprocessor.sde" }
+            }
+        },
+        {
+            "name": "meta.preprocessor.other.sde",
+            "match": "^\\s*(#\\s*(?:if|elif|else|endif|include|error|set))\\b(.*$)",
+            "captures": {
+                "1": { "name": "keyword.control.preprocessor.sde" },
+                "2": {
+                    "patterns": [
+                        { "match": "\\b(defined|TRUE|FALSE)\\b", "name": "keyword.control.preprocessor.sde" },
+                        { "match": "\"[^\"]*\"", "name": "string.quoted.double.sde" }
+                    ]
                 }
-            ]
+            }
         },
         {
             "match": "#(?:t(?:rue)?|f(?:alse)?|\\\\(?:newline|space|tab|[a-zA-Z0-9])|[()]|;)",
             "name": "constant.character.format.placeholder"
+        },
+        {
+            "match": "\\b([A-Z][A-Z0-9_]{2,})\\b",
+            "name": "variable.other.constant.preprocessor.sde"
         },
         {
             "name": "comment.line.hash",
