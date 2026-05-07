@@ -377,7 +377,7 @@
             "entity.name.type.sdevice"
           ],
           "macro": [
-            "variable.other.constant.preprocessor"
+            "entity.name.type.sdevice"
           ]
         }
       }

@@ -443,7 +443,7 @@
             "match": "^\\s*(#\\s*define)\\b\\s+(\\w+)(\\s+.*)?$",
             "captures": {
                 "1": { "name": "keyword.control.preprocessor.sde" },
-                "2": { "name": "variable.other.constant.preprocessor.sde" },
+                "2": { "name": "entity.name.type.sde" },
                 "3": {
                     "patterns": [
                         { "match": "\"[^\"]*\"", "name": "string.quoted.double.sde" },
@@ -457,7 +457,7 @@
             "match": "^\\s*(#\\s*undef)\\b\\s+(\\w+)",
             "captures": {
                 "1": { "name": "keyword.control.preprocessor.sde" },
-                "2": { "name": "variable.other.constant.preprocessor.sde" }
+                "2": { "name": "entity.name.type.sde" }
             }
         },
         {
@@ -465,7 +465,7 @@
             "match": "^\\s*(#\\s*(?:ifdef|ifndef))\\b\\s+(\\w+)",
             "captures": {
                 "1": { "name": "keyword.control.preprocessor.sde" },
-                "2": { "name": "variable.other.constant.preprocessor.sde" }
+                "2": { "name": "entity.name.type.sde" }
             }
         },
         {
@@ -487,7 +487,7 @@
         },
         {
             "match": "\\b([A-Z][A-Z0-9_]{2,}|_[A-Za-z0-9_]+)\\b",
-            "name": "variable.other.constant.preprocessor.sde"
+            "name": "entity.name.type.sde"
         },
         {
             "name": "comment.line.hash",

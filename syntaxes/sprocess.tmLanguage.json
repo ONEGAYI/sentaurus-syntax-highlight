@@ -311,7 +311,7 @@
       "match": "^\\s*(#\\s*define)\\b\\s+(\\w+)(\\s+.*)?$",
       "captures": {
         "1": { "name": "keyword.control.preprocessor.tcl" },
-        "2": { "name": "variable.other.constant.preprocessor.tcl" },
+        "2": { "name": "entity.name.type.tcl" },
         "3": {
           "patterns": [
             { "match": "\"[^\"]*\"", "name": "string.quoted.double.tcl" },
@@ -325,7 +325,7 @@
       "match": "^\\s*(#\\s*undef)\\b\\s+(\\w+)",
       "captures": {
         "1": { "name": "keyword.control.preprocessor.tcl" },
-        "2": { "name": "variable.other.constant.preprocessor.tcl" }
+        "2": { "name": "entity.name.type.tcl" }
       }
     },
     {
@@ -333,7 +333,7 @@
       "match": "^\\s*(#\\s*(?:ifdef|ifndef))\\b\\s+(\\w+)",
       "captures": {
         "1": { "name": "keyword.control.preprocessor.tcl" },
-        "2": { "name": "variable.other.constant.preprocessor.tcl" }
+        "2": { "name": "entity.name.type.tcl" }
       }
     },
     {
@@ -351,7 +351,7 @@
     },
     {
       "match": "\\b([A-Z][A-Z0-9_]{2,}|_[A-Za-z0-9_]+)\\b",
-      "name": "variable.other.constant.preprocessor.tcl"
+      "name": "entity.name.type.tcl"
     },
     {
       "name": "comment.line.hash",
