@@ -367,5 +367,43 @@ test('lowercase keyword matched inside uppercase section', () => {
     assert.ok(data.length > 0, 'Should produce tokens for mixed case');
 });
 
+console.log('\nsdevice-semantic — sub-section deep nesting:');
+
+test('Transient with multi-line nested parentheses is tokenized as subSection', () => {
+    const text = [
+        'Solve {',
+        '    Transient (',
+        '        InitialTime= 0.0 FinalTime= 4e-10',
+        '        TurningPoints(',
+        '            (Condition(',
+        '                1e-11; 0.9e-10',
+        '            ) Value=1e-13)',
+        '        )',
+        '    ){',
+        '        Coupled {',
+        '            Poisson',
+        '        }',
+        '    }',
+        '}',
+    ].join('\n');
+    const index = buildKeywordSectionIndex(docs);
+    const sectionKws = new Set(['file', 'plot', 'solve', 'coupled']);
+    const data = extractSdeviceTokens(text, index, sectionKws);
+    let curLine = 0, curCol = 0;
+    let foundTransient = false;
+    for (let i = 0; i < data.length; i += 5) {
+        curLine += data[i];
+        curCol = data[i] === 0 ? curCol + data[i + 1] : data[i + 1];
+        const len = data[i + 2];
+        const typeIdx = data[i + 3];
+        const word = text.split('\n')[curLine].slice(curCol, curCol + len);
+        if (word === 'Transient') {
+            assert.strictEqual(typeIdx, 2, 'Transient should be subSection (type 2)');
+            foundTransient = true;
+        }
+    }
+    assert.ok(foundTransient, 'Should find Transient token');
+});
+
 console.log(`\n${passed} passed, ${failed} failed`);
 if (failed) process.exit(1);

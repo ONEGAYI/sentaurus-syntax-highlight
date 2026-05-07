@@ -246,10 +246,13 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
             // 子 section 关键词（后跟可选 (...) 和 {）→ subSection 青绿色 token
             if (SDEVICE_SUB_SECTIONS.has(wordLower)) {
                 let rest = scanText.slice(wordEnd);
-                // 向后拼接直到 ( 平衡且出现 {（跳过嵌套块如 Goal { ... }）
-                const MAX_LOOKAHEAD = 5;
+                // 向后拼接直到 ( 平衡且出现 {
+                // pd > 0 时不受行数限制（括号可能跨多行嵌套），pd <= 0 后只再找 BRACE_LOOKAHEAD 行
+                const BRACE_LOOKAHEAD = 5;
+                const ABS_MAX_LOOKAHEAD = 200;
                 let nextLine = lineIdx + 1;
-                while (nextLine < lines.length && nextLine <= lineIdx + MAX_LOOKAHEAD) {
+                let balancedAt = -1;
+                while (nextLine < lines.length && nextLine <= lineIdx + ABS_MAX_LOOKAHEAD) {
                     let pd = 0, hasBrace = false;
                     for (const c of rest) {
                         if (c === '(') pd++;
@@ -257,6 +260,10 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
                         else if (c === '{') hasBrace = true;
                     }
                     if (pd <= 0 && hasBrace) break;
+                    if (pd <= 0 && !hasBrace) {
+                        if (balancedAt < 0) balancedAt = nextLine;
+                        if (nextLine > balancedAt + BRACE_LOOKAHEAD) break;
+                    }
                     const nt = lines[nextLine++].trimStart();
                     if (nt === '' || nt[0] === '#' || nt[0] === '*') continue;
                     const ci = nt.indexOf('#');
