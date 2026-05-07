@@ -39,7 +39,7 @@ function provideSchemeReferences(document, position, options) {
     const entry = schemeCache.get(document);
     if (!entry) return null;
 
-    const { ast, scopeTree, lineStarts } = entry;
+    const { ast, scopeTree, lineStarts, text: docText } = entry;
 
     const range = document.getWordRangeAtPosition(position, /[\w:.\-<>?!+*/=]+/);
     if (!range) return null;
@@ -57,7 +57,6 @@ function provideSchemeReferences(document, position, options) {
     const cursorLine = position.line + 1;
 
     // #define 宏引用查找（优先于作用域变量，不依赖 AST）
-    const docText = document.getText();
     const ppDefs = ppUtils.extractPpDefines(docText);
     const ppDef = [...ppDefs].reverse().find(d => d.name === word && d.line <= cursorLine);
     if (ppDef) {
