@@ -3,7 +3,12 @@ name: CodeRabbit Retry
 on:
   schedule:
     - cron: '17 * * * *' # 每小时运行一次
-  workflow_dispatch: # 允许手动触发
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: 'Dry run 模式（仅日志，不实际评论）'
+        type: boolean
+        default: false
 
 jobs:
   retry:
@@ -19,3 +24,4 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           max-retries: '4'
           cooldown-hours: '2'
+          dry-run: ${{ inputs.dry-run || 'false' }}
