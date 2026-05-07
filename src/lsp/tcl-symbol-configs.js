@@ -103,8 +103,27 @@ function getSdeviceAllSectionKeywords() {
     return all;
 }
 
+/**
+ * 获取 sdevice 完整 section 关键词集合（全小写）。
+ * SDEVICE keywords are case insensitive (User Guide Table 193)。
+ * 用于语义 Provider 的大小写不敏感匹配。
+ * @returns {Set<string>}
+ */
+function getSdeviceAllSectionKeywordsLower() {
+    const all = new Set();
+    for (const kw of SECTION_KEYWORDS.sdevice) {
+        all.add(kw.toLowerCase());
+    }
+    for (const kw of ['Coupled', 'Transient', 'QuasiStationary', 'CoupledPrevious',
+        'ACCoupled', 'Goal']) {
+        all.add(kw.toLowerCase());
+    }
+    return all;
+}
+
 module.exports = {
     isSectionCommand,
     getSdeviceAllSectionKeywords,
+    getSdeviceAllSectionKeywordsLower,
     SDEVICE_SUB_SECTIONS,
 };

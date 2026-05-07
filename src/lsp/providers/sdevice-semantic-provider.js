@@ -1,7 +1,7 @@
 // src/lsp/providers/sdevice-semantic-provider.js
 'use strict';
 
-const { BASE_TO_SUFFIXES, VECTOR_SECTIONS } = require('./sdevice-vector-keywords');
+const { BASE_TO_SUFFIXES_LOWER, VECTOR_SECTIONS_LOWER } = require('./sdevice-vector-keywords');
 const { SDEVICE_SUB_SECTIONS } = require('../tcl-symbol-configs');
 const { extractPpDefines, encodeTokenDelta } = require('../pp-utils');
 
@@ -10,19 +10,23 @@ const TOKEN_MODIFIERS = ['declaration'];
 
 /**
  * 从 sdevice_command_docs.json 构建关键词→所属 section 集合的索引。
+ * 键和值均为小写，支持 SDEVICE 大小写不敏感匹配。
  * @param {Object} docs - sdevice_command_docs.json 解析结果
- * @returns {Map<string, Set<string>>} keyword → Set<section>
+ * @returns {Map<string, Set<string>>} keyword(lower) → Set<section(lower)>
  */
 function buildKeywordSectionIndex(docs) {
     const index = new Map();
 
     function add(kw, section) {
-        if (!index.has(kw)) index.set(kw, new Set());
-        index.get(kw).add(section);
+        const kwLower = kw.toLowerCase();
+        const secLower = section.toLowerCase();
+        if (!index.has(kwLower)) index.set(kwLower, new Set());
+        index.get(kwLower).add(secLower);
     }
 
     for (const [kw, v] of Object.entries(docs)) {
         const section = v.section;
+        if (!section) continue;
         add(kw, section);
         if (Array.isArray(v.parameters)) {
             for (const p of v.parameters) {
@@ -129,8 +133,9 @@ function scanStacksPerLine(text, sectionKeywords, preSplitLines) {
             let end = j + 1;
             while (j >= 0 && isWord(text[j])) j--;
             const ident = text.slice(j + 1, end);
-            if (sectionKeywords.has(ident)) {
-                stack.push({ name: ident, depth });
+            const identLower = ident.toLowerCase();
+            if (sectionKeywords.has(identLower)) {
+                stack.push({ name: identLower, depth });
             }
             depth++;
             i++;
@@ -220,7 +225,7 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
         while ((vm = vectorRe.exec(scanText)) !== null) {
             const base = vm[1];
             const suffix = '/' + vm[2];
-            const allowedSuffixes = BASE_TO_SUFFIXES.get(base);
+            const allowedSuffixes = BASE_TO_SUFFIXES_LOWER.get(base.toLowerCase());
             if (allowedSuffixes && allowedSuffixes.includes(suffix)) {
                 vectorRanges.push({ start: vm.index, end: vm.index + vm[0].length });
             }
@@ -272,7 +277,7 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
             }
 
 
-            const wordSections = keywordIndex.get(word);
+            const wordSections = keywordIndex.get(word.toLowerCase());
             if (!wordSections) {
                 if (ppDefines) {
                     const ppDef = ppDefines.find(d => d.name === word && d.line <= lineIdx + 1);
@@ -284,7 +289,7 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
             }
 
             if (stack.length === 0) {
-                if (!sectionKeywords.has(word)) continue;
+                if (!sectionKeywords.has(word.toLowerCase())) continue;
                 const after = lineText.slice(col + word.length).trimStart();
                 if (!after.startsWith('{')) continue;
                 tokens.push({ line: lineIdx, col, len: word.length, type: 0 });
@@ -303,7 +308,7 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
         }
 
         // 矢量关键词整体 token（仅在 Plot/CurrentPlot section 内）
-        if (vectorRanges.length > 0 && stack.some(s => VECTOR_SECTIONS.has(s))) {
+        if (vectorRanges.length > 0 && stack.some(s => VECTOR_SECTIONS_LOWER.has(s))) {
             for (const range of vectorRanges) {
                 tokens.push({ line: lineIdx, col: range.start, len: range.end - range.start, type: 1 });
             }
