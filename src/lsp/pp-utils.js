@@ -53,14 +53,15 @@ function extractPpDefines(text) {
     const lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i].replace(/\r$/, '');
-        const match = line.match(/^\s*#\s*define\s+(\w+)(?:\s+(.*))?$/);
+        const match = line.match(/^(\s*#\s*define\s+)(\w+)(?:\s+(.*))?$/);
         if (match) {
-            const rawValue = match[2];
+            const rawValue = match[3];
             const value = rawValue !== undefined ? rawValue.trim() : '';
             defines.push({
-                name: match[1],
+                name: match[2],
                 value,
                 line: i + 1,
+                startCol: match[1].length,
                 endLine: i + 1,
                 definitionText: line.trim(),
                 kind: 'ppDefine',
@@ -90,6 +91,11 @@ function extractPpUndefs(text) {
 /** 转义正则特殊字符 */
 function escapeRegex(s) {
     return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** 构造单词边界正则 */
+function buildWordRegex(word) {
+    return new RegExp('\\b' + escapeRegex(word) + '\\b', 'g');
 }
 
 /** 检查 line[col] 是否在双引号字符串内 */
@@ -123,7 +129,7 @@ function findPpDefineRefs(text, defines) {
 
     for (const def of defines) {
         const undefLine = undefMap.get(def.name);
-        const regex = new RegExp(`\\b${escapeRegex(def.name)}\\b`, 'g');
+        const regex = buildWordRegex(def.name);
 
         for (let i = 0; i < lines.length; i++) {
             const lineNum = i + 1;
@@ -221,6 +227,35 @@ function encodeTokenDelta(tokens) {
     return result;
 }
 
+/** Delta 编码：扁平 3-tuple 数组 [line, col, len, ...]，type=0, modifier=0 */
+function encodeDelta3(rawTokens) {
+    const result = [];
+    let prevLine = 0, prevCol = 0;
+    for (let i = 0; i < rawTokens.length; i += 3) {
+        const line = rawTokens[i], col = rawTokens[i + 1], len = rawTokens[i + 2];
+        const deltaLine = line - prevLine;
+        const deltaCol = deltaLine === 0 ? col - prevCol : col;
+        result.push(deltaLine, deltaCol, len, 0, 0);
+        prevLine = line;
+        prevCol = col;
+    }
+    return result;
+}
+
+/** Delta 编码：5-tuple 嵌套数组 [[line, col, len, typeIdx, modBitmask], ...] */
+function encodeDelta5(rawTokens) {
+    const result = [];
+    let prevLine = 0, prevCol = 0;
+    for (const [line, col, len, typeIdx, modBitmask] of rawTokens) {
+        const deltaLine = line - prevLine;
+        const deltaCol = deltaLine === 0 ? col - prevCol : col;
+        result.push(deltaLine, deltaCol, len, typeIdx, modBitmask);
+        prevLine = line;
+        prevCol = col;
+    }
+    return result;
+}
+
 /**
  * 扫描 #ifdef/#ifndef 指令中引用的未定义宏。
  * @param {string} text - 文档全文
@@ -243,4 +278,4 @@ function findUndefPpMacroRefs(text, definedNames) {
     return results;
 }
 
-module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens, escapeRegex, encodeTokenDelta, findUndefPpMacroRefs };
+module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens, escapeRegex, buildWordRegex, encodeTokenDelta, encodeDelta3, encodeDelta5, findUndefPpMacroRefs };

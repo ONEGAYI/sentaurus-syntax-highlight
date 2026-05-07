@@ -71,50 +71,13 @@ function _walkForFuncCalls(node, userFuncNames, lineStarts, collector) {
 function extractSemanticTokens(ast, userFuncNames, lineStarts) {
     const tokens = [];
     _walkForFuncCalls(ast, userFuncNames, lineStarts, (line, col, len) => tokens.push(line, col, len));
-    return encodeDelta(tokens);
-}
-
-function encodeDelta(rawTokens) {
-    const result = [];
-    let prevLine = 0;
-    let prevCol = 0;
-    for (let i = 0; i < rawTokens.length; i += 3) {
-        const line = rawTokens[i];
-        const col = rawTokens[i + 1];
-        const len = rawTokens[i + 2];
-        const deltaLine = line - prevLine;
-        const deltaCol = deltaLine === 0 ? col - prevCol : col;
-        result.push(deltaLine, deltaCol, len, 0, 0);
-        prevLine = line;
-        prevCol = col;
-    }
-    return result;
-}
-
-/**
- * 将 5 元组 [line, col, len, typeIdx, modBitmask] 数组编码为 delta 格式。
- * @param {number[][]} rawTokens
- * @returns {number[]}
- */
-function encodeDeltaFull(rawTokens) {
-    const result = [];
-    let prevLine = 0;
-    let prevCol = 0;
-    for (const [line, col, len, typeIdx, modBitmask] of rawTokens) {
-        const deltaLine = line - prevLine;
-        const deltaCol = deltaLine === 0 ? col - prevCol : col;
-        result.push(deltaLine, deltaCol, len, typeIdx, modBitmask);
-        prevLine = line;
-        prevCol = col;
-    }
-    return result;
+    return ppUtils.encodeDelta3(tokens);
 }
 
 function createSemanticTokensProvider(schemeCache) {
     return {
         provideDocumentSemanticTokens(document) {
-            const text = document.getText();
-            const { ast, analysis, lineStarts } = schemeCache.get(document);
+            const { ast, analysis, lineStarts, text, ppDefs } = schemeCache.get(document);
 
             // 收集所有原始 token: [line, col, len, typeIdx, modBitmask]
             const rawTokens = [];
@@ -132,17 +95,8 @@ function createSemanticTokensProvider(schemeCache) {
             });
 
             // Type 1: macro, Mod 1 = declaration (定义位置), Mod 0 = 引用
-            const ppDefs = ppUtils.extractPpDefines(text);
-            const lines = text.split('\n');
             for (const def of ppDefs) {
-                const line0 = def.line - 1;
-                if (line0 < lines.length) {
-                    const re = new RegExp('\\b' + ppUtils.escapeRegex(def.name) + '\\b');
-                    const match = re.exec(lines[line0]);
-                    if (match) {
-                        rawTokens.push([line0, match.index, def.name.length, 1, 1]);
-                    }
-                }
+                rawTokens.push([def.line - 1, def.startCol, def.name.length, 1, 1]);
             }
 
             const ppRefs = ppUtils.findPpDefineRefs(text, ppDefs);
@@ -151,7 +105,7 @@ function createSemanticTokensProvider(schemeCache) {
             }
 
             rawTokens.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
-            return { data: encodeDeltaFull(rawTokens) };
+            return { data: ppUtils.encodeDelta5(rawTokens) };
         },
     };
 }

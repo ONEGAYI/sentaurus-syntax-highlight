@@ -1,5 +1,6 @@
 'use strict';
 
+const ppUtils = require('./pp-utils');
 const schemeParser = require('./scheme-parser');
 const schemeAnalyzer = require('./scheme-analyzer');
 const scopeAnalyzer = require('./scope-analyzer');
@@ -38,7 +39,8 @@ class SchemeParseCache {
         /**
          * Map<string, { version: number, ast: object, errors: Array,
          *   analysis: { definitions: Array, foldingRanges: Array },
-         *   scopeTree: object, text: string, lineStarts: number[] }>
+         *   scopeTree: object, text: string, lineStarts: number[],
+         *   ppDefs: Array, ppBlocks: object }>
          * @type {Map}
          */
         this._cache = new Map();
@@ -49,7 +51,8 @@ class SchemeParseCache {
      * @param {{ uri: { toString(): string }, version: number, getText(): string }} document
      * @returns {{ version: number, ast: object, errors: Array,
      *   analysis: { definitions: Array, foldingRanges: Array },
-     *   scopeTree: object, text: string, lineStarts: number[] }}
+     *   scopeTree: object, text: string, lineStarts: number[],
+     *   ppDefs: Array, ppBlocks: object }}
      */
     get(document) {
         const uri = document.uri.toString();
@@ -67,7 +70,10 @@ class SchemeParseCache {
         const scopeTree = scopeAnalyzer.buildScopeTree(ast);
         const lineStarts = computeLineStarts(text);
 
-        const entry = { version, ast, errors, analysis, scopeTree, text, lineStarts };
+        const ppDefs = ppUtils.extractPpDefines(text);
+        const ppBlocks = ppUtils.buildPpBlocks(text);
+
+        const entry = { version, ast, errors, analysis, scopeTree, text, lineStarts, ppDefs, ppBlocks };
         this._cache.set(uri, entry);
 
         // FIFO 淘汰
@@ -119,7 +125,8 @@ class TclParseCache {
         /** @type {number} */
         this._maxEntries = opts.maxEntries || 20;
         /**
-         * Map<string, { version: number, tree: object, text: string, lineStarts: number[] }>
+         * Map<string, { version: number, tree: object, text: string, lineStarts: number[],
+         *   ppDefs: Array, ppBlocks: object }>
          * @type {Map}
          */
         this._cache = new Map();
@@ -132,7 +139,8 @@ class TclParseCache {
      * 如果 WASM 解析器尚未初始化（isReady() === false），返回 null。
      *
      * @param {{ uri: { toString(): string }, version: number, getText(): string }} document
-     * @returns {{ version: number, tree: object, text: string, lineStarts: number[] } | null}
+     * @returns {{ version: number, tree: object, text: string, lineStarts: number[],
+     *   ppDefs: Array, ppBlocks: object } | null}
      */
     get(document) {
         const tclParserWasm = require('./tcl-parser-wasm');
@@ -160,7 +168,10 @@ class TclParseCache {
         }
         const lineStarts = computeLineStarts(text);
 
-        const entry = { version, tree, text, lineStarts };
+        const ppDefs = ppUtils.extractPpDefines(text);
+        const ppBlocks = ppUtils.buildPpBlocks(text);
+
+        const entry = { version, tree, text, lineStarts, ppDefs, ppBlocks };
         this._cache.set(uri, entry);
 
         // FIFO 淘汰
