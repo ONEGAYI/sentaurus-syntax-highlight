@@ -374,7 +374,7 @@
             "entity.name.tag.sdevice"
           ],
           "subSection": [
-            "entity.name.type"
+            "entity.name.type.sdevice"
           ],
           "macro": [
             "variable.other.constant.preprocessor"
