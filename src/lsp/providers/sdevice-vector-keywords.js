@@ -74,6 +74,16 @@ for (const [suffix, bases] of Object.entries(VECTOR_KEYWORDS)) {
 // 触发矢量功能的 section 集合
 const VECTOR_SECTIONS = new Set(['Plot', 'CurrentPlot']);
 
+// 大小写不敏感版本（SDEVICE keywords are case insensitive per User Guide Table 193）
+const BASE_TO_SUFFIXES_LOWER = new Map();
+for (const [base, suffixes] of BASE_TO_SUFFIXES) {
+    BASE_TO_SUFFIXES_LOWER.set(base.toLowerCase(), suffixes);
+}
+const VECTOR_SECTIONS_LOWER = new Set();
+for (const s of VECTOR_SECTIONS) {
+    VECTOR_SECTIONS_LOWER.add(s.toLowerCase());
+}
+
 // 合法后缀集合
 const VALID_SUFFIXES = new Set(Object.keys(VECTOR_KEYWORDS));
 
@@ -111,13 +121,37 @@ function resolveBaseKeyword(word) {
     return suffixes.includes(suffix) ? base : null;
 }
 
+// 大小写不敏感版本（SDEVICE keywords are case insensitive）
+function resolveBaseKeywordCI(word) {
+    const slashIdx = word.indexOf('/');
+    if (slashIdx === -1) return null;
+    const base = word.slice(0, slashIdx);
+    const suffix = word.slice(slashIdx).toLowerCase();
+    const suffixes = BASE_TO_SUFFIXES_LOWER.get(base.toLowerCase());
+    if (!suffixes) return null;
+    return suffixes.some(s => s.toLowerCase() === suffix) ? base : null;
+}
+
+function getSuffixesForBaseCI(keyword) {
+    return BASE_TO_SUFFIXES_LOWER.get(keyword.toLowerCase());
+}
+
+function isVectorBaseCI(keyword) {
+    return BASE_TO_SUFFIXES_LOWER.has(keyword.toLowerCase());
+}
+
 module.exports = {
     VECTOR_KEYWORDS,
     BASE_TO_SUFFIXES,
+    BASE_TO_SUFFIXES_LOWER,
     FULL_VECTOR_KEYWORDS,
     VECTOR_SECTIONS,
+    VECTOR_SECTIONS_LOWER,
     VALID_SUFFIXES,
     isVectorBase,
     getSuffixesForBase,
     resolveBaseKeyword,
+    isVectorBaseCI,
+    getSuffixesForBaseCI,
+    resolveBaseKeywordCI,
 };

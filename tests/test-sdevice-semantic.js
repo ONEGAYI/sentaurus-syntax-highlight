@@ -24,19 +24,19 @@ console.log('\nsdevice-semantic — buildKeywordSectionIndex:');
 
 test('Plot appears in multiple sections', () => {
     const index = buildKeywordSectionIndex(docs);
-    assert.ok(index.has('Plot'));
-    const sections = index.get('Plot');
-    assert.ok(sections.has('File'), 'Plot should belong to File');
-    assert.ok(sections.has('Plot'), 'Plot should belong to Plot');
-    assert.ok(sections.has('Solve'), 'Plot should belong to Solve');
+    assert.ok(index.has('plot'));
+    const sections = index.get('plot');
+    assert.ok(sections.has('file'), 'Plot should belong to File');
+    assert.ok(sections.has('plot'), 'Plot should belong to Plot');
+    assert.ok(sections.has('solve'), 'Plot should belong to Solve');
 });
 
 test('ElectricField appears in Physics and Plot', () => {
     const index = buildKeywordSectionIndex(docs);
-    assert.ok(index.has('ElectricField'));
-    const sections = index.get('ElectricField');
-    assert.ok(sections.has('Physics'));
-    assert.ok(sections.has('Plot'));
+    assert.ok(index.has('electricfield'));
+    const sections = index.get('electricfield');
+    assert.ok(sections.has('physics'));
+    assert.ok(sections.has('plot'));
 });
 
 test('Non-existent keyword returns undefined', () => {
@@ -52,44 +52,44 @@ test('Index contains many keywords', () => {
 console.log('\nsdevice-semantic — getSectionStack:');
 
 test('empty text returns empty stack', () => {
-    const stack = getSectionStack('', 0, new Set(['Plot', 'File']));
+    const stack = getSectionStack('', 0, new Set(['plot', 'file']));
     assert.deepStrictEqual(stack, []);
 });
 
 test('no section returns empty stack', () => {
     const text = 'set x 1\nset y 2';
-    const stack = getSectionStack(text, 0, new Set(['Plot', 'File']));
+    const stack = getSectionStack(text, 0, new Set(['plot', 'file']));
     assert.deepStrictEqual(stack, []);
 });
 
-test('inside File section returns [File]', () => {
+test('inside File section returns [file]', () => {
     const text = 'File {\n  Plot="x"\n}';
-    const stack = getSectionStack(text, 1, new Set(['Plot', 'File', 'Solve']));
-    assert.deepStrictEqual(stack, ['File']);
+    const stack = getSectionStack(text, 1, new Set(['plot', 'file', 'solve']));
+    assert.deepStrictEqual(stack, ['file']);
 });
 
 test('nested section returns multi-level stack', () => {
     const text = 'Solve {\n  Coupled {\n    Plot\n  }\n}';
-    const stack = getSectionStack(text, 2, new Set(['Plot', 'File', 'Solve', 'Coupled']));
-    assert.deepStrictEqual(stack, ['Solve', 'Coupled']);
+    const stack = getSectionStack(text, 2, new Set(['plot', 'file', 'solve', 'coupled']));
+    assert.deepStrictEqual(stack, ['solve', 'coupled']);
 });
 
 test('outside braces returns empty stack', () => {
     const text = 'File {\n  Plot="x"\n}\nPlot {';
-    const stack = getSectionStack(text, 3, new Set(['Plot', 'File']));
+    const stack = getSectionStack(text, 3, new Set(['plot', 'file']));
     assert.deepStrictEqual(stack, []);
 });
 
 test('braces inside string are ignored', () => {
     const text = 'File {\n  Plot="a{b}c"\n}';
-    const stack = getSectionStack(text, 1, new Set(['Plot', 'File']));
-    assert.deepStrictEqual(stack, ['File']);
+    const stack = getSectionStack(text, 1, new Set(['plot', 'file']));
+    assert.deepStrictEqual(stack, ['file']);
 });
 
 test('braces inside comments are ignored', () => {
     const text = 'File {\n  # Plot {\n  Plot="x"\n}';
-    const stack = getSectionStack(text, 1, new Set(['Plot', 'File']));
-    assert.deepStrictEqual(stack, ['File']);
+    const stack = getSectionStack(text, 1, new Set(['plot', 'file']));
+    assert.deepStrictEqual(stack, ['file']);
 });
 
 console.log('\nsdevice-semantic — extractSdeviceTokens:');
@@ -97,7 +97,7 @@ console.log('\nsdevice-semantic — extractSdeviceTokens:');
 test('Plot inside File is sectionKeyword (type 1)', () => {
     const text = 'File {\n  Plot="x"\n}';
     const index = buildKeywordSectionIndex(docs);
-    const sectionKws = new Set(['File', 'Plot', 'Solve', 'Coupled']);
+    const sectionKws = new Set(['file', 'plot', 'solve', 'coupled']);
     const data = extractSdeviceTokens(text, index, sectionKws);
     assert.ok(data.length > 0, 'Should produce tokens');
     let curLine = 0, curCol = 0;
@@ -124,7 +124,7 @@ test('Plot inside File is sectionKeyword (type 1)', () => {
 test('Top-level Plot is sectionName (type 0)', () => {
     const text = 'Plot {\n  ElectricField\n}';
     const index = buildKeywordSectionIndex(docs);
-    const sectionKws = new Set(['File', 'Plot', 'Solve']);
+    const sectionKws = new Set(['file', 'plot', 'solve']);
     const data = extractSdeviceTokens(text, index, sectionKws);
     let curLine = 0, curCol = 0;
     for (let i = 0; i < data.length; i += 5) {
@@ -142,7 +142,7 @@ test('Top-level Plot is sectionName (type 0)', () => {
 test('Plot inside nested Solve>Coupled is sectionKeyword', () => {
     const text = 'Solve {\n  Coupled {\n    Plot\n  }\n}';
     const index = buildKeywordSectionIndex(docs);
-    const sectionKws = new Set(['File', 'Plot', 'Solve', 'Coupled']);
+    const sectionKws = new Set(['file', 'plot', 'solve', 'coupled']);
     const data = extractSdeviceTokens(text, index, sectionKws);
     let curLine = 0, curCol = 0;
     let foundPlotToken = false;
@@ -163,7 +163,7 @@ test('Plot inside nested Solve>Coupled is sectionKeyword', () => {
 test('Non-keyword text produces no tokens', () => {
     const text = 'set x 1\nset y 2';
     const index = buildKeywordSectionIndex(docs);
-    const sectionKws = new Set(['File', 'Plot']);
+    const sectionKws = new Set(['file', 'plot']);
     const data = extractSdeviceTokens(text, index, sectionKws);
     assert.strictEqual(data.length, 0, 'No tokens for non-keyword text');
 });
@@ -172,34 +172,34 @@ console.log('\nsdevice-semantic — edge cases:');
 
 test('tab before { is handled correctly', () => {
     const text = 'File\t{\n  Plot="x"\n}';
-    const stack = getSectionStack(text, 1, new Set(['Plot', 'File']));
-    assert.deepStrictEqual(stack, ['File']);
+    const stack = getSectionStack(text, 1, new Set(['plot', 'file']));
+    assert.deepStrictEqual(stack, ['file']);
 });
 
 test('asterisk comment line braces are ignored', () => {
     const text = 'File {\n* this has { braces }\n  Plot="x"\n}';
-    const stack = getSectionStack(text, 2, new Set(['Plot', 'File']));
-    assert.deepStrictEqual(stack, ['File']);
+    const stack = getSectionStack(text, 2, new Set(['plot', 'file']));
+    assert.deepStrictEqual(stack, ['file']);
 });
 
 test('asterisk comment mid-line is NOT treated as comment', () => {
     // * only starts a comment at line beginning
     const text = 'File {\n  x * { y }\n}';
-    const stack = getSectionStack(text, 1, new Set(['Plot', 'File']));
-    assert.deepStrictEqual(stack, ['File']);
+    const stack = getSectionStack(text, 1, new Set(['plot', 'file']));
+    assert.deepStrictEqual(stack, ['file']);
     // depth should be 2 because the { inside the line is counted
 });
 
 test('multi-line string does not cause lineIdx drift', () => {
     const text = 'File {\n  Output = "line1\nline2"\n  Plot="x"\n}';
-    const stack = getSectionStack(text, 3, new Set(['Plot', 'File']));
-    assert.deepStrictEqual(stack, ['File'], 'Line after multi-line string should be inside File');
+    const stack = getSectionStack(text, 3, new Set(['plot', 'file']));
+    assert.deepStrictEqual(stack, ['file'], 'Line after multi-line string should be inside File');
 });
 
 test('inline # comment does not produce false tokens', () => {
     const text = 'File {\n  FileName = "output.tdr"   # see Plot section\n}';
     const index = buildKeywordSectionIndex(docs);
-    const sectionKws = new Set(['File', 'Plot', 'Solve']);
+    const sectionKws = new Set(['file', 'plot', 'solve']);
     const data = extractSdeviceTokens(text, index, sectionKws);
     let curLine = 0, curCol = 0;
     for (let i = 0; i < data.length; i += 5) {
@@ -214,7 +214,7 @@ test('inline # comment does not produce false tokens', () => {
 test('keyword inside string is not tokenized', () => {
     const text = 'File {\n  Plot="ElectricField is cool"\n}';
     const index = buildKeywordSectionIndex(docs);
-    const sectionKws = new Set(['File', 'Plot', 'Solve']);
+    const sectionKws = new Set(['file', 'plot', 'solve']);
     const data = extractSdeviceTokens(text, index, sectionKws);
     let curLine = 0, curCol = 0;
     for (let i = 0; i < data.length; i += 5) {
@@ -231,7 +231,7 @@ console.log('\nsdevice-semantic — cache:');
 test('extractTokensFromStacks matches extractSdeviceTokens', () => {
     const text = 'File {\n  Plot="x"\n}';
     const index = buildKeywordSectionIndex(docs);
-    const sectionKws = new Set(['File', 'Plot', 'Solve', 'Coupled']);
+    const sectionKws = new Set(['file', 'plot', 'solve', 'coupled']);
     const fullResult = extractSdeviceTokens(text, index, sectionKws);
     const lines = text.split('\n');
     const stacks = scanStacksPerLine(text, sectionKws, lines);
@@ -240,7 +240,7 @@ test('extractTokensFromStacks matches extractSdeviceTokens', () => {
 });
 
 test('createSdeviceSemanticProvider returns provider with expected methods', () => {
-    const provider = createSdeviceSemanticProvider(docs, new Set(['File', 'Plot', 'Solve']));
+    const provider = createSdeviceSemanticProvider(docs, new Set(['file', 'plot', 'solve']));
     assert.strictEqual(typeof provider.provideDocumentSemanticTokens, 'function');
     assert.strictEqual(typeof provider.getSectionStackForDocument, 'function');
     assert.strictEqual(typeof provider.invalidate, 'function');
@@ -248,7 +248,7 @@ test('createSdeviceSemanticProvider returns provider with expected methods', () 
 });
 
 test('provider caches results for same document version', () => {
-    const provider = createSdeviceSemanticProvider(docs, new Set(['File', 'Plot', 'Solve']));
+    const provider = createSdeviceSemanticProvider(docs, new Set(['file', 'plot', 'solve']));
     let callCount = 0;
     const mockDoc = {
         uri: { toString: () => 'file:///test.cmd' },
@@ -265,7 +265,7 @@ test('provider caches results for same document version', () => {
 });
 
 test('provider recomputes on version change', () => {
-    const provider = createSdeviceSemanticProvider(docs, new Set(['File', 'Plot', 'Solve']));
+    const provider = createSdeviceSemanticProvider(docs, new Set(['file', 'plot', 'solve']));
     let text = 'File {\n  Plot="x"\n}';
     const mockDoc = {
         uri: { toString: () => 'file:///test2.cmd' },
@@ -281,7 +281,7 @@ test('provider recomputes on version change', () => {
 });
 
 test('provider getSectionStackForDocument uses cache', () => {
-    const provider = createSdeviceSemanticProvider(docs, new Set(['File', 'Plot', 'Solve']));
+    const provider = createSdeviceSemanticProvider(docs, new Set(['file', 'plot', 'solve']));
     let callCount = 0;
     const mockDoc = {
         uri: { toString: () => 'file:///test3.cmd' },
@@ -294,11 +294,11 @@ test('provider getSectionStackForDocument uses cache', () => {
     // hover 调用 getSectionStackForDocument 应命中缓存
     const stack = provider.getSectionStackForDocument(mockDoc, 1);
     assert.strictEqual(callCount, 1, 'Hover should reuse cache');
-    assert.deepStrictEqual(stack, ['File']);
+    assert.deepStrictEqual(stack, ['file']);
 });
 
 test('invalidate clears cache entry', () => {
-    const provider = createSdeviceSemanticProvider(docs, new Set(['File', 'Plot', 'Solve']));
+    const provider = createSdeviceSemanticProvider(docs, new Set(['file', 'plot', 'solve']));
     let callCount = 0;
     const mockDoc = {
         uri: { toString: () => 'file:///test4.cmd' },
@@ -310,6 +310,61 @@ test('invalidate clears cache entry', () => {
     provider.invalidate('file:///test4.cmd');
     provider.provideDocumentSemanticTokens(mockDoc);
     assert.strictEqual(callCount, 2, 'Should recompute after invalidation');
+});
+
+console.log('\nsdevice-semantic — case insensitive (User Guide Table 193):');
+
+test('lowercase section keyword recognized', () => {
+    const text = 'physics {\n  eMobility\n}';
+    const stack = getSectionStack(text, 1, new Set(['physics', 'math', 'file']));
+    assert.deepStrictEqual(stack, ['physics']);
+});
+
+test('ALLCAPS section keyword recognized', () => {
+    const text = 'SOLVE {\n  COUPLED {\n    PLOT\n  }\n}';
+    const stack = getSectionStack(text, 2, new Set(['solve', 'coupled', 'plot']));
+    assert.deepStrictEqual(stack, ['solve', 'coupled']);
+});
+
+test('mixed case keyword matched in index', () => {
+    const index = buildKeywordSectionIndex(docs);
+    assert.ok(index.has('electricfield'), 'lowercase lookup should work');
+    // 索引键已统一小写，消费侧需 .toLowerCase() 后查找
+    assert.ok(index.has('ElectricField'.toLowerCase()), 'mixed case via toLowerCase works');
+    assert.ok(index.has('ELECTRICFIELD'.toLowerCase()), 'ALLCAPS via toLowerCase works');
+    const sections = index.get('electricfield');
+    assert.ok(sections.has('physics'));
+    assert.ok(sections.has('plot'));
+});
+
+test('lowercase section keyword gets sectionName token', () => {
+    const text = 'plot {\n  electricfield\n}';
+    const index = buildKeywordSectionIndex(docs);
+    const sectionKws = new Set(['plot', 'file', 'solve']);
+    const data = extractSdeviceTokens(text, index, sectionKws);
+    assert.ok(data.length > 0, 'Should produce tokens');
+    let curLine = 0, curCol = 0;
+    for (let i = 0; i < data.length; i += 5) {
+        curLine += data[i];
+        curCol = data[i] === 0 ? curCol + data[i+1] : data[i+1];
+        const len = data[i+2];
+        const typeIdx = data[i+3];
+        const word = text.split('\n')[curLine].slice(curCol, curCol + len);
+        if (word === 'plot' && curLine === 0) {
+            assert.strictEqual(typeIdx, 0, 'lowercase plot should be sectionName (type 0)');
+        }
+        if (word === 'electricfield' && curLine === 1) {
+            assert.strictEqual(typeIdx, 1, 'lowercase electricfield should be sectionKeyword (type 1)');
+        }
+    }
+});
+
+test('lowercase keyword matched inside uppercase section', () => {
+    const text = 'PHYSICS {\n  electricfield\n}';
+    const index = buildKeywordSectionIndex(docs);
+    const sectionKws = new Set(['physics', 'file', 'solve']);
+    const data = extractSdeviceTokens(text, index, sectionKws);
+    assert.ok(data.length > 0, 'Should produce tokens for mixed case');
 });
 
 console.log(`\n${passed} passed, ${failed} failed`);

@@ -63,7 +63,7 @@ assert.strictEqual(VECTOR_SECTIONS.size, 2);
 
 const docs = require('../syntaxes/sdevice_command_docs.json');
 const { buildKeywordSectionIndex, extractSdeviceTokens } = require('../src/lsp/providers/sdevice-semantic-provider');
-const sectionKws = require('../src/lsp/tcl-symbol-configs').getSdeviceAllSectionKeywords();
+const sectionKws = require('../src/lsp/tcl-symbol-configs').getSdeviceAllSectionKeywordsLower();
 const index = buildKeywordSectionIndex(docs);
 const sectionKeywords = new Set(sectionKws);
 
@@ -188,3 +188,62 @@ function decodeTokens(text, data) {
 }
 
 console.log('All sdevice-vector-keywords tests passed!');
+
+// --- CI (case-insensitive) functions ---
+
+const {
+    BASE_TO_SUFFIXES_LOWER, VECTOR_SECTIONS_LOWER,
+    isVectorBaseCI, getSuffixesForBaseCI, resolveBaseKeywordCI,
+} = require('../src/lsp/providers/sdevice-vector-keywords');
+
+// CI data integrity
+assert.ok(BASE_TO_SUFFIXES_LOWER.has('electricfield'), 'lowercase key should exist');
+assert.ok(BASE_TO_SUFFIXES_LOWER.has('ELECTRICFIELD'.toLowerCase()), 'ALLCAPS via toLowerCase works');
+
+// isVectorBaseCI
+assert.strictEqual(isVectorBaseCI('electricfield'), true);
+assert.strictEqual(isVectorBaseCI('ELECTRICFIELD'), true);
+assert.strictEqual(isVectorBaseCI('ElectricField'), true);
+assert.strictEqual(isVectorBaseCI('unknown'), false);
+
+// getSuffixesForBaseCI
+assert.deepStrictEqual(getSuffixesForBaseCI('electricfield'), ['/Vector']);
+assert.deepStrictEqual(getSuffixesForBaseCI('ESHEDISTRIBUTION'), ['/SpecialVector']);
+assert.strictEqual(getSuffixesForBaseCI('unknown'), undefined);
+
+// resolveBaseKeywordCI
+assert.strictEqual(resolveBaseKeywordCI('electricfield/Vector'), 'electricfield');
+assert.strictEqual(resolveBaseKeywordCI('ELECTRICFIELD/Vector'), 'ELECTRICFIELD');
+assert.strictEqual(resolveBaseKeywordCI('pe_polarization/vector'), 'pe_polarization');
+assert.strictEqual(resolveBaseKeywordCI('ElectricField'), null);
+// ALLCAPS suffix variants (case-insensitive suffix matching)
+assert.strictEqual(resolveBaseKeywordCI('ELECTRICFIELD/VECTOR'), 'ELECTRICFIELD');
+assert.strictEqual(resolveBaseKeywordCI('electricfield/VECTOR'), 'electricfield');
+assert.strictEqual(resolveBaseKeywordCI('eSHEDistribution/SPECIALVECTOR'), 'eSHEDistribution');
+assert.strictEqual(resolveBaseKeywordCI('ConductionCurrentDensity/VECTOR'), 'ConductionCurrentDensity');
+
+// VECTOR_SECTIONS_LOWER
+assert.ok(VECTOR_SECTIONS_LOWER.has('plot'));
+assert.ok(VECTOR_SECTIONS_LOWER.has('PLOT'.toLowerCase()));
+assert.ok(VECTOR_SECTIONS_LOWER.has('currentplot'));
+assert.strictEqual(VECTOR_SECTIONS_LOWER.size, 2);
+
+// CI vector token: lowercase section + keyword
+{
+    const data = extractSdeviceTokens('plot {\n  electricfield/Vector\n}', index, sectionKeywords);
+    const tokens = decodeTokens('plot {\n  electricfield/Vector\n}', data);
+    const vf = tokens.find(t => t.word === 'electricfield/Vector');
+    assert.ok(vf, 'lowercase electricfield/Vector inside plot should be vector token');
+    assert.strictEqual(vf.typeIdx, 1);
+}
+
+// CI vector token: ALLCAPS suffix
+{
+    const data = extractSdeviceTokens('plot {\n  ELECTRICFIELD/VECTOR\n}', index, sectionKeywords);
+    const tokens = decodeTokens('plot {\n  ELECTRICFIELD/VECTOR\n}', data);
+    const vf = tokens.find(t => t.word === 'ELECTRICFIELD/VECTOR');
+    assert.ok(vf, 'ALLCAPS ELECTRICFIELD/VECTOR should be vector token');
+    assert.strictEqual(vf.typeIdx, 1);
+}
+
+console.log('All sdevice-vector-keywords CI tests passed!');

@@ -24,7 +24,7 @@ const variableReferenceProvider = require('./lsp/providers/variable-reference-pr
 const symbolCompletion = require('./lsp/providers/symbol-completion');
 const symbolReferenceProvider = require('./lsp/providers/symbol-reference-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
-const { getSdeviceAllSectionKeywords } = require('./lsp/tcl-symbol-configs');
+const { getSdeviceAllSectionKeywordsLower } = require('./lsp/tcl-symbol-configs');
 const ppUtils = require('./lsp/pp-utils');
 
 /** @type {SchemeParseCache} */
@@ -465,13 +465,18 @@ function activate(context) {
 
     // Semantic Tokens (sdevice) — section 上下文感知着色
     const sdeviceDocs = loadDocsJson('sdevice_command_docs.json', false) || {};
-    const sdeviceSectionKws = getSdeviceAllSectionKeywords();
+    const sdeviceSectionKwsLower = getSdeviceAllSectionKeywordsLower();
+    // 小写→原始大小写映射，用于 hover 等需要原始键查找文档的场景
+    const sdeviceLowerToCanon = new Map();
+    for (const key of Object.keys(sdeviceDocs)) {
+        sdeviceLowerToCanon.set(key.toLowerCase(), key);
+    }
     const sdeviceLegend = new vscode.SemanticTokensLegend(
         sdeviceSemanticMod.TOKEN_TYPES,
         sdeviceSemanticMod.TOKEN_MODIFIERS
     );
     sdeviceStProvider = sdeviceSemanticMod.createSdeviceSemanticProvider(
-        sdeviceDocs, sdeviceSectionKws
+        sdeviceDocs, sdeviceSectionKwsLower
     );
     context.subscriptions.push(
         vscode.languages.registerDocumentSemanticTokensProvider(
@@ -618,12 +623,12 @@ function activate(context) {
                         while (start > 0 && /[A-Za-z0-9_]/.test(lineText[start - 1])) start--;
                         const baseKeyword = lineText.slice(start, end);
 
-                        const suffixes = vectorKW.getSuffixesForBase(baseKeyword);
+                        const suffixes = vectorKW.getSuffixesForBaseCI(baseKeyword);
                         if (!suffixes) return undefined;
 
                         // 检查 section 上下文
                         const stack = sdeviceStProvider.getSectionStackForDocument(document, position.line);
-                        if (!stack.some(s => vectorKW.VECTOR_SECTIONS.has(s))) return undefined;
+                        if (!stack.some(s => vectorKW.VECTOR_SECTIONS_LOWER.has(s))) return undefined;
 
                         return suffixes.map(suffix => {
                             const suffixPart = suffix.slice(1);
@@ -674,8 +679,10 @@ function activate(context) {
                     const word = document.getText(range);
 
                     // 矢量关键词回退：ElectricField/Vector → 查找 ElectricField 文档
-                    const vectorBase = vectorKW.resolveBaseKeyword(word);
+                    const vectorBase = vectorKW.resolveBaseKeywordCI(word);
                     const effectiveWord = vectorBase || word;
+                    const wordLower = word.toLowerCase();
+                    const effectiveWordLower = effectiveWord.toLowerCase();
 
                     // 1. 查函数文档（优先，仅限当前语言的文档）
                     const docs = getDocs(langId) || {};
@@ -687,12 +694,13 @@ function activate(context) {
                         );
                         if (stack.length > 0) {
                             for (let si = stack.length - 1; si >= 0; si--) {
-                                const secName = stack[si];
+                                const secNameLower = stack[si];
+                                const secName = sdeviceLowerToCanon.get(secNameLower) || secNameLower;
                                 const secDoc = docs[secName];
                                 if (!secDoc) continue;
                                 if (Array.isArray(secDoc.parameters)) {
                                     const param = secDoc.parameters.find(p =>
-                                        (typeof p === 'object' ? p.name : p) === word
+                                        (typeof p === 'object' ? p.name : p).toLowerCase() === wordLower
                                     );
                                     if (param && typeof param === 'object') {
                                         const md = new vscode.MarkdownString();
@@ -702,8 +710,9 @@ function activate(context) {
                                         return new vscode.Hover(md, range);
                                     }
                                 }
-                                if (Array.isArray(secDoc.keywords) && secDoc.keywords.includes(effectiveWord)) {
-                                    const kwDoc = docs[effectiveWord];
+                                if (Array.isArray(secDoc.keywords) && secDoc.keywords.some(k => k.toLowerCase() === effectiveWordLower)) {
+                                    const kwCanon = sdeviceLowerToCanon.get(effectiveWordLower);
+                                    const kwDoc = kwCanon ? docs[kwCanon] : docs[effectiveWord];
                                     if (kwDoc) {
                                         // 优先查 contexts[当前 section] 的上下文描述
                                         const ctxDesc = kwDoc.contexts && kwDoc.contexts[secName];
@@ -730,7 +739,8 @@ function activate(context) {
                         }
                     }
 
-                    const doc = docs[effectiveWord] || docs[decodeHtml(effectiveWord)];
+                    const canonKey = sdeviceLowerToCanon.get(effectiveWordLower);
+                    const doc = (canonKey && docs[canonKey]) || docs[effectiveWord] || docs[decodeHtml(effectiveWord)];
                     if (doc) return new vscode.Hover(formatDoc(doc, langId), range);
 
                     // 2. 查用户变量定义
