@@ -20,8 +20,7 @@ reviews:
     - "!scripts/**"
     - "!temp/**"
 
-    # 机器生成的语法文件 & 二进制
-    - "!syntaxes/*.tmLanguage.json"
+    # 二进制
     - "!syntaxes/tree-sitter-tcl.wasm"
 
     # 工具配置（非业务代码）
