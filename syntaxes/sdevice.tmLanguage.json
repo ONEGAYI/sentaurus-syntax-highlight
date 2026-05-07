@@ -2,8 +2,8 @@
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "name": "Sentaurus SDEVICE",
   "patterns": [
-    { "include": "#comments" },
     { "include": "#preprocessor" },
+    { "include": "#comments" },
     { "include": "#macro-reference" },
     { "include": "#strings" },
     { "include": "#numbers" },
@@ -94,9 +94,9 @@
       "beginCaptures": { "1": { "name": "keyword.control.sdevice" } },
       "end": "\\}",
       "patterns": [
+        { "include": "#preprocessor" },
         { "include": "#comments" },
         { "include": "#strings" },
-        { "include": "#preprocessor" },
         { "include": "#macro-reference" },
         { "include": "#numbers" },
         { "include": "#swb-params" },
@@ -112,9 +112,9 @@
       "beginCaptures": { "1": { "name": "entity.name.type.sdevice" } },
       "end": "\\}",
       "patterns": [
+        { "include": "#preprocessor" },
         { "include": "#comments" },
         { "include": "#strings" },
-        { "include": "#preprocessor" },
         { "include": "#macro-reference" },
         { "include": "#numbers" },
         { "include": "#swb-params" },
@@ -214,9 +214,9 @@
       "begin": "\\{",
       "end": "\\}",
       "patterns": [
+        { "include": "#preprocessor" },
         { "include": "#comments" },
         { "include": "#strings" },
-        { "include": "#preprocessor" },
         { "include": "#macro-reference" },
         { "include": "#numbers" },
         { "include": "#swb-params" },
