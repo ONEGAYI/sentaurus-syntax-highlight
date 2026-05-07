@@ -486,7 +486,7 @@
             "name": "constant.character.format.placeholder"
         },
         {
-            "match": "\\b([A-Z][A-Z0-9_]{2,})\\b",
+            "match": "\\b([A-Z][A-Z0-9_]{2,}|_[A-Za-z0-9_]+)\\b",
             "name": "variable.other.constant.preprocessor.sde"
         },
         {
