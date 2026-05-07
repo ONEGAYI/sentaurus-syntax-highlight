@@ -69,7 +69,7 @@
       ]
     },
     "macro-reference": {
-      "match": "\\b([A-Z][A-Z0-9_]{2,}|_[A-Za-z0-9_]+)\\b",
+      "match": "\\b([A-Z][A-Z0-9_]{2,}|_[A-Z0-9_]+)\\b",
       "name": "entity.name.type.sdevice"
     },
     "strings": {
