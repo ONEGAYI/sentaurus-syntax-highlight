@@ -4,6 +4,25 @@
 
 ---
 
+## [1.13.0] - 2026-05-07
+
+### 新功能
+
+- **SDE #define 预处理器宏语义支持**（#5）：将 Tcl 方言已有的 `#define` 宏功能完整对齐到 SDE（Scheme 方言），覆盖定义提取、语义着色（`macro` token）、未定义宏诊断（`#ifdef`/`#ifndef` 引用未定义宏时显示 Hint）、引用查找、定义跳转和代码折叠六大功能。新增 `pp-utils.findUndefPpMacroRefs()` 共享函数消除 Tcl/SDE 两处 `#ifdef`/`#ifndef` 诊断循环重复；`semantic-tokens-provider.js` legend 扩展为 `[userFunctionCall, macro]`，统一编码函数调用和宏 token
+- **SDEVICE 关键词大小写不敏感支持**（#6）：根据 SDEVICE User Guide Table 193 "Keywords are case insensitive"，实现全链路大小写脱敏。TextMate 语法 78 个关键词正则添加 `(?i)` 前缀；语义 Token 层构建小写键索引，所有查找统一 `.toLowerCase()`；Hover 文档通过 `sdeviceLowerToCanon` 映射回原始 PascalCase 获取文档；矢量关键词补全改用 CI 包装函数。仅影响 SDEVICE，其他 5 种工具无官方文档证据
+
+### Bug 修复
+
+- **修复 SDEVICE 子 section 多层括号嵌套时语义着色失败**：Solve 下的 Transient/Coupled 等子 section 在跨行 `(options)` 括号嵌套时无法被识别为 `subSection` token。优化括号配对算法正确处理多层嵌套场景
+
+### 测试
+
+- 新增 Transient 多层括号嵌套回归测试（8 个用例）
+- 扩展 `test-sdevice-semantic.js` 覆盖大小写不敏感场景（32 passed）
+- 扩展 `test-sdevice-vector-keywords.js` 大小写不敏感匹配测试
+
+---
+
 ## [1.12.0] - 2026-05-06
 
 ### 新功能
@@ -733,6 +752,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.13.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.9.1...v1.10.0

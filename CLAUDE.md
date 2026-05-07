@@ -86,7 +86,7 @@ sentaurus-syntax-highlight/
 │   │   ├── parse-cache.js                      ← 统一解析缓存层（SchemeParseCache + TclParseCache）
 │   │   │
 │   │   └── providers/                          ← VSCode Provider 实现
-│   │       ├── folding-provider.js             ← Scheme 代码折叠
+│   │       ├── folding-provider.js             ← Scheme 代码折叠 + 预处理器块折叠
 │   │       ├── bracket-diagnostic.js           ← Scheme 括号平衡诊断
 │   │       ├── signature-provider.js           ← Scheme 函数签名提示（内置 + 用户定义函数）
 │   │       ├── undef-var-diagnostic.js         ← 未定义/重复定义变量诊断（Scheme + Tcl 双语言）+ 未定义宏诊断
@@ -100,7 +100,7 @@ sentaurus-syntax-highlight/
 │   │       ├── quote-auto-delete-logic.js      ← 空引号对自动删除判断逻辑
 │   │       ├── quote-auto-delete-provider.js   ← 空引号对自动删除 Provider（6 种语言共用）
 │   │       ├── region-undef-diagnostic.js         ← Region/Material/Contact 未定义语义诊断（Scheme）
-│   │       ├── semantic-tokens-provider.js        ← SDE 用户定义函数调用高亮（Semantic Tokens）
+│   │       ├── semantic-tokens-provider.js        ← SDE 用户定义函数调用 + #define 宏着色（Semantic Tokens）
 │   │       ├── sdevice-semantic-provider.js    ← SDEVICE 语义 token（section/subSection/keyword/macro/vector）
 │   │       ├── sdevice-vector-keywords.js      ← SDEVICE 矢量关键词数据（57 基础词 + 3 后缀）
 │   │       ├── symbol-completion.js               ← Region/Material/Contact 符号补全
@@ -188,7 +188,7 @@ SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依
 - `folding-provider.js` / `tcl-folding-provider.js` — 代码折叠
 - `bracket-diagnostic.js` / `tcl-bracket-diagnostic.js` — 括号平衡诊断
 - `signature-provider.js` — Scheme 函数签名提示（内置 + 用户定义函数 fallback）
-- `semantic-tokens-provider.js` — SDE 用户定义函数调用高亮（Semantic Tokens）
+- `semantic-tokens-provider.js` — SDE 用户定义函数调用 + #define 宏着色（Semantic Tokens，legend 扩展为 `[userFunctionCall, macro]`）
 - `sdevice-semantic-provider.js` — SDEVICE 语义着色（sectionName/subSection/sectionKeyword/macro/vector token，纯文本栈追踪 + 三阶段扫描 + document.version 缓存）
 - `sdevice-vector-keywords.js` — SDEVICE Plot/CurrentPlot 矢量关键词数据模块（57 基础词 + 3 后缀）
 - `scheme-on-enter-provider.js` — Scheme 括号内回车多级自动缩进（与 `sde.json` onEnterRules 协同，逻辑提取至 `scheme-on-enter-logic.js`）
