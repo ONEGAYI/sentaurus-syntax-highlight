@@ -12,6 +12,9 @@
     { "match": "\\b(if|else|elseif|for|foreach|while|switch|break|continue|return)\\b", "name": "keyword.control.sdevice" },
     { "match": "\\b(proc|try|throw)\\b", "name": "keyword.other.sdevice" },
     { "match": "\\b(after|append|array|catch|close|concat|error|eval|expr|file|format|gets|glob|global|incr|info|join|lappend|lindex|linsert|list|llength|lrange|lreplace|lsearch|lsort|open|puts|read|regsub|rename|scan|set|source|split|string|subst|unset|uplevel|upvar|variable|vwait)\\b", "name": "support.function.sdevice" },
+    { "include": "#section-keywords" },
+    { "include": "#section-constants" },
+    { "include": "#vector-keywords" },
     { "match": "\\b[A-Za-z_][A-Za-z0-9_\\-]*(?![A-Za-z0-9_\\-])", "name": "variable.other" }
   ],
   "repository": {
