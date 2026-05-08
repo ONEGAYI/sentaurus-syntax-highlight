@@ -8,6 +8,11 @@ const { extractPpDefines, encodeTokenDelta } = require('../pp-utils');
 const TOKEN_TYPES = ['sectionName', 'sectionKeyword', 'subSection', 'macro'];
 const TOKEN_MODIFIERS = ['declaration'];
 
+// 不应被 sectionKeyword 语义 token 覆盖的关键词：
+// - 区域/材料限定词（保持 constant.numeric 浅绿色）
+// - TextMate 层已用其他 scope 着色的关键词（如 entity.name.type 青绿色）
+const SECTION_KEYWORD_EXCLUSIONS = new Set(['semiconductor', 'insulator', 'window']);
+
 /**
  * 从 sdevice_command_docs.json 构建关键词→所属 section 集合的索引。
  * 键和值均为小写，支持 SDEVICE 大小写不敏感匹配。
@@ -309,7 +314,7 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
                         break;
                     }
                 }
-                if (matched) {
+                if (matched && !SECTION_KEYWORD_EXCLUSIONS.has(wordLower)) {
                     tokens.push({ line: lineIdx, col, len: word.length, type: 1 });
                 }
             }

@@ -17038,6 +17038,29 @@
     "example": "Solve {\n  Coupled { Poisson Electron Hole }\n  Continuation( Name=\"drain\" NewArc InitialVstep=0.01 MaxVstep=0.1 ) {\n    Coupled { Poisson Electron Hole }\n  }\n}",
     "contexts": {}
   },
+  "NewCurrentFile": {
+    "section": "Solve",
+    "signature": "NewCurrentFile = <string>",
+    "description": "Specifies a new current plot file name in the Solve section. Creates a separate current plot file with the given name, allowing different simulation stages to write to distinct output files. Commonly used in TDDB and multi-stage simulations to organize output data. Unlike NewCurrentPrefix which appends to the default name, NewCurrentFile replaces the entire file name.",
+    "parameters": [
+      {
+        "name": "filename",
+        "type": "string",
+        "desc": "New current plot file name."
+      }
+    ],
+    "keywords": [
+      "CurrentPlot",
+      "Plot",
+      "File",
+      "Transient",
+      "Quasistationary"
+    ],
+    "example": "Solve {\n  NewCurrentFile = \"tran_25C\"\n  Coupled { Poisson Electron Hole }\n}",
+    "contexts": {
+      "Solve": "In Solve section to create a new current plot file"
+    }
+  },
   "NewCurrentPrefix": {
     "section": "Solve",
     "signature": "NewCurrentPrefix = <string>",
