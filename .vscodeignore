@@ -2,13 +2,17 @@
 .serena/**
 .gitignore
 .git/**
+.github/**
 CLAUDE.md
 TODOLIST.md
 scripts/**
 package-lock.json
 *.vsix
 assets/**
+
+# configs
 .coderabbit.yaml
+.pr_agent.toml
 # claude code local
 .claude/**
 

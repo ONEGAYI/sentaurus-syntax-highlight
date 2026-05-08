@@ -2,9 +2,9 @@
 # 文档: https://github.com/Codium-ai/pr-agent/blob/main/docs/docs/usage-guide/changing_a_model.md
 
 [config]
-model = "deepseek/deepseek-v4-flash"
+model = "deepseek/deepseek-v4-pro"
 fallback_models = ["deepseek/deepseek-v4-flash"]
-custom_model_max_tokens = 131072
+custom_model_max_tokens = 256000
 response_language = "zh-CN"
 ignore_pr_labels = ["skip-review"]
 
