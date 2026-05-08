@@ -366,8 +366,7 @@ function activate(context) {
             // Tcl 方言语言
             if (!_docsCache.tcl) {
                 _docsCache.tcl = loadDocsJson('tcl_command_docs.json', useZh) || {};
-                const mathDocs = loadDocsJson('tcl_expr_mathfunc_docs.json', useZh);
-                if (mathDocs) Object.assign(_docsCache.tcl, mathDocs);
+                _docsCache.tclMath = loadDocsJson('tcl_expr_mathfunc_docs.json', useZh) || {};
             }
             if (!_docsCache[langId]) {
                 const langSpecificDocs = (() => {
@@ -375,7 +374,7 @@ function activate(context) {
                     if (langId === 'svisual') return loadDocsJson('svisual_command_docs.json', useZh) || {};
                     return {};
                 })();
-                _docsCache[langId] = { ...langSpecificDocs, ..._docsCache.tcl };
+                _docsCache[langId] = { ..._docsCache.tcl, ..._docsCache.tclMath, ...langSpecificDocs };
             }
             langFuncDocs[langId] = _docsCache[langId];
         }
