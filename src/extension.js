@@ -364,6 +364,8 @@ function activate(context) {
             // Tcl 方言语言
             if (!_docsCache.tcl) {
                 _docsCache.tcl = loadDocsJson('tcl_command_docs.json', useZh) || {};
+                const mathDocs = loadDocsJson('tcl_expr_mathfunc_docs.json', useZh);
+                if (mathDocs) Object.assign(_docsCache.tcl, mathDocs);
             }
             if (!_docsCache[langId]) {
                 const langSpecificDocs = (() => {
