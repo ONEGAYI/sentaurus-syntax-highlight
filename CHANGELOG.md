@@ -4,6 +4,24 @@
 
 ---
 
+## [1.13.1] - 2026-05-08
+
+### 性能优化
+
+- **#define 预处理器结果统一缓存**（#8）：将 `#define` 宏定义提取和预处理器分支分析结果统一缓存在 `parse-cache.js` 中，消除各 Provider 的重复全文扫描。`SchemeParseCache` 和 `TclParseCache` 新增 `ppDefs`/`ppBlocks` 字段，`folding-provider.js`、`semantic-tokens-provider.js`、`undef-var-diagnostic.js`、`variable-reference-provider.js` 均从缓存读取。`pp-utils.js` 提取 delta 编码为共享函数 `encodeDelta3`/`encodeDelta5`
+
+### 新功能
+
+- **SDEVICE TextMate 语法重构**（#9）：SDEVICE 语法从扁平模式重构为 `repository` + `begin/end` 嵌套结构，实现 section 内关键词的精确作用域匹配。恢复顶层 `section-keywords`/`section-constants`/`vector-keywords` 匹配规则，添加 section 嵌套块的 fallback identifier 消除非关键词标识符的白色显示
+- **#define 宏 TextMate scope 统一**：统一 6 种语言的 `#define` 宏 TextMate scope 为 `entity.name.type`（青色），与语义层着色对齐。为 SDE 及 5 种 Tcl 语言的语法文件添加宏引用规则
+- **预处理器指令优先级修复**：调整 TextMate 语法 patterns 优先级顺序，确保 `#define` 等预处理器指令不再被注释规则拦截
+
+### Bug 修复
+
+- **微调 SDEVICE 关键词 scope 分配**：`ElectrostaticPotential`、`SRHRecombination` 从 `constant.numeric` 移至 `entity.name.tag`（蓝色数据集名）；`Window` 从 `entity.name.tag` 改为独立的 `entity.name.type` 规则（青绿色子命令）；新增 `NewCurrentFile` 关键词（Solve section）。语义 provider 排除 `Semiconductor`、`Insulator`、`Window` 不被 `sectionKeyword` token 覆盖，保持 TextMate 原色
+
+---
+
 ## [1.13.0] - 2026-05-07
 
 ### 新功能
@@ -752,6 +770,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.13.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.0...v1.13.1
 [1.13.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.10.0...v1.11.0
