@@ -32,6 +32,9 @@ jobs:
           CONFIG_MODEL: "deepseek/deepseek-v4-flash"
           CONFIG_CUSTOM_MODEL_MAX_TOKENS: 131072
 
+          # ── 跳过审查（给 PR 添加 skip-review 标签时跳过） ──
+          CONFIG_IGNORE_PR_LABELS: '["skip-review"]'
+
           # ── 语言（控制输出语言） ──
           CONFIG_RESPONSE_LANGUAGE: "zh-CN"
 
