@@ -155,7 +155,7 @@ sentaurus-syntax-highlight/
 
 ### 第一层：TextMate 语法高亮
 
-由 `syntaxes/*.tmLanguage.json`（声明式 JSON）驱动，`package.json` 注册 6 种语言，每种通过 `filenamePatterns` 匹配文件（非扩展名），共用 `.cmd` 后缀互不冲突。
+由 `syntaxes/*.tmLanguage.json`（声明式 JSON）驱动，`package.json` 注册 6 种语言，每种通过 `filenamePatterns` 匹配文件（非扩展名），共用 `.cmd` 后缀互不冲突（Svisual 例外，使用 `_vis.tcl`）。
 
 | Language ID | 工具 | 方言 | 文件模式 | 语言配置 |
 |-------------|------|------|----------|----------|
@@ -164,7 +164,8 @@ sentaurus-syntax-highlight/
 | `sprocess` | Process Simulator | Tcl | `*_fps.cmd`, `.fps` | `tcl.json` |
 | `emw` | EM Wave | Tcl | `*_eml.cmd`, `*_emw.cmd` | `tcl.json` |
 | `inspect` | Inspect | Tcl | `*_ins.cmd` | `tcl.json` |
-| `svisual` | Sentaurus Visual | Tcl | `*_vis.cmd` | `tcl.json` |
+| `svisual` | Sentaurus Visual | Tcl | `*_vis.tcl` | `tcl.json`（注释 `#`） |
+| — | _(Sentaurus Visual)_ | _Python_ | _`*_vis.py`_ | _标准 Python 扩展覆盖，缺 `sv` 模块补全_ |
 
 每个语法文件按首匹配胜出规则依次包含：注释 → 字符串 → 数值 → `@Var@` SWB 参数 → 兜底标识符。关键词从 XML mode 文件提取（`scripts/syntax/extract_keywords.py`），XML 标签映射为 TextMate scope（KEYWORD1→`keyword.control`, KEYWORD2→`keyword.other`, KEYWORD3→`entity.name.tag`, KEYWORD4→`support.class`, FUNCTION→`entity.name.function`）。
 

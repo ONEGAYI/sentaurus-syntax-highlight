@@ -4,6 +4,14 @@
 
 ---
 
+## [1.13.2] - 2026-05-08
+
+### Bug 修复
+
+- **修正 Svisual 文件关联后缀**：将 Sentaurus Visual 的文件模式从 `*_vis.cmd` 修正为 `*_vis.tcl`。根据 Sentaurus Visual 官方用户手册（T-2022.03），Svisual 脚本使用 `.tcl`（Tcl 模式）和 `.py`（Python 模式）扩展名，而非 `.cmd`。其他 5 种 Tcl 工具（SDEVICE、SPROCESS、EMW、Inspect、SDE）不受影响
+
+---
+
 ## [1.13.1] - 2026-05-08
 
 ### 性能优化
@@ -770,6 +778,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.13.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.1...v1.13.2
 [1.13.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.0...v1.13.1
 [1.13.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.11.0...v1.12.0

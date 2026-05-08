@@ -43,7 +43,7 @@ A VSCode extension providing syntax highlighting, auto-completion, and semantic 
 | Sentaurus Process (SPROCESS) | `*_fps.cmd`, `.fps` |
 | Sentaurus EMW | `*_eml.cmd`, `*_emw.cmd` |
 | Sentaurus Inspect | `*_ins.cmd` |
-| Sentaurus Visual (SVISUAL) | `*_vis.cmd` |
+| Sentaurus Visual (SVISUAL) | `*_vis.tcl` |
 
 ### Screenshots
 
