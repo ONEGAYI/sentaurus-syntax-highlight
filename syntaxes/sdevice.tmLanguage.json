@@ -107,7 +107,8 @@
         { "include": "#section-keywords" },
         { "include": "#section-constants" },
         { "include": "#vector-keywords" },
-        { "include": "#nested-braces" }
+        { "include": "#nested-braces" },
+        { "match": "\\b[A-Za-z_][A-Za-z0-9_\\-]*(?![A-Za-z0-9_\\-])", "name": "variable.other" }
       ]
     },
     "solve-subsections": {
@@ -124,7 +125,8 @@
         { "include": "#section-keywords" },
         { "include": "#section-constants" },
         { "include": "#vector-keywords" },
-        { "include": "#nested-braces" }
+        { "include": "#nested-braces" },
+        { "match": "\\b[A-Za-z_][A-Za-z0-9_\\-]*(?![A-Za-z0-9_\\-])", "name": "variable.other" }
       ]
     },
     "section-keywords": {
@@ -227,7 +229,8 @@
         { "include": "#section-keywords" },
         { "include": "#section-constants" },
         { "include": "#vector-keywords" },
-        { "include": "#nested-braces" }
+        { "include": "#nested-braces" },
+        { "match": "\\b[A-Za-z_][A-Za-z0-9_\\-]*(?![A-Za-z0-9_\\-])", "name": "variable.other" }
       ]
     }
   },
