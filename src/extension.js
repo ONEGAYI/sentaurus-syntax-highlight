@@ -53,12 +53,13 @@ const KIND_MAP = {
     LITERAL2: vscode.CompletionItemKind.Value,
     LITERAL3: vscode.CompletionItemKind.EnumMember,
     FUNCTION: vscode.CompletionItemKind.Function,
+    MATHFUNC: vscode.CompletionItemKind.Function,
     MATERIAL: vscode.CompletionItemKind.Constant,
 };
 
 /** Sort prefix: keywords/functions first, then classes/tags, then literals. */
 const SORT_PREFIX = {
-    KEYWORD1: '0', KEYWORD2: '0', FUNCTION: '0',
+    KEYWORD1: '0', KEYWORD2: '0', FUNCTION: '0', MATHFUNC: '0',
     KEYWORD3: '1', KEYWORD4: '1',
     LITERAL1: '2', LITERAL2: '2', LITERAL3: '2',
     MATERIAL: '2',
@@ -70,6 +71,7 @@ const DETAIL_LABEL = {
     KEYWORD3: 'Tag', KEYWORD4: 'Class',
     LITERAL1: 'Constant', LITERAL2: 'Numeric Literal', LITERAL3: 'String Literal',
     FUNCTION: 'Function',
+    MATHFUNC: 'Math Function',
     MATERIAL: 'Material',
 };
 
