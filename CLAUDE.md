@@ -119,7 +119,7 @@ sentaurus-syntax-highlight/
 │
 ├── scripts/                                    ← 开发工具脚本
 │   ├── syntax/                                 ← 语法生成与维护
-│   │   ├── extract_keywords.py                 ← 从 XML mode 文件提取关键词并生成语法
+│   │   ├── extract_keywords.py                 ← [已不再维护] 从 XML mode 文件提取关键词并生成语法（历史参考）
 │   │   ├── split_long_matches.py               ← 拆分超长正则匹配模式（可读性优化）
 │   │   └── audit-sdevice-keywords.js           ← SDEVICE 关键词审计（扫描官方手册）
 │   └── docs/                                   ← 文档翻译、校验与处理
@@ -167,7 +167,7 @@ sentaurus-syntax-highlight/
 | `svisual` | Sentaurus Visual | Tcl | `*_vis.tcl` | `tcl.json`（注释 `#`） |
 | — | _(Sentaurus Visual)_ | _Python_ | _`*_vis.py`_ | _标准 Python 扩展覆盖，缺 `sv` 模块补全_ |
 
-每个语法文件按首匹配胜出规则依次包含：注释 → 字符串 → 数值 → `@Var@` SWB 参数 → 兜底标识符。关键词从 XML mode 文件提取（`scripts/syntax/extract_keywords.py`），XML 标签映射为 TextMate scope（KEYWORD1→`keyword.control`, KEYWORD2→`keyword.other`, KEYWORD3→`entity.name.tag`, KEYWORD4→`support.class`, FUNCTION→`entity.name.function`）。
+每个语法文件按首匹配胜出规则依次包含：注释 → 字符串 → 数值 → `@Var@` SWB 参数 → 兜底标识符。关键词最初从 XML mode 文件通过 `scripts/syntax/extract_keywords.py`（已不再维护）提取，XML 标签映射为 TextMate scope（KEYWORD1→`keyword.control`, KEYWORD2→`keyword.other`, KEYWORD3→`entity.name.tag`, KEYWORD4→`support.class`, FUNCTION→`entity.name.function`），现改为直接手工维护 JSON 语法文件。
 
 ### 第二层：关键词补全与文档悬停
 
@@ -224,7 +224,7 @@ SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依
 
 - 多种语言共用 `.cmd` 扩展名——文件关联完全依赖 `filenamePatterns`，而非 `extensions`
 - TextMate 语法遵循首匹配胜出规则——兜底模式必须放在最后
-- `scripts/syntax/extract_keywords.py` 路径硬编码，跨环境使用前必须修改 `main()` 中的路径
+- `scripts/syntax/extract_keywords.py` 已不再维护——关键词和语法文件的变更直接手工编辑 JSON，不再通过脚本生成。该脚本仅作为历史参考保留
 - `*.Identifier` 文件已被 gitignore
 - 使用中文编写文档、提交和发布
 - 兼容性目标：CentOS 7 / VSCode v1.85.2 / GLIBC 2.17（无 TypeScript、无构建步骤、无原生二进制）

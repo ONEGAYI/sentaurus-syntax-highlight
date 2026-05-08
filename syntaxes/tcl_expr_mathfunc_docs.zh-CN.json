@@ -1,0 +1,200 @@
+{
+  "abs": {
+    "signature": "abs(arg)",
+    "description": "返回 arg 的绝对值。若 arg 为整数则返回整数，若为浮点数则返回浮点数。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "数值（整数或浮点数）。"}],
+    "example": "set a [expr {abs(-3.14)}]   ;# returns 3.14\nset b [expr {abs(-5)}]      ;# returns 5"
+  },
+  "acos": {
+    "signature": "acos(arg)",
+    "description": "返回 arg 的反余弦值，值域 [0, pi] 弧度。arg 必须在 [-1, 1] 范围内。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "[-1, 1] 范围内的数值。"}],
+    "example": "set angle [expr {acos(0.5)}]  ;# returns approx 1.0472 (pi/3)"
+  },
+  "asin": {
+    "signature": "asin(arg)",
+    "description": "返回 arg 的反正弦值，值域 [-pi/2, pi/2] 弧度。arg 必须在 [-1, 1] 范围内。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "[-1, 1] 范围内的数值。"}],
+    "example": "set angle [expr {asin(0.5)}]  ;# returns approx 0.5236 (pi/6)"
+  },
+  "atan": {
+    "signature": "atan(arg)",
+    "description": "返回 arg 的反正切值，值域 [-pi/2, pi/2] 弧度。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "数值。"}],
+    "example": "set angle [expr {atan(1.0)}]  ;# returns approx 0.7854 (pi/4)"
+  },
+  "atan2": {
+    "signature": "atan2(y, x)",
+    "description": "返回 y/x 的四象限反正切值，值域 [-pi, pi] 弧度。x 和 y 不能同时为 0。使用两个参数的符号确定正确的象限。",
+    "parameters": [
+      {"name": "y", "type": "number", "desc": "纵坐标。"},
+      {"name": "x", "type": "number", "desc": "横坐标。"}
+    ],
+    "example": "set angle [expr {atan2(1.0, 0.0)}]   ;# returns approx 1.5708 (pi/2)\nset angle [expr {atan2(-1.0, -1.0)}] ;# returns approx -2.3562 (-3pi/4)"
+  },
+  "bool": {
+    "signature": "bool(arg)",
+    "description": "若 arg 为零或字符串 \"false\" 则返回 0，否则返回 1。也接受 \"true\" 作为真值。",
+    "parameters": [{"name": "arg", "type": "number|string", "desc": "数值或字符串 \"true\"/\"false\"。"}],
+    "example": "set b1 [expr {bool(0)}]            ;# returns 0\nset b2 [expr {bool(42)}]           ;# returns 1\nset b3 [expr {bool(\"false\")}]      ;# returns 0"
+  },
+  "ceil": {
+    "signature": "ceil(arg)",
+    "description": "返回不小于 arg 的最小整数值（向上取整），结果为浮点数（小数部分为零）。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "数值。"}],
+    "example": "set c1 [expr {ceil(3.14)}]   ;# returns 4.0\nset c2 [expr {ceil(-3.14)}]  ;# returns -3.0\nset c3 [expr {ceil(5.0)}]    ;# returns 5.0"
+  },
+  "cos": {
+    "signature": "cos(arg)",
+    "description": "返回 arg（以弧度为单位）的余弦值。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "以弧度为单位的角度。"}],
+    "example": "set val [expr {cos(0.0)}]        ;# returns 1.0\nset val [expr {cos(3.14159/2)}] ;# returns approx 0.0"
+  },
+  "cosh": {
+    "signature": "cosh(arg)",
+    "description": "返回 arg 的双曲余弦值。大参数可能导致溢出错误。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "数值。"}],
+    "example": "set val [expr {cosh(0.0)}]  ;# returns 1.0\nset val [expr {cosh(1.0)}]  ;# returns approx 1.5431"
+  },
+  "double": {
+    "signature": "double(arg)",
+    "description": "将 arg 转换为双精度浮点数。若 arg 为超出双精度范围的整数，返回 Inf 或 -Inf。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "数值。"}],
+    "example": "set d1 [expr {double(42)}]     ;# returns 42.0\nset d2 [expr {double(3)}]      ;# returns 3.0"
+  },
+  "entier": {
+    "signature": "entier(arg)",
+    "description": "返回 arg 的整数部分（向零截断）。与 int()/wide() 不同，结果无上限整数范围。Tcl 8.5 引入，用于替代旧的隐式截断行为。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "数值。"}],
+    "example": "set e1 [expr {entier(3.99)}]   ;# returns 3\nset e2 [expr {entier(-3.99)}]  ;# returns -3"
+  },
+  "exp": {
+    "signature": "exp(arg)",
+    "description": "返回 e 的 arg 次幂（指数函数）。结果可能溢出导致错误。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "数值。"}],
+    "example": "set val [expr {exp(0.0)}]   ;# returns 1.0\nset val [expr {exp(1.0)}]   ;# returns approx 2.7183"
+  },
+  "floor": {
+    "signature": "floor(arg)",
+    "description": "返回不大于 arg 的最大整数值（向下取整），结果为浮点数（小数部分为零）。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "数值。"}],
+    "example": "set f1 [expr {floor(3.14)}]   ;# returns 3.0\nset f2 [expr {floor(-3.14)}]  ;# returns -4.0"
+  },
+  "fmod": {
+    "signature": "fmod(x, y)",
+    "description": "返回 x 除以 y 的浮点余数。若 y 为 0 则报错。",
+    "parameters": [
+      {"name": "x", "type": "number", "desc": "被除数。"},
+      {"name": "y", "type": "number", "desc": "除数（不能为零）。"}
+    ],
+    "example": "set r1 [expr {fmod(10.0, 3.0)}]  ;# returns 1.0\nset r2 [expr {fmod(7.5, 2.0)}]   ;# returns 1.5"
+  },
+  "hypot": {
+    "signature": "hypot(x, y)",
+    "description": "返回直角三角形的斜边长度：sqrt(x*x + y*y)。比手动计算更数值稳定，可避免中间溢出或下溢。",
+    "parameters": [
+      {"name": "x", "type": "number", "desc": "一条直角边的长度。"},
+      {"name": "y", "type": "number", "desc": "另一条直角边的长度。"}
+    ],
+    "example": "set h [expr {hypot(3.0, 4.0)}]  ;# returns 5.0\nset h [expr {hypot(1e200, 1e200)}] ;# avoids overflow, returns approx 1.414e200"
+  },
+  "int": {
+    "signature": "int(arg)",
+    "description": "返回 arg 向零截断后的整数部分。结果限制在机器字长范围内（通常 32 或 64 位）。需要无限制整数范围时请使用 entier()。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "数值。"}],
+    "example": "set i1 [expr {int(3.99)}]   ;# returns 3\nset i2 [expr {int(-3.99)}]  ;# returns -3"
+  },
+  "isqrt": {
+    "signature": "isqrt(arg)",
+    "description": "返回 arg 平方根的整数部分（向下取整）。arg 必须为非负整数。与 sqrt() 不同，结果为任意精度整数。Tcl 8.5 引入。",
+    "parameters": [{"name": "arg", "type": "integer", "desc": "非负整数。"}],
+    "example": "set i [expr {isqrt(16)}]    ;# returns 4\nset i [expr {isqrt(20)}]    ;# returns 4"
+  },
+  "log": {
+    "signature": "log(arg)",
+    "description": "返回 arg 的自然对数（以 e 为底）。arg 必须为正数。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "正值。"}],
+    "example": "set val [expr {log(1.0)}]    ;# returns 0.0\nset val [expr {log(2.7183)}] ;# returns approx 1.0"
+  },
+  "log10": {
+    "signature": "log10(arg)",
+    "description": "返回 arg 以 10 为底的对数。arg 必须为正数。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "正值。"}],
+    "example": "set val [expr {log10(100.0)}]  ;# returns 2.0\nset val [expr {log10(1.0)}]    ;# returns 0.0"
+  },
+  "max": {
+    "signature": "max(arg ...)",
+    "description": "返回所有参数中的最大值。接受一个或多个数值参数。若仅有一个参数则返回该参数。返回类型与输入类型一致（整数或浮点数）。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "一个或多个待比较的数值。"}],
+    "example": "set m1 [expr {max(3, 7, 2, 9)}]   ;# returns 9\nset m2 [expr {max(-1.5, -2.0)}]  ;# returns -1.5"
+  },
+  "min": {
+    "signature": "min(arg ...)",
+    "description": "返回所有参数中的最小值。接受一个或多个数值参数。若仅有一个参数则返回该参数。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "一个或多个待比较的数值。"}],
+    "example": "set m1 [expr {min(3, 7, 2, 9)}]   ;# returns 2\nset m2 [expr {min(-1.5, -2.0)}]  ;# returns -2.0"
+  },
+  "pow": {
+    "signature": "pow(x, y)",
+    "description": "返回 x 的 y 次幂。若 x 为负数，y 必须为整数。结果可能溢出。",
+    "parameters": [
+      {"name": "x", "type": "number", "desc": "底数。"},
+      {"name": "y", "type": "number", "desc": "指数。若 x 为负数则必须为整数。"}
+    ],
+    "example": "set p1 [expr {pow(2.0, 10.0)}]   ;# returns 1024.0\nset p2 [expr {pow(9.0, 0.5)}]    ;# returns 3.0 (平方根)"
+  },
+  "rand": {
+    "signature": "rand()",
+    "description": "返回 (0, 1) 范围内的伪随机浮点数。随机数生成器为简单线性同余生成器，非密码安全。种子从系统时钟初始化。使用 srand() 设置特定种子。",
+    "parameters": [],
+    "example": "set r [expr {rand()}]         ;# e.g., 0.5321\nset scaled [expr {int(rand() * 100)}] ;# 0-99 的随机整数"
+  },
+  "round": {
+    "signature": "round(arg)",
+    "description": "将 arg 四舍五入到最接近的整数。若恰好位于两个整数中间，则舍入到最近的偶数（银行家舍入）。若 arg 已是整数则直接返回。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "数值。"}],
+    "example": "set r1 [expr {round(3.4)}]   ;# returns 3\nset r2 [expr {round(3.5)}]   ;# returns 4\nset r3 [expr {round(2.5)}]   ;# returns 2"
+  },
+  "sin": {
+    "signature": "sin(arg)",
+    "description": "返回 arg（以弧度为单位）的正弦值。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "以弧度为单位的角度。"}],
+    "example": "set val [expr {sin(0.0)}]        ;# returns 0.0\nset val [expr {sin(3.14159/2)}] ;# returns approx 1.0"
+  },
+  "sinh": {
+    "signature": "sinh(arg)",
+    "description": "返回 arg 的双曲正弦值。大参数可能导致溢出错误。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "数值。"}],
+    "example": "set val [expr {sinh(0.0)}]  ;# returns 0.0\nset val [expr {sinh(1.0)}]  ;# returns approx 1.1752"
+  },
+  "sqrt": {
+    "signature": "sqrt(arg)",
+    "description": "返回 arg 的平方根。arg 必须为非负数。极大参数可能返回 Inf。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "非负数值。"}],
+    "example": "set s1 [expr {sqrt(16.0)}]  ;# returns 4.0\nset s2 [expr {sqrt(2.0)}]   ;# returns approx 1.4142"
+  },
+  "srand": {
+    "signature": "srand(arg)",
+    "description": "用整数 arg 设置 rand() 随机数生成器的种子。种子通常从系统时钟初始化。返回新序列的第一个随机数（等同于调用 srand 后立即调用 rand()）。",
+    "parameters": [{"name": "arg", "type": "integer", "desc": "随机数生成器的种子值。"}],
+    "example": "expr {srand(42)}        ;# 以 42 为种子，返回首个随机数\nset r [expr {rand()}]    ;# 下一个随机值"
+  },
+  "tan": {
+    "signature": "tan(arg)",
+    "description": "返回 arg（以弧度为单位）的正切值。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "以弧度为单位的角度。"}],
+    "example": "set val [expr {tan(0.0)}]        ;# returns 0.0\nset val [expr {tan(3.14159/4)}] ;# returns approx 1.0"
+  },
+  "tanh": {
+    "signature": "tanh(arg)",
+    "description": "返回 arg 的双曲正切值。结果始终在 (-1, 1) 范围内。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "数值。"}],
+    "example": "set val [expr {tanh(0.0)}]  ;# returns 0.0\nset val [expr {tanh(10.0)}] ;# returns approx 1.0"
+  },
+  "wide": {
+    "signature": "wide(arg)",
+    "description": "将 arg 转换为 64 位整数（等价于 C 语言 long long 类型）。值向零截断。需要无限制整数范围时请使用 entier()。",
+    "parameters": [{"name": "arg", "type": "number", "desc": "数值。"}],
+    "example": "set w [expr {wide(3.99)}]   ;# returns 3\nset w [expr {wide(2.0 ** 40)}] ;# returns 1099511627776"
+  }
+}

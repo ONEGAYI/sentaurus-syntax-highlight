@@ -149,8 +149,12 @@
       "name": "keyword.other.emw"
     },
     {
-      "match": "\\b(after|append|array|catch|close|concat|error|eval|expr|file|format|gets|glob|global|incr|info|join|lappend|lindex|linsert|list|llength|lrange|lreplace|lsearch|lsort|open|puts|read|regsub|rename|scan|set|source|split|string|subst|unset|uplevel|upvar|variable|vwait)\\b",
+      "match": "\\b(after|append|array|break|catch|cd|close|concat|continue|error|eval|exec|exit|expr|file|flush|for|foreach|format|gets|glob|global|if|incr|info|join|lappend|lassign|lindex|linsert|list|llength|lmap|lrange|lrepeat|lreplace|lreverse|lsearch|lset|lsort|open|proc|puts|pwd|read|regexp|regsub|rename|return|scan|set|source|split|string|subst|switch|throw|time|try|unset|update|uplevel|upvar|variable|vwait|while)\\b",
       "name": "support.function.emw"
+    },
+    {
+      "match": "\\b(abs|acos|asin|atan|atan2|bool|ceil|cos|cosh|double|entier|exp|floor|fmod|hypot|int|isqrt|log|log10|max|min|pow|rand|round|sin|sinh|sqrt|srand|tan|tanh|wide)\\b",
+      "name": "support.function.math.tcl"
     },
     {
       "match": "\\b[A-Za-z_][A-Za-z0-9_\\-]*(?![A-Za-z0-9_\\-])",
