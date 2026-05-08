@@ -1,0 +1,200 @@
+{
+  "abs": {
+    "signature": "abs(arg)",
+    "description": "Returns the absolute value of arg. If arg is an integer, returns an integer; if arg is a floating-point number, returns a floating-point number.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A numeric value (integer or floating point)."}],
+    "example": "set a [expr {abs(-3.14)}]   ;# returns 3.14\nset b [expr {abs(-5)}]      ;# returns 5"
+  },
+  "acos": {
+    "signature": "acos(arg)",
+    "description": "Returns the arc cosine of arg, in the range [0, pi] radians. arg must be in the range [-1, 1].",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A value in [-1, 1]."}],
+    "example": "set angle [expr {acos(0.5)}]  ;# returns approx 1.0472 (pi/3)"
+  },
+  "asin": {
+    "signature": "asin(arg)",
+    "description": "Returns the arc sine of arg, in the range [-pi/2, pi/2] radians. arg must be in the range [-1, 1].",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A value in [-1, 1]."}],
+    "example": "set angle [expr {asin(0.5)}]  ;# returns approx 0.5236 (pi/6)"
+  },
+  "atan": {
+    "signature": "atan(arg)",
+    "description": "Returns the arc tangent of arg, in the range [-pi/2, pi/2] radians.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A numeric value."}],
+    "example": "set angle [expr {atan(1.0)}]  ;# returns approx 0.7854 (pi/4)"
+  },
+  "atan2": {
+    "signature": "atan2(y, x)",
+    "description": "Returns the four-quadrant arc tangent of y/x, in the range [-pi, pi] radians. x and y cannot both be 0. Uses the signs of both arguments to determine the correct quadrant.",
+    "parameters": [
+      {"name": "y", "type": "number", "desc": "The y-coordinate."},
+      {"name": "x", "type": "number", "desc": "The x-coordinate."}
+    ],
+    "example": "set angle [expr {atan2(1.0, 0.0)}]   ;# returns approx 1.5708 (pi/2)\nset angle [expr {atan2(-1.0, -1.0)}] ;# returns approx -2.3562 (-3pi/4)"
+  },
+  "bool": {
+    "signature": "bool(arg)",
+    "description": "Returns 0 if arg is zero or the string \"false\", otherwise 1. Also accepts \"true\" as true.",
+    "parameters": [{"name": "arg", "type": "number|string", "desc": "A numeric value or string \"true\"/\"false\"."}],
+    "example": "set b1 [expr {bool(0)}]            ;# returns 0\nset b2 [expr {bool(42)}]           ;# returns 1\nset b3 [expr {bool(\"false\")}]      ;# returns 0"
+  },
+  "ceil": {
+    "signature": "ceil(arg)",
+    "description": "Returns the smallest integer value not less than arg, as a floating-point number (with zero fractional part). This is ceiling (round up).",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A numeric value."}],
+    "example": "set c1 [expr {ceil(3.14)}]   ;# returns 4.0\nset c2 [expr {ceil(-3.14)}]  ;# returns -3.0\nset c3 [expr {ceil(5.0)}]    ;# returns 5.0"
+  },
+  "cos": {
+    "signature": "cos(arg)",
+    "description": "Returns the cosine of arg, measured in radians.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "An angle in radians."}],
+    "example": "set val [expr {cos(0.0)}]        ;# returns 1.0\nset val [expr {cos(3.14159/2)}] ;# returns approx 0.0"
+  },
+  "cosh": {
+    "signature": "cosh(arg)",
+    "description": "Returns the hyperbolic cosine of arg. Results may overflow for large arguments, causing an error.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A numeric value."}],
+    "example": "set val [expr {cosh(0.0)}]  ;# returns 1.0\nset val [expr {cosh(1.0)}]  ;# returns approx 1.5431"
+  },
+  "double": {
+    "signature": "double(arg)",
+    "description": "Converts arg to a double-precision floating-point number. If arg is an integer that exceeds the range of double, returns Inf or -Inf.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A numeric value."}],
+    "example": "set d1 [expr {double(42)}]     ;# returns 42.0\nset d2 [expr {double(3)}]      ;# returns 3.0"
+  },
+  "entier": {
+    "signature": "entier(arg)",
+    "description": "Returns the integer part of arg (truncation toward zero). Unlike int() and wide(), the result has unlimited integer range. Introduced in Tcl 8.5 to replace implicit truncation behavior.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A numeric value."}],
+    "example": "set e1 [expr {entier(3.99)}]   ;# returns 3\nset e2 [expr {entier(-3.99)}]  ;# returns -3"
+  },
+  "exp": {
+    "signature": "exp(arg)",
+    "description": "Returns e raised to the power of arg (the exponential function). Results may overflow, causing an error.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A numeric value."}],
+    "example": "set val [expr {exp(0.0)}]   ;# returns 1.0\nset val [expr {exp(1.0)}]   ;# returns approx 2.7183"
+  },
+  "floor": {
+    "signature": "floor(arg)",
+    "description": "Returns the largest integer value not greater than arg, as a floating-point number (with zero fractional part). This is floor (round down).",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A numeric value."}],
+    "example": "set f1 [expr {floor(3.14)}]   ;# returns 3.0\nset f2 [expr {floor(-3.14)}]  ;# returns -4.0"
+  },
+  "fmod": {
+    "signature": "fmod(x, y)",
+    "description": "Returns the floating-point remainder of x divided by y. If y is 0, an error is raised.",
+    "parameters": [
+      {"name": "x", "type": "number", "desc": "The dividend."},
+      {"name": "y", "type": "number", "desc": "The divisor (must not be zero)."}
+    ],
+    "example": "set r1 [expr {fmod(10.0, 3.0)}]  ;# returns 1.0\nset r2 [expr {fmod(7.5, 2.0)}]   ;# returns 1.5"
+  },
+  "hypot": {
+    "signature": "hypot(x, y)",
+    "description": "Returns the length of the hypotenuse of a right triangle with sides x and y: sqrt(x*x + y*y). More numerically stable than manual computation, avoiding intermediate overflow or underflow.",
+    "parameters": [
+      {"name": "x", "type": "number", "desc": "Length of one side."},
+      {"name": "y", "type": "number", "desc": "Length of the other side."}
+    ],
+    "example": "set h [expr {hypot(3.0, 4.0)}]  ;# returns 5.0\nset h [expr {hypot(1e200, 1e200)}] ;# avoids overflow, returns approx 1.414e200"
+  },
+  "int": {
+    "signature": "int(arg)",
+    "description": "Returns the integer part of arg by truncation toward zero. The result is limited to the machine word size (typically 32 or 64 bits). For unlimited integer range, use entier() instead.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A numeric value."}],
+    "example": "set i1 [expr {int(3.99)}]   ;# returns 3\nset i2 [expr {int(-3.99)}]  ;# returns -3"
+  },
+  "isqrt": {
+    "signature": "isqrt(arg)",
+    "description": "Returns the integer part of the square root of arg. arg must be a non-negative integer. Unlike sqrt(), the result is an arbitrary-precision integer. Introduced in Tcl 8.5.",
+    "parameters": [{"name": "arg", "type": "integer", "desc": "A non-negative integer."}],
+    "example": "set i [expr {isqrt(16)}]    ;# returns 4\nset i [expr {isqrt(20)}]    ;# returns 4"
+  },
+  "log": {
+    "signature": "log(arg)",
+    "description": "Returns the natural logarithm (base e) of arg. arg must be a positive value.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A positive numeric value."}],
+    "example": "set val [expr {log(1.0)}]    ;# returns 0.0\nset val [expr {log(2.7183)}] ;# returns approx 1.0"
+  },
+  "log10": {
+    "signature": "log10(arg)",
+    "description": "Returns the base-10 logarithm of arg. arg must be a positive value.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A positive numeric value."}],
+    "example": "set val [expr {log10(100.0)}]  ;# returns 2.0\nset val [expr {log10(1.0)}]    ;# returns 0.0"
+  },
+  "max": {
+    "signature": "max(arg ...)",
+    "description": "Returns the maximum value among all its arguments. Accepts one or more numeric arguments. If exactly one argument is given, returns that argument. The return type matches the input type (integer or floating-point).",
+    "parameters": [{"name": "arg", "type": "number", "desc": "One or more numeric values to compare."}],
+    "example": "set m1 [expr {max(3, 7, 2, 9)}]   ;# returns 9\nset m2 [expr {max(-1.5, -2.0)}]  ;# returns -1.5"
+  },
+  "min": {
+    "signature": "min(arg ...)",
+    "description": "Returns the minimum value among all its arguments. Accepts one or more numeric arguments. If exactly one argument is given, returns that argument.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "One or more numeric values to compare."}],
+    "example": "set m1 [expr {min(3, 7, 2, 9)}]   ;# returns 2\nset m2 [expr {min(-1.5, -2.0)}]  ;# returns -2.0"
+  },
+  "pow": {
+    "signature": "pow(x, y)",
+    "description": "Returns x raised to the power y. If x is negative, y must be an integer value. Results may overflow.",
+    "parameters": [
+      {"name": "x", "type": "number", "desc": "The base."},
+      {"name": "y", "type": "number", "desc": "The exponent. Must be integral if x is negative."}
+    ],
+    "example": "set p1 [expr {pow(2.0, 10.0)}]   ;# returns 1024.0\nset p2 [expr {pow(9.0, 0.5)}]    ;# returns 3.0 (square root)"
+  },
+  "rand": {
+    "signature": "rand()",
+    "description": "Returns a pseudo-random floating-point number in the range (0, 1). The random number generator is a simple linear congruential generator and is NOT cryptographically secure. The seed is initialized from the system clock. Use srand() to set a specific seed.",
+    "parameters": [],
+    "example": "set r [expr {rand()}]         ;# e.g., 0.5321\nset scaled [expr {int(rand() * 100)}] ;# random integer 0-99"
+  },
+  "round": {
+    "signature": "round(arg)",
+    "description": "Rounds arg to the nearest integer value. If arg is exactly halfway between two integers, rounds to the nearest even integer (banker's rounding). If arg is already an integer, returns it unchanged.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A numeric value."}],
+    "example": "set r1 [expr {round(3.4)}]   ;# returns 3\nset r2 [expr {round(3.5)}]   ;# returns 4\nset r3 [expr {round(2.5)}]   ;# returns 2"
+  },
+  "sin": {
+    "signature": "sin(arg)",
+    "description": "Returns the sine of arg, measured in radians.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "An angle in radians."}],
+    "example": "set val [expr {sin(0.0)}]        ;# returns 0.0\nset val [expr {sin(3.14159/2)}] ;# returns approx 1.0"
+  },
+  "sinh": {
+    "signature": "sinh(arg)",
+    "description": "Returns the hyperbolic sine of arg. Results may overflow for large arguments, causing an error.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A numeric value."}],
+    "example": "set val [expr {sinh(0.0)}]  ;# returns 0.0\nset val [expr {sinh(1.0)}]  ;# returns approx 1.1752"
+  },
+  "sqrt": {
+    "signature": "sqrt(arg)",
+    "description": "Returns the square root of arg. arg must be non-negative. May return Inf for very large arguments.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A non-negative numeric value."}],
+    "example": "set s1 [expr {sqrt(16.0)}]  ;# returns 4.0\nset s2 [expr {sqrt(2.0)}]   ;# returns approx 1.4142"
+  },
+  "srand": {
+    "signature": "srand(arg)",
+    "description": "Seeds the random number generator used by rand() with the integer arg. The seed is normally initialized from the system clock. Returns the first random number of the new sequence (same as calling rand() immediately after srand).",
+    "parameters": [{"name": "arg", "type": "integer", "desc": "The seed value for the random number generator."}],
+    "example": "expr {srand(42)}        ;# seed with 42, returns first random\nset r [expr {rand()}]    ;# next random value"
+  },
+  "tan": {
+    "signature": "tan(arg)",
+    "description": "Returns the tangent of arg, measured in radians.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "An angle in radians."}],
+    "example": "set val [expr {tan(0.0)}]        ;# returns 0.0\nset val [expr {tan(3.14159/4)}] ;# returns approx 1.0"
+  },
+  "tanh": {
+    "signature": "tanh(arg)",
+    "description": "Returns the hyperbolic tangent of arg. The result is always in the range (-1, 1).",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A numeric value."}],
+    "example": "set val [expr {tanh(0.0)}]  ;# returns 0.0\nset val [expr {tanh(10.0)}] ;# returns approx 1.0"
+  },
+  "wide": {
+    "signature": "wide(arg)",
+    "description": "Converts arg to a 64-bit integer (equivalent to C's long long type). The value is truncated toward zero. For unlimited integer range, use entier() instead.",
+    "parameters": [{"name": "arg", "type": "number", "desc": "A numeric value."}],
+    "example": "set w [expr {wide(3.99)}]   ;# returns 3\nset w [expr {wide(2.0 ** 40)}] ;# returns 1099511627776"
+  }
+}
