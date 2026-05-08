@@ -553,13 +553,16 @@ function activate(context) {
 
     const languages = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect', 'svisual'];
     const materialKeywords = allKeywords.MATERIAL || [];
+    const mathfuncKeywords = allKeywords.MATHFUNC || [];
 
     for (const langId of languages) {
         const moduleKeywords = allKeywords[langId];
         if (!moduleKeywords) continue;
 
-        // 将全局 MATERIAL 分类合并到各语言补全
-        const enrichedKeywords = { ...moduleKeywords, MATERIAL: materialKeywords };
+        // 将全局 MATERIAL 合并到所有语言，MATHFUNC 仅合并到 Tcl 方言（非 sde）
+        const extras = { MATERIAL: materialKeywords };
+        if (langId !== 'sde') extras.MATHFUNC = mathfuncKeywords;
+        const enrichedKeywords = { ...moduleKeywords, ...extras };
         const items = buildItems(enrichedKeywords, getDocs(langId), langId);
 
         const completionDisposable = vscode.languages.registerCompletionItemProvider(
