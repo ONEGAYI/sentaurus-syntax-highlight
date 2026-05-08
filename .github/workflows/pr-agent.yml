@@ -2,7 +2,7 @@ name: PR Agent
 
 on:
   pull_request:
-    types: [opened, reopened, ready_for_review]
+    types: [opened, reopened, ready_for_review, synchronize]
   issue_comment:
     types: [created]
 
@@ -44,6 +44,9 @@ jobs:
           # ── 自定义提示词（每个工具可单独设置 extra_instructions） ──
           PR_REVIEWER_EXTRA_INSTRUCTIONS: "关注代码逻辑正确性、潜在 bug、安全问题。不要评论代码风格或格式问题。"
           PR_CODE_SUGGESTIONS_EXTRA_INSTRUCTIONS: "只建议确实能改善代码质量或修复问题的改动，不要做纯风格调整。"
+
+          # ── 增量审查（push 新 commit 时自动审查增量部分） ──
+          GITHUB_APP_HANDLE_PUSH_TRIGGER: true
 
           # ── 文件排除（同步自 .coderabbit.yaml） ──
           IGNORE__GLOB: >-
