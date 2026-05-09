@@ -109,7 +109,7 @@ async function main() {
                 { name: 'gamma', line: 10 },
             ],
             [
-                { name: 'beta', line: 11 },  // 未通过 global/upvar 引入原始名
+                { name: 'beta', line: 11 },
             ]
         );
     });
@@ -130,12 +130,8 @@ async function main() {
         );
     });
 
-    console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
+    // 异步测试中用 process.exitCode 替代 process.exit() 避免 libuv 句柄警告
+    const { printSummary } = require('./helpers/test-runner');
+    printSummary();
+    process.exitCode = 0; // summary 内部已打印结果，设退出码即可
 }
-
-main().catch(e => {
-    console.error('Fatal:', e);
-    process.exit(1);
-});
-
-summary();

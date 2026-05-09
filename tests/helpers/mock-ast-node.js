@@ -21,8 +21,8 @@ function makeProcNode(name, paramsText, bodyChildren, startRow, endRow) {
         makeNode('simple_word', 'proc', [], startRow, 0, startRow, 4),
         makeNode('simple_word', name, [], startRow, 5, startRow, 5 + name.length),
         makeNode('arguments', paramsText, argsChildren, startRow, 6 + name.length, startRow, argsEndCol),
-        makeNode('braced_word', '{ ... }', bodyChildren || [], startRow, argsEndCol + 1, endRow || startRow, 1),
-    ], startRow, 0, endRow || startRow, 1);
+        makeNode('braced_word', '{ ... }', bodyChildren || [], startRow, argsEndCol + 1, endRow ?? startRow, 1),
+    ], startRow, 0, endRow ?? startRow, 1);
 }
 
 function makeSetNode(varName, valueText, startRow) {

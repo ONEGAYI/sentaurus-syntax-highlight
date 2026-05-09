@@ -12,4 +12,9 @@ function summary() {
     process.exit(failed > 0 ? 1 : 0);
 }
 
-module.exports = { test, summary };
+function printSummary() {
+    console.log(`\n${passed} passed, ${failed} failed`);
+    if (failed > 0) process.exitCode = 1;
+}
+
+module.exports = { test, summary, printSummary };

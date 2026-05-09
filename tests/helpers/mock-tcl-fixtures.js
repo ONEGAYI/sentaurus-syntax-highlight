@@ -15,8 +15,8 @@ function makeEmptyProc(name, bodyChildren, startRow, endRow) {
         makeNode('simple_word', 'proc', [], startRow, 0, startRow, 4),
         makeNode('simple_word', name, [], startRow, 5, startRow, 5 + name.length),
         makeNode('arguments', '', [], startRow, 6 + name.length, startRow, 8 + name.length),
-        makeNode('braced_word', '{ ... }', bodyChildren || [], startRow, 9 + name.length, endRow || startRow, 1),
-    ], startRow, 0, endRow || startRow, 1);
+        makeNode('braced_word', '{ ... }', bodyChildren || [], startRow, 9 + name.length, endRow ?? startRow, 1),
+    ], startRow, 0, endRow ?? startRow, 1);
 }
 
 function makeProcWithArgs(name, args, bodyChildren, startRow, endRow) {
@@ -28,8 +28,8 @@ function makeProcWithArgs(name, args, bodyChildren, startRow, endRow) {
         makeNode('simple_word', 'proc', [], startRow, 0, startRow, 4),
         makeNode('simple_word', name, [], startRow, 5, startRow, 5 + name.length),
         makeNode('arguments', argsText, argsChildren, startRow, 6 + name.length, startRow, 8 + name.length + argsText.length),
-        makeNode('braced_word', '{ ... }', bodyChildren || [], startRow, 9 + name.length + argsText.length, endRow || startRow, 1),
-    ], startRow, 0, endRow || startRow, 1);
+        makeNode('braced_word', '{ ... }', bodyChildren || [], startRow, 9 + name.length + argsText.length, endRow ?? startRow, 1),
+    ], startRow, 0, endRow ?? startRow, 1);
 }
 
 module.exports = { makeGlobalSet, makeEmptyProc, makeProcWithArgs };
