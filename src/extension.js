@@ -446,7 +446,7 @@ function activate(context) {
     undefVarDiagnostic.activate(context, schemeCache, tclCache);
 
     // Region/Material/Contact 未定义语义诊断（SDE only）
-    regionUndefDiagnostic.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, builtinMaterials);
+    regionUndefDiagnostic.activate(context, schemeCache, builtinMaterials);
 
     // DocumentSymbol / 面包屑导航（4 语言共用）
     const tclDocumentSymbolProvider = tclDocSymbolMod.createTclDocumentSymbolProvider(tclCache);
@@ -549,10 +549,10 @@ function activate(context) {
     context.subscriptions.push(sigHelpDisposable);
 
     // Symbol completion (SDE only) — region/material/contact 补全
-    symbolCompletion.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, vscode);
+    symbolCompletion.activate(context, schemeCache, modeDispatchTable, vscode);
 
     // Find All References (SDE only) — region/material/contact
-    symbolReferenceProvider.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, vscode);
+    symbolReferenceProvider.activate(context, schemeCache, vscode);
 
     // Find All References — 用户自定义变量（全部 6 种语言）
     variableReferenceProvider.activate(context, schemeCache, tclCache, vscode);

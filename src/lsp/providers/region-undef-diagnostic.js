@@ -2,17 +2,12 @@
 'use strict';
 
 const vscode = require('vscode');
-const { extractSymbols } = require('../symbol-index');
 const { safeCol } = require('../pp-utils');
 
 const DEBOUNCE_MS = 500;
 
 /** @type {import('../parse-cache').SchemeParseCache} */
 let schemeCache;
-/** @type {object} */
-let symbolParamsTable;
-/** @type {object} */
-let modeDispatchTable;
 /** @type {Set<string>} */
 let builtinMaterials;
 /** @type {vscode.DiagnosticCollection} */
@@ -20,14 +15,8 @@ let diagnosticCollection;
 /** @type {NodeJS.Timeout} */
 let debounceTimer;
 
-/**
- * 注册 Region/Material/Contact 未定义语义诊断。
- * @param {Set<string>} materials - 内置材料名白名单（从 all_keywords.json MATERIAL 加载）
- */
-function activate(context, schemeCacheInstance, symbolParams, modeDispatch, materials) {
+function activate(context, schemeCacheInstance, materials) {
     schemeCache = schemeCacheInstance;
-    symbolParamsTable = symbolParams;
-    modeDispatchTable = modeDispatch;
     builtinMaterials = materials || new Set();
 
     diagnosticCollection = vscode.languages.createDiagnosticCollection('sde-symbol-undef');
@@ -64,7 +53,9 @@ function updateDiagnostics(doc) {
     if (!entry) return;
 
     const { ast, text, lineStarts } = entry;
-    const { defs, refs } = extractSymbols(ast, text, symbolParamsTable, modeDispatchTable);
+    const symbolsResult = schemeCache.getSymbols(doc);
+    if (!symbolsResult) return;
+    const { defs, refs } = symbolsResult;
     const definedNames = new Set(defs.map(d => `${d.type}:${d.name}`));
 
     const diagnostics = [];
