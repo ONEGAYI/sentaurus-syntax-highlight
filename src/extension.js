@@ -27,6 +27,9 @@ const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
 const { getSdeviceAllSectionKeywordsLower } = require('./lsp/tcl-symbol-configs');
 const ppUtils = require('./lsp/pp-utils');
 
+const TCL_SUBCMD_COMPLETION_RE = /\b(string|file|info|array|dict)\s+$/;
+const TCL_SUBCMD_HOVER_RE = /\b(string|file|info|array|dict)\s+(\w+)$/;
+
 /** @type {SchemeParseCache} */
 let schemeCache;
 /** @type {TclParseCache} */
@@ -570,23 +573,19 @@ function activate(context) {
             { language: langId },
             {
                 provideCompletionItems(document, position) {
-                    // Tcl 子命令上下文感知补全
                     if (langId !== 'sde') {
                         const linePrefix = document.lineAt(position.line).text.substring(0, position.character);
-                        const subcmdContext = linePrefix.match(/\b(string|file|info|array|dict)\s+$/);
+                        const subcmdContext = TCL_SUBCMD_COMPLETION_RE.exec(linePrefix);
                         if (subcmdContext) {
                             const parentCmd = subcmdContext[1];
-                            getDocs(langId);  // 确保 _docsCache.tclSub 已加载
                             const subDocs = _docsCache.tclSub;
                             if (subDocs && subDocs[parentCmd]) {
-                                const subItems = [];
-                                for (const [name, doc] of Object.entries(subDocs[parentCmd])) {
+                                return Object.entries(subDocs[parentCmd]).map(([name, doc]) => {
                                     const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Method);
                                     item.detail = 'Tcl 子命令';
                                     item.documentation = new vscode.MarkdownString(doc.description);
-                                    subItems.push(item);
-                                }
-                                return subItems;
+                                    return item;
+                                });
                             }
                         }
                     }
@@ -716,16 +715,15 @@ function activate(context) {
                     const docs = getDocs(langId) || {};
 
                     // Tcl 子命令上下文感知悬停
-                    const lineText = document.lineAt(position.line).text;
-                    const linePrefix = lineText.substring(0, position.character);
-                    const subcmdMatch = linePrefix.match(/\b(string|file|info|array|dict)\s+(\w+)$/);
+                    const linePrefix = document.lineAt(position.line).text.substring(0, position.character);
+                    const subcmdMatch = TCL_SUBCMD_HOVER_RE.exec(linePrefix);
                     if (subcmdMatch) {
                         const [, parentCmd, subcmd] = subcmdMatch;
                         const subDocs = _docsCache.tclSub;
-                        if (subDocs && subDocs[parentCmd] && subDocs[parentCmd][word]) {
-                            const subDoc = subDocs[parentCmd][word];
+                        if (subDocs && subDocs[parentCmd] && subDocs[parentCmd][subcmd]) {
+                            const subDoc = subDocs[parentCmd][subcmd];
                             const md = new vscode.MarkdownString();
-                            md.appendMarkdown(`**${parentCmd} ${word}** \`（Tcl 子命令）\`\n\n`);
+                            md.appendMarkdown(`**${parentCmd} ${subcmd}** \`（Tcl 子命令）\`\n\n`);
                             md.appendCodeblock(subDoc.signature, 'tcl');
                             md.appendMarkdown(`\n\n${subDoc.description}`);
                             if (subDoc.example) {
