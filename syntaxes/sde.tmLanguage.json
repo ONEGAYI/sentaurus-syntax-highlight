@@ -486,10 +486,6 @@
             "name": "constant.character.format.placeholder"
         },
         {
-            "match": "\\b([A-Z][A-Z0-9_]{2,}|_[A-Z0-9_]+)\\b",
-            "name": "entity.name.type.sde"
-        },
-        {
             "name": "comment.line.hash",
             "match": "^\\s*#.*$"
         },
