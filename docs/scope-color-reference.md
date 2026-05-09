@@ -119,6 +119,7 @@
 | `keyword.control.{lang}` | `if` `else` `elseif` `for` `foreach` `while` `switch` `break` `continue` `return` | ~10 |
 | `keyword.other.{lang}` | `proc` `try` `throw` | ~3 |
 | `support.function.{lang}` | `set` `puts` `gets` `list` `lindex` `llength` `lrange` `string` `expr` `incr` `info` `catch` `eval` ... | ~42 |
+| `support.function.tcl-subcommand` | 子命令（如 `string length` 的 `length`） | 所有 Tcl 工具 |
 
 ## 四、Semantic Token 类型
 
