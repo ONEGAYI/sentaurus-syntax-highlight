@@ -165,10 +165,6 @@
       }
     },
     {
-      "match": "\\b([A-Z][A-Z0-9_]{2,}|_[A-Z0-9_]+)\\b",
-      "name": "entity.name.type.tcl"
-    },
-    {
       "name": "comment.line.hash",
       "match": "#.*$"
     },
