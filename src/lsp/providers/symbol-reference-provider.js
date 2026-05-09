@@ -1,30 +1,15 @@
 // src/lsp/providers/symbol-reference-provider.js
 'use strict';
 
-const { extractSymbols } = require('../symbol-index');
 const { safeCol } = require('../pp-utils');
 
 /** @type {import('../parse-cache').SchemeParseCache} */
 let schemeCache;
 /** @type {object} */
-let symbolParamsTable;
-/** @type {object} */
-let modeDispatchTable;
-/** @type {object} */
 let vscode;
 
-/**
- * 注册 Find All References Provider（SDE only）。
- * @param {object} context - vscode.ExtensionContext
- * @param {import('../parse-cache').SchemeParseCache} schemeCacheInstance
- * @param {object} symbolParams - 函数名 → { symbolParams: [...] } 映射表
- * @param {object} modeDispatch - 函数名 → modeDispatch 元数据
- * @param {object} vscodeRef - vscode 模块引用
- */
-function activate(context, schemeCacheInstance, symbolParams, modeDispatch, vscodeRef) {
+function activate(context, schemeCacheInstance, vscodeRef) {
     schemeCache = schemeCacheInstance;
-    symbolParamsTable = symbolParams;
-    modeDispatchTable = modeDispatch;
     vscode = vscodeRef;
 
     const provider = {
@@ -60,7 +45,7 @@ function provideSymbolReferences(document, position, options) {
     const targetName = quotedText.slice(1, -1); // 去掉引号
     if (!targetName) return null;
 
-    const { defs, refs } = extractSymbols(ast, text, symbolParamsTable, modeDispatchTable);
+    const { defs, refs } = schemeCache.getSymbols(document) || { defs: [], refs: [] };
     const all = [...defs, ...refs];
     const matches = all.filter(e => e.name === targetName);
 

@@ -2,20 +2,16 @@
 'use strict';
 
 const dispatcher = require('../semantic-dispatcher');
-const { extractSymbols } = require('../symbol-index');
 
 /** @type {import('../parse-cache').SchemeParseCache} */
 let schemeCache;
-/** @type {object} */
-let symbolParamsTable;
 /** @type {object} */
 let modeDispatchTable;
 /** @type {object} */
 let vscode;
 
-function activate(context, schemeCacheInstance, symbolParams, modeDispatch, vscodeRef) {
+function activate(context, schemeCacheInstance, modeDispatch, vscodeRef) {
     schemeCache = schemeCacheInstance;
-    symbolParamsTable = symbolParams;
     modeDispatchTable = modeDispatch;
     vscode = vscodeRef;
 
@@ -58,7 +54,7 @@ function provideSymbolCompletions(document, position) {
     const matching = config.symbolParams.find(p => p.index === effectiveParam);
     if (!matching) return null;
 
-    const { defs } = extractSymbols(ast, text, symbolParamsTable, modeDispatchTable);
+    const { defs } = schemeCache.getSymbols(document) || { defs: [] };
     // type:auto 时，根据解析到的模式关键词确定实际类型
     let targetType = matching.type;
     if (targetType === 'auto' && result.mode) {

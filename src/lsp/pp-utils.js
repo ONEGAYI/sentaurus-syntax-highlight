@@ -127,44 +127,51 @@ function findPpDefineRefs(text, defines) {
         undefMap.set(u.name, u.line);
     }
 
+    const defineMap = new Map();
     for (const def of defines) {
-        const undefLine = undefMap.get(def.name);
-        const regex = buildWordRegex(def.name);
+        if (!defineMap.has(def.name)) {
+            defineMap.set(def.name, []);
+        }
+        defineMap.get(def.name).push(def);
+    }
 
-        for (let i = 0; i < lines.length; i++) {
-            const lineNum = i + 1;
-            if (lineNum < def.line) continue;
-            if (undefLine !== undefined && lineNum > undefLine) continue;
+    const regexMap = new Map();
+    for (const name of defineMap.keys()) {
+        regexMap.set(name, buildWordRegex(name));
+    }
 
-            const line = lines[i];
+    const directiveRe = /^\s*#(ifdef|ifndef|undef)\s+(\w+)/;
+    const defineRe = /^\s*#define\s+(\w+)/;
+    const commentRe = /^#(if|ifdef|ifndef|elif|else|endif|define|undef|include|error|set|seth|rem|verbatim)\b/;
 
-            // 精确提取：#ifdef / #ifndef（允许前导空格，与 extractPpDefines 一致）
-            const ifdefMatch = line.match(/^\s*#(ifdef|ifndef)\s+(\w+)/);
-            if (ifdefMatch && ifdefMatch[2] === def.name) {
-                const nameStart = ifdefMatch.index + ifdefMatch[0].lastIndexOf(ifdefMatch[2]);
-                refs.push({ name: def.name, line: lineNum, startCol: nameStart, refType: ifdefMatch[1] });
-                continue;
+    for (let i = 0; i < lines.length; i++) {
+        const lineNum = i + 1;
+        const line = lines[i];
+
+        const directiveMatch = line.match(directiveRe);
+        if (directiveMatch) {
+            const [, type, name] = directiveMatch;
+            if (defineMap.has(name)) {
+                const nameStart = directiveMatch.index + directiveMatch[0].lastIndexOf(name);
+                refs.push({ name, line: lineNum, startCol: nameStart, refType: type });
             }
+            continue;
+        }
 
-            // 精确提取：#undef（允许前导空格）
-            const undefMatch = line.match(/^\s*#undef\s+(\w+)/);
-            if (undefMatch && undefMatch[1] === def.name) {
-                const nameStart = undefMatch.index + undefMatch[0].lastIndexOf(undefMatch[1]);
-                refs.push({ name: def.name, line: lineNum, startCol: nameStart, refType: 'undef' });
-                continue;
-            }
+        const defineMatch = line.match(defineRe);
+        if (defineMatch && defineMap.has(defineMatch[1])) continue;
 
-            // #define 定义行本身：跳过（允许前导空格）
-            const defineMatch = line.match(/^\s*#define\s+(\w+)/);
-            if (defineMatch && defineMatch[1] === def.name) continue;
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith('#') && !commentRe.test(trimmed)) continue;
 
-            // 纯注释行 → 跳过
-            const trimmed = line.trimStart();
-            if (trimmed.startsWith('#') && !/^#(if|ifdef|ifndef|elif|else|endif|define|undef|include|error|set|seth|rem|verbatim)\b/.test(trimmed)) {
-                continue;
-            }
+        for (const [name, defs] of defineMap) {
+            const inScope = defs.some(def =>
+                lineNum >= def.line &&
+                (undefMap.get(name) === undefined || lineNum <= undefMap.get(name))
+            );
+            if (!inScope) continue;
 
-            // 裸词扫描
+            const regex = regexMap.get(name);
             regex.lastIndex = 0;
             let match;
             while ((match = regex.exec(line)) !== null) {
@@ -172,7 +179,7 @@ function findPpDefineRefs(text, defines) {
                 if (col > 0 && line[col - 1] === '$') continue;
                 if (col >= 2 && line[col - 1] === '{' && line[col - 2] === '$') continue;
                 if (isInQuotedString(line, col)) continue;
-                refs.push({ name: def.name, line: lineNum, startCol: col, refType: 'usage' });
+                refs.push({ name, line: lineNum, startCol: col, refType: 'usage' });
             }
         }
     }

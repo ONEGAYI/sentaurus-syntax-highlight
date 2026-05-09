@@ -246,6 +246,46 @@ test('dispose 在空缓存上不抛异常', () => {
 });
 
 // ===========================================================================
+// SchemeParseCache — getSymbols 惰性缓存
+// ===========================================================================
+console.log('\nSchemeParseCache — getSymbols 惰性缓存:');
+
+test('未设置 symbolConfig 时返回 null', () => {
+    const cache = new SchemeParseCache();
+    const doc = mockDoc('file:///a.scm', 1, '(define x 42)');
+    assert.strictEqual(cache.getSymbols(doc), null);
+});
+
+test('设置 config 后返回 extractSymbols 结果', () => {
+    const cache = new SchemeParseCache();
+    cache.setSymbolConfig({}, {});
+    const doc = mockDoc('file:///a.scm', 1, '(define x 42)');
+    const result = cache.getSymbols(doc);
+    assert.ok(result);
+    assert.ok(Array.isArray(result.defs));
+    assert.ok(Array.isArray(result.refs));
+});
+
+test('相同 version 返回同一 symbols 引用（缓存命中）', () => {
+    const cache = new SchemeParseCache();
+    cache.setSymbolConfig({}, {});
+    const doc = mockDoc('file:///a.scm', 1, '(define x 42)');
+    const r1 = cache.getSymbols(doc);
+    const r2 = cache.getSymbols(doc);
+    assert.strictEqual(r1, r2);
+});
+
+test('version 变更时 symbols 重新计算', () => {
+    const cache = new SchemeParseCache();
+    cache.setSymbolConfig({}, {});
+    const doc1 = mockDoc('file:///a.scm', 1, '(define x 42)');
+    const doc2 = mockDoc('file:///a.scm', 2, '(define y 99)');
+    const r1 = cache.getSymbols(doc1);
+    const r2 = cache.getSymbols(doc2);
+    assert.notStrictEqual(r1, r2);
+});
+
+// ===========================================================================
 // 汇总
 // ===========================================================================
 console.log(`\n${'='.repeat(50)}`);

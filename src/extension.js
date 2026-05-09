@@ -25,7 +25,7 @@ const variableReferenceProvider = require('./lsp/providers/variable-reference-pr
 const symbolCompletion = require('./lsp/providers/symbol-completion');
 const symbolReferenceProvider = require('./lsp/providers/symbol-reference-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
-const { getSdeviceAllSectionKeywordsLower } = require('./lsp/tcl-symbol-configs');
+const { SDEVICE_ALL_SECTION_KEYWORDS_LOWER } = require('./lsp/tcl-symbol-configs');
 const ppUtils = require('./lsp/pp-utils');
 
 const TCL_SUBCMD_COMPLETION_RE = /\b(string|file|info|array|dict)\s+$/;
@@ -404,6 +404,8 @@ function activate(context) {
         }
     }
 
+    schemeCache.setSymbolConfig(symbolParamsTable, modeDispatchTable);
+
     // FoldingRangeProvider (SDE only)
     const foldingProvider = foldingProviderMod.createFoldingProvider(schemeCache);
     context.subscriptions.push(
@@ -444,7 +446,7 @@ function activate(context) {
     undefVarDiagnostic.activate(context, schemeCache, tclCache);
 
     // Region/Material/Contact 未定义语义诊断（SDE only）
-    regionUndefDiagnostic.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, builtinMaterials);
+    regionUndefDiagnostic.activate(context, schemeCache, builtinMaterials);
 
     // DocumentSymbol / 面包屑导航（4 语言共用）
     const tclDocumentSymbolProvider = tclDocSymbolMod.createTclDocumentSymbolProvider(tclCache);
@@ -473,7 +475,7 @@ function activate(context) {
 
     // Semantic Tokens (sdevice) — section 上下文感知着色
     const sdeviceDocs = loadDocsJson('sdevice_command_docs.json', false) || {};
-    const sdeviceSectionKwsLower = getSdeviceAllSectionKeywordsLower();
+    const sdeviceSectionKwsLower = SDEVICE_ALL_SECTION_KEYWORDS_LOWER;
     // 小写→原始大小写映射，用于 hover 等需要原始键查找文档的场景
     const sdeviceLowerToCanon = new Map();
     for (const key of Object.keys(sdeviceDocs)) {
@@ -547,10 +549,10 @@ function activate(context) {
     context.subscriptions.push(sigHelpDisposable);
 
     // Symbol completion (SDE only) — region/material/contact 补全
-    symbolCompletion.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, vscode);
+    symbolCompletion.activate(context, schemeCache, modeDispatchTable, vscode);
 
     // Find All References (SDE only) — region/material/contact
-    symbolReferenceProvider.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, vscode);
+    symbolReferenceProvider.activate(context, schemeCache, vscode);
 
     // Find All References — 用户自定义变量（全部 6 种语言）
     variableReferenceProvider.activate(context, schemeCache, tclCache, vscode);
