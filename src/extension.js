@@ -798,10 +798,16 @@ function activate(context) {
 
                     if (astUtils.TCL_LANGS.has(langId)) {
                         // Tcl: 用户变量悬停需要 $ 前缀；function/ppDefine 无此限制
-                        const dollarRange = document.getWordRangeAtPosition(position, /(?<!\\)\$[\w:.\-<>?!+*/=]+/);
+                        // 支持 ${varName}（花括号形式）和 $varName（简单形式）
+                        const bracedRange = document.getWordRangeAtPosition(position, /\$\{[\w:.\-<>?!+*/=]+\}/);
+                        const dollarRange = bracedRange || document.getWordRangeAtPosition(position, /(?<!\\)\$[\w:.\-<>?!+*/=]+/);
                         if (dollarRange) {
                             let dollarWord = document.getText(dollarRange);
-                            if (dollarWord.startsWith('$')) dollarWord = dollarWord.slice(1);
+                            if (dollarWord.startsWith('${') && dollarWord.endsWith('}')) {
+                                dollarWord = dollarWord.slice(2, -1);
+                            } else if (dollarWord.startsWith('$')) {
+                                dollarWord = dollarWord.slice(1);
+                            }
                             // Tcl: set 既是定义也是赋值，取光标前行号最大的匹配
                             const cursorLine = position.line + 1;
                             for (const d of userDefs) {
@@ -890,12 +896,18 @@ function activate(context) {
                     }
 
                     // Tcl: scope-aware via buildScopeIndex + resolveDefinition
+                    // 支持 ${varName}（花括号形式）和 $varName（简单形式）
+                    const bracedRange = document.getWordRangeAtPosition(position, /\$\{[\w:.\-<>?!+*/=]+\}/);
                     const dollarRange = document.getWordRangeAtPosition(position, /(?<!\\)\$[\w:-]+/);
                     const plainRange = document.getWordRangeAtPosition(position, /[\w:-]+/);
-                    const range = dollarRange || plainRange;
+                    const range = bracedRange || dollarRange || plainRange;
                     if (!range) return null;
                     let word = document.getText(range);
-                    if (word.startsWith('$')) word = word.slice(1);
+                    if (word.startsWith('${') && word.endsWith('}')) {
+                        word = word.slice(2, -1);
+                    } else if (word.startsWith('$')) {
+                        word = word.slice(1);
+                    }
                     if (!word) return null;
 
                     // #define 宏定义 fallback（不依赖 WASM）
