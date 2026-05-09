@@ -439,7 +439,7 @@ function buildScopeIndex(root) {
                 if (argsNode) {
                     const argNodes = _findChildrenByType(argsNode, 'argument');
                     for (const arg of argNodes) {
-                        if (arg.text) params.push(arg.text);
+                        if (arg.text) params.push(_extractArgName(arg));
                     }
                 }
 
@@ -869,7 +869,7 @@ function _processProcScopes(root, scopeMap, maxLine) {
         if (argsNode) {
             const argNodes = _findChildrenByType(argsNode, 'argument');
             for (const arg of argNodes) {
-                const name = arg.text;
+                const name = _extractArgName(arg);
                 _addToScopeFromLine(scopeMap, name, bodyStart, bodyEnd);
             }
         }
@@ -1134,14 +1134,13 @@ function _handleProcedure(node, results, sourceText, lines) {
     if (argsNode) {
         const argNodes = _findChildrenByType(argsNode, 'argument');
         for (const arg of argNodes) {
-            // argument 节点的 text 通常是参数名
-            const argName = arg.text;
+            const argName = _extractArgName(arg);
             if (argName) {
                 results.push({
                     name: argName,
                     line: arg.startPosition.row + 1,
                     endLine: arg.endPosition.row + 1,
-                    definitionText: arg.text,
+                    definitionText: _extractArgName(arg),
                     kind: 'parameter',
                 });
             }
@@ -1493,6 +1492,19 @@ function _extractVariableNames(words) {
     }
     return names;
 }
+
+/**
+ * 从 procedure 的 argument 节点中提取参数名。
+ * 简单参数 argument("a") → "a"；默认值参数 argument("{b 1.0}") → "b"。
+ * argument 内第一个 simple_word 始终是参数名。
+ * @param {object} argNode - argument AST 节点
+ * @returns {string}
+ */
+function _extractArgName(argNode) {
+    const inner = _findChildByType(argNode, 'simple_word');
+    return inner ? inner.text : argNode.text;
+}
+
 function _findChildByType(node, type) {
     for (let i = 0; i < node.childCount; i++) {
         const child = node.child(i);
@@ -1673,9 +1685,10 @@ function _symbolProcedure(node, langId, out) {
     if (argsNode) {
         const argNodes = _findChildrenByType(argsNode, 'argument');
         for (const arg of argNodes) {
-            if (arg.text) {
+            const name = _extractArgName(arg);
+            if (name) {
                 symbol.children.push({
-                    name: arg.text,
+                    name,
                     kind: SymbolKind.Field,
                     startLine: arg.startPosition.row,
                     endLine: arg.endPosition.row,

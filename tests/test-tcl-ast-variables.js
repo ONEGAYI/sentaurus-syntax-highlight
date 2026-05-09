@@ -139,6 +139,43 @@ test('提取 proc 函数名和参数', () => {
     assert.strictEqual(vars[2].kind, 'parameter');
 });
 
+	test('提取 proc 默认值参数 {b 1.0}', () => {
+	    // proc ADD {a {b 1.0}} {body}
+	    const argA = makeNode('argument', 'a', [
+	        makeNode('simple_word', 'a', [], 0, 10, 0, 11),
+	    ], 0, 10, 0, 11);
+	    const argB = makeNode('argument', '{b 1.0}', [
+	        makeNode('{', '{', [], 0, 12, 0, 13),
+	        makeNode('simple_word', 'b', [], 0, 13, 0, 14),
+	        makeNode('simple_word', '1.0', [], 0, 15, 0, 18),
+	        makeNode('}', '}', [], 0, 18, 0, 19),
+	    ], 0, 12, 0, 19);
+	    const argumentsNode = makeNode('arguments', '{a {b 1.0}}', [
+	        makeNode('{', '{', [], 0, 9, 0, 10),
+	        argA, argB,
+	        makeNode('}', '}', [], 0, 19, 0, 20),
+	    ], 0, 9, 0, 20);
+	    const bodyNode = makeNode('braced_word', '{ body }', [], 0, 21, 1, 1);
+	    const procNode = makeNode('procedure', 'proc ADD {a {b 1.0}} { body }', [
+	        makeNode('simple_word', 'proc', [], 0, 0, 0, 4),
+	        makeNode('simple_word', 'ADD', [], 0, 5, 0, 8),
+	        argumentsNode,
+	        bodyNode,
+	    ], 0, 0, 1, 1);
+	    const root = makeNode('program', '', [procNode], 0, 0, 1, 1);
+	    const vars = ast.getVariables(root);
+
+	    assert.strictEqual(vars.length, 3, `应有 3 个结果（1函数+2参数），实际 ${vars.length}`);
+	    assert.strictEqual(vars[0].name, 'ADD');
+	    assert.strictEqual(vars[0].kind, 'function');
+	    assert.strictEqual(vars[1].name, 'a');
+	    assert.strictEqual(vars[1].kind, 'parameter');
+	    // 关键：参数名应为 "b" 而非 "{b 1.0}"
+	    assert.strictEqual(vars[2].name, 'b');
+	    assert.strictEqual(vars[2].kind, 'parameter');
+	});
+
+
 test('提取 proc 函数名（无参数）', () => {
     // proc myFunc {} {body}
     const argumentsNode = makeNode('arguments', '{}', [
