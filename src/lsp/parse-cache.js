@@ -4,6 +4,7 @@ const ppUtils = require('./pp-utils');
 const schemeParser = require('./scheme-parser');
 const schemeAnalyzer = require('./scheme-analyzer');
 const scopeAnalyzer = require('./scope-analyzer');
+const { extractSymbols } = require('./symbol-index');
 
 /**
  * 计算文本的行起始偏移量表（每行第一个字符在原文中的 offset）。
@@ -44,6 +45,8 @@ class SchemeParseCache {
          * @type {Map}
          */
         this._cache = new Map();
+        this._symbolParamsTable = null;
+        this._modeDispatchTable = null;
     }
 
     /**
@@ -98,6 +101,24 @@ class SchemeParseCache {
      */
     dispose() {
         this._cache.clear();
+    }
+
+    setSymbolConfig(symbolParamsTable, modeDispatchTable) {
+        this._symbolParamsTable = symbolParamsTable;
+        this._modeDispatchTable = modeDispatchTable;
+    }
+
+    getSymbols(document) {
+        const entry = this.get(document);
+        if (!entry) return null;
+        if (!entry.symbols) {
+            if (!this._symbolParamsTable) return null;
+            entry.symbols = extractSymbols(
+                entry.ast, entry.text,
+                this._symbolParamsTable, this._modeDispatchTable
+            );
+        }
+        return entry.symbols;
     }
 
     /**
