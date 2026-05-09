@@ -3,6 +3,41 @@
   "name": "Sentaurus INSPECT",
   "patterns": [
     {
+      "match": "\\b(string)\\s+(length|match|range|first|last|index|trim|trimleft|trimright|tolower|toupper|totitle|equal|compare|is|map|repeat|replace|reverse|cat|wordstart|wordend|bytelength)\\b",
+      "captures": {
+        "1": { "name": "support.function.inspect" },
+        "2": { "name": "support.function.tcl-subcommand" }
+      }
+    },
+    {
+      "match": "\\b(file)\\s+(join|dirname|tail|extension|rootname|exists|isfile|isdirectory|mkdir|copy|delete|rename|nativename|normalize|stat|size|readable|writable|executable|mtime|atime|type)\\b",
+      "captures": {
+        "1": { "name": "support.function.inspect" },
+        "2": { "name": "support.function.tcl-subcommand" }
+      }
+    },
+    {
+      "match": "\\b(info)\\s+(exists|commands|procs|args|body|level|script|hostname|patchlevel|tclversion|globals|locals|vars|default)\\b",
+      "captures": {
+        "1": { "name": "support.function.inspect" },
+        "2": { "name": "support.function.tcl-subcommand" }
+      }
+    },
+    {
+      "match": "\\b(array)\\s+(exists|get|set|names|size|unset|statistics)\\b",
+      "captures": {
+        "1": { "name": "support.function.inspect" },
+        "2": { "name": "support.function.tcl-subcommand" }
+      }
+    },
+    {
+      "match": "\\b(dict)\\s+(create|get|set|exists|unset|remove|replace|merge|keys|values|size|for|map|filter|info|update|with)\\b",
+      "captures": {
+        "1": { "name": "support.function.inspect" },
+        "2": { "name": "support.function.tcl-subcommand" }
+      }
+    },
+    {
       "patterns": [
         {
           "match": "\\b(cv_nextLine|tpnx_plot_par|cv_scale|tpnx_plotMSG|tpnx_characteristic_impedance|rfx_abs2_c|ExtractIoff|rfx_S2K|cv_linTransCurve|cvcmp_DeltaTwoCurves|tpnx_plotONE|cv_getVals|proj_getGroups|gr_setGridAttr|ft_scalar|tpnx_startfq|load_library|ltranspose|tpnx_setdBPoint|rfx_GetFmax|cv_lineColor|cv_disp|proj_getList|fi_writeBitmap|rfx_im_c|gr_formatAxis|cv_getXaxis|rfx_ReIm2Phase|tpnx_plotK|rfx_Y)(?![A-Za-z0-9_:-])",
@@ -176,41 +211,7 @@
       "match": "\\b(proc|try|throw)\\b",
       "name": "keyword.other.inspect"
     },
-    {
-      "match": "\\b(string)\\s+(length|match|range|first|last|index|trim|trimleft|trimright|tolower|toupper|totitle|equal|compare|is|map|repeat|replace|reverse|cat|wordstart|wordend|bytelength)\\b",
-      "captures": {
-        "1": { "name": "support.function.inspect" },
-        "2": { "name": "support.function.tcl-subcommand" }
-      }
-    },
-    {
-      "match": "\\b(file)\\s+(join|dirname|tail|extension|rootname|exists|isfile|isdirectory|mkdir|copy|delete|rename|nativename|normalize|stat|size|readable|writable|executable|mtime|atime|type)\\b",
-      "captures": {
-        "1": { "name": "support.function.inspect" },
-        "2": { "name": "support.function.tcl-subcommand" }
-      }
-    },
-    {
-      "match": "\\b(info)\\s+(exists|commands|procs|args|body|level|script|hostname|patchlevel|tclversion|globals|locals|vars|default)\\b",
-      "captures": {
-        "1": { "name": "support.function.inspect" },
-        "2": { "name": "support.function.tcl-subcommand" }
-      }
-    },
-    {
-      "match": "\\b(array)\\s+(exists|get|set|names|size|unset|statistics)\\b",
-      "captures": {
-        "1": { "name": "support.function.inspect" },
-        "2": { "name": "support.function.tcl-subcommand" }
-      }
-    },
-    {
-      "match": "\\b(dict)\\s+(create|get|set|exists|unset|remove|replace|merge|keys|values|size|for|map|filter|info|update|with)\\b",
-      "captures": {
-        "1": { "name": "support.function.inspect" },
-        "2": { "name": "support.function.tcl-subcommand" }
-      }
-    },
+
     {
       "match": "\\b(after|append|array|break|catch|cd|close|concat|continue|error|eval|exec|exit|expr|file|flush|for|foreach|format|gets|glob|global|if|incr|info|join|lappend|lassign|lindex|linsert|list|llength|lmap|lrange|lrepeat|lreplace|lreverse|lsearch|lset|lsort|open|proc|puts|pwd|read|regexp|regsub|rename|return|scan|set|source|split|string|subst|switch|throw|time|try|unset|update|uplevel|upvar|variable|vwait|while)\\b",
       "name": "support.function.inspect"

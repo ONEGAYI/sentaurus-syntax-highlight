@@ -715,7 +715,8 @@ function activate(context) {
                     const docs = getDocs(langId) || {};
 
                     // Tcl 子命令上下文感知悬停
-                    const linePrefix = document.lineAt(position.line).text.substring(0, position.character);
+                    // 用 range.end.character 而非 position.character，确保悬停在子命令任意位置时都能匹配完整单词
+                    const linePrefix = document.lineAt(position.line).text.substring(0, range.end.character);
                     const subcmdMatch = TCL_SUBCMD_HOVER_RE.exec(linePrefix);
                     if (subcmdMatch) {
                         const [, parentCmd, subcmd] = subcmdMatch;
