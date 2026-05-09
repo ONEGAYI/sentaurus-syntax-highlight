@@ -14,7 +14,7 @@ const TOKEN_MODIFIERS = ['declaration'];
  * @param {number[]} lineStarts - 预计算行首偏移表
  * @param {function} collector - 回调 (line, col, len)
  */
-function walkForTclFuncCalls(node, procNames, _lineStarts, collector) {
+function walkForTclFuncCalls(node, procNames, collector) {
     if (node.type === 'command') {
         const firstChild = node.child(0);
         if (firstChild && firstChild.type === 'simple_word' && procNames.has(firstChild.text)) {
@@ -23,7 +23,7 @@ function walkForTclFuncCalls(node, procNames, _lineStarts, collector) {
     }
 
     for (let i = 0; i < node.childCount; i++) {
-        walkForTclFuncCalls(node.child(i), procNames, _lineStarts, collector);
+        walkForTclFuncCalls(node.child(i), procNames, collector);
     }
 }
 
@@ -50,7 +50,7 @@ function createTclFuncallSemanticProvider(tclCache, options) {
             const scopeIndex = tclCache.getScopeIndex(document);
             const procNames = scopeIndex ? scopeIndex.globalProcNames : new Map();
             if (procNames.size > 0) {
-                walkForTclFuncCalls(entry.tree.rootNode, procNames, null, (line, col, len) => {
+                walkForTclFuncCalls(entry.tree.rootNode, procNames, (line, col, len) => {
                     rawTokens.push([line, col, len, 0, 0]);
                 });
             }
