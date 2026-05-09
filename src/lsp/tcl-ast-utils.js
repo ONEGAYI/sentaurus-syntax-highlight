@@ -722,6 +722,8 @@ function _collectScopeImportsForIndex(node, imports) {
 
 /**
  * 构建行号 → 可见变量集的作用域映射。
+ * @deprecated 使用 ScopeIndex.getVisibleAt(line) 按需查询替代。
+ *   此函数为 O(lines × scopeComplexity) 全量预计算，仅用于测试和基准测试。
  * @param {object} root - AST 根节点
  * @returns {Map<number, Set<string>>} 行号(1-based) → 可见变量名集合
  */
