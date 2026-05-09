@@ -412,5 +412,36 @@ test('resolveDefinition: foreach 循环外优先匹配外层定义', () => {
     assert.strictEqual(resolved.defLine, 1, `foreach 循环外应解析到行 1（全局 set item 0），实际行 ${resolved.defLine}`);
 });
 
+test('resolveDefinition: 仅循环内定义的变量在循环外仍可解析', () => {
+    // for {set k 0} {$k<10} {incr k} {body}  (行 1)
+    // puts $k  (行 3) — k 只在 for init 中定义，无外层定义
+    // Tcl 无块作用域，k 在循环外仍有效
+    const initBraced = makeNode('braced_word', '{set k 0}', [
+        makeNode('{', '{', [], 0, 4, 0, 5),
+        makeNode('set', 'set k 0', [
+            makeNode('simple_word', 'set', [], 0, 5, 0, 8),
+            makeNode('id', 'k', [], 0, 9, 0, 10),
+            makeNode('simple_word', '0', [], 0, 11, 0, 12),
+        ], 0, 5, 0, 12),
+        makeNode('}', '}', [], 0, 12, 0, 13),
+    ], 0, 4, 0, 13);
+
+    const forCmd = makeNode('command', 'for {set k 0} ...', [
+        makeNode('simple_word', 'for', [], 0, 0, 0, 3),
+        initBraced,
+        makeNode('braced_word', '{$k<10}', [], 0, 14, 0, 20),
+        makeNode('braced_word', '{incr k}', [], 0, 21, 0, 28),
+        makeNode('braced_word', '{body}', [], 0, 29, 0, 34),
+    ], 0, 0, 0, 34);
+
+    const root = makeNode('program', '', [forCmd], 0, 0, 0, 34);
+    const index = ast.buildScopeIndex(root);
+
+    // 行 3（循环外）解析 k → 应能找到行 1（for init 中的 set k 0）
+    const resolved = index.resolveDefinition('k', 3);
+    assert.ok(resolved, '仅循环内定义的变量在循环外应可解析');
+    assert.strictEqual(resolved.defLine, 1, `应解析到行 1（for init set k 0），实际行 ${resolved.defLine}`);
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 if (failed > 0) process.exit(1);

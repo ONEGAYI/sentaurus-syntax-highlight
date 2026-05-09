@@ -261,44 +261,39 @@ class ScopeIndex {
     /**
      * 在定义列表中查找名称匹配且 defLine <= line 的最后一条记录。
      * Tcl 中 set 既是定义也是赋值，应取最后一条。
-     * 当 loopScopes 存在时，优先匹配光标所在循环内的定义；
-     * 光标在循环外时，跳过循环临时变量的定义。
+     * 循环感知：当存在外层同名定义和循环内同名定义时，循环外优先外层；
+     * 但 Tcl 无块作用域，只有循环内定义时不跳过。
      * @param {Array<{name: string, defLine: number}>} defs
      * @param {string} name
      * @param {number} line - 1-based 行号
-     * @param {Array<{startLine: number, endLine: number, varNames: Set<string>}>} [loopScopes]
      * @returns {object|null}
      */
-    _findLastDefBefore(defs, name, line, loopScopes) {
-        // 判断光标是否在某个循环体内且该循环定义了这个变量
-        let insideLoopWithVar = false;
-        if (loopScopes) {
-            for (const loop of loopScopes) {
-                if (line >= loop.startLine && line <= loop.endLine && loop.varNames.has(name)) {
-                    insideLoopWithVar = true;
-                    break;
-                }
+    _findLastDefBefore(defs, name, line) {
+        const loops = this._loopScopes;
+        // 光标是否在某个定义了此变量的循环体内
+        const cursorInLoop = loops.some(l =>
+            line >= l.startLine && line <= l.endLine && l.varNames.has(name)
+        );
+
+        let outerResult = null;
+        let loopResult = null;
+        for (const d of defs) {
+            if (d.name !== name || d.defLine > line) continue;
+            // 判断该定义是否在某个循环的行范围内
+            const defInLoop = loops.some(l =>
+                l.varNames.has(name) && d.defLine >= l.startLine && d.defLine <= l.endLine
+            );
+            if (defInLoop) {
+                loopResult = d;
+            } else {
+                outerResult = d;
             }
         }
 
-        let result = null;
-        for (const d of defs) {
-            if (d.name === name && d.defLine <= line) {
-                if (loopScopes && !insideLoopWithVar) {
-                    // 光标在循环外：跳过定义在循环范围内的同名变量
-                    let insideAnyLoop = false;
-                    for (const loop of loopScopes) {
-                        if (loop.varNames.has(name) && d.defLine >= loop.startLine && d.defLine <= loop.endLine) {
-                            insideAnyLoop = true;
-                            break;
-                        }
-                    }
-                    if (insideAnyLoop) continue;
-                }
-                result = d;
-            }
-        }
-        return result;
+        // 光标在循环内 → 优先循环内定义（取最后一条）
+        if (cursorInLoop) return loopResult || outerResult;
+        // 光标在循环外 → 优先外层定义；只有循环内定义时不跳过（Tcl 无块作用域）
+        return outerResult || loopResult;
     }
 
     /**
@@ -371,7 +366,7 @@ class ScopeIndex {
             if (local) return { defLine: local.defLine, scope: 'local' };
 
             if (proc.scopeImports.includes(name)) {
-                const globalDef = this._findLastDefBefore(this._globalDefs, name, line, this._loopScopes);
+                const globalDef = this._findLastDefBefore(this._globalDefs, name, line);
                 if (globalDef) return { defLine: globalDef.defLine, scope: 'imported' };
             }
 
@@ -400,6 +395,7 @@ function buildScopeIndex(root) {
     const globalDefs = [];
     const procScopes = [];
     const loopScopes = [];
+    const maxLine = _countMaxLine(root) + 1;
 
     for (let i = 0; i < root.childCount; i++) {
         const child = root.child(i);
@@ -501,7 +497,7 @@ function buildScopeIndex(root) {
                     }
                     for (const w of words) {
                         if (w.type === 'braced_word') {
-                            _collectLocalDefsForIndex(w, globalDefs, 1, _countMaxLine(root) + 1);
+                            _collectLocalDefsForIndex(w, globalDefs, 1, maxLine);
                         }
                     }
                 }

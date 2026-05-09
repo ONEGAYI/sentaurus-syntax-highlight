@@ -109,7 +109,8 @@ function checkTclUndefVars(document) {
 
     const root = entry.tree.rootNode;
     const refs = astUtils.getVariableRefs(root);
-    const scopeIndex = astUtils.buildScopeIndex(root);
+    const scopeIndex = tclCache.getScopeIndex(document);
+    if (!scopeIndex) return [];
 
     const diagnostics = [];
     for (const ref of refs) {

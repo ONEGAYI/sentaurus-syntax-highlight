@@ -810,9 +810,8 @@ function activate(context) {
                             }
                             // 优先使用 scope-aware resolveDefinition（循环感知）
                             const cursorLine = position.line + 1;
-                            const entry = tclCache.get(document);
-                            if (entry && entry.tree) {
-                                const scopeIndex = astUtils.buildScopeIndex(entry.tree.rootNode);
+                            const scopeIndex = tclCache.getScopeIndex(document);
+                            if (scopeIndex) {
                                 const resolved = scopeIndex.resolveDefinition(dollarWord, cursorLine);
                                 if (resolved) {
                                     def = userDefs.find(d => d.name === dollarWord && d.line === resolved.defLine);
@@ -937,9 +936,8 @@ function activate(context) {
                         }
                     }
 
-                    const entry = tclCache.get(document);
-                    if (!entry || !entry.tree) return null;
-                    const scopeIndex = astUtils.buildScopeIndex(entry.tree.rootNode);
+                    const scopeIndex = tclCache.getScopeIndex(document);
+                    if (!scopeIndex) return null;
                     let targetDef = scopeIndex.resolveDefinition(word, cursorLine);
                     if (!targetDef) return null;
 
