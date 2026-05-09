@@ -53,7 +53,7 @@ function extractPpDefines(text) {
     const lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i].replace(/\r$/, '');
-        const match = line.match(/^(\s*#\s*define\s+)(\w+)(?:\s+(.*))?$/);
+        const match = line.match(/^(\s*#define\s+)(\w+)(?:\s+(.*))?$/);
         if (match) {
             const rawValue = match[3];
             const value = rawValue !== undefined ? rawValue.trim() : '';
@@ -80,7 +80,7 @@ function extractPpUndefs(text) {
     const undefs = [];
     const lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
-        const match = lines[i].match(/^\s*#\s*undef\s+(\w+)/);
+        const match = lines[i].match(/^\s*#undef\s+(\w+)/);
         if (match) {
             undefs.push({ name: match[1], line: i + 1 });
         }
@@ -139,7 +139,7 @@ function findPpDefineRefs(text, defines) {
             const line = lines[i];
 
             // 精确提取：#ifdef / #ifndef（允许前导空格，与 extractPpDefines 一致）
-            const ifdefMatch = line.match(/^\s*#\s*(ifdef|ifndef)\s+(\w+)/);
+            const ifdefMatch = line.match(/^\s*#(ifdef|ifndef)\s+(\w+)/);
             if (ifdefMatch && ifdefMatch[2] === def.name) {
                 const nameStart = ifdefMatch.index + ifdefMatch[0].indexOf(def.name);
                 refs.push({ name: def.name, line: lineNum, startCol: nameStart, refType: ifdefMatch[1] });
@@ -147,7 +147,7 @@ function findPpDefineRefs(text, defines) {
             }
 
             // 精确提取：#undef（允许前导空格）
-            const undefMatch = line.match(/^\s*#\s*undef\s+(\w+)/);
+            const undefMatch = line.match(/^\s*#undef\s+(\w+)/);
             if (undefMatch && undefMatch[1] === def.name) {
                 const nameStart = undefMatch.index + undefMatch[0].indexOf(def.name);
                 refs.push({ name: def.name, line: lineNum, startCol: nameStart, refType: 'undef' });
@@ -155,12 +155,12 @@ function findPpDefineRefs(text, defines) {
             }
 
             // #define 定义行本身：跳过（允许前导空格）
-            const defineMatch = line.match(/^\s*#\s*define\s+(\w+)/);
+            const defineMatch = line.match(/^\s*#define\s+(\w+)/);
             if (defineMatch && defineMatch[1] === def.name) continue;
 
             // 纯注释行 → 跳过
             const trimmed = line.trimStart();
-            if (trimmed.startsWith('#') && !/^#\s*(if|ifdef|ifndef|elif|else|endif|define|undef|include|error|set|seth|rem|verbatim)\b/.test(trimmed)) {
+            if (trimmed.startsWith('#') && !/^#(if|ifdef|ifndef|elif|else|endif|define|undef|include|error|set|seth|rem|verbatim)\b/.test(trimmed)) {
                 continue;
             }
 
@@ -198,7 +198,7 @@ function buildPpDefineTokens(text) {
     for (const def of defines) {
         const lineIdx = def.line - 1;
         const line = lines[lineIdx];
-        const match = line.match(/^(\s*#\s*define\s+)(\w+)/);
+        const match = line.match(/^(\s*#define\s+)(\w+)/);
         if (match) {
             const nameCol = match[1].length;
             tokens.push({ line: lineIdx, col: nameCol, len: def.name.length, type: 0, modifier: 1 });
@@ -266,7 +266,7 @@ function findUndefPpMacroRefs(text, definedNames) {
     const results = [];
     const lines = text.split('\n');
     for (let i = 0; i < lines.length; i++) {
-        const match = lines[i].match(/^\s*#\s*(ifdef|ifndef)\s+(\w+)/);
+        const match = lines[i].match(/^\s*#(ifdef|ifndef)\s+(\w+)/);
         if (match) {
             const name = match[2];
             if (!definedNames.has(name)) {

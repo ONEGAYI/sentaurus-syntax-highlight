@@ -440,7 +440,7 @@
         },
         {
             "name": "meta.preprocessor.define.sde",
-            "match": "^\\s*(#\\s*define)\\b\\s+(\\w+)(\\s+.*)?$",
+            "match": "^\\s*(#define)\\b\\s+(\\w+)(\\s+.*)?$",
             "captures": {
                 "1": { "name": "keyword.control.preprocessor.sde" },
                 "2": { "name": "entity.name.type.sde" },
@@ -454,7 +454,7 @@
         },
         {
             "name": "meta.preprocessor.undef.sde",
-            "match": "^\\s*(#\\s*undef)\\b\\s+(\\w+)",
+            "match": "^\\s*(#undef)\\b\\s+(\\w+)",
             "captures": {
                 "1": { "name": "keyword.control.preprocessor.sde" },
                 "2": { "name": "entity.name.type.sde" }
@@ -462,7 +462,7 @@
         },
         {
             "name": "meta.preprocessor.ifdef.sde",
-            "match": "^\\s*(#\\s*(?:ifdef|ifndef))\\b\\s+(\\w+)",
+            "match": "^\\s*(#(?:ifdef|ifndef))\\b\\s+(\\w+)",
             "captures": {
                 "1": { "name": "keyword.control.preprocessor.sde" },
                 "2": { "name": "entity.name.type.sde" }
@@ -470,7 +470,7 @@
         },
         {
             "name": "meta.preprocessor.other.sde",
-            "match": "^\\s*(#\\s*(?:if|elif|else|endif|include|error|set))\\b(.*$)",
+            "match": "^\\s*(#(?:if|elif|else|endif|include|error|set))\\b(.*$)",
             "captures": {
                 "1": { "name": "keyword.control.preprocessor.sde" },
                 "2": {
