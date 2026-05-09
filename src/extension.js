@@ -404,6 +404,8 @@ function activate(context) {
         }
     }
 
+    schemeCache.setSymbolConfig(symbolParamsTable, modeDispatchTable);
+
     // FoldingRangeProvider (SDE only)
     const foldingProvider = foldingProviderMod.createFoldingProvider(schemeCache);
     context.subscriptions.push(
