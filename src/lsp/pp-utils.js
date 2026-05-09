@@ -141,7 +141,7 @@ function findPpDefineRefs(text, defines) {
             // 精确提取：#ifdef / #ifndef（允许前导空格，与 extractPpDefines 一致）
             const ifdefMatch = line.match(/^\s*#(ifdef|ifndef)\s+(\w+)/);
             if (ifdefMatch && ifdefMatch[2] === def.name) {
-                const nameStart = ifdefMatch.index + ifdefMatch[0].indexOf(def.name);
+                const nameStart = ifdefMatch.index + ifdefMatch[0].lastIndexOf(ifdefMatch[2]);
                 refs.push({ name: def.name, line: lineNum, startCol: nameStart, refType: ifdefMatch[1] });
                 continue;
             }
@@ -149,7 +149,7 @@ function findPpDefineRefs(text, defines) {
             // 精确提取：#undef（允许前导空格）
             const undefMatch = line.match(/^\s*#undef\s+(\w+)/);
             if (undefMatch && undefMatch[1] === def.name) {
-                const nameStart = undefMatch.index + undefMatch[0].indexOf(def.name);
+                const nameStart = undefMatch.index + undefMatch[0].lastIndexOf(undefMatch[1]);
                 refs.push({ name: def.name, line: lineNum, startCol: nameStart, refType: 'undef' });
                 continue;
             }
@@ -270,7 +270,7 @@ function findUndefPpMacroRefs(text, definedNames) {
         if (match) {
             const name = match[2];
             if (!definedNames.has(name)) {
-                const nameStart = match.index + match[0].indexOf(name);
+                const nameStart = match.index + match[0].lastIndexOf(name);
                 results.push({ line: i, startCol: nameStart, endCol: nameStart + name.length, name });
             }
         }
