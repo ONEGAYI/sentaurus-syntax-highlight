@@ -4,6 +4,20 @@
 
 ---
 
+## [1.13.3] - 2026-05-09
+
+### 新功能
+
+- **Tcl expr 数学函数补全、高亮与文档悬停**（#14）：为 5 种 Tcl 工具新增 31 个 `expr` 数学函数（abs/sin/cos/log/pow 等）的完整支持。语法高亮添加 `support.function.math.tcl` 正则规则，补全系统新增 `MATHFUNC` 类别（`CompletionItemKind.Function`），文档悬停覆盖全部函数的签名、描述和示例。数学函数文档独立缓存为 `_docsCache.tclMath`，合并顺序 tcl → tclMath → langSpecific，确保 sdevice 的 sin/exp/log 命令文档不被覆盖
+- **Tcl 核心命令扩充至 66 个**（#14）：补齐 23 条此前遗漏的 Tcl 内建命令文档（中英文双语），覆盖控制流（if/switch/for/foreach/while）、返回与跳转（return/break/continue）、列表进阶（lrepeat/lreverse/lassign/lset/lmap）、事件与系统（after/vwait/update/exec/exit/cd/pwd/time）、字符串（concat/eval）。语法高亮正则同步扩展至 66 个命令
+
+### Bug 修复
+
+- **MATHFUNC 数据去重**（#15）：将 5 个工具 section 中重复的 MATHFUNC（各 31 元素）提升到 `all_keywords.json` 顶层，消除 124 行冗余。`extension.js` 参照 MATERIAL 合并模式将顶层 MATHFUNC 合并到 5 种 Tcl 语言补全
+- **min/max 补全列表重复冲突**（#15）：从 sprocess/emw/svisual 的非 MATHFUNC 类别中删除 min/max 重复条目，消除补全列表中出现两个同名项的问题
+
+---
+
 ## [1.13.2] - 2026-05-08
 
 ### Bug 修复
@@ -778,6 +792,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.13.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.2...v1.13.3
 [1.13.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.1...v1.13.2
 [1.13.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.0...v1.13.1
 [1.13.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.12.0...v1.13.0
