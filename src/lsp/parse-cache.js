@@ -126,7 +126,7 @@ class TclParseCache {
         this._maxEntries = opts.maxEntries || 20;
         /**
          * Map<string, { version: number, tree: object, text: string, lineStarts: number[],
-         *   ppDefs: Array, ppBlocks: object }>
+         *   ppDefs: Array, ppBlocks: object, scopeIndex?: object }>
          * @type {Map}
          */
         this._cache = new Map();
@@ -185,6 +185,21 @@ class TclParseCache {
         }
 
         return entry;
+    }
+
+    /**
+     * 获取（或计算并缓存）ScopeIndex。与 tree 共享 document.version 生命周期。
+     * @param {{ uri: { toString(): string }, version: number, getText(): string }} document
+     * @returns {object|null} ScopeIndex 实例，或 null（WASM 未就绪）
+     */
+    getScopeIndex(document) {
+        const entry = this.get(document);
+        if (!entry) return null;
+        if (!entry.scopeIndex) {
+            const { buildScopeIndex } = require('./tcl-ast-utils');
+            entry.scopeIndex = buildScopeIndex(entry.tree.rootNode);
+        }
+        return entry.scopeIndex;
     }
 
     /**

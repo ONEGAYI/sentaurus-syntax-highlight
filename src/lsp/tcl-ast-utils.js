@@ -244,8 +244,9 @@ class ScopeIndex {
     /**
      * @param {Array<{name: string, defLine: number, isProc: boolean}>} globalDefs
      * @param {Array<{name: string, startLine: number, endLine: number, params: string[], localDefs: Array<{name: string, defLine: number}>, scopeImports: string[]}>} procScopes
+     * @param {Array<{startLine: number, endLine: number, varNames: Set<string>}>} loopScopes
      */
-    constructor(globalDefs, procScopes) {
+    constructor(globalDefs, procScopes, loopScopes) {
         this._globalDefs = globalDefs;
         this._globalProcNames = new Map();
         for (const def of globalDefs) {
@@ -254,22 +255,45 @@ class ScopeIndex {
             }
         }
         this._procScopes = procScopes.slice().sort((a, b) => a.startLine - b.startLine);
+        this._loopScopes = loopScopes || [];
     }
 
     /**
      * 在定义列表中查找名称匹配且 defLine <= line 的最后一条记录。
      * Tcl 中 set 既是定义也是赋值，应取最后一条。
+     * 循环感知：当存在外层同名定义和循环内同名定义时，循环外优先外层；
+     * 但 Tcl 无块作用域，只有循环内定义时不跳过。
      * @param {Array<{name: string, defLine: number}>} defs
      * @param {string} name
      * @param {number} line - 1-based 行号
      * @returns {object|null}
      */
     _findLastDefBefore(defs, name, line) {
-        let result = null;
+        const loops = this._loopScopes;
+        // 光标是否在某个定义了此变量的循环体内
+        const cursorInLoop = loops.some(l =>
+            line >= l.startLine && line <= l.endLine && l.varNames.has(name)
+        );
+
+        let outerResult = null;
+        let loopResult = null;
         for (const d of defs) {
-            if (d.name === name && d.defLine <= line) result = d;
+            if (d.name !== name || d.defLine > line) continue;
+            // 判断该定义是否在某个循环的行范围内
+            const defInLoop = loops.some(l =>
+                l.varNames.has(name) && d.defLine >= l.startLine && d.defLine <= l.endLine
+            );
+            if (defInLoop) {
+                loopResult = d;
+            } else {
+                outerResult = d;
+            }
         }
-        return result;
+
+        // 光标在循环内 → 优先循环内定义（取最后一条）
+        if (cursorInLoop) return loopResult || outerResult;
+        // 光标在循环外 → 优先外层定义；只有循环内定义时不跳过（Tcl 无块作用域）
+        return outerResult || loopResult;
     }
 
     /**
@@ -352,7 +376,7 @@ class ScopeIndex {
             return null;
         }
 
-        const globalDef = this._findLastDefBefore(this._globalDefs, name, line);
+        const globalDef = this._findLastDefBefore(this._globalDefs, name, line, this._loopScopes);
         if (globalDef) return { defLine: globalDef.defLine, scope: 'global' };
 
         const globalProc = this._globalDefs.find(d => d.name === name && d.isProc);
@@ -370,6 +394,8 @@ class ScopeIndex {
 function buildScopeIndex(root) {
     const globalDefs = [];
     const procScopes = [];
+    const loopScopes = [];
+    const maxLine = _countMaxLine(root) + 1;
 
     for (let i = 0; i < root.childCount; i++) {
         const child = root.child(i);
@@ -456,9 +482,22 @@ function buildScopeIndex(root) {
                 }
                 if (cmdName === 'for') {
                     const words = _getCommandWords(child);
+                    const bracedWords = words.filter(w => w.type === 'braced_word');
+                    // body 是最后一个 braced_word，用它确定循环范围
+                    const bodyBraced = bracedWords.length > 0 ? bracedWords[bracedWords.length - 1] : null;
+                    if (bodyBraced) {
+                        const loopStart = child.startPosition.row + 1;
+                        const loopEnd = child.endPosition.row + 1;
+                        // 收集 init/next 中的变量名（循环临时变量）
+                        const loopVarNames = new Set();
+                        for (let bi = 0; bi < bracedWords.length - 1; bi++) {
+                            _collectVarNamesFromNode(bracedWords[bi], loopVarNames);
+                        }
+                        loopScopes.push({ startLine: loopStart, endLine: loopEnd, varNames: loopVarNames });
+                    }
                     for (const w of words) {
                         if (w.type === 'braced_word') {
-                            _collectLocalDefsForIndex(w, globalDefs, 1, _countMaxLine(root) + 1);
+                            _collectLocalDefsForIndex(w, globalDefs, 1, maxLine);
                         }
                     }
                 }
@@ -472,7 +511,14 @@ function buildScopeIndex(root) {
         }
 
         if (child.type === 'foreach') {
-            for (const v of _extractForeachVarNames(child)) {
+            const varNames = _extractForeachVarNames(child);
+            const loopVarSet = new Set(varNames.map(v => v.name));
+            loopScopes.push({
+                startLine: child.startPosition.row + 1,
+                endLine: child.endPosition.row + 1,
+                varNames: loopVarSet,
+            });
+            for (const v of varNames) {
                 globalDefs.push({
                     name: v.name,
                     defLine: v.line,
@@ -489,7 +535,41 @@ function buildScopeIndex(root) {
         }
     }
 
-    return new ScopeIndex(globalDefs, procScopes);
+    return new ScopeIndex(globalDefs, procScopes, loopScopes);
+}
+
+/**
+ * 从 AST 节点中递归收集所有 set 命令定义的变量名。
+ * 用于识别 for 循环 init/next 中的循环临时变量。
+ * @param {object} node - AST 节点
+ * @param {Set<string>} names - 输出变量名集合
+ */
+function _collectVarNamesFromNode(node, names) {
+    if (!node) return;
+    // 查找 set 命令
+    if (node.type === 'set') {
+        const idNode = _findChildByType(node, 'id');
+        if (idNode && !idNode.text.startsWith('env(')) {
+            names.add(idNode.text);
+        }
+    }
+    // 查找 incr 命令（command 类型内嵌）
+    if (node.type === 'command') {
+        const firstChild = node.child(0);
+        if (firstChild && firstChild.type === 'simple_word' && firstChild.text === 'incr') {
+            const words = _getCommandWords(node);
+            if (words.length >= 2) {
+                const varNode = words[1];
+                if (varNode.type === 'simple_word' || varNode.type === 'id') {
+                    names.add(varNode.text);
+                }
+            }
+        }
+    }
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (child) _collectVarNamesFromNode(child, names);
+    }
 }
 
 /**
@@ -540,6 +620,20 @@ function _collectLocalDefsForIndex(node, defs, scopeStart, scopeEnd) {
                     const words = _getCommandWords(child);
                     for (const d of _extractCommandVarDefs(child, cmdName, words)) {
                         defs.push({ name: d.name, defLine: d.line });
+                    }
+                    // braced_word 在 word_list 内，用 _getCommandWords 穿透递归 body
+                    for (const w of words) {
+                        if (w.type === 'braced_word') {
+                            _collectLocalDefsForIndex(w, defs, scopeStart, scopeEnd);
+                        }
+                    }
+                } else if (cmdName === 'incr') {
+                    const words = _getCommandWords(child);
+                    if (words.length >= 2) {
+                        const varNode = words[1];
+                        if (varNode.type === 'simple_word' || varNode.type === 'id') {
+                            defs.push({ name: varNode.text, defLine: varNode.startPosition.row + 1 });
+                        }
                     }
                 } else if (cmdName === 'lappend' || cmdName === 'append') {
                     const words = _getCommandWords(child);
@@ -834,6 +928,20 @@ function _collectLocalDefs(node, scopeMap, scopeStart, scopeEnd) {
                     for (const d of _extractCommandVarDefs(child, 'dict', words)) {
                         _addToScopeFromLine(scopeMap, d.name, d.line, scopeEnd);
                     }
+                    for (const w of words) {
+                        if (w.type === 'braced_word') {
+                            _collectLocalDefs(w, scopeMap, scopeStart, scopeEnd);
+                        }
+                    }
+                } else if (cmdName === 'incr') {
+                    const words = _getCommandWords(child);
+                    if (words.length >= 2) {
+                        const varNode = words[1];
+                        if (varNode.type === 'simple_word' || varNode.type === 'id') {
+                            const defLine = varNode.startPosition.row + 1;
+                            _addToScopeFromLine(scopeMap, varNode.text, defLine, scopeEnd);
+                        }
+                    }
                 } else if (cmdName === 'lappend' || cmdName === 'append') {
                     const words = _getCommandWords(child);
                     for (const arg of words) {
@@ -1080,12 +1188,11 @@ function _handleForeach(node, results, sourceText, lines) {
  * while {cond} { body }
  */
 function _handleWhile(node, results, sourceText, lines) {
-    // while 可能有多个 braced_word（条件 + body）
-    const bracedWords = _findChildrenByType(node, 'braced_word');
-    // 最后一个 braced_word 是 body
-    if (bracedWords.length > 0) {
-        for (const bw of bracedWords) {
-            _collectVariables(bw, results, sourceText, lines);
+    const words = _getCommandWords(node);
+    // while {cond} {body} — 递归所有 braced_word 提取变量
+    for (const w of words) {
+        if (w.type === 'braced_word') {
+            _collectVariables(w, results, sourceText, lines);
         }
     }
 }
@@ -1122,10 +1229,11 @@ function _handleCommand(node, results, sourceText, lines) {
                 kind: 'variable',
             });
         }
-        // 递归 braced_word 子节点（body/lmap body）
-        const bracedWords = _findChildrenByType(node, 'braced_word');
-        for (const bw of bracedWords) {
-            _collectVariables(bw, results, sourceText, lines);
+        // braced_word 在 word_list 内，必须用 _getCommandWords 穿透
+        for (const w of words) {
+            if (w.type === 'braced_word') {
+                _collectVariables(w, results, sourceText, lines);
+            }
         }
     } else if (cmdName === 'dict') {
         const words = _getCommandWords(node);
@@ -1143,10 +1251,27 @@ function _handleCommand(node, results, sourceText, lines) {
                 });
             }
         }
-        // 递归 braced_word（dict for body）
-        const bracedWords = _findChildrenByType(node, 'braced_word');
-        for (const bw of bracedWords) {
-            _collectVariables(bw, results, sourceText, lines);
+        for (const w of words) {
+            if (w.type === 'braced_word') {
+                _collectVariables(w, results, sourceText, lines);
+            }
+        }
+    } else if (cmdName === 'incr') {
+        const words = _getCommandWords(node);
+        if (words.length >= 2) {
+            const varNode = words[1];
+            if (varNode.type === 'simple_word' || varNode.type === 'id') {
+                const defText = lines
+                    ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
+                    : node.text;
+                results.push({
+                    name: varNode.text,
+                    line: varNode.startPosition.row + 1,
+                    endLine: varNode.endPosition.row + 1,
+                    definitionText: defText,
+                    kind: 'variable',
+                });
+            }
         }
     } else {
         // 其他 command，递归子节点（可能包含嵌套结构）
@@ -1160,10 +1285,13 @@ function _handleCommand(node, results, sourceText, lines) {
  * → command: simple_word("for") + braced_word(init) + braced_word(cond) + braced_word(step) + braced_word(body)
  */
 function _handleFor(node, results, sourceText, lines) {
-    // 递归所有 braced_word 子节点（init 中可能有 set，body 中也可能有）
-    const bracedWords = _findChildrenByType(node, 'braced_word');
-    for (const bw of bracedWords) {
-        _collectVariables(bw, results, sourceText, lines);
+    // braced_word 在 word_list 内部，必须用 _getCommandWords 穿透
+    // for {init} {cond} {step} {body} — 递归所有 braced_word 提取变量
+    const words = _getCommandWords(node);
+    for (const w of words) {
+        if (w.type === 'braced_word') {
+            _collectVariables(w, results, sourceText, lines);
+        }
     }
 }
 
@@ -1659,9 +1787,11 @@ function _symbolFor(node, langId, out) {
         children: [],
     };
 
-    const bracedWords = _findChildrenByType(node, 'braced_word');
-    for (const bw of bracedWords) {
-        _collectSymbols(bw, langId, symbol.children);
+    const words = _getCommandWords(node);
+    for (const w of words) {
+        if (w.type === 'braced_word') {
+            _collectSymbols(w, langId, symbol.children);
+        }
     }
 
     out.push(symbol);

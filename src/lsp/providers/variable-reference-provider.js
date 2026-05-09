@@ -2,7 +2,7 @@
 'use strict';
 
 const { getSchemeRefs, getVisibleDefinitions } = require('../scope-analyzer');
-const { getVariableRefs, buildScopeIndex, TCL_LANGS } = require('../tcl-ast-utils');
+const { getVariableRefs, TCL_LANGS } = require('../tcl-ast-utils');
 const ppUtils = require('../pp-utils');
 
 let schemeCache;
@@ -180,9 +180,8 @@ function provideTclReferences(document, position, options) {
 
     // Tcl 变量引用（需要 WASM）
     if (entry && entry.tree) {
-        const root = entry.tree.rootNode;
-        const scopeIndex = buildScopeIndex(root);
-        const targetDef = scopeIndex.resolveDefinition(word, cursorLine);
+        const scopeIndex = tclCache.getScopeIndex(document);
+        const targetDef = scopeIndex ? scopeIndex.resolveDefinition(word, cursorLine) : null;
 
         if (targetDef) {
             // Add definition location
