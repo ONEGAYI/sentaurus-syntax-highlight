@@ -1,16 +1,21 @@
 // tests/test-undef-var-integration.js
-const { test, summary } = require('./helpers/test-runner');
 // 集成测试：用真实 WASM 解析器验证 buildScopeMap 对 word_list 包装命令的处理
 'use strict';
 
-const Parser = require('web-tree-sitter');
+const { test, summary } = require('./helpers/test-runner');
+const assert = require('assert');
+let Parser;
+try {
+    Parser = require('web-tree-sitter');
+} catch (e) {
+    if (e.code === 'MODULE_NOT_FOUND') {
+        console.error('⚠ web-tree-sitter 未安装。请在此工作树中运行 npm install');
+        process.exit(2);
+    }
+    throw e;
+}
 const path = require('path');
 const astUtils = require('../src/lsp/tcl-ast-utils');
-
-
-function assert(cond, msg) {
-    if (!cond) throw new Error(msg || 'Assertion failed');
-}
 
 async function main() {
     await Parser.init({
