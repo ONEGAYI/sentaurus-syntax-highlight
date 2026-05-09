@@ -6,6 +6,7 @@
     { "include": "#comments" },
     { "include": "#macro-reference" },
     { "include": "#strings" },
+    { "include": "#tcl-variable" },
     { "include": "#numbers" },
     { "include": "#swb-params" },
     { "include": "#section-block" },
@@ -82,8 +83,13 @@
       "end": "\"",
       "patterns": [
         { "name": "constant.character.escape", "match": "\\\\." },
+        { "match": "\\$\\{[^}]+\\}|\\$[A-Za-z_][A-Za-z0-9_:]*", "name": "variable.other.readwrite.tcl" },
         { "match": "@[a-zA-Z_<][^@]*@", "name": "constant.character.format.placeholder" }
       ]
+    },
+    "tcl-variable": {
+      "match": "\\$\\{[^}]+\\}|\\$[A-Za-z_][A-Za-z0-9_:]*",
+      "name": "variable.other.readwrite.tcl"
     },
     "numbers": {
       "match": "\\b(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?\\b",
