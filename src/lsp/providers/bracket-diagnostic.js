@@ -44,22 +44,27 @@ function activate(context, cache) {
  * @param {vscode.TextDocument} doc
  */
 function updateDiagnostics(doc) {
-    const { errors } = schemeCache.get(doc);
+    try {
+        const { errors } = schemeCache.get(doc);
 
-    const diagnostics = errors.map(err => {
-        const range = new vscode.Range(
-            doc.positionAt(err.start),
-            doc.positionAt(err.end)
-        );
-        const severity = err.severity === 'error'
-            ? vscode.DiagnosticSeverity.Error
-            : vscode.DiagnosticSeverity.Warning;
-        const diagnostic = new vscode.Diagnostic(range, err.message, severity);
-        diagnostic.source = 'sde-brackets';
-        return diagnostic;
-    });
+        const diagnostics = errors.map(err => {
+            const range = new vscode.Range(
+                doc.positionAt(err.start),
+                doc.positionAt(err.end)
+            );
+            const severity = err.severity === 'error'
+                ? vscode.DiagnosticSeverity.Error
+                : vscode.DiagnosticSeverity.Warning;
+            const diagnostic = new vscode.Diagnostic(range, err.message, severity);
+            diagnostic.source = 'sde-brackets';
+            return diagnostic;
+        });
 
-    diagnosticCollection.set(doc.uri, diagnostics);
+        diagnosticCollection.set(doc.uri, diagnostics);
+    } catch (e) {
+        console.error('Sentaurus: bracket diagnostic error', e);
+        diagnosticCollection.set(doc.uri, []);
+    }
 }
 
 module.exports = { activate };

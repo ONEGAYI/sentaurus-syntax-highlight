@@ -3,6 +3,7 @@
 
 const vscode = require('vscode');
 const { extractSymbols } = require('../symbol-index');
+const { safeCol } = require('../pp-utils');
 
 const DEBOUNCE_MS = 500;
 
@@ -72,8 +73,8 @@ function updateDiagnostics(doc) {
     for (const ref of refs) {
         if (ref.type === 'material' && builtinMaterials.has(ref.name)) continue;
         if (!definedNames.has(`${ref.type}:${ref.name}`)) {
-            const startCol = ref.start - lineStarts[ref.line - 1];
-            const endCol = ref.end - lineStarts[ref.line - 1];
+            const startCol = safeCol(lineStarts, ref.line, ref.start);
+            const endCol = safeCol(lineStarts, ref.line, ref.end);
             const range = new vscode.Range(
                 ref.line - 1, startCol,
                 ref.line - 1, endCol

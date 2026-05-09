@@ -109,55 +109,55 @@ function buildScopeTree(ast) {
                     }
                     return;
                 }
+
+                // (if test consequent [alternative])
+                if (children[0].value === 'if' && children.length >= 3) {
+                    walk(children[1], parentScope, branchCtx); // test expression
+                    const groupId = condGroupCounter++;
+                    walk(children[2], parentScope, { condGroup: groupId, condBranch: 0 }); // consequent
+                    if (children.length >= 4) {
+                        walk(children[3], parentScope, { condGroup: groupId, condBranch: 1 }); // alternative
+                    }
+                    for (let i = 4; i < children.length; i++) {
+                        walk(children[i], parentScope, branchCtx);
+                    }
+                    return;
+                }
+
+                // (cond (test body...) ... [(else body...)])
+                if (children[0].value === 'cond') {
+                    for (let i = 1; i < children.length; i++) {
+                        if (children[i].type === 'List' && children[i].children.length >= 1) {
+                            const clause = children[i];
+                            walk(clause.children[0], parentScope, branchCtx); // test
+                            const groupId = condGroupCounter++;
+                            for (let j = 1; j < clause.children.length; j++) {
+                                walk(clause.children[j], parentScope, { condGroup: groupId, condBranch: i - 1 });
+                            }
+                        }
+                    }
+                    return;
+                }
+
+                // (case expr ((datum...) body...) ... [(else body...)])
+                if (children[0].value === 'case' && children.length >= 3) {
+                    walk(children[1], parentScope, branchCtx); // expression
+                    for (let i = 2; i < children.length; i++) {
+                        if (children[i].type === 'List' && children[i].children.length >= 1) {
+                            const clause = children[i];
+                            walk(clause.children[0], parentScope, branchCtx); // datum list
+                            const groupId = condGroupCounter++;
+                            for (let j = 1; j < clause.children.length; j++) {
+                                walk(clause.children[j], parentScope, { condGroup: groupId, condBranch: i - 2 });
+                            }
+                        }
+                    }
+                    return;
+                }
             }
 
             // 空列表（如 ()、(; comment)）没有子节点可处理
             if (children.length === 0) return;
-
-            // (if test consequent [alternative])
-            if (children[0].value === 'if' && children.length >= 3) {
-                walk(children[1], parentScope, branchCtx); // test expression
-                const groupId = condGroupCounter++;
-                walk(children[2], parentScope, { condGroup: groupId, condBranch: 0 }); // consequent
-                if (children.length >= 4) {
-                    walk(children[3], parentScope, { condGroup: groupId, condBranch: 1 }); // alternative
-                }
-                for (let i = 4; i < children.length; i++) {
-                    walk(children[i], parentScope, branchCtx);
-                }
-                return;
-            }
-
-            // (cond (test body...) ... [(else body...)])
-            if (children[0].value === 'cond') {
-                for (let i = 1; i < children.length; i++) {
-                    if (children[i].type === 'List' && children[i].children.length >= 1) {
-                        const clause = children[i];
-                        walk(clause.children[0], parentScope, branchCtx); // test
-                        const groupId = condGroupCounter++;
-                        for (let j = 1; j < clause.children.length; j++) {
-                            walk(clause.children[j], parentScope, { condGroup: groupId, condBranch: i - 1 });
-                        }
-                    }
-                }
-                return;
-            }
-
-            // (case expr ((datum...) body...) ... [(else body...)])
-            if (children[0].value === 'case' && children.length >= 3) {
-                walk(children[1], parentScope, branchCtx); // expression
-                for (let i = 2; i < children.length; i++) {
-                    if (children[i].type === 'List' && children[i].children.length >= 1) {
-                        const clause = children[i];
-                        walk(clause.children[0], parentScope, branchCtx); // datum list
-                        const groupId = condGroupCounter++;
-                        for (let j = 1; j < clause.children.length; j++) {
-                            walk(clause.children[j], parentScope, { condGroup: groupId, condBranch: i - 2 });
-                        }
-                    }
-                }
-                return;
-            }
 
             for (const child of children) {
                 walk(child, parentScope, branchCtx);

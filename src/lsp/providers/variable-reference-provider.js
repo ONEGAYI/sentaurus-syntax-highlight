@@ -92,8 +92,8 @@ function provideSchemeReferences(document, position, options) {
 
     // Add definition location
     if (options.includeDeclaration !== false) {
-        const defStartCol = targetDef.start - lineStarts[targetDef.line - 1];
-        const defEndCol = targetDef.end - lineStarts[targetDef.line - 1];
+        const defStartCol = ppUtils.safeCol(lineStarts, targetDef.line, targetDef.start);
+        const defEndCol = ppUtils.safeCol(lineStarts, targetDef.line, targetDef.end);
         locations.push(new vscode.Location(
             document.uri,
             new vscode.Range(targetDef.line - 1, defStartCol, targetDef.line - 1, defEndCol)
@@ -111,8 +111,8 @@ function provideSchemeReferences(document, position, options) {
             d => d.name === word && d.line === targetDef.line && d.start === targetDef.start
         );
         if (resolvesToSame) {
-            const startCol = ref.start - lineStarts[ref.line - 1];
-            const endCol = ref.end - lineStarts[ref.line - 1];
+            const startCol = ppUtils.safeCol(lineStarts, ref.line, ref.start);
+            const endCol = ppUtils.safeCol(lineStarts, ref.line, ref.end);
             locations.push(new vscode.Location(
                 document.uri,
                 new vscode.Range(ref.line - 1, startCol, ref.line - 1, endCol)
@@ -205,7 +205,7 @@ function provideTclReferences(document, position, options) {
             }
 
             // Filter references — only include refs that resolve to the same definition
-            const refs = getVariableRefs(root);
+            const refs = getVariableRefs(entry.tree.rootNode);
             for (const ref of refs) {
                 if (ref.name !== word) continue;
                 const refDef = scopeIndex.resolveDefinition(ref.name, ref.line);
