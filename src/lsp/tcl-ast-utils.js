@@ -206,6 +206,7 @@ function getVariables(root, sourceText) {
  * @returns {Array<{name: string, line: number, startCol: number, endCol: number}>}
  */
 function getVariableRefs(root) {
+    if (!root) return [];
     const refs = [];
     walkNodes(root, node => {
         if (node.type === 'variable_substitution') {

@@ -205,7 +205,7 @@ function provideTclReferences(document, position, options) {
             }
 
             // Filter references — only include refs that resolve to the same definition
-            const refs = getVariableRefs(root);
+            const refs = getVariableRefs(entry.tree.rootNode);
             for (const ref of refs) {
                 if (ref.name !== word) continue;
                 const refDef = scopeIndex.resolveDefinition(ref.name, ref.line);
