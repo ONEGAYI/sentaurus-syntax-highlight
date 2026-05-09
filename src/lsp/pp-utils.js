@@ -127,7 +127,6 @@ function findPpDefineRefs(text, defines) {
         undefMap.set(u.name, u.line);
     }
 
-    // 预构建 define 查找表
     const defineMap = new Map();
     for (const def of defines) {
         if (!defineMap.has(def.name)) {
@@ -136,43 +135,35 @@ function findPpDefineRefs(text, defines) {
         defineMap.get(def.name).push(def);
     }
 
+    const regexMap = new Map();
+    for (const name of defineMap.keys()) {
+        regexMap.set(name, buildWordRegex(name));
+    }
+
+    const directiveRe = /^\s*#(ifdef|ifndef|undef)\s+(\w+)/;
+    const defineRe = /^\s*#define\s+(\w+)/;
+    const commentRe = /^#(if|ifdef|ifndef|elif|else|endif|define|undef|include|error|set|seth|rem|verbatim)\b/;
+
     for (let i = 0; i < lines.length; i++) {
         const lineNum = i + 1;
         const line = lines[i];
 
-        // 精确提取：#ifdef / #ifndef
-        const ifdefMatch = line.match(/^\s*#(ifdef|ifndef)\s+(\w+)/);
-        if (ifdefMatch) {
-            const name = ifdefMatch[2];
+        const directiveMatch = line.match(directiveRe);
+        if (directiveMatch) {
+            const [, type, name] = directiveMatch;
             if (defineMap.has(name)) {
-                const nameStart = ifdefMatch.index + ifdefMatch[0].lastIndexOf(name);
-                refs.push({ name, line: lineNum, startCol: nameStart, refType: ifdefMatch[1] });
+                const nameStart = directiveMatch.index + directiveMatch[0].lastIndexOf(name);
+                refs.push({ name, line: lineNum, startCol: nameStart, refType: type });
             }
             continue;
         }
 
-        // 精确提取：#undef
-        const undefMatch = line.match(/^\s*#undef\s+(\w+)/);
-        if (undefMatch) {
-            const name = undefMatch[1];
-            if (defineMap.has(name)) {
-                const nameStart = undefMatch.index + undefMatch[0].lastIndexOf(name);
-                refs.push({ name, line: lineNum, startCol: nameStart, refType: 'undef' });
-            }
-            continue;
-        }
-
-        // #define 定义行本身 → 跳过
-        const defineMatch = line.match(/^\s*#define\s+(\w+)/);
+        const defineMatch = line.match(defineRe);
         if (defineMatch && defineMap.has(defineMatch[1])) continue;
 
-        // 纯注释行 → 跳过
         const trimmed = line.trimStart();
-        if (trimmed.startsWith('#') && !/^#(if|ifdef|ifndef|elif|else|endif|define|undef|include|error|set|seth|rem|verbatim)\b/.test(trimmed)) {
-            continue;
-        }
+        if (trimmed.startsWith('#') && !commentRe.test(trimmed)) continue;
 
-        // 裸词扫描：对每行尝试匹配所有 define 名
         for (const [name, defs] of defineMap) {
             const inScope = defs.some(def =>
                 lineNum >= def.line &&
@@ -180,7 +171,7 @@ function findPpDefineRefs(text, defines) {
             );
             if (!inScope) continue;
 
-            const regex = buildWordRegex(name);
+            const regex = regexMap.get(name);
             regex.lastIndex = 0;
             let match;
             while ((match = regex.exec(line)) !== null) {

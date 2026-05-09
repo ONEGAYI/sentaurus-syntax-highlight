@@ -8,7 +8,7 @@ const { SDEVICE_ALL_SECTION_KEYWORDS_LOWER } = require('../../src/lsp/tcl-symbol
 const docsPath = path.join(__dirname, '..', '..', 'syntaxes', 'sdevice_command_docs.json');
 const docs = JSON.parse(fs.readFileSync(docsPath, 'utf8'));
 const index = buildKeywordSectionIndex(docs);
-const sectionKeywords = new Set(SDEVICE_ALL_SECTION_KEYWORDS_LOWER);
+const sectionKeywords = SDEVICE_ALL_SECTION_KEYWORDS_LOWER;
 
 function decodeTokens(text, data) {
     const lines = text.split('\n');
