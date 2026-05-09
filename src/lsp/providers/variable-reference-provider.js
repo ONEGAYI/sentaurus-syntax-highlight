@@ -124,15 +124,20 @@ function provideSchemeReferences(document, position, options) {
 }
 
 function provideTclReferences(document, position, options) {
-    // Extract word — try $varName first, then plain word
+    // Extract word — try ${varName}（花括号形式）first, then $varName, then plain word
+    const bracedRange = document.getWordRangeAtPosition(position, /\$\{[\w:.\-<>?!+*/=]+\}/);
     const dollarRange = document.getWordRangeAtPosition(position, /(?<!\\)\$[\w:-]+/);
     const plainRange = document.getWordRangeAtPosition(position, /[\w:-]+/);
-    const range = dollarRange || plainRange;
+    const range = bracedRange || dollarRange || plainRange;
     if (!range) return null;
 
     let word = document.getText(range);
     if (!word) return null;
-    if (word.startsWith('$')) word = word.slice(1);
+    if (word.startsWith('${') && word.endsWith('}')) {
+        word = word.slice(2, -1);
+    } else if (word.startsWith('$')) {
+        word = word.slice(1);
+    }
     if (!word) return null;
 
     // Skip comments: check for `#` before cursor on same line (outside strings)
