@@ -195,7 +195,12 @@ function parse(text) {
         debug('ERROR: 解析器未初始化，请先调用 init()');
         return null;
     }
-    return _parser.parse(text);
+    try {
+        return _parser.parse(text);
+    } catch (e) {
+        debug(`parse() WASM 异常: ${e.message}`);
+        return null;
+    }
 }
 
 /**
