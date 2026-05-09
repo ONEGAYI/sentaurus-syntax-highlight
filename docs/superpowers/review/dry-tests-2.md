@@ -1,7 +1,7 @@
 # 复用/DRY审查报告 -- tests/ 批次 2
 
 审查范围: 17 文件, 约 5200 行
-发现问题数: 8（其中 4 项为批次 1 已报告问题的批次 2 确认/补充，4 项为批次 2 新发现）
+发现问题数: 10（其中 3 项为批次 1 已报告问题的批次 2 确认/补充，7 项为批次 2 新发现）
 
 ---
 
@@ -51,7 +51,9 @@ function test(name, fn) {
 - `tests/test-tcl-ast-utils.js` (行 8-19)
 - `tests/test-variable-reference.js` (行 92-102)
 
-5 个文件全部复制了完全相同的 `makeNode(type, text, children, startRow, startCol, endRow, endCol)` 函数。与批次 1 的 `test-tcl-document-symbol.js`、`test-tcl-var-refs.js` 合计 7 个文件共享同一实现。
+5 个文件全部复制了完全相同的 `makeNode(type, text, children, startRow, startCol, endRow, endCol)` 函数。与批次 1 的 `test-tcl-document-symbol.js`、`test-tcl-var-refs.js` 合计 **7 个文件**共享同一实现。多处注释如"与 test-tcl-ast-utils.js 的 makeNode 保持一致"证明作者已意识到重复但选择复制。
+
+每次 `makeNode` 调用还创建不必要的 `child` 方法闭包和嵌套对象，与真实 AST 接口可能不同步。
 
 **建议**: 同 DRY-3。提取为 `tests/helpers/mock-ast-node.js`。
 
@@ -66,16 +68,16 @@ function test(name, fn) {
 这两个文件测试同一模块 `tcl-ast-utils` 的不同 API（`buildScopeIndex` vs `buildScopeMap`），但大量测试用例构造了几乎相同的 AST 节点树：
 
 - **"全局 set 变量"**: `makeNode('set', 'set x 42', [...])` -- 两文件均有
-- **"global 声明"**: `makeNode('command', 'global global_var', [...])` + `makeNode('set', 'set global_var 1', [...])` -- 两文件均有，构造逻辑完全相同
+- **"global 声明"**: `makeNode('command', 'global global_var', [...])` + `makeNode('set', 'set global_var 1', [...])` -- 两文件均有
 - **"foreach 循环变量"**: `makeNode('foreach', 'foreach item $list {...}', [...])` -- 两文件均有
 - **"upvar 声明"**: `makeNode('command', 'upvar 1 outer_var local', [...])` + procNode 构造 -- 两文件均有
 - **"variable 声明"**: `makeNode('command', 'variable ns_var', [...])` + procNode 构造 -- 两文件均有
 
-其中 global/upvar/variable 测试的完整 AST 构造代码（约 30-40 行/组）在两个文件中几乎逐字复制。`test-tcl-scope-index.js` 已包含 `buildScopeMap` 的委托测试（行 250-269），确认两 API 产出一致，说明 `test-tcl-scope-map.js` 的多数测试实际上是 `test-tcl-scope-index.js` 的超集。
+其中 global/upvar/variable 测试的完整 AST 构造代码（约 30-40 行/组）在两个文件中几乎逐字复制。`test-tcl-scope-index.js` 已包含 `buildScopeMap` 的委托测试（行 250-269），确认两 API 产出一致。
 
-**建议**: 
+**建议**:
 1. 将共享的 AST 构造函数提取为 `tests/helpers/mock-tcl-fixtures.js`，如 `buildGlobalSetVar('x', '42', 0)`、`buildProcWithBody('myProc', [], bodyChildren)` 等
-2. 考虑合并两文件，或让 `test-tcl-scope-map.js` 只保留 `buildScopeMap` 特有的测试（行 250-269 的委托验证已足够覆盖等价性）
+2. 考虑合并两文件，或让 `test-tcl-scope-map.js` 只保留 `buildScopeMap` 特有的测试
 
 ---
 
@@ -109,31 +111,11 @@ function mockDoc(text, version, uri) {
 
 - `sdegeo:create-cuboid` 的 `{ index: 2, role: 'def', type: 'material' }` + `{ index: 3, role: 'def', type: 'region' }` 配置重复 13 次
 - `sdegeo:create-rectangle` 的类似配置重复 3 次
-- `sdedr:offset-interface`/`sdedr:offset-block` 的 modeTable（含 `region: { params: [...] }` + `material: { params: [...] }`）重复 5 次
+- `sdedr:offset-interface`/`sdedr:offset-block` 的 modeTable 重复 5 次
 
 测试数据的重复导致文件过长（556 行），且 symbolParams 配置变更需要逐个修改。
 
-**建议**: 在文件顶部定义常量表：
-```js
-const CUBOID_TABLE = {
-    'sdegeo:create-cuboid': {
-        symbolParams: [
-            { index: 2, role: 'def', type: 'material' },
-            { index: 3, role: 'def', type: 'region' },
-        ],
-    },
-};
-const OFFSET_INTERFACE_MODES = {
-    'sdedr:offset-interface': {
-        argIndex: 0,
-        modes: {
-            region: { params: ['region1', 'region2'] },
-            material: { params: ['material1', 'material2'] },
-        },
-    },
-};
-```
-各测试用例直接引用 `CUBOID_TABLE` / `OFFSET_INTERFACE_MODES`，仅在被测行为依赖不同配置时才内联。
+**建议**: 在文件顶部定义常量表 `CUBOID_TABLE` / `OFFSET_INTERFACE_MODES`，各测试用例直接引用。
 
 ---
 
@@ -141,7 +123,7 @@ const OFFSET_INTERFACE_MODES = {
 
 **文件**: `tests/test-signature-provider.js` (322 行)
 
-4 个测试用例（行 123-141、224-243、287-308、对应 `sdegeo:create-circle`）独立声明了完全相同的 `funcDocs` 对象：
+4 个测试用例（行 123-141、224-243、287-308）独立声明了完全相同的 `funcDocs` 对象：
 
 ```js
 'sdegeo:create-circle': {
@@ -161,6 +143,40 @@ const OFFSET_INTERFACE_MODES = {
 
 ---
 
+### DRY-16: Tcl 测试中 proc AST 构建模式跨 4 文件重复
+
+**文件**:
+- `tests/test-tcl-ast-variables.js` (行 100-202, 3 个 proc 构建)
+- `tests/test-tcl-scope-index.js` (行 61-117, 4 个 proc 构建)
+- `tests/test-tcl-scope-map.js` (行 43-159, 多个 proc 构建)
+- `tests/test-tcl-ast-variables.js` (行 286-323, 嵌套 proc body)
+
+构建 `proc foo {args} {body}` AST 需要约 15-20 行 `makeNode` 调用，"空参数 proc"和"带参数 proc"各被构建 3-4 次。与 DRY-11 部分重叠但关注点不同——DRY-11 是两文件间大面积重复，此处关注的是 proc 构建模式在更多文件中的系统性重复。
+
+**建议**: 在 `tests/helpers/mock-ast-node.js` 中提供工厂函数：
+
+```javascript
+function makeProcNode(name, params, bodyChildren, startRow, ...) { ... }
+function makeSetNode(varName, value, row, col) { ... }
+```
+
+---
+
+### DRY-17: Scheme 测试中 parse+analyze+buildScopeTree 三步 setup 重复
+
+**文件**:
+- `tests/test-scheme-analyzer.js` — `parse()` + `analyze()`
+- `tests/test-scheme-dup-def-diagnostic.js` — `parse()` + `buildScopeTree()` + `buildPpBranchMap()`
+- `tests/test-variable-reference.js` — `parse()` + `buildScopeTree()` + `getSchemeRefs()` + `getVisibleDefinitions()`
+- `tests/test-scheme-var-refs.js` — `parse()` + `getSchemeRefs()`
+- `tests/test-signature-provider.js` — 已用 `createMockCache()` 解决但其他文件未跟进
+
+每个测试文件都需要先 parse 得到 AST，再调用 1-3 个分析函数。`test-signature-provider.js` 已经封装了 `createMockCache()` 来消除这个重复，但其他 4 个文件没有跟进。
+
+**建议**: 参考 `createMockCache()` 模式，提供通用的 `parseScheme(code)` 辅助函数，返回 `{ ast, analysis, scopeTree, errors, text }`。
+
+---
+
 ## 低严重度
 
 ### DRY-15: WASM 解析器初始化样板在 2 个文件中重复
@@ -176,7 +192,7 @@ const OFFSET_INTERFACE_MODES = {
 
 此外 `generateSchemeCode` 函数在 `benchmark.js` 和 `benchmark-firstload.js` 中各自独立定义了一次（结构略有差异），功能等价。
 
-**建议**: 
+**建议**:
 1. WASM 初始化提取为 `tests/helpers/init-tcl-parser.js`，导出 `async function initTclParser()` 返回 `{ parser, language }`
 2. `generateSchemeCode` 提取为 `tests/helpers/generate-scheme-code.js`
 
@@ -193,20 +209,23 @@ const OFFSET_INTERFACE_MODES = {
 | DRY-12 | 中 | mockDoc 函数 (批次 1 确认) | 1 (新增) | ~6 行 |
 | DRY-13 | 中 | symbol-index 内联配置重复 | 1 | ~150 行（净减） |
 | DRY-14 | 中 | signature-provider 函数文档重复 | 1 | ~30 行 |
+| DRY-16 | 中 | proc AST 构建模式跨 4 文件 | 4 | ~80 行 |
+| DRY-17 | 中 | Scheme parse+analyze setup | 5 | ~40 行 |
 | DRY-15 | 低 | WASM 初始化 + generateSchemeCode | 2+2 | ~30 行 |
 
-**批次 2 总计预估**: 提取共享模块后，可消除约 480 行重复代码。
+**批次 2 总计预估**: 提取共享模块后，可消除约 600 行重复代码。
 
-**结合批次 1 的累计影响**: 两批次合计可消除约 925 行重复代码，约占全部测试代码的 15%。批次 1 报告的 5 个共享模块建议完全覆盖批次 2 的问题：
+**结合批次 1 的累计影响**: 两批次合计可消除约 1045 行重复代码，约占全部测试代码的 17%。批次 1 报告的 5 个共享模块建议完全覆盖批次 2 的问题：
 
 ```
 tests/helpers/
 ├── test-runner.js         ← DRY-1/8: test() + summary() + exit()
 ├── symbol-fixtures.js     ← DRY-2/9: SYMBOL_TABLE + CUBOID_TABLE + OFFSET_MODES
-├── mock-ast-node.js       ← DRY-3/10: makeNode()
+├── mock-ast-node.js       ← DRY-3/10: makeNode() + makeProcNode() + makeSetNode()
 ├── mock-document.js       ← DRY-5/12: mockDoc()
-├── mock-tcl-fixtures.js   ← DRY-11: buildGlobalSetVar(), buildProcWithBody() 等
+├── mock-tcl-fixtures.js   ← DRY-11/16: buildGlobalSetVar(), buildProcWithBody() 等
 ├── sdevice-setup.js       ← DRY-4/6: SDEVICE fixtures (批次 1)
+├── scheme-parse.js        ← DRY-17: parseScheme() 辅助函数
 ├── init-tcl-parser.js     ← DRY-15: WASM 初始化
 └── generate-scheme-code.js ← DRY-15: 合成代码生成
 ```
