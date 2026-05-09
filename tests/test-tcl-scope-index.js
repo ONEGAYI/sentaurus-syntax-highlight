@@ -1,25 +1,11 @@
 // tests/test-tcl-scope-index.js
+const { test, summary } = require('./helpers/test-runner');
+const { makeNode } = require('./helpers/mock-ast-node');
 'use strict';
 
 const assert = require('assert');
 
-function makeNode(type, text, children, startRow, startCol, endRow, endCol) {
-    return {
-        type, text,
-        children: children || [],
-        childCount: (children || []).length,
-        startPosition: { row: startRow || 0, column: startCol || 0 },
-        endPosition: { row: endRow || 0, column: endCol || 0 },
-        hasError: false,
-        child(i) { return this.children[i]; },
-    };
-}
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 const ast = require('../src/lsp/tcl-ast-utils');
 
@@ -108,9 +94,7 @@ test('proc 默认值参数 {b 1.0} 在 body 内可见', () => {
 	const bodyLine = index.getVisibleAt(1);
 	assert.ok(bodyLine.has('a'), 'body 内应可见参数 a');
 	assert.ok(bodyLine.has('b'), 'body 内应可见默认值参数 b');
-	const proc = index._procScopes[0];
-	assert.ok(proc.params.includes('b'), 'params 数组应包含 b');
-	assert.ok(!proc.params.includes('{b 1.0}'), 'params 数组不应包含原始文本 {b 1.0}');
+		// 通过公共 API 验证参数解析正确性
 	const def = index.resolveDefinition('b', 1);
 	assert.ok(def, '默认值参数 b 应能被 resolveDefinition 找到');
 	assert.strictEqual(def.scope, 'local');
@@ -477,5 +461,4 @@ test('resolveDefinition: 仅循环内定义的变量在循环外仍可解析', (
     assert.strictEqual(resolved.defLine, 1, `应解析到行 1（for init set k 0），实际行 ${resolved.defLine}`);
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-if (failed > 0) process.exit(1);
+summary();

@@ -1,4 +1,6 @@
 // tests/test-tcl-ast-variables.js
+const { test, summary } = require('./helpers/test-runner');
+const { makeNode } = require('./helpers/mock-ast-node');
 'use strict';
 
 const assert = require('assert');
@@ -7,24 +9,7 @@ const assert = require('assert');
  * 手动 mock web-tree-sitter 节点结构。
  * 与 test-tcl-ast-utils.js 的 makeNode 保持一致。
  */
-function makeNode(type, text, children, startRow, startCol, endRow, endCol) {
-    return {
-        type,
-        text,
-        children: children || [],
-        childCount: (children || []).length,
-        startPosition: { row: startRow || 0, column: startCol || 0 },
-        endPosition: { row: endRow || 0, column: endCol || 0 },
-        hasError: false,
-        child(i) { return this.children[i]; },
-    };
-}
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 const ast = require('../src/lsp/tcl-ast-utils');
 
@@ -274,9 +259,9 @@ test('for 循环提取 init 和 body 中的变量', () => {
     const vars = ast.getVariables(root);
 
     // 应提取 init 中的 i 和 body 中的 x
-    assert.ok(vars.length >= 2, `应至少有 2 个变量（i, x），实际 ${vars.length}：${vars.map(v=>v.name).join(',')}`);
-    assert.ok(vars.some(v => v.name === 'i'), '应提取 init 中的 i');
-    assert.ok(vars.some(v => v.name === 'x'), '应提取 body 中的 x');
+    assert.strictEqual(vars.length, 2, `应恰好提取 2 个变量（i, x），实际 ${vars.length}：${vars.map(v=>v.name).join(',')}`);
+    assert.strictEqual(vars[0].name, 'i', '第一个变量应为 i（init 中）');
+    assert.strictEqual(vars[1].name, 'x', '第二个变量应为 x（body 中）');
 });
 
 // ── 嵌套结构 ──
@@ -452,7 +437,8 @@ test('lmap 单变量提取', () => {
     const root = makeNode('program', '', [forNode], 0, 0, 0, 24);
     const vars = ast.getVariables(root);
 
-    assert.ok(vars.some(v => v.name === 'x'), '应提取 lmap 循环变量 x');
+    assert.strictEqual(vars.length, 1, `应恰好提取 1 个变量，实际 ${vars.length}：${vars.map(v=>v.name).join(',')}`);
+    assert.strictEqual(vars[0].name, 'x', '应提取 lmap 循环变量 x');
 });
 
 test('lmap 多变量提取（braced_word 形式）', () => {
@@ -479,8 +465,9 @@ test('lmap 多变量提取（braced_word 形式）', () => {
     const root = makeNode('program', '', [forNode], 0, 0, 0, 31);
     const vars = ast.getVariables(root);
 
-    assert.ok(vars.some(v => v.name === 'a'), '应提取 lmap 变量 a');
-    assert.ok(vars.some(v => v.name === 'b'), '应提取 lmap 变量 b');
+    assert.strictEqual(vars.length, 2, `应恰好提取 2 个变量，实际 ${vars.length}：${vars.map(v=>v.name).join(',')}`);
+    assert.strictEqual(vars[0].name, 'a', '应提取 lmap 变量 a');
+    assert.strictEqual(vars[1].name, 'b', '应提取 lmap 变量 b');
 });
 
 test('dict for 键值变量提取', () => {
@@ -508,8 +495,9 @@ test('dict for 键值变量提取', () => {
     const root = makeNode('program', '', [dictNode], 0, 0, 0, 27);
     const vars = ast.getVariables(root);
 
-    assert.ok(vars.some(v => v.name === 'k'), '应提取 dict for 键变量 k');
-    assert.ok(vars.some(v => v.name === 'v'), '应提取 dict for 值变量 v');
+    assert.strictEqual(vars.length, 2, `应恰好提取 2 个变量，实际 ${vars.length}：${vars.map(v=>v.name).join(',')}`);
+    assert.strictEqual(vars[0].name, 'k', '应提取 dict for 键变量 k');
+    assert.strictEqual(vars[1].name, 'v', '应提取 dict for 值变量 v');
 });
 
 test('incr 变量提取', () => {
@@ -531,6 +519,6 @@ test('incr 变量提取', () => {
 
 // ── 汇总 ──
 console.log(`\n${'='.repeat(40)}`);
-console.log(`  通过: ${passed}, 失败: ${failed}`);
 console.log(`${'='.repeat(40)}\n`);
-process.exit(failed > 0 ? 1 : 0);
+
+summary();

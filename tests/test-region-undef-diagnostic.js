@@ -1,39 +1,11 @@
 // tests/test-region-undef-diagnostic.js
 'use strict';
 
+const { test, summary } = require('./helpers/test-runner');
+const { SYMBOL_TABLE } = require('./helpers/symbol-fixtures');
 const assert = require('assert');
 const { parse } = require('../src/lsp/scheme-parser');
 const { extractSymbols } = require('../src/lsp/symbol-index');
-
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
-
-const SYMBOL_TABLE = {
-    'sdegeo:create-rectangle': {
-        symbolParams: [
-            { index: 2, role: 'def', type: 'material' },
-            { index: 3, role: 'def', type: 'region' },
-        ],
-    },
-    'sdegeo:define-contact-set': {
-        symbolParams: [
-            { index: 0, role: 'def', type: 'contact' },
-        ],
-    },
-    'sdedr:define-refinement-region': {
-        symbolParams: [
-            { index: 2, role: 'ref', type: 'region' },
-        ],
-    },
-    'sde:hide-region': {
-        symbolParams: [
-            { index: 0, role: 'ref', type: 'region' },
-        ],
-    },
-};
 
 /** Sentaurus 内置材料名白名单（从 all_keywords.json MATERIAL 分类加载） */
 const BUILTIN_MATERIALS = new Set(
@@ -181,5 +153,4 @@ test('用户定义材料覆盖内置名 → 无诊断', () => {
     assert.strictEqual(undefs.length, 0);
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-process.exit(failed > 0 ? 1 : 0);
+summary();

@@ -1,12 +1,11 @@
 // tests/test-definitions.js
+'use strict';
+
+const { test, summary } = require('./helpers/test-runner');
+const { mockDoc } = require('./helpers/mock-document');
 const assert = require('assert');
 const { findBalancedExpression, extractSchemeDefinitions, extractTclDefinitionsAst, extractDefinitions, getDefinitions, clearDefinitionCache, invalidateDefinitionCache, truncateDefinitionText } = require('../src/definitions');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 console.log('\nfindBalancedExpression:');
 
@@ -268,18 +267,9 @@ test('null/undefined 返回原值', () => {
 
 console.log('\ngetDefinitions (缓存):');
 
-// 模拟 document 对象
-function mockDoc(text, version, uri) {
-    return {
-        getText: () => text,
-        version,
-        uri: { toString: () => uri || 'file:///test.cmd' },
-    };
-}
-
 test('首次调用执行扫描', () => {
     clearDefinitionCache();
-    const doc = mockDoc('(define myVar 42)', 1);
+    const doc = mockDoc('file:///test.sde', 1, '(define myVar 42)');
     const defs = getDefinitions(doc, 'sde');
     assert.strictEqual(defs.length, 1);
     assert.strictEqual(defs[0].name, 'myVar');
@@ -287,7 +277,7 @@ test('首次调用执行扫描', () => {
 
 test('同版本使用缓存', () => {
     clearDefinitionCache();
-    const doc = mockDoc('(define x 1)', 1);
+    const doc = mockDoc('file:///test.sde', 1, '(define x 1)');
     const d1 = getDefinitions(doc, 'sde');
     const d2 = getDefinitions(doc, 'sde');
     assert.strictEqual(d1, d2); // 同一引用
@@ -296,8 +286,8 @@ test('同版本使用缓存', () => {
 test('版本变化重新扫描', () => {
     clearDefinitionCache();
     const uri = 'file:///test2.cmd';
-    const doc1 = mockDoc('(define x 1)', 1, uri);
-    const doc2 = mockDoc('(define x 1) (define y 2)', 2, uri);
+    const doc1 = mockDoc(uri, 1, '(define x 1)');
+    const doc2 = mockDoc(uri, 2, '(define x 1) (define y 2)');
     const d1 = getDefinitions(doc1, 'sde');
     const d2 = getDefinitions(doc2, 'sde');
     assert.strictEqual(d1.length, 1);
@@ -309,8 +299,8 @@ console.log('\ninvalidateDefinitionCache:');
 
 test('删除指定 URI 缓存条目', () => {
     clearDefinitionCache();
-    const doc1 = mockDoc('(define x 1)', 1, 'file:///test-inv-a.sde');
-    const doc2 = mockDoc('(define y 2)', 1, 'file:///test-inv-b.sde');
+    const doc1 = mockDoc('file:///test-inv-a.sde', 1, '(define x 1)');
+    const doc2 = mockDoc('file:///test-inv-b.sde', 1, '(define y 2)');
 
     const d1 = getDefinitions(doc1, 'sde');
     const d2 = getDefinitions(doc2, 'sde');
@@ -336,5 +326,4 @@ test('删除不存在的 URI 不报错', () => {
     clearDefinitionCache();
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-process.exit(failed > 0 ? 1 : 0);
+summary();

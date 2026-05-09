@@ -1,4 +1,5 @@
 // tests/test-expression-quickpick.js
+const { test, summary } = require('./helpers/test-runner');
 const assert = require('assert');
 const {
     CursorTracker,
@@ -7,11 +8,6 @@ const {
     parseHistoryInput,
 } = require('../src/commands/expression-converter');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 // ─── CursorTracker ─────────────────────────────
 console.log('\nCursorTracker:');
@@ -265,5 +261,5 @@ test('!abc 无空格按模糊匹配处理', () => {
 
 // ─── Summary ──────────────────────────────────
 console.log(`\n${'='.repeat(40)}`);
-console.log(`${passed} passed, ${failed} failed`);
-if (failed) process.exit(1);
+
+summary();

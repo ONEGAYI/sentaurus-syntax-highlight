@@ -51,26 +51,31 @@ function activate(context) {
  * @param {vscode.TextDocument} doc
  */
 function updateDiagnostics(doc) {
-    const text = doc.getText();
+    try {
+        const text = doc.getText();
 
-    // 使用文本级括号平衡检查，无需 WASM 解析器
-    const errors = astUtils.findMismatchedBraces(text);
+        // 使用文本级括号平衡检查，无需 WASM 解析器
+        const errors = astUtils.findMismatchedBraces(text);
 
-    const diagnostics = errors.map(err => {
-        const range = new vscode.Range(
-            err.startLine, err.startCol,
-            err.endLine, err.endCol
-        );
-        const diagnostic = new vscode.Diagnostic(
-            range,
-            err.message,
-            vscode.DiagnosticSeverity.Warning
-        );
-        diagnostic.source = 'tcl-brackets';
-        return diagnostic;
-    });
+        const diagnostics = errors.map(err => {
+            const range = new vscode.Range(
+                err.startLine, err.startCol,
+                err.endLine, err.endCol
+            );
+            const diagnostic = new vscode.Diagnostic(
+                range,
+                err.message,
+                vscode.DiagnosticSeverity.Warning
+            );
+            diagnostic.source = 'tcl-brackets';
+            return diagnostic;
+        });
 
-    diagnosticCollection.set(doc.uri, diagnostics);
+        diagnosticCollection.set(doc.uri, diagnostics);
+    } catch (e) {
+        console.error('Sentaurus: tcl bracket diagnostic error', e);
+        diagnosticCollection.set(doc.uri, []);
+    }
 }
 
 module.exports = { activate };

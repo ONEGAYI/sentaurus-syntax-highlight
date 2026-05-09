@@ -2,6 +2,7 @@
 'use strict';
 
 const { extractSymbols } = require('../symbol-index');
+const { safeCol } = require('../pp-utils');
 
 /** @type {import('../parse-cache').SchemeParseCache} */
 let schemeCache;
@@ -68,8 +69,8 @@ function provideSymbolReferences(document, position, options) {
     const locations = [];
     for (const m of matches) {
         // m.start/m.end 是文档级偏移量，需转为行内列号
-        const startCol = m.start - lineStarts[m.line - 1];
-        const endCol = m.end - lineStarts[m.line - 1];
+        const startCol = safeCol(lineStarts, m.line, m.start);
+        const endCol = safeCol(lineStarts, m.line, m.end);
         const loc = new vscode.Location(
             document.uri,
             new vscode.Range(m.line - 1, startCol, m.line - 1, endCol)

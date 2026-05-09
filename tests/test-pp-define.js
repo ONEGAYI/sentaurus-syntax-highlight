@@ -1,14 +1,10 @@
 // tests/test-pp-define.js
+const { test, summary } = require('./helpers/test-runner');
 'use strict';
 
 const assert = require('assert');
 const { extractPpDefines, extractPpUndefs } = require('../src/lsp/pp-utils');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 console.log('\nextractPpDefines:');
 
@@ -239,5 +235,4 @@ test('buildPpDefineTokens 定义位置带 declaration modifier', () => {
     assert.strictEqual(data[4], 1); // declaration modifier
 });
 
-console.log(`\n${passed} passed, ${failed} failed`);
-process.exit(failed > 0 ? 1 : 0);
+summary();

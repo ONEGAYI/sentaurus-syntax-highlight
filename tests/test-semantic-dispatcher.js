@@ -1,4 +1,5 @@
 // tests/test-semantic-dispatcher.js
+const { test, summary } = require('./helpers/test-runner');
 'use strict';
 
 const assert = require('assert');
@@ -6,11 +7,6 @@ const { parse } = require('../src/lsp/scheme-parser');
 const dispatcher = require('../src/lsp/semantic-dispatcher');
 const { computeLineStarts } = require('../src/lsp/parse-cache');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 function parseCode(code) {
     const { ast } = parse(code);
@@ -167,5 +163,4 @@ test('非模式分派函数返回 mode=null', () => {
     assert.strictEqual(result.activeParam, 0);
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-process.exit(failed > 0 ? 1 : 0);
+summary();

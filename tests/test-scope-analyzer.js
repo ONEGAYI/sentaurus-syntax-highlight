@@ -1,13 +1,9 @@
 // tests/test-scope-analyzer.js
+const { test, summary } = require('./helpers/test-runner');
 const assert = require('assert');
 const { buildScopeTree, getVisibleDefinitions } = require('../src/lsp/scope-analyzer');
 const { parse } = require('../src/lsp/scheme-parser');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 function treeOf(code) {
     const { ast } = parse(code);
@@ -254,5 +250,4 @@ test('空列表与 define 共存不抛出异常', () => {
     assert.strictEqual(tree.definitions[1].name, 'y');
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-process.exit(failed > 0 ? 1 : 0);
+summary();

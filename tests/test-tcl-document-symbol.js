@@ -1,28 +1,13 @@
 // tests/test-tcl-document-symbol.js
+const { test, summary } = require('./helpers/test-runner');
+const { makeNode } = require('./helpers/mock-ast-node');
 'use strict';
 
 const assert = require('assert');
 
 // ── Mock 节点构造（与 test-tcl-ast-utils.js 相同） ──
 
-function makeNode(type, text, children, startRow, startCol, endRow, endCol) {
-    return {
-        type,
-        text,
-        children: children || [],
-        childCount: (children || []).length,
-        startPosition: { row: startRow || 0, column: startCol || 0 },
-        endPosition: { row: endRow || 0, column: endCol || 0 },
-        hasError: false,
-        child(i) { return this.children[i]; },
-    };
-}
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  \u2713 ${name}`); }
-    catch (e) { failed++; console.log(`  \u2717 ${name}: ${e.message}`); }
-}
 
 const { getDocumentSymbols, SymbolKind } = require('../src/lsp/tcl-ast-utils');
 
@@ -325,6 +310,6 @@ test('SymbolKind \u5305\u542b\u6b63\u786e\u503c', () => {
 
 // ── 汇总 ──
 console.log(`\n${'='.repeat(40)}`);
-console.log(`  \u901a\u8fc7: ${passed}, \u5931\u8d25: ${failed}`);
 console.log(`${'='.repeat(40)}\n`);
-process.exit(failed > 0 ? 1 : 0);
+
+summary();

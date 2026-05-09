@@ -206,6 +206,7 @@ function getVariables(root, sourceText) {
  * @returns {Array<{name: string, line: number, startCol: number, endCol: number}>}
  */
 function getVariableRefs(root) {
+    if (!root) return [];
     const refs = [];
     walkNodes(root, node => {
         if (node.type === 'variable_substitution') {
@@ -257,6 +258,8 @@ class ScopeIndex {
         this._procScopes = procScopes.slice().sort((a, b) => a.startLine - b.startLine);
         this._loopScopes = loopScopes || [];
     }
+
+    get globalProcNames() { return this._globalProcNames; }
 
     /**
      * 在定义列表中查找名称匹配且 defLine <= line 的最后一条记录。

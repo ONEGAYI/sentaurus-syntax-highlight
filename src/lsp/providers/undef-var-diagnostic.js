@@ -85,16 +85,21 @@ function activate(context, schemeCacheInstance, tclCacheInstance) {
  * @param {vscode.TextDocument} doc
  */
 function updateDiagnostics(doc) {
-    const langId = doc.languageId;
+    try {
+        const langId = doc.languageId;
 
-    let diagnostics;
-    if (langId === 'sde') {
-        diagnostics = checkSchemeUndefVars(doc);
-    } else {
-        diagnostics = checkTclUndefVars(doc);
+        let diagnostics;
+        if (langId === 'sde') {
+            diagnostics = checkSchemeUndefVars(doc);
+        } else {
+            diagnostics = checkTclUndefVars(doc);
+        }
+
+        diagnosticCollection.set(doc.uri, diagnostics);
+    } catch (e) {
+        console.error('Sentaurus: undef-var diagnostic error', e);
+        diagnosticCollection.set(doc.uri, []);
     }
-
-    diagnosticCollection.set(doc.uri, diagnostics);
 }
 
 /**

@@ -1,39 +1,11 @@
 // tests/test-symbol-reference.js
 'use strict';
 
+const { test, summary } = require('./helpers/test-runner');
+const { SYMBOL_TABLE } = require('./helpers/symbol-fixtures');
 const assert = require('assert');
 const { parse } = require('../src/lsp/scheme-parser');
 const { extractSymbols } = require('../src/lsp/symbol-index');
-
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
-
-const SYMBOL_TABLE = {
-    'sdegeo:create-rectangle': {
-        symbolParams: [
-            { index: 2, role: 'def', type: 'material' },
-            { index: 3, role: 'def', type: 'region' },
-        ],
-    },
-    'sdegeo:define-contact-set': {
-        symbolParams: [
-            { index: 0, role: 'def', type: 'contact' },
-        ],
-    },
-    'sdedr:define-refinement-region': {
-        symbolParams: [
-            { index: 2, role: 'ref', type: 'region' },
-        ],
-    },
-    'sde:hide-region': {
-        symbolParams: [
-            { index: 0, role: 'ref', type: 'region' },
-        ],
-    },
-};
 
 function findReferences(code, targetName, targetType) {
     const { ast } = parse(code);
@@ -92,5 +64,4 @@ test('string-append 定义的符号可以被查找', () => {
     assert.strictEqual(locations.length, 2); // 1 def + 1 ref
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-process.exit(failed > 0 ? 1 : 0);
+summary();
