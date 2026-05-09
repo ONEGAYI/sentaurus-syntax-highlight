@@ -4,6 +4,19 @@
 
 ---
 
+## [1.15.1] - 2026-05-09
+
+### 新功能
+
+- **Tcl proc 函数名高亮与调用处语义着色**（#27）：为 5 种 Tcl 方言语法文件新增 `proc` 定义处函数名的 TextMate 高亮（`entity.name.function.*` scope，青绿色）；新增 `tcl-funcall-semantic.js` 模块，复用 WASM AST 实现调用处函数名的 `userFunctionCall` 语义着色（零额外解析开销）。SDEVICE 的 proc 调用着色使用独立 Provider，与现有 section 语义共存；其余 4 种 Tcl 工具复用统一 Provider（proc 调用 + #define 宏）。同时修复默认值参数（如 `{b 1.0}`）的 undef-var 诊断误报，移除 svisual 语法中 9 个单字母关键词误匹配（b/s/v/x/n/m/y/r），`offsetToLineCol` 提取到 `pp-utils.js` 共享
+
+### Bug 修复
+
+- **删除 macro-reference 规则以消除 3 字符大写词误标**（#24）：移除所有 6 个语法文件中基于命名风格猜测的 `macro-reference` 匹配规则（`{2,}` 量词导致 `ABC`、`TMP` 等 3 字符大写词被错误标记为 `entity.name.type`）。预处理器指令 captures 中的宏名高亮不受影响
+- **修复 Tcl 变量悬停因运算符符号吞并导致边界匹配失败**（#26）：修复 `$a+$b-$c` 等含运算符表达式中只有最后一个变量能触发悬停的问题。将 HoverProvider 中 `$varName` 的正则从 `[\w:.\-<>?!+*/=]+` 收窄为 `[\w:-]+`，与 DefinitionProvider 保持一致。`${varName}` 花括号形式保持宽正则不变
+
+---
+
 ## [1.15.0] - 2026-05-09
 
 ### 新功能
@@ -827,6 +840,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.15.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.15.0...v1.15.1
 [1.15.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.14.1...v1.15.0
 [1.14.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.14.0...v1.14.1
 [1.14.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.3...v1.14.0

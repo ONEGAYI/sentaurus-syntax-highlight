@@ -19,6 +19,7 @@
 
 - **测试扩展**：使用 VSCode 的 "Extension Development Host" 启动配置（从 `.vscode/launch.json` 按 F5）
 - **工作树注意事项**：`git worktree` 只复制 git 跟踪的文件，`node_modules/`（含 `web-tree-sitter`）被 `.gitignore` 排除。在新工作树中开发前**必须运行 `npm install`**，否则 WASM 解析器加载失败导致所有 Tcl 语义功能（悬停、跳转、诊断、折叠）全部失效。`display_test/` 同样被忽略，测试文件可在主仓库路径下打开，不影响功能。
+  - 凡代码开发、Bug修复/调试，进入工作树操作。
 
 - **打包扩展**：
   ```bash
@@ -104,6 +105,7 @@ sentaurus-syntax-highlight/
 │   │       ├── quote-auto-delete-provider.js   ← 空引号对自动删除 Provider（6 种语言共用）
 │   │       ├── region-undef-diagnostic.js         ← Region/Material/Contact 未定义语义诊断（Scheme）
 │   │       ├── semantic-tokens-provider.js        ← SDE 用户定义函数调用 + #define 宏着色（Semantic Tokens）
+│   │       ├── tcl-funcall-semantic.js          ← Tcl proc 调用处函数名语义着色（WASM AST 驱动）
 │   │       ├── sdevice-semantic-provider.js    ← SDEVICE 语义 token（section/subSection/keyword/macro/vector）
 │   │       ├── sdevice-vector-keywords.js      ← SDEVICE 矢量关键词数据（57 基础词 + 3 后缀）
 │   │       ├── symbol-completion.js               ← Region/Material/Contact 符号补全
@@ -193,6 +195,7 @@ SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依
 - `bracket-diagnostic.js` / `tcl-bracket-diagnostic.js` — 括号平衡诊断
 - `signature-provider.js` — Scheme 函数签名提示（内置 + 用户定义函数 fallback）
 - `semantic-tokens-provider.js` — SDE 用户定义函数调用 + #define 宏着色（Semantic Tokens，legend 扩展为 `[userFunctionCall, macro]`）
+- `tcl-funcall-semantic.js` — Tcl proc 调用处函数名语义着色（复用 `TclParseCache` WASM AST，零额外解析开销；SDEVICE 独立 Provider，其余 4 种 Tcl 工具复用统一 Provider）
 - `sdevice-semantic-provider.js` — SDEVICE 语义着色（sectionName/subSection/sectionKeyword/macro/vector token，纯文本栈追踪 + 三阶段扫描 + document.version 缓存）
 - `sdevice-vector-keywords.js` — SDEVICE Plot/CurrentPlot 矢量关键词数据模块（57 基础词 + 3 后缀）
 - `scheme-on-enter-provider.js` — Scheme 括号内回车多级自动缩进（与 `sde.json` onEnterRules 协同，逻辑提取至 `scheme-on-enter-logic.js`）
