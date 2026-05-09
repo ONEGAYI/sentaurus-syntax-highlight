@@ -101,12 +101,16 @@ function provideSchemeReferences(document, position, options) {
     }
 
     // Filter references — only include refs that resolve to the same definition
+    const visibleCache = new Map();
+    visibleCache.set(cursorLine, visibleDefs);
     for (const ref of refs) {
         if (ref.name !== word) continue;
-        // Skip the definition site itself (exact match)
         if (ref.line === targetDef.line && ref.start === targetDef.start && ref.end === targetDef.end) continue;
 
-        const refVisibleDefs = getVisibleDefinitions(scopeTree, ref.line);
+        if (!visibleCache.has(ref.line)) {
+            visibleCache.set(ref.line, getVisibleDefinitions(scopeTree, ref.line));
+        }
+        const refVisibleDefs = visibleCache.get(ref.line);
         const resolvesToSame = refVisibleDefs.some(
             d => d.name === word && d.line === targetDef.line && d.start === targetDef.start
         );
