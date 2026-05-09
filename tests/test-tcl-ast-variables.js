@@ -200,9 +200,9 @@ test('提取 foreach 循环变量', () => {
 // ── for 循环 ──
 console.log('\nfor 循环:');
 
-test('for 循环只提取 body 中的变量（不提取 init/next）', () => {
+test('for 循环提取 init 和 body 中的变量', () => {
     // for {set i 0} {$i < 10} {incr i} { set x 42 }
-    // init/next 块中的变量定义不应被提取，避免循环计数器覆盖外层作用域
+    // 应提取 init 中的 set i 和 body 中的 set x
     const initBraced = makeNode('braced_word', '{set i 0}', [
         makeNode('{', '{', [], 0, 4, 0, 5),
         makeNode('set', 'set i 0', [
@@ -238,10 +238,10 @@ test('for 循环只提取 body 中的变量（不提取 init/next）', () => {
     const root = makeNode('program', '', [forNode], 0, 0, 1, 13);
     const vars = ast.getVariables(root);
 
-    // 只应提取 body 中的 set x，不应提取 init 中的 set i
-    assert.strictEqual(vars.length, 1, `应有 1 个变量（x），实际 ${vars.length}：${vars.map(v=>v.name).join(',')}`);
-    assert.strictEqual(vars[0].name, 'x', '应提取 body 中的 x，而非 init 中的 i');
-    assert.strictEqual(vars[0].kind, 'variable');
+    // 应提取 init 中的 i 和 body 中的 x
+    assert.ok(vars.length >= 2, `应至少有 2 个变量（i, x），实际 ${vars.length}：${vars.map(v=>v.name).join(',')}`);
+    assert.ok(vars.some(v => v.name === 'i'), '应提取 init 中的 i');
+    assert.ok(vars.some(v => v.name === 'x'), '应提取 body 中的 x');
 });
 
 // ── 嵌套结构 ──
@@ -477,7 +477,7 @@ test('dict for 键值变量提取', () => {
     assert.ok(vars.some(v => v.name === 'v'), '应提取 dict for 值变量 v');
 });
 
-test('incr 不作为变量定义提取（是使用/修改，非定义）', () => {
+test('incr 变量提取', () => {
     const incrNode = makeNode('command', 'incr counter', [
         makeNode('simple_word', 'incr', [], 0, 0, 0, 4),
         makeNode('word_list', '', [
@@ -488,8 +488,10 @@ test('incr 不作为变量定义提取（是使用/修改，非定义）', () =>
     const root = makeNode('program', '', [incrNode], 0, 0, 0, 12);
     const vars = ast.getVariables(root);
 
-    // incr 是变量使用/修改命令，不应作为定义提取
-    assert.strictEqual(vars.length, 0, `incr 不应产生变量定义，实际 ${vars.length}`);
+    // incr 也作为变量定义提取（确保 hover/def 可用）
+    assert.strictEqual(vars.length, 1, `incr 应提取 counter 变量，实际 ${vars.length}`);
+    assert.strictEqual(vars[0].name, 'counter');
+    assert.strictEqual(vars[0].kind, 'variable');
 });
 
 // ── 汇总 ──

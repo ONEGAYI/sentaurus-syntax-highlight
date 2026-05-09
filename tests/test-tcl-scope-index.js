@@ -299,5 +299,118 @@ test('resolveDefinition: proc 内未定义变量返回 null', () => {
     assert.strictEqual(index.resolveDefinition('z', 3), null);
 });
 
+console.log('\n=== resolveDefinition 循环作用域优先级 测试 ===\n');
+
+// 场景：set i 0 (行1) → for {set i 1} ... (行2-4) → 循环外 while (行6)
+// for 循环内 init 中的 set i 1 不应劫持循环外的 $i 引用
+test('resolveDefinition: for 循环外优先匹配外层定义', () => {
+    // set i 0       (行 1)
+    // for {set i 1} {$i<10} {incr i} {body}  (行 2-4)
+    // puts $i       (行 6) — 应解析到行 1 而非行 2
+    const globalSet = makeNode('set', 'set i 0', [
+        makeNode('simple_word', 'set', [], 0, 0, 0, 3),
+        makeNode('id', 'i', [], 0, 4, 0, 5),
+        makeNode('simple_word', '0', [], 0, 6, 0, 7),
+    ], 0, 0, 0, 7);
+
+    const initBraced = makeNode('braced_word', '{set i 1}', [
+        makeNode('{', '{', [], 1, 4, 1, 5),
+        makeNode('set', 'set i 1', [
+            makeNode('simple_word', 'set', [], 1, 5, 1, 8),
+            makeNode('id', 'i', [], 1, 9, 1, 10),
+            makeNode('simple_word', '1', [], 1, 11, 1, 12),
+        ], 1, 5, 1, 12),
+        makeNode('}', '}', [], 1, 12, 1, 13),
+    ], 1, 4, 1, 13);
+
+    const condBraced = makeNode('braced_word', '{$i<10}', [], 1, 14, 1, 20);
+    const stepBraced = makeNode('braced_word', '{incr i}', [], 1, 21, 1, 28);
+    const bodyBraced = makeNode('braced_word', '{body}', [], 1, 29, 1, 34);
+
+    const forCmd = makeNode('command', 'for {set i 1} {$i<10} {incr i} {body}', [
+        makeNode('simple_word', 'for', [], 1, 0, 1, 3),
+        initBraced,
+        condBraced,
+        stepBraced,
+        bodyBraced,
+    ], 1, 0, 1, 34);
+
+    const root = makeNode('program', '', [globalSet, forCmd], 0, 0, 1, 34);
+    const index = ast.buildScopeIndex(root);
+
+    // 行 6（循环外）解析 i → 应为行 1（全局 set i 0），不是行 2（for init）
+    const resolved = index.resolveDefinition('i', 6);
+    assert.ok(resolved, '循环外应能解析 i');
+    assert.strictEqual(resolved.defLine, 1, `循环外应解析到行 1（全局 set i 0），实际行 ${resolved.defLine}`);
+});
+
+test('resolveDefinition: for 循环体内优先匹配循环内定义', () => {
+    // set i 0       (行 1)
+    // for {set i 1} {$i<10} {incr i} {body}  (行 2)
+    // 循环体内（行 2）解析 i → 应为行 2（for init）
+    const globalSet = makeNode('set', 'set i 0', [
+        makeNode('simple_word', 'set', [], 0, 0, 0, 3),
+        makeNode('id', 'i', [], 0, 4, 0, 5),
+        makeNode('simple_word', '0', [], 0, 6, 0, 7),
+    ], 0, 0, 0, 7);
+
+    const initBraced = makeNode('braced_word', '{set i 1}', [
+        makeNode('{', '{', [], 1, 4, 1, 5),
+        makeNode('set', 'set i 1', [
+            makeNode('simple_word', 'set', [], 1, 5, 1, 8),
+            makeNode('id', 'i', [], 1, 9, 1, 10),
+            makeNode('simple_word', '1', [], 1, 11, 1, 12),
+        ], 1, 5, 1, 12),
+        makeNode('}', '}', [], 1, 12, 1, 13),
+    ], 1, 4, 1, 13);
+
+    const bodyBraced = makeNode('braced_word', '{body}', [], 1, 29, 1, 34);
+    const forCmd = makeNode('command', 'for {set i 1} ...', [
+        makeNode('simple_word', 'for', [], 1, 0, 1, 3),
+        initBraced,
+        makeNode('braced_word', '{$i<10}', [], 1, 14, 1, 20),
+        makeNode('braced_word', '{incr i}', [], 1, 21, 1, 28),
+        bodyBraced,
+    ], 1, 0, 1, 34);
+
+    const root = makeNode('program', '', [globalSet, forCmd], 0, 0, 1, 34);
+    const index = ast.buildScopeIndex(root);
+
+    // 行 2（for 循环范围内）解析 i → 应为行 2（for init 中的 set i 1）
+    const resolved = index.resolveDefinition('i', 2);
+    assert.ok(resolved, '循环内应能解析 i');
+    assert.strictEqual(resolved.defLine, 2, `循环内应解析到行 2（for init set i 1），实际行 ${resolved.defLine}`);
+});
+
+test('resolveDefinition: foreach 循环外优先匹配外层定义', () => {
+    // set item 0        (行 1)
+    // foreach item $list { body }  (行 3)
+    // puts $item        (行 5) — 应解析到行 1
+    const globalSet = makeNode('set', 'set item 0', [
+        makeNode('simple_word', 'set', [], 0, 0, 0, 3),
+        makeNode('id', 'item', [], 0, 4, 0, 8),
+        makeNode('simple_word', '0', [], 0, 9, 0, 10),
+    ], 0, 0, 0, 10);
+
+    const foreachNode = makeNode('foreach', 'foreach item $list { body }', [
+        makeNode('simple_word', 'foreach', [], 2, 0, 2, 7),
+        makeNode('word_list', '', [
+            makeNode('simple_word', 'item', [], 2, 8, 2, 12),
+        ], 2, 8, 2, 12),
+        makeNode('word_list', '', [
+            makeNode('variable_substitution', '$list', [], 2, 13, 2, 18),
+        ], 2, 13, 2, 18),
+        makeNode('braced_word', '{ body }', [], 2, 19, 2, 27),
+    ], 2, 0, 2, 27);
+
+    const root = makeNode('program', '', [globalSet, foreachNode], 0, 0, 2, 27);
+    const index = ast.buildScopeIndex(root);
+
+    // 行 5（循环外）解析 item → 应为行 1（全局 set item 0）
+    const resolved = index.resolveDefinition('item', 5);
+    assert.ok(resolved, 'foreach 循环外应能解析 item');
+    assert.strictEqual(resolved.defLine, 1, `foreach 循环外应解析到行 1（全局 set item 0），实际行 ${resolved.defLine}`);
+});
+
 console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
 if (failed > 0) process.exit(1);
