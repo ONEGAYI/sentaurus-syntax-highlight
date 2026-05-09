@@ -186,6 +186,17 @@
           "match": "\\\\."
         },
         {
+          "name": "meta.interpolation.tcl",
+          "begin": "\\[",
+          "end": "\\]",
+          "captures": {
+            "0": { "name": "punctuation.section.interpolation.tcl" }
+          },
+          "patterns": [
+            { "include": "$self" }
+          ]
+        },
+        {
           "match": "\\$\\{[^}]+\\}|\\$[A-Za-z_][A-Za-z0-9_:]*",
           "name": "variable.other.readwrite.tcl"
         },
