@@ -4,6 +4,21 @@
 
 ---
 
+## [1.15.0] - 2026-05-09
+
+### 新功能
+
+- **Tcl 字符串内 [] 命令替换语法高亮**（#23）：为 5 种 Tcl 工具语法文件（sdevice/sprocess/svisual/emw/inspect）新增字符串双引号内 `[]` 命令替换的递归语法高亮。使用 `$self` 递归自引用实现嵌套命令替换的无限深度匹配；支持变量引用 `$var`/`${var}` 和转义字符 `\"`/`\\` 的识别；`\[` 转义由已有转义模式优先匹配，不被误识别为命令替换开始。覆盖 `puts "PI=[format %.3f $PI]_test"` 等真实用例
+
+### Bug 修复
+
+- **Tcl for/foreach 循环变量悬停、跳转与作用域感知**（#21）：修复 `for`/`foreach`/`lmap`/`dict for`/`incr` 等循环结构中变量定义的提取和悬停跳转。循环变量现在获得循环作用域，不再劫持外层同名定义；悬停/定义跳转/引用查找均通过作用域感知过滤，循环变量只在所属循环体内有效。新增 144 行作用域索引测试用例验证边界条件
+- **预处理器指令不再错误匹配空格**（#22）：修复 `#define`/`#ifdef` 等预处理器指令在 `#  后有空格` 形式时无法被识别的正则匹配问题，确保制表符和空格后的指令正确高亮
+- **Tcl 多变量命令变量定义提取**（#20）：修复 `lassign`/`foreach`/`scan`/`dict` 等多变量接收命令的参数识别，正确处理多个变量同时定义的场景
+- **Tcl 花括号变量 ${var} 语义支持**（#19）：为 `${var}` 花括号包裹变量形式添加悬停、定义跳转和引用查找支持，与 `$var` 行为一致
+
+---
+  
 ## [1.14.1] - 2026-05-09
 
 ### Bug 修复
@@ -812,6 +827,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.15.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.14.1...v1.15.0
 [1.14.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.14.0...v1.14.1
 [1.14.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.3...v1.14.0
 [1.13.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.2...v1.13.3
