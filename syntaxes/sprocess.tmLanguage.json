@@ -443,6 +443,13 @@
       "name": "keyword.control.sprocess"
     },
     {
+      "match": "\\b(proc)\\s+([A-Za-z_][A-Za-z0-9_\\-]*)",
+      "captures": {
+        "1": { "name": "keyword.other.sprocess" },
+        "2": { "name": "entity.name.function.sprocess" }
+      }
+    },
+    {
       "match": "\\b(proc|try|throw)\\b",
       "name": "keyword.other.sprocess"
     },

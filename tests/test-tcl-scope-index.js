@@ -82,6 +82,40 @@ test('proc 参数在 body 内可见', () => {
     assert.ok(globalLine.has('myProc'), 'proc 名 myProc 应可见（作为全局函数）');
 });
 
+// 测试 4b：proc 默认值参数在 body 内可见
+test('proc 默认值参数 {b 1.0} 在 body 内可见', () => {
+	const argsNode = makeNode('arguments', '{a {b 1.0}}', [
+		makeNode('argument', 'a', [
+			makeNode('simple_word', 'a', [], 0, 10, 0, 11),
+		], 0, 10, 0, 11),
+		makeNode('argument', '{b 1.0}', [
+			makeNode('{', '{', [], 0, 12, 0, 13),
+			makeNode('simple_word', 'b', [], 0, 13, 0, 14),
+			makeNode('simple_word', '1.0', [], 0, 15, 0, 18),
+			makeNode('}', '}', [], 0, 18, 0, 19),
+		], 0, 12, 0, 19),
+	], 0, 9, 0, 20);
+	const bodyNode = makeNode('braced_word', '{ ... }', [], 0, 21, 2, 1);
+	const procNode = makeNode('procedure', 'proc ADD {a {b 1.0}} { ... }', [
+		makeNode('simple_word', 'proc', [], 0, 0, 0, 4),
+		makeNode('simple_word', 'ADD', [], 0, 5, 0, 8),
+		argsNode,
+		bodyNode,
+	], 0, 0, 2, 1);
+	const root = makeNode('program', '', [procNode], 0, 0, 2, 1);
+
+	const index = ast.buildScopeIndex(root);
+	const bodyLine = index.getVisibleAt(1);
+	assert.ok(bodyLine.has('a'), 'body 内应可见参数 a');
+	assert.ok(bodyLine.has('b'), 'body 内应可见默认值参数 b');
+	const proc = index._procScopes[0];
+	assert.ok(proc.params.includes('b'), 'params 数组应包含 b');
+	assert.ok(!proc.params.includes('{b 1.0}'), 'params 数组不应包含原始文本 {b 1.0}');
+	const def = index.resolveDefinition('b', 1);
+	assert.ok(def, '默认值参数 b 应能被 resolveDefinition 找到');
+	assert.strictEqual(def.scope, 'local');
+});
+
 // 测试 5：proc 内部局部变量仅在 body 内可见
 test('proc 内部局部变量仅在 body 内可见', () => {
     // proc body 内有 set local_var 1 (row 2)

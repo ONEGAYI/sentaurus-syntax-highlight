@@ -76,11 +76,11 @@
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(scale_format|v|values|nof_labels|scale_padding|particles_size|start|powergain|width|help|csv|shift|dataset|handles_color|arrow_color|ids|scale|at|ModLorentzDampFac|nbin|weighted|smooth|position|xmax|regions|markers_type|script|vmin|conditions|normal_arrow)(?![A-Za-z0-9_:-])",
+          "match": "\\b(scale_format|values|nof_labels|scale_padding|particles_size|start|powergain|width|help|csv|shift|dataset|handles_color|arrow_color|ids|scale|at|ModLorentzDampFac|nbin|weighted|smooth|position|xmax|regions|markers_type|script|vmin|conditions|normal_arrow)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(CRITableStep|curves|p2|point|LogFile|integ_max_steps|arrow_size|linestyle|DebyeRelaxTime|text|ncond|scale_font_size|LorentzDampFac|biasport|rvs|ref_plot|aoo|xmin|vin|scale_precision|out|SimplexTolX|moments|b|s|linewidth|vout|label|index|focal_point)(?![A-Za-z0-9_:-])",
+          "match": "\\b(CRITableStep|curves|p2|point|LogFile|integ_max_steps|arrow_size|linestyle|DebyeRelaxTime|text|ncond|scale_font_size|LorentzDampFac|biasport|rvs|ref_plot|aoo|xmin|vin|scale_precision|out|SimplexTolX|moments|linewidth|vout|label|index|focal_point)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
@@ -88,7 +88,7 @@
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(sign|rfmatrix|ranges|plot|spacing|frame_width|font_factor|function|constant_arrow|geom|direction|EndTick|x|devicewidth|rotation|font_size|path|color_fg|ResultFile|ss|translucency_level|anchor|rotation_point|coord|view_up|contacts_color|region|occurrence|target|squares)(?![A-Za-z0-9_:-])",
+          "match": "\\b(sign|rfmatrix|ranges|plot|spacing|frame_width|font_factor|function|constant_arrow|geom|direction|EndTick|devicewidth|rotation|font_size|path|color_fg|ResultFile|ss|translucency_level|anchor|rotation_point|coord|view_up|contacts_color|region|occurrence|target|squares)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
@@ -96,15 +96,15 @@
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(xo|yLog|n|location|sifm|sgn|integ_max_propagation|plane|ParameterFile|npar|link|scale_font_att|title_font_size|rseed|desc|filename|segments|SimplexMaxIterations|value|pos|xaxis|border_width|title_font_color|special|frames|arrow_style|m|phi|style|p1)(?![A-Za-z0-9_:-])",
+          "match": "\\b(xo|yLog|location|sifm|sgn|integ_max_propagation|plane|ParameterFile|npar|link|scale_font_att|title_font_size|rseed|desc|filename|segments|SimplexMaxIterations|value|pos|xaxis|border_width|title_font_color|special|frames|arrow_style|phi|style|p1)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(semdataset|y|label_pos|markers_size|axis|color_map|ydd|resolution|deriv|line_width|minor_ticks_position|nsam|frame_duration|arrow_step|rfparameter|dim|margins|NumberLorentzPoles|weights|CRITableFile|yShift|LorentzFreq|NumberDrudePoles|id|valueY|material|rsig|max|less|head_size)(?![A-Za-z0-9_:-])",
+          "match": "\\b(semdataset|label_pos|markers_size|axis|color_map|ydd|resolution|deriv|line_width|minor_ticks_position|nsam|frame_duration|arrow_step|rfparameter|dim|margins|NumberLorentzPoles|weights|CRITableFile|yShift|LorentzFreq|NumberDrudePoles|id|valueY|material|rsig|max|less|head_size)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(end|DrudeFreq|yScale|r|eps|xScale|path_depth|precision|window|log10|FinalPlot|custom_levels|dss|WeightImagEps|ticks_position)(?![A-Za-z0-9_:-])",
+          "match": "\\b(end|DrudeFreq|yScale|eps|xScale|path_depth|precision|window|log10|FinalPlot|custom_levels|dss|WeightImagEps|ticks_position)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         }
       ]
@@ -281,6 +281,13 @@
     {
       "match": "\\b(if|else|elseif|for|foreach|while|switch|break|continue|return)\\b",
       "name": "keyword.control.svisual"
+    },
+    {
+      "match": "\\b(proc)\\s+([A-Za-z_][A-Za-z0-9_\\-]*)",
+      "captures": {
+        "1": { "name": "keyword.other.svisual" },
+        "2": { "name": "entity.name.function.svisual" }
+      }
     },
     {
       "match": "\\b(proc|try|throw)\\b",

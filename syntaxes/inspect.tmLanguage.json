@@ -219,6 +219,13 @@
       "name": "keyword.control.inspect"
     },
     {
+      "match": "\\b(proc)\\s+([A-Za-z_][A-Za-z0-9_\\-]*)",
+      "captures": {
+        "1": { "name": "keyword.other.inspect" },
+        "2": { "name": "entity.name.function.inspect" }
+      }
+    },
+    {
       "match": "\\b(proc|try|throw)\\b",
       "name": "keyword.other.inspect"
     },
