@@ -137,9 +137,9 @@ function parse(text) {
                 type: 'Quote',
                 expression: expr,
                 start: tok.start,
-                end: expr.end,
+                end: expr ? expr.end : tok.end,
                 line: tok.line,
-                endLine: expr.endLine,
+                endLine: expr ? expr.endLine : tok.line,
             };
         }
 
