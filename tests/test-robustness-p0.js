@@ -1,13 +1,9 @@
 'use strict';
+const { test, summary } = require('./helpers/test-runner');
 
 const assert = require('assert');
 const { parse } = require('../src/lsp/scheme-parser');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 console.log('\n=== P0: Quote+EOF 空指针崩溃修复 ===\n');
 
@@ -35,5 +31,4 @@ test("嵌套引用中的 Quote+EOF", () => {
     assert.ok(ast, '应返回有效 AST');
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-if (failed > 0) process.exit(1);
+summary();

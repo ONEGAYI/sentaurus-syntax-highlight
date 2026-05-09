@@ -1,25 +1,11 @@
 // tests/test-tcl-var-refs.js
+const { test, summary } = require('./helpers/test-runner');
+const { makeNode } = require('./helpers/mock-ast-node');
 'use strict';
 
 const assert = require('assert');
 
-function makeNode(type, text, children, startRow, startCol, endRow, endCol) {
-    return {
-        type, text,
-        children: children || [],
-        childCount: (children || []).length,
-        startPosition: { row: startRow || 0, column: startCol || 0 },
-        endPosition: { row: endRow || 0, column: endCol || 0 },
-        hasError: false,
-        child(i) { return this.children[i]; },
-    };
-}
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 const ast = require('../src/lsp/tcl-ast-utils');
 
@@ -77,5 +63,4 @@ test('variable_substitution 嵌套在 braced_word 中', () => {
     assert.strictEqual(refs[0].name, 'val');
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-if (failed > 0) process.exit(1);
+summary();

@@ -1,25 +1,10 @@
 // tests/test-parse-cache.js
 'use strict';
 
+const { test, summary } = require('./helpers/test-runner');
+const { mockDoc } = require('./helpers/mock-document');
 const assert = require('assert');
 const { SchemeParseCache, TclParseCache, computeLineStarts } = require('../src/lsp/parse-cache');
-
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
-
-/**
- * 创建模拟 document 对象
- */
-function mockDoc(uri, version, text) {
-    return {
-        uri: { toString: () => uri },
-        version,
-        getText: () => text,
-    };
-}
 
 // ===========================================================================
 // computeLineStarts
@@ -264,7 +249,5 @@ test('dispose 在空缓存上不抛异常', () => {
 // 汇总
 // ===========================================================================
 console.log(`\n${'='.repeat(50)}`);
-console.log(`测试完成: ${passed} 通过, ${failed} 失败`);
-if (failed > 0) {
-    process.exit(1);
-}
+
+summary();

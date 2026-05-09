@@ -2,19 +2,20 @@
 // 集成测试：用真实 WASM 解析器验证 buildScopeMap 对 word_list 包装命令的处理
 'use strict';
 
-const Parser = require('web-tree-sitter');
+const { test, summary } = require('./helpers/test-runner');
+const assert = require('assert');
+let Parser;
+try {
+    Parser = require('web-tree-sitter');
+} catch (e) {
+    if (e.code === 'MODULE_NOT_FOUND') {
+        console.error('⚠ web-tree-sitter 未安装。请在此工作树中运行 npm install');
+        process.exit(2);
+    }
+    throw e;
+}
 const path = require('path');
 const astUtils = require('../src/lsp/tcl-ast-utils');
-
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
-
-function assert(cond, msg) {
-    if (!cond) throw new Error(msg || 'Assertion failed');
-}
 
 async function main() {
     await Parser.init({
@@ -108,7 +109,7 @@ async function main() {
                 { name: 'gamma', line: 10 },
             ],
             [
-                { name: 'beta', line: 11 },  // 未通过 global/upvar 引入原始名
+                { name: 'beta', line: 11 },
             ]
         );
     });
@@ -129,11 +130,7 @@ async function main() {
         );
     });
 
-    console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-    if (failed > 0) process.exit(1);
+    // 异步测试中用 process.exitCode 替代 process.exit() 避免 libuv 句柄警告
+    const { printSummary } = require('./helpers/test-runner');
+    printSummary();
 }
-
-main().catch(e => {
-    console.error('Fatal:', e);
-    process.exit(1);
-});

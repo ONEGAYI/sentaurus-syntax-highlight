@@ -1,15 +1,11 @@
 'use strict';
+const { test, summary } = require('./helpers/test-runner');
 
 const assert = require('assert');
 const { parse } = require('../src/lsp/scheme-parser');
 const { extractSemanticTokens, TOKEN_TYPES, TOKEN_MODIFIERS } = require('../src/lsp/providers/semantic-tokens-provider');
 const { computeLineStarts } = require('../src/lsp/parse-cache');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 console.log('\nsemantic-tokens — extractSemanticTokens:');
 
@@ -87,5 +83,4 @@ test('define 体内的其他函数调用被正确标记', () => {
     assert.strictEqual(data.length, 5);
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-process.exit(failed > 0 ? 1 : 0);
+summary();

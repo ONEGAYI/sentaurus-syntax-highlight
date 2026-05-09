@@ -1,4 +1,5 @@
 // tests/test-signature-provider.js
+const { test, summary } = require('./helpers/test-runner');
 'use strict';
 
 const assert = require('assert');
@@ -26,11 +27,6 @@ function createMockCache() {
     };
 }
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 console.log('\nbuildSignatureLabel:');
 
@@ -318,5 +314,4 @@ test('非函数调用返回 null', () => {
     assert.strictEqual(result, null);
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-process.exit(failed > 0 ? 1 : 0);
+summary();

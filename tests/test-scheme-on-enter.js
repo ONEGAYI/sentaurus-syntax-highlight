@@ -1,4 +1,5 @@
 // tests/test-scheme-on-enter.js
+const { test, summary } = require('./helpers/test-runner');
 const assert = require('assert');
 const {
     countUnmatchedOpenParens,
@@ -7,11 +8,6 @@ const {
     findUnmatchedOpenParenColumns,
 } = require('../src/lsp/providers/scheme-on-enter-logic');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 // ─── isLastOpenParenEmpty ──────────────────
 console.log('\nisLastOpenParenEmpty:');
@@ -142,5 +138,5 @@ test('三层嵌套 ((|)) → 不跳过', () => {
 });
 
 // ─── 结果 ──────────────────────────────────
-console.log(`\n${passed} passed, ${failed} failed`);
-process.exit(failed ? 1 : 0);
+
+summary();
