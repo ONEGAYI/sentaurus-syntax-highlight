@@ -367,6 +367,7 @@ function activate(context) {
             if (!_docsCache.tcl) {
                 _docsCache.tcl = loadDocsJson('tcl_command_docs.json', useZh) || {};
                 _docsCache.tclMath = loadDocsJson('tcl_expr_mathfunc_docs.json', useZh) || {};
+                _docsCache.tclSub = loadDocsJson('tcl_subcommand_docs.json', useZh) || {};
             }
             if (!_docsCache[langId]) {
                 const langSpecificDocs = (() => {
@@ -569,6 +570,27 @@ function activate(context) {
             { language: langId },
             {
                 provideCompletionItems(document, position) {
+                    // Tcl 子命令上下文感知补全
+                    if (langId !== 'sde') {
+                        const linePrefix = document.lineAt(position.line).text.substring(0, position.character);
+                        const subcmdContext = linePrefix.match(/\b(string|file|info|array|dict)\s+$/);
+                        if (subcmdContext) {
+                            const parentCmd = subcmdContext[1];
+                            getDocs(langId);  // 确保 _docsCache.tclSub 已加载
+                            const subDocs = _docsCache.tclSub;
+                            if (subDocs && subDocs[parentCmd]) {
+                                const subItems = [];
+                                for (const [name, doc] of Object.entries(subDocs[parentCmd])) {
+                                    const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Method);
+                                    item.detail = 'Tcl 子命令';
+                                    item.documentation = new vscode.MarkdownString(doc.description);
+                                    subItems.push(item);
+                                }
+                                return subItems;
+                            }
+                        }
+                    }
+
                     const userDefs = defs.getDefinitions(document, langId);
                     if (userDefs.length === 0) return items;
 
@@ -692,6 +714,27 @@ function activate(context) {
 
                     // 1. 查函数文档（优先，仅限当前语言的文档）
                     const docs = getDocs(langId) || {};
+
+                    // Tcl 子命令上下文感知悬停
+                    const lineText = document.lineAt(position.line).text;
+                    const linePrefix = lineText.substring(0, position.character);
+                    const subcmdMatch = linePrefix.match(/\b(string|file|info|array|dict)\s+(\w+)$/);
+                    if (subcmdMatch) {
+                        const [, parentCmd, subcmd] = subcmdMatch;
+                        const subDocs = _docsCache.tclSub;
+                        if (subDocs && subDocs[parentCmd] && subDocs[parentCmd][word]) {
+                            const subDoc = subDocs[parentCmd][word];
+                            const md = new vscode.MarkdownString();
+                            md.appendMarkdown(`**${parentCmd} ${word}** \`（Tcl 子命令）\`\n\n`);
+                            md.appendCodeblock(subDoc.signature, 'tcl');
+                            md.appendMarkdown(`\n\n${subDoc.description}`);
+                            if (subDoc.example) {
+                                md.appendMarkdown('\n\n**示例：**\n');
+                                md.appendCodeblock(subDoc.example, 'tcl');
+                            }
+                            return new vscode.Hover(md, range);
+                        }
+                    }
 
                     // sdevice: 上下文感知文档查找（复用语义 token 缓存）
                     if (langId === 'sdevice') {
