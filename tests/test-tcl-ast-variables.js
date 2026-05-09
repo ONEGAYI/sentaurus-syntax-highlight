@@ -200,51 +200,47 @@ test('提取 foreach 循环变量', () => {
 // ── for 循环 ──
 console.log('\nfor 循环:');
 
-test('提取 for 循环 init 中的 set 变量', () => {
-    // for {set i 0} {$i < 10} {incr i} { body }
-    // "for" 被解析为 command 节点，第一个 simple_word 是 "for"
-    const initSet = makeNode('set', 'set i 0', [
-        makeNode('simple_word', 'set', [], 0, 5, 0, 8),
-        makeNode('id', 'i', [], 0, 9, 0, 10),
-        makeNode('simple_word', '0', [], 0, 11, 0, 12),
-    ], 0, 5, 0, 12);
+test('for 循环只提取 body 中的变量（不提取 init/next）', () => {
+    // for {set i 0} {$i < 10} {incr i} { set x 42 }
+    // init/next 块中的变量定义不应被提取，避免循环计数器覆盖外层作用域
     const initBraced = makeNode('braced_word', '{set i 0}', [
         makeNode('{', '{', [], 0, 4, 0, 5),
-        makeNode('word_list', '', [initSet], 0, 5, 0, 12),
+        makeNode('set', 'set i 0', [
+            makeNode('simple_word', 'set', [], 0, 5, 0, 8),
+            makeNode('id', 'i', [], 0, 9, 0, 10),
+            makeNode('simple_word', '0', [], 0, 11, 0, 12),
+        ], 0, 5, 0, 12),
         makeNode('}', '}', [], 0, 12, 0, 13),
     ], 0, 4, 0, 13);
 
-    const condBraced = makeNode('braced_word', '{$i < 10}', [
-        makeNode('{', '{', [], 0, 14, 0, 15),
-        makeNode('word_list', '', [], 0, 15, 0, 22),
-        makeNode('}', '}', [], 0, 22, 0, 23),
-    ], 0, 14, 0, 23);
+    const condBraced = makeNode('braced_word', '{$i < 10}', [], 0, 14, 0, 23);
+    const stepBraced = makeNode('braced_word', '{incr i}', [], 0, 24, 0, 32);
 
-    const stepBraced = makeNode('braced_word', '{incr i}', [
-        makeNode('{', '{', [], 0, 24, 0, 25),
-        makeNode('word_list', '', [], 0, 25, 0, 31),
-        makeNode('}', '}', [], 0, 31, 0, 32),
-    ], 0, 24, 0, 32);
-
-    const bodyBraced = makeNode('braced_word', '{ body }', [
+    const bodySet = makeNode('set', 'set x 42', [
+        makeNode('simple_word', 'set', [], 1, 4, 1, 7),
+        makeNode('id', 'x', [], 1, 8, 1, 9),
+        makeNode('simple_word', '42', [], 1, 10, 1, 12),
+    ], 1, 4, 1, 12);
+    const bodyBraced = makeNode('braced_word', '{ set x 42 }', [
         makeNode('{', '{', [], 0, 33, 0, 34),
-        makeNode('word_list', '', [], 0, 34, 0, 39),
-        makeNode('}', '}', [], 0, 39, 0, 40),
-    ], 0, 33, 0, 40);
+        bodySet,
+        makeNode('}', '}', [], 1, 12, 1, 13),
+    ], 0, 33, 1, 13);
 
-    const forNode = makeNode('command', 'for {set i 0} {$i < 10} {incr i} { body }', [
+    const forNode = makeNode('command', 'for {set i 0} {$i < 10} {incr i} { set x 42 }', [
         makeNode('simple_word', 'for', [], 0, 0, 0, 3),
         initBraced,
         condBraced,
         stepBraced,
         bodyBraced,
-    ], 0, 0, 0, 40);
+    ], 0, 0, 1, 13);
 
-    const root = makeNode('program', '', [forNode], 0, 0, 0, 40);
+    const root = makeNode('program', '', [forNode], 0, 0, 1, 13);
     const vars = ast.getVariables(root);
 
-    assert.strictEqual(vars.length, 1, `应有 1 个变量（i），实际 ${vars.length}`);
-    assert.strictEqual(vars[0].name, 'i');
+    // 只应提取 body 中的 set x，不应提取 init 中的 set i
+    assert.strictEqual(vars.length, 1, `应有 1 个变量（x），实际 ${vars.length}：${vars.map(v=>v.name).join(',')}`);
+    assert.strictEqual(vars[0].name, 'x', '应提取 body 中的 x，而非 init 中的 i');
     assert.strictEqual(vars[0].kind, 'variable');
 });
 
@@ -481,7 +477,7 @@ test('dict for 键值变量提取', () => {
     assert.ok(vars.some(v => v.name === 'v'), '应提取 dict for 值变量 v');
 });
 
-test('incr 变量提取', () => {
+test('incr 不作为变量定义提取（是使用/修改，非定义）', () => {
     const incrNode = makeNode('command', 'incr counter', [
         makeNode('simple_word', 'incr', [], 0, 0, 0, 4),
         makeNode('word_list', '', [
@@ -492,9 +488,8 @@ test('incr 变量提取', () => {
     const root = makeNode('program', '', [incrNode], 0, 0, 0, 12);
     const vars = ast.getVariables(root);
 
-    assert.strictEqual(vars.length, 1, `应有 1 个变量，实际 ${vars.length}`);
-    assert.strictEqual(vars[0].name, 'counter');
-    assert.strictEqual(vars[0].kind, 'variable');
+    // incr 是变量使用/修改命令，不应作为定义提取
+    assert.strictEqual(vars.length, 0, `incr 不应产生变量定义，实际 ${vars.length}`);
 });
 
 // ── 汇总 ──

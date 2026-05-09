@@ -1109,10 +1109,10 @@ function _handleForeach(node, results, sourceText, lines) {
  */
 function _handleWhile(node, results, sourceText, lines) {
     const words = _getCommandWords(node);
-    for (const w of words) {
-        if (w.type === 'braced_word') {
-            _collectVariables(w, results, sourceText, lines);
-        }
+    const bracedWords = words.filter(w => w.type === 'braced_word');
+    // while 有 cond + body 两个 braced_word，只递归 body（最后一个）
+    if (bracedWords.length > 0) {
+        _collectVariables(bracedWords[bracedWords.length - 1], results, sourceText, lines);
     }
 }
 
@@ -1175,23 +1175,7 @@ function _handleCommand(node, results, sourceText, lines) {
                 _collectVariables(w, results, sourceText, lines);
             }
         }
-    } else if (cmdName === 'incr') {
-        const words = _getCommandWords(node);
-        if (words.length >= 2) {
-            const varNode = words[1];
-            if (varNode.type === 'simple_word' || varNode.type === 'id') {
-                const defText = lines
-                    ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
-                    : node.text;
-                results.push({
-                    name: varNode.text,
-                    line: varNode.startPosition.row + 1,
-                    endLine: varNode.endPosition.row + 1,
-                    definitionText: defText,
-                    kind: 'variable',
-                });
-            }
-        }    } else {
+    } else {
         // 其他 command，递归子节点（可能包含嵌套结构）
         _collectVariables(node, results, sourceText, lines);
     }
@@ -1204,11 +1188,12 @@ function _handleCommand(node, results, sourceText, lines) {
  */
 function _handleFor(node, results, sourceText, lines) {
     // braced_word 在 word_list 内部，必须用 _getCommandWords 穿透
+    // 只递归 body（最后一个 braced_word），不提取 init/cond/next 中的变量定义
+    // 避免循环计数器变量覆盖外层作用域的同名变量
     const words = _getCommandWords(node);
-    for (const w of words) {
-        if (w.type === 'braced_word') {
-            _collectVariables(w, results, sourceText, lines);
-        }
+    const bracedWords = words.filter(w => w.type === 'braced_word');
+    if (bracedWords.length > 0) {
+        _collectVariables(bracedWords[bracedWords.length - 1], results, sourceText, lines);
     }
 }
 
