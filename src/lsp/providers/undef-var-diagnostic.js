@@ -281,12 +281,14 @@ function checkSchemeUndefVars(document) {
     // 收集 #define 宏名，避免将宏引用误报为未定义变量
     const ppMacroNames = new Set(ppDefs.map(d => d.name));
 
+    const visibleCache = new Map();
     const diagnostics = [];
     for (const ref of refs) {
         if (ppMacroNames.has(ref.name)) continue;
-        // 跳过已知名称（内置函数等已在 getSchemeRefs 中过滤）
-        // 这里额外检查作用域内可见性
-        const visible = scopeAnalyzer.getVisibleDefinitions(scopeTree, ref.line);
+        if (!visibleCache.has(ref.line)) {
+            visibleCache.set(ref.line, scopeAnalyzer.getVisibleDefinitions(scopeTree, ref.line));
+        }
+        const visible = visibleCache.get(ref.line);
         const isVisible = visible.some(d => d.name === ref.name);
 
         if (!isVisible) {
