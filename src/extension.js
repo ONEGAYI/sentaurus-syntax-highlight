@@ -913,8 +913,8 @@ function activate(context) {
                             }
                             return null;
                         }
-                        const defStartCol = def.start - lineStarts[def.line - 1];
-                        const defEndCol = def.end - lineStarts[def.line - 1];
+                        const defStartCol = ppUtils.safeCol(lineStarts, def.line, def.start);
+                        const defEndCol = ppUtils.safeCol(lineStarts, def.line, def.end);
                         return new vscode.Location(
                             document.uri,
                             new vscode.Range(def.line - 1, defStartCol, def.line - 1, defEndCol)

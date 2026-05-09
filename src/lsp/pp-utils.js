@@ -294,4 +294,9 @@ function offsetToLineCol(absOffset, lineStarts) {
     return { line: lo, col: absOffset - lineStarts[lo] };
 }
 
-module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens, escapeRegex, buildWordRegex, encodeTokenDelta, encodeDelta3, encodeDelta5, findUndefPpMacroRefs, offsetToLineCol };
+function safeCol(lineStarts, line, offset) {
+    const idx = line - 1;
+    return (idx >= 0 && idx < lineStarts.length) ? offset - lineStarts[idx] : 0;
+}
+
+module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens, escapeRegex, buildWordRegex, encodeTokenDelta, encodeDelta3, encodeDelta5, findUndefPpMacroRefs, offsetToLineCol, safeCol };
