@@ -4,6 +4,14 @@
 
 ---
 
+## [1.14.1] - 2026-05-09
+
+### Bug 修复
+
+- **Tcl 子命令高亮优先级与悬停文档修正**（#18）：修复 svisual/sprocess/inspect 三个语法文件中子命令模式（`string`/`file`/`info`/`array`/`dict`）被工具特有关键词模式抢匹配的问题，导致子命令获得错误 scope。将子命令模式移至 patterns 数组最前；修复 HoverProvider 中 `linePrefix` 截断导致悬停在子命令任意位置时正则匹配不完整的问题。子命令 scope 由 `support.function`（黄色）改为 `support.type`（青绿色），与主命令形成视觉区分
+
+---
+
 ## [1.14.0] - 2026-05-09
 
 ### 新功能
@@ -804,6 +812,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.14.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.14.0...v1.14.1
 [1.14.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.3...v1.14.0
 [1.13.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.2...v1.13.3
 [1.13.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.1...v1.13.2
