@@ -760,7 +760,10 @@ function activate(context) {
                         if (dollarRange) {
                             let dollarWord = document.getText(dollarRange);
                             if (dollarWord.startsWith('$')) dollarWord = dollarWord.slice(1);
-                            def = userDefs.find(d => d.name === dollarWord);
+                            // Tcl: set 既是定义也是赋值，取最后一个匹配
+                            for (const d of userDefs) {
+                                if (d.name === dollarWord) def = d;
+                            }
                             if (def) hoverRange = dollarRange;
                         }
                         if (!def) {
