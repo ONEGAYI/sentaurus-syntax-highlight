@@ -800,7 +800,7 @@ function activate(context) {
                         // Tcl: 用户变量悬停需要 $ 前缀；function/ppDefine 无此限制
                         // 支持 ${varName}（花括号形式）和 $varName（简单形式）
                         const bracedRange = document.getWordRangeAtPosition(position, /\$\{[\w:.\-<>?!+*/=]+\}/);
-                        const dollarRange = bracedRange || document.getWordRangeAtPosition(position, /(?<!\\)\$[\w:.\-<>?!+*/=]+/);
+                        const dollarRange = bracedRange || document.getWordRangeAtPosition(position, /(?<!\\)\$[\w:-]+/);
                         if (dollarRange) {
                             let dollarWord = document.getText(dollarRange);
                             if (dollarWord.startsWith('${') && dollarWord.endsWith('}')) {
