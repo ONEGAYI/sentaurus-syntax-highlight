@@ -4,6 +4,18 @@
 
 ---
 
+## [1.14.0] - 2026-05-09
+
+### 新功能
+
+- **Tcl 子命令上下文感知高亮与文档悬停**（#17）：为 5 种 Tcl 工具新增 `string`/`file`/`info`/`array`/`dict` 5 个主命令共 83 个子命令的上下文感知高亮。使用 TextMate match+captures 模式，仅在主命令后高亮子命令，单独出现的子命令不匹配；HoverProvider 通过同行前向扫描检测主命令-子命令组合，显示嵌套两级文档（中英文双语）；CompletionProvider 在主命令后第一个参数位触发子命令补全（kind=Method）。新增 `support.function.tcl-subcommand` scope，可独立配色
+
+### Bug 修复
+
+- **Tcl 变量悬停/跳转/引用语义修正**（#16）：HoverProvider、DefinitionProvider、ReferenceProvider 现在要求 `$varName` 才触发变量语义，裸名不再误匹配（与 undef-var 诊断行为一致）；所有 `$var` 匹配 regex 增加 `(?<!\)` lookbehind，Tcl 的 `\$var` 转义不再触发悬停/跳转；同一变量多次 `set` 时悬停显示最后一次的值，跳转定位到最后一个 `set`；5 个 Tcl 工具 tmLanguage 添加 `$var` 语法高亮（字符串内 + 顶层）
+
+---
+
 ## [1.13.3] - 2026-05-09
 
 ### 新功能
@@ -792,6 +804,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.14.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.3...v1.14.0
 [1.13.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.2...v1.13.3
 [1.13.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.1...v1.13.2
 [1.13.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.13.0...v1.13.1
