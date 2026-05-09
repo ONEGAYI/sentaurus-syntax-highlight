@@ -768,10 +768,9 @@ function activate(context) {
                                 }
                             }
                             if (def) hoverRange = dollarRange;
-                        }
-                        if (!def) {
-                            const bareWord = word.startsWith('$') ? word.slice(1) : word;
-                            def = userDefs.find(d => d.name === bareWord && d.kind !== 'variable');
+                        } else {
+                            // 无 $ 前缀时才查 proc/ppDefine 等非变量定义
+                            def = userDefs.find(d => d.name === word && d.kind !== 'variable');
                         }
                     } else {
                         def = userDefs.find(d => d.name === word);
