@@ -378,6 +378,53 @@
           ],
           "macro": [
             "entity.name.type.sdevice"
+          ],
+          "userFunctionCall": [
+            "entity.name.function.sdevice"
+          ]
+        }
+      },
+      {
+        "language": "sprocess",
+        "scopes": {
+          "userFunctionCall": [
+            "entity.name.function.sprocess"
+          ],
+          "macro": [
+            "entity.name.type.sprocess"
+          ]
+        }
+      },
+      {
+        "language": "emw",
+        "scopes": {
+          "userFunctionCall": [
+            "entity.name.function.emw"
+          ],
+          "macro": [
+            "entity.name.type.emw"
+          ]
+        }
+      },
+      {
+        "language": "inspect",
+        "scopes": {
+          "userFunctionCall": [
+            "entity.name.function.inspect"
+          ],
+          "macro": [
+            "entity.name.type.inspect"
+          ]
+        }
+      },
+      {
+        "language": "svisual",
+        "scopes": {
+          "userFunctionCall": [
+            "entity.name.function.svisual"
+          ],
+          "macro": [
+            "entity.name.type.svisual"
           ]
         }
       }

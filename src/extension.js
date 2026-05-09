@@ -8,6 +8,7 @@ const scopeAnalyzer = require('./lsp/scope-analyzer');
 const signatureProvider = require('./lsp/providers/signature-provider');
 const semanticTokensMod = require('./lsp/providers/semantic-tokens-provider');
 const sdeviceSemanticMod = require('./lsp/providers/sdevice-semantic-provider');
+const tclFuncallSemantic = require('./lsp/providers/tcl-funcall-semantic');
 const expressionConverter = require('./commands/expression-converter');
 const tclParserWasm = require('./lsp/tcl-parser-wasm');
 const astUtils = require('./lsp/tcl-ast-utils');
@@ -493,42 +494,36 @@ function activate(context) {
         )
     );
 
-    // Semantic Tokens (其他 Tcl 工具) — #define 宏着色（含 document.version 缓存）
-    const tclPpLangs = ['sprocess', 'emw', 'inspect', 'svisual'];
-    const ppDefineLegend = new vscode.SemanticTokensLegend(
-        ['macro'],
-        ['declaration']
+    // Semantic Tokens (sdevice) — proc 函数调用（补充到现有 section 语义着色之上）
+    const sdeviceFuncallLegend = new vscode.SemanticTokensLegend(
+        tclFuncallSemantic.FUNCALL_ONLY_TYPES,
+        []
     );
-    const ppTokenCache = new Map();
-    const PP_TOKEN_MAX_CACHE = 20;
+    const sdeviceFuncallProvider = tclFuncallSemantic.createTclFuncallSemanticProvider(tclCache, { includeMacro: false });
+    context.subscriptions.push(
+        vscode.languages.registerDocumentSemanticTokensProvider(
+            { language: 'sdevice' },
+            sdeviceFuncallProvider,
+            sdeviceFuncallLegend
+        )
+    );
+
+    // Semantic Tokens (其他 Tcl 工具) — proc 函数调用 + #define 宏着色
+    const tclPpLangs = ['sprocess', 'emw', 'inspect', 'svisual'];
+    const tclFuncallLegend = new vscode.SemanticTokensLegend(
+        tclFuncallSemantic.TOKEN_TYPES,
+        tclFuncallSemantic.TOKEN_MODIFIERS
+    );
+    const tclFuncallProvider = tclFuncallSemantic.createTclFuncallSemanticProvider(tclCache, { includeMacro: true });
     for (const ppLang of tclPpLangs) {
         context.subscriptions.push(
             vscode.languages.registerDocumentSemanticTokensProvider(
                 { language: ppLang },
-                {
-                    provideDocumentSemanticTokens(document) {
-                        const uri = document.uri.toString();
-                        const cached = ppTokenCache.get(uri);
-                        if (cached && cached.version === document.version) {
-                            return { data: cached.data };
-                        }
-                        const data = ppUtils.buildPpDefineTokens(document.getText());
-                        ppTokenCache.set(uri, { version: document.version, data });
-                        if (ppTokenCache.size > PP_TOKEN_MAX_CACHE) {
-                            ppTokenCache.delete(ppTokenCache.keys().next().value);
-                        }
-                        return { data };
-                    },
-                },
-                ppDefineLegend
+                tclFuncallProvider,
+                tclFuncallLegend
             )
         );
     }
-    context.subscriptions.push(
-        vscode.workspace.onDidCloseTextDocument(doc => {
-            ppTokenCache.delete(doc.uri.toString());
-        })
-    );
 
     // Signature Help (SDE only)
     const sigHelpDisposable = vscode.languages.registerSignatureHelpProvider(

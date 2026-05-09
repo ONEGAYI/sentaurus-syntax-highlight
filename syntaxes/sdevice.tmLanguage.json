@@ -10,6 +10,7 @@
     { "include": "#swb-params" },
     { "include": "#section-block" },
     { "match": "\\b(if|else|elseif|for|foreach|while|switch|break|continue|return)\\b", "name": "keyword.control.sdevice" },
+    { "match": "\\b(proc)\\s+([A-Za-z_][A-Za-z0-9_\\-]*)", "captures": { "1": { "name": "keyword.other.sdevice" }, "2": { "name": "entity.name.function.sdevice" } } },
     { "match": "\\b(proc|try|throw)\\b", "name": "keyword.other.sdevice" },
     {
       "match": "\\b(string)\\s+(length|match|range|first|last|index|trim|trimleft|trimright|tolower|toupper|totitle|equal|compare|is|map|repeat|replace|reverse|cat|wordstart|wordend|bytelength)\\b",

@@ -156,6 +156,13 @@
       "name": "keyword.control.emw"
     },
     {
+      "match": "\\b(proc)\\s+([A-Za-z_][A-Za-z0-9_\\-]*)",
+      "captures": {
+        "1": { "name": "keyword.other.emw" },
+        "2": { "name": "entity.name.function.emw" }
+      }
+    },
+    {
       "match": "\\b(proc|try|throw)\\b",
       "name": "keyword.other.emw"
     },

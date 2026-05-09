@@ -278,4 +278,20 @@ function findUndefPpMacroRefs(text, definedNames) {
     return results;
 }
 
-module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens, escapeRegex, buildWordRegex, encodeTokenDelta, encodeDelta3, encodeDelta5, findUndefPpMacroRefs };
+/**
+ * 将绝对字符偏移转换为 (0-based line, 0-based col)，利用预计算行首偏移表。
+ * @param {number} absOffset
+ * @param {number[]} lineStarts
+ * @returns {{ line: number, col: number }}
+ */
+function offsetToLineCol(absOffset, lineStarts) {
+    let lo = 0, hi = lineStarts.length - 1;
+    while (lo < hi) {
+        const mid = (lo + hi + 1) >> 1;
+        if (lineStarts[mid] <= absOffset) lo = mid;
+        else hi = mid - 1;
+    }
+    return { line: lo, col: absOffset - lineStarts[lo] };
+}
+
+module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens, escapeRegex, buildWordRegex, encodeTokenDelta, encodeDelta3, encodeDelta5, findUndefPpMacroRefs, offsetToLineCol };

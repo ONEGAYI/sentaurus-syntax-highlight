@@ -6,23 +6,6 @@ const TOKEN_TYPES = ['userFunctionCall', 'macro'];
 const TOKEN_MODIFIERS = ['declaration'];
 
 /**
- * 将绝对字符偏移转换为 (0-based line, 0-based col)，利用预计算行首偏移表。
- * @param {number} absOffset
- * @param {number[]} lineStarts
- * @returns {{ line: number, col: number }}
- */
-function offsetToLineCol(absOffset, lineStarts) {
-    // 二分查找：找最大的 lineStarts[i] <= absOffset
-    let lo = 0, hi = lineStarts.length - 1;
-    while (lo < hi) {
-        const mid = (lo + hi + 1) >> 1;
-        if (lineStarts[mid] <= absOffset) lo = mid;
-        else hi = mid - 1;
-    }
-    return { line: lo, col: absOffset - lineStarts[lo] };
-}
-
-/**
  * 共享 AST walker：提取用户定义函数调用位置。
  * @param {object} node - AST 节点
  * @param {Set<string>} userFuncNames - 用户定义函数名集合
@@ -41,7 +24,7 @@ function _walkForFuncCalls(node, userFuncNames, lineStarts, collector) {
         }
         if (firstEffective && firstEffective.type === 'Identifier' &&
             userFuncNames.has(firstEffective.value)) {
-            const pos = offsetToLineCol(firstEffective.start, lineStarts);
+            const pos = ppUtils.offsetToLineCol(firstEffective.start, lineStarts);
             collector(pos.line, pos.col, firstEffective.end - firstEffective.start);
         }
         // define 表达式中跳过 children[1]（变量名或函数签名 List），
