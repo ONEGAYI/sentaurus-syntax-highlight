@@ -462,15 +462,9 @@ function buildScopeIndex(root) {
                         }
                     }
                 }
-                if (cmdName === 'lassign' || cmdName === 'lmap') {
+                if (cmdName === 'lassign' || cmdName === 'lmap' || cmdName === 'dict') {
                     const words = _getCommandWords(child);
                     for (const d of _extractCommandVarDefs(child, cmdName, words)) {
-                        globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
-                    }
-                }
-                if (cmdName === 'dict') {
-                    const words = _getCommandWords(child);
-                    for (const d of _extractCommandVarDefs(child, 'dict', words)) {
                         globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
                     }
                 }
@@ -487,40 +481,10 @@ function buildScopeIndex(root) {
             }
         }
 
-        // ERROR 节点：tree-sitter 不识别的命令（lassign、variable、upvar 等）
-        if (child.type === 'ERROR' && child.childCount > 0) {
-            const first = child.child(0);
-            if (first && first.type === 'simple_word') {
-                const cmdName = first.text;
-                if (cmdName === 'lassign') {
-                    // lassign list varName ?varName ...?
-                    for (let i = 1; i < child.childCount; i++) {
-                        const arg = child.child(i);
-                        if (arg && arg.type === 'simple_word' && i >= 2) {
-                            globalDefs.push({
-                                name: arg.text,
-                                defLine: arg.startPosition.row + 1,
-                                isProc: false,
-                            });
-                        }
-                    }
-                } else if (cmdName === 'variable') {
-                    // variable ?name value ...? → 取奇数位（第1,3,5...个参数）
-                    let argIdx = 0;
-                    for (let i = 1; i < child.childCount; i++) {
-                        const arg = child.child(i);
-                        if (arg && arg.type === 'simple_word') {
-                            if (argIdx % 2 === 0) {
-                                globalDefs.push({
-                                    name: arg.text,
-                                    defLine: arg.startPosition.row + 1,
-                                    isProc: false,
-                                });
-                            }
-                            argIdx++;
-                        }
-                    }
-                }
+        // ERROR 节点：tree-sitter 不识别的命令（lassign、variable 等）
+        if (child.type === 'ERROR') {
+            for (const d of _extractErrorVarDefs(child)) {
+                globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
             }
         }
     }
@@ -572,14 +536,9 @@ function _collectLocalDefsForIndex(node, defs, scopeStart, scopeEnd) {
                             _collectLocalDefsForIndex(w, defs, scopeStart, scopeEnd);
                         }
                     }
-                } else if (cmdName === 'lassign' || cmdName === 'lmap') {
+                } else if (cmdName === 'lassign' || cmdName === 'lmap' || cmdName === 'dict') {
                     const words = _getCommandWords(child);
                     for (const d of _extractCommandVarDefs(child, cmdName, words)) {
-                        defs.push({ name: d.name, defLine: d.line });
-                    }
-                } else if (cmdName === 'dict') {
-                    const words = _getCommandWords(child);
-                    for (const d of _extractCommandVarDefs(child, 'dict', words)) {
                         defs.push({ name: d.name, defLine: d.line });
                     }
                 } else if (cmdName === 'lappend' || cmdName === 'append') {
@@ -600,29 +559,9 @@ function _collectLocalDefsForIndex(node, defs, scopeStart, scopeEnd) {
         }
 
         // ERROR 节点：lassign、variable 等未识别命令
-        if (child.type === 'ERROR' && child.childCount > 0) {
-            const first = child.child(0);
-            if (first && first.type === 'simple_word') {
-                const cmdName = first.text;
-                if (cmdName === 'lassign') {
-                    for (let i = 2; i < child.childCount; i++) {
-                        const arg = child.child(i);
-                        if (arg && arg.type === 'simple_word') {
-                            defs.push({ name: arg.text, defLine: arg.startPosition.row + 1 });
-                        }
-                    }
-                } else if (cmdName === 'variable') {
-                    let argIdx = 0;
-                    for (let i = 1; i < child.childCount; i++) {
-                        const arg = child.child(i);
-                        if (arg && arg.type === 'simple_word') {
-                            if (argIdx % 2 === 0) {
-                                defs.push({ name: arg.text, defLine: arg.startPosition.row + 1 });
-                            }
-                            argIdx++;
-                        }
-                    }
-                }
+        if (child.type === 'ERROR') {
+            for (const d of _extractErrorVarDefs(child)) {
+                defs.push({ name: d.name, defLine: d.line });
             }
         }
 
@@ -670,31 +609,15 @@ function _collectScopeImportsForIndex(node, imports) {
 
         if (cmdName === 'upvar') {
             const words = _getCommandWords(n);
-            if (words.length >= 3) {
-                let start = 1;
-                if (/^\d+$/.test(words[1].text)) start = 2;
-                for (let i = start; i < words.length; i += 2) {
-                    if (i + 1 < words.length) {
-                        const localWord = words[i + 1];
-                        if (localWord.type === 'simple_word' || localWord.type === 'id') {
-                            imports.push(localWord.text);
-                        }
-                    }
-                }
+            for (const name of _extractUpvarLocalNames(words)) {
+                imports.push(name);
             }
         }
 
         if (cmdName === 'variable') {
             const words = _getCommandWords(n);
-            let argIdx = 0;
-            for (let i = 1; i < words.length; i++) {
-                const w = words[i];
-                if (w.type === 'simple_word' || w.type === 'id') {
-                    if (argIdx % 2 === 0) {
-                        imports.push(w.text);
-                    }
-                    argIdx++;
-                }
+            for (const name of _extractVariableNames(words)) {
+                imports.push(name);
             }
         }
     });
@@ -776,17 +699,24 @@ function _collectGlobalDefs(root, scopeMap, maxLine) {
                         }
                     }
                 }
+                if (cmdName === 'lassign' || cmdName === 'lmap') {
+                    const words = _getCommandWords(child);
+                    for (const d of _extractCommandVarDefs(child, cmdName, words)) {
+                        _addToScopeFromLine(scopeMap, d.name, d.line, maxLine);
+                    }
+                }
+                if (cmdName === 'dict') {
+                    const words = _getCommandWords(child);
+                    for (const d of _extractCommandVarDefs(child, 'dict', words)) {
+                        _addToScopeFromLine(scopeMap, d.name, d.line, maxLine);
+                    }
+                }
             }
         }
 
         if (child.type === 'foreach') {
-            const argsNode = _findChildByType(child, 'arguments');
-            if (argsNode && argsNode.childCount > 0) {
-                const loopVar = argsNode.child(0);
-                if (loopVar && loopVar.text) {
-                    const defLine = loopVar.startPosition.row + 1;
-                    _addToScopeFromLine(scopeMap, loopVar.text, defLine, maxLine);
-                }
+            for (const v of _extractForeachVarNames(child)) {
+                _addToScopeFromLine(scopeMap, v.name, v.line, maxLine);
             }
         }
     }
@@ -959,34 +889,15 @@ function _processScopeImports(node, scopeMap, root, bodyStart, bodyEnd) {
 
         if (cmdName === 'upvar') {
             const words = _getCommandWords(n);
-            // upvar ?level? otherVar myVar ?otherVar myVar ...?
-            // 不按类型过滤，按位置取 local 变量名（每对的第二个）
-            if (words.length >= 3) {
-                let start = 1;
-                if (/^\d+$/.test(words[1].text)) start = 2;
-                for (let i = start; i < words.length; i += 2) {
-                    if (i + 1 < words.length) {
-                        const localWord = words[i + 1];
-                        if (localWord.type === 'simple_word' || localWord.type === 'id') {
-                            _addToScopeFromLine(scopeMap, localWord.text, bodyStart, bodyEnd);
-                        }
-                    }
-                }
+            for (const name of _extractUpvarLocalNames(words)) {
+                _addToScopeFromLine(scopeMap, name, bodyStart, bodyEnd);
             }
         }
 
         if (cmdName === 'variable') {
             const words = _getCommandWords(n);
-            // variable ?name value ...? → 取奇数位变量名（不按类型过滤以保持位置）
-            let argIdx = 0;
-            for (let i = 1; i < words.length; i++) {
-                const w = words[i];
-                if (w.type === 'simple_word' || w.type === 'id') {
-                    if (argIdx % 2 === 0) {
-                        _addToScopeFromLine(scopeMap, w.text, bodyStart, bodyEnd);
-                    }
-                    argIdx++;
-                }
+            for (const name of _extractVariableNames(words)) {
+                _addToScopeFromLine(scopeMap, name, bodyStart, bodyEnd);
             }
         }
     });
@@ -1030,36 +941,20 @@ function _collectVariables(node, results, sourceText, lines) {
 
             default:
                 // ERROR 节点中可能包含已知命令（lassign、variable 等）
-                if (child.type === 'ERROR' && child.childCount > 0) {
-                    const first = child.child(0);
-                    if (first && first.type === 'simple_word') {
-                        const cmdName = first.text;
-                        if (cmdName === 'lassign' || cmdName === 'variable') {
-                            const defText = lines
-                                ? _extendNodeTextToLineEnd(child.text, child.endPosition.row, lines)
-                                : child.text;
-                            // lassign list var1 var2 ... → 从第 2 个参数开始
-                            // variable name val name val ... → 奇数位
-                            const startIdx = cmdName === 'lassign' ? 2 : 1;
-                            let argIdx = 0;
-                            for (let j = 1; j < child.childCount; j++) {
-                                const arg = child.child(j);
-                                if (arg && arg.type === 'simple_word') {
-                                    const isDef = cmdName === 'lassign'
-                                        ? (j >= startIdx)
-                                        : (argIdx % 2 === 0);
-                                    if (isDef) {
-                                        results.push({
-                                            name: arg.text,
-                                            line: arg.startPosition.row + 1,
-                                            endLine: arg.startPosition.row + 1,
-                                            definitionText: defText,
-                                            kind: 'variable',
-                                        });
-                                    }
-                                    argIdx++;
-                                }
-                            }
+                if (child.type === 'ERROR') {
+                    const errorDefs = _extractErrorVarDefs(child);
+                    if (errorDefs.length > 0) {
+                        const defText = lines
+                            ? _extendNodeTextToLineEnd(child.text, child.endPosition.row, lines)
+                            : child.text;
+                        for (const d of errorDefs) {
+                            results.push({
+                                name: d.name,
+                                line: d.line,
+                                endLine: d.line,
+                                definitionText: defText,
+                                kind: 'variable',
+                            });
                         }
                     }
                 }
@@ -1335,13 +1230,42 @@ function _extractForeachVarNames(node) {
 }
 
 /**
+ * 从 braced_word 节点中提取所有变量名（如 {k v} → k, v）。
+ * braced_word 内部结构：{ → command(simple_word ...) → }，或直接 simple_word。
+ */
+function _extractBracedWordVars(bracedNode, defs) {
+    for (let i = 0; i < bracedNode.childCount; i++) {
+        const child = bracedNode.child(i);
+        if (!child || child.type === '{' || child.type === '}') continue;
+        if (child.type === 'command') {
+            for (let j = 0; j < child.childCount; j++) {
+                const sc = child.child(j);
+                if (sc && sc.type === 'simple_word') {
+                    defs.push({ name: sc.text, line: sc.startPosition.row + 1 });
+                }
+                if (sc && sc.type === 'word_list') {
+                    for (let k = 0; k < sc.childCount; k++) {
+                        const wc = sc.child(k);
+                        if (wc && wc.type === 'simple_word') {
+                            defs.push({ name: wc.text, line: wc.startPosition.row + 1 });
+                        }
+                    }
+                }
+            }
+        } else if (child.type === 'simple_word') {
+            defs.push({ name: child.text, line: child.startPosition.row + 1 });
+        }
+    }
+}
+
+/**
  * 从 command/ERROR 节点提取命令级变量定义（lassign、lmap、dict for）。
  * 返回 {name, line} 数组。
  */
 function _extractCommandVarDefs(node, cmdName, words) {
     const defs = [];
     if (cmdName === 'lassign') {
-        // lassign list ?varName ...?  → words[0]=lassign, words[1]=list, words[2+]=varNames
+        // words[2+] 为目标变量名（跳过命令名和源列表）
         for (let i = 2; i < words.length; i++) {
             const w = words[i];
             if (w.type === 'simple_word' || w.type === 'id') {
@@ -1349,40 +1273,19 @@ function _extractCommandVarDefs(node, cmdName, words) {
             }
         }
     } else if (cmdName === 'lmap') {
-        // lmap var1 list1 ?var2 list2 ...? body → 类似 foreach
+        // 奇数位为变量名（var/list 对交替，跳过末尾 body）
         for (let i = 1; i < words.length - 1; i += 2) {
             const w = words[i];
             if (w.type === 'simple_word' || w.type === 'id') {
                 defs.push({ name: w.text, line: w.startPosition.row + 1 });
+            } else if (w.type === 'braced_word') {
+                _extractBracedWordVars(w, defs);
             }
         }
     } else if (cmdName === 'dict' && words[1] && words[1].text === 'for') {
-        // dict for {keyVar valueVar} dict body → words[0]=dict, words[1]=for, words[2]={k v}
         const bracedVars = words[2];
         if (bracedVars && bracedVars.type === 'braced_word') {
-            for (let i = 0; i < bracedVars.childCount; i++) {
-                const child = bracedVars.child(i);
-                if (!child || child.type === '{' || child.type === '}') continue;
-                // braced_word 内部可能是 command > simple_word 或直接 simple_word
-                if (child.type === 'command') {
-                    for (let j = 0; j < child.childCount; j++) {
-                        const sc = child.child(j);
-                        if (sc && sc.type === 'simple_word') {
-                            defs.push({ name: sc.text, line: sc.startPosition.row + 1 });
-                        }
-                        if (sc && sc.type === 'word_list') {
-                            for (let k = 0; k < sc.childCount; k++) {
-                                const wc = sc.child(k);
-                                if (wc && wc.type === 'simple_word') {
-                                    defs.push({ name: wc.text, line: wc.startPosition.row + 1 });
-                                }
-                            }
-                        }
-                    }
-                } else if (child.type === 'simple_word') {
-                    defs.push({ name: child.text, line: child.startPosition.row + 1 });
-                }
-            }
+            _extractBracedWordVars(bracedVars, defs);
         }
     }
     return defs;
@@ -1391,6 +1294,77 @@ function _extractCommandVarDefs(node, cmdName, words) {
 /**
  * 查找第一个指定类型的直接子节点。
  */
+
+/**
+ * 从 ERROR 节点提取变量定义（lassign、variable 等）。
+ * tree-sitter 不识别这些命令时将其解析为 ERROR，子节点为扁平的 simple_word 列表。
+ * 返回 {name, line} 数组。
+ */
+function _extractErrorVarDefs(node) {
+    const defs = [];
+    if (node.childCount === 0) return defs;
+    const first = node.child(0);
+    if (!first || first.type !== 'simple_word') return defs;
+    const cmdName = first.text;
+    if (cmdName === 'lassign') {
+        for (let i = 2; i < node.childCount; i++) {
+            const arg = node.child(i);
+            if (arg && arg.type === 'simple_word') {
+                defs.push({ name: arg.text, line: arg.startPosition.row + 1 });
+            }
+        }
+    } else if (cmdName === 'variable') {
+        let argIdx = 0;
+        for (let i = 1; i < node.childCount; i++) {
+            const arg = node.child(i);
+            if (arg && arg.type === 'simple_word') {
+                if (argIdx % 2 === 0) {
+                    defs.push({ name: arg.text, line: arg.startPosition.row + 1 });
+                }
+                argIdx++;
+            }
+        }
+    }
+    return defs;
+}
+
+/**
+ * 从 upvar 命令词列表中提取所有本地变量名。
+ * upvar ?level? otherVar myVar ?otherVar myVar ...?
+ * 不按类型过滤以保持配对位置结构。
+ */
+function _extractUpvarLocalNames(words) {
+    const names = [];
+    if (words.length < 3) return names;
+    let start = 1;
+    if (/^\d+$/.test(words[1].text)) start = 2;
+    for (let i = start; i < words.length; i += 2) {
+        if (i + 1 < words.length) {
+            const w = words[i + 1];
+            if (w.type === 'simple_word' || w.type === 'id') {
+                names.push(w.text);
+            }
+        }
+    }
+    return names;
+}
+
+/**
+ * 从 variable 命令词列表中提取所有变量名（取 name-value 对中的 name）。
+ * variable ?name value ...?
+ */
+function _extractVariableNames(words) {
+    const names = [];
+    let argIdx = 0;
+    for (let i = 1; i < words.length; i++) {
+        const w = words[i];
+        if (w.type === 'simple_word' || w.type === 'id') {
+            if (argIdx % 2 === 0) names.push(w.text);
+        }
+        argIdx++;
+    }
+    return names;
+}
 function _findChildByType(node, type) {
     for (let i = 0; i < node.childCount; i++) {
         const child = node.child(i);
