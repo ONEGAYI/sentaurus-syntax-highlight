@@ -14,17 +14,16 @@ const TOKEN_MODIFIERS = ['declaration'];
  * @param {number[]} lineStarts - 预计算行首偏移表
  * @param {function} collector - 回调 (line, col, len)
  */
-function walkForTclFuncCalls(node, procNames, lineStarts, collector) {
+function walkForTclFuncCalls(node, procNames, _lineStarts, collector) {
     if (node.type === 'command') {
         const firstChild = node.child(0);
         if (firstChild && firstChild.type === 'simple_word' && procNames.has(firstChild.text)) {
-            const pos = ppUtils.offsetToLineCol(firstChild.startIndex, lineStarts);
-            collector(pos.line, pos.col, firstChild.endIndex - firstChild.startIndex);
+            collector(firstChild.startPosition.row, firstChild.startPosition.column, firstChild.endPosition.column - firstChild.startPosition.column);
         }
     }
 
     for (let i = 0; i < node.childCount; i++) {
-        walkForTclFuncCalls(node.child(i), procNames, lineStarts, collector);
+        walkForTclFuncCalls(node.child(i), procNames, _lineStarts, collector);
     }
 }
 
@@ -49,9 +48,9 @@ function createTclFuncallSemanticProvider(tclCache, options) {
 
             // Type 0: userFunctionCall
             const scopeIndex = tclCache.getScopeIndex(document);
-            const procNames = scopeIndex ? scopeIndex._globalProcNames : new Map();
+            const procNames = scopeIndex ? scopeIndex.globalProcNames : new Map();
             if (procNames.size > 0) {
-                walkForTclFuncCalls(entry.tree.rootNode, procNames, entry.lineStarts, (line, col, len) => {
+                walkForTclFuncCalls(entry.tree.rootNode, procNames, null, (line, col, len) => {
                     rawTokens.push([line, col, len, 0, 0]);
                 });
             }

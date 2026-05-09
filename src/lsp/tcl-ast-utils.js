@@ -259,6 +259,8 @@ class ScopeIndex {
         this._loopScopes = loopScopes || [];
     }
 
+    get globalProcNames() { return this._globalProcNames; }
+
     /**
      * 在定义列表中查找名称匹配且 defLine <= line 的最后一条记录。
      * Tcl 中 set 既是定义也是赋值，应取最后一条。
