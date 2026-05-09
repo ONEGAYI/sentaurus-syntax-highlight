@@ -133,5 +133,4 @@ async function main() {
     // 异步测试中用 process.exitCode 替代 process.exit() 避免 libuv 句柄警告
     const { printSummary } = require('./helpers/test-runner');
     printSummary();
-    process.exitCode = 0; // summary 内部已打印结果，设退出码即可
 }
