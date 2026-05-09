@@ -280,7 +280,7 @@ test('resolveDefinition: proc 内局部 set 变量', () => {
     assert.ok(argResult, '应找到 arg1 参数定义');
     assert.strictEqual(argResult.scope, 'local');
 
-    const yResult = index.resolveDefinition('y', 3);
+    const yResult = index.resolveDefinition('y', 4);
     assert.ok(yResult, '应找到 y 的局部定义');
     assert.strictEqual(yResult.scope, 'local');
 });

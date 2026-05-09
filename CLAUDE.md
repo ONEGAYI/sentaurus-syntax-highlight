@@ -18,6 +18,7 @@
   注意：脚本中输入/输出路径是硬编码的（`d:\pydemo\modes` 和 `d:\pydemo\sentaurus-tcad-syntax\syntaxes`），运行前需修改 `main()` 中的路径。
 
 - **测试扩展**：使用 VSCode 的 "Extension Development Host" 启动配置（从 `.vscode/launch.json` 按 F5）
+- **工作树注意事项**：`git worktree` 只复制 git 跟踪的文件，`node_modules/`（含 `web-tree-sitter`）被 `.gitignore` 排除。在新工作树中开发前**必须运行 `npm install`**，否则 WASM 解析器加载失败导致所有 Tcl 语义功能（悬停、跳转、诊断、折叠）全部失效。`display_test/` 同样被忽略，测试文件可在主仓库路径下打开，不影响功能。
 
 - **打包扩展**：
   ```bash

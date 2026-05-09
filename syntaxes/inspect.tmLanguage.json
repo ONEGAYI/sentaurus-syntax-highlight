@@ -151,6 +151,10 @@
           "match": "\\\\."
         },
         {
+          "match": "\\$\\{[^}]+\\}|\\$[A-Za-z_][A-Za-z0-9_:]*",
+          "name": "variable.other.readwrite.tcl"
+        },
+        {
           "match": "@[a-zA-Z_<][^@]*@",
           "name": "constant.character.format.placeholder"
         }
@@ -214,6 +218,10 @@
     {
       "match": "\\b(abs|acos|asin|atan|atan2|bool|ceil|cos|cosh|double|entier|exp|floor|fmod|hypot|int|isqrt|log|log10|max|min|pow|rand|round|sin|sinh|sqrt|srand|tan|tanh|wide)\\b",
       "name": "support.function.math.tcl"
+    },
+    {
+      "match": "\\$\\{[^}]+\\}|\\$[A-Za-z_][A-Za-z0-9_:]*",
+      "name": "variable.other.readwrite.tcl"
     },
     {
       "match": "\\b[A-Za-z_][A-Za-z0-9_\\-]*(?![A-Za-z0-9_\\-])",

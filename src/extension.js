@@ -701,7 +701,7 @@ function activate(context) {
             {
                 provideHover(document, position) {
                     if (isInComment(document, position)) return null;
-                    const range = document.getWordRangeAtPosition(position, /[\w:.\-<>?!+*/=]+/);
+                    const range = document.getWordRangeAtPosition(position, /\$?[\w:.\-<>?!+*/=]+/);
                     if (!range) return null;
                     const word = document.getText(range);
 
@@ -792,17 +792,38 @@ function activate(context) {
 
                     // 2. 查用户变量定义
                     const userDefs = defs.getDefinitions(document, langId);
-                    let def = userDefs.find(d => d.name === word);
+                    let def = null;
                     let hoverRange = range;
 
-                    // Fallback: broad regex may over-capture (e.g. "Voltage=_Vds_"), try \w+ only
-                    let hoverWord = word;
-                    if (!def) {
-                        const narrowRange = document.getWordRangeAtPosition(position, /[\w]+/);
-                        if (narrowRange) {
-                            hoverWord = document.getText(narrowRange);
-                            def = userDefs.find(d => d.name === hoverWord);
-                            if (def) hoverRange = narrowRange;
+                    if (astUtils.TCL_LANGS.has(langId)) {
+                        // Tcl: 用户变量悬停需要 $ 前缀；function/ppDefine 无此限制
+                        const dollarRange = document.getWordRangeAtPosition(position, /(?<!\\)\$[\w:.\-<>?!+*/=]+/);
+                        if (dollarRange) {
+                            let dollarWord = document.getText(dollarRange);
+                            if (dollarWord.startsWith('$')) dollarWord = dollarWord.slice(1);
+                            // Tcl: set 既是定义也是赋值，取光标前行号最大的匹配
+                            const cursorLine = position.line + 1;
+                            for (const d of userDefs) {
+                                if (d.name === dollarWord && d.line <= cursorLine) {
+                                    if (!def || d.line > def.line) def = d;
+                                }
+                            }
+                            if (def) hoverRange = dollarRange;
+                        } else {
+                            // 无 $ 前缀时才查 proc/ppDefine 等非变量定义
+                            def = userDefs.find(d => d.name === word && d.kind !== 'variable');
+                        }
+                    } else {
+                        def = userDefs.find(d => d.name === word);
+                        // Fallback: broad regex may over-capture (e.g. "Voltage=_Vds_"), try \w+ only
+                        let hoverWord = word;
+                        if (!def) {
+                            const narrowRange = document.getWordRangeAtPosition(position, /[\w]+/);
+                            if (narrowRange) {
+                                hoverWord = document.getText(narrowRange);
+                                def = userDefs.find(d => d.name === hoverWord);
+                                if (def) hoverRange = narrowRange;
+                            }
                         }
                     }
 
@@ -868,7 +889,7 @@ function activate(context) {
                     }
 
                     // Tcl: scope-aware via buildScopeIndex + resolveDefinition
-                    const dollarRange = document.getWordRangeAtPosition(position, /\$[\w:-]+/);
+                    const dollarRange = document.getWordRangeAtPosition(position, /(?<!\\)\$[\w:-]+/);
                     const plainRange = document.getWordRangeAtPosition(position, /[\w:-]+/);
                     const range = dollarRange || plainRange;
                     if (!range) return null;
@@ -897,6 +918,9 @@ function activate(context) {
                     const scopeIndex = astUtils.buildScopeIndex(entry.tree.rootNode);
                     let targetDef = scopeIndex.resolveDefinition(word, cursorLine);
                     if (!targetDef) return null;
+
+                    // 用户变量（非 function）需要 $ 前缀；proc 可通过裸名跳转
+                    if (!dollarRange && targetDef.scope !== 'global-proc') return null;
 
                     const defLine0 = targetDef.defLine - 1;
                     const defLineText = document.lineAt(defLine0).text;

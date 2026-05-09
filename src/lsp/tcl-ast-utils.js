@@ -257,6 +257,22 @@ class ScopeIndex {
     }
 
     /**
+     * 在定义列表中查找名称匹配且 defLine <= line 的最后一条记录。
+     * Tcl 中 set 既是定义也是赋值，应取最后一条。
+     * @param {Array<{name: string, defLine: number}>} defs
+     * @param {string} name
+     * @param {number} line - 1-based 行号
+     * @returns {object|null}
+     */
+    _findLastDefBefore(defs, name, line) {
+        let result = null;
+        for (const d of defs) {
+            if (d.name === name && d.defLine <= line) result = d;
+        }
+        return result;
+    }
+
+    /**
      * 查询指定行号（1-based）的可见变量集。
      * @param {number} line - 1-based 行号
      * @returns {Set<string>} 可见变量名集合
@@ -322,11 +338,11 @@ class ScopeIndex {
                 return { defLine: proc.startLine, scope: 'local' };
             }
 
-            const local = proc.localDefs.find(d => d.name === name);
+            const local = this._findLastDefBefore(proc.localDefs, name, line);
             if (local) return { defLine: local.defLine, scope: 'local' };
 
             if (proc.scopeImports.includes(name)) {
-                const globalDef = this._globalDefs.find(d => d.name === name);
+                const globalDef = this._findLastDefBefore(this._globalDefs, name, line);
                 if (globalDef) return { defLine: globalDef.defLine, scope: 'imported' };
             }
 
@@ -336,7 +352,7 @@ class ScopeIndex {
             return null;
         }
 
-        const globalDef = this._globalDefs.find(d => d.name === name);
+        const globalDef = this._findLastDefBefore(this._globalDefs, name, line);
         if (globalDef) return { defLine: globalDef.defLine, scope: 'global' };
 
         const globalProc = this._globalDefs.find(d => d.name === name && d.isProc);
