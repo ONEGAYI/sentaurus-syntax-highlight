@@ -25,7 +25,7 @@ const variableReferenceProvider = require('./lsp/providers/variable-reference-pr
 const symbolCompletion = require('./lsp/providers/symbol-completion');
 const symbolReferenceProvider = require('./lsp/providers/symbol-reference-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
-const { getSdeviceAllSectionKeywordsLower } = require('./lsp/tcl-symbol-configs');
+const { SDEVICE_ALL_SECTION_KEYWORDS_LOWER } = require('./lsp/tcl-symbol-configs');
 const ppUtils = require('./lsp/pp-utils');
 
 const TCL_SUBCMD_COMPLETION_RE = /\b(string|file|info|array|dict)\s+$/;
@@ -475,7 +475,7 @@ function activate(context) {
 
     // Semantic Tokens (sdevice) — section 上下文感知着色
     const sdeviceDocs = loadDocsJson('sdevice_command_docs.json', false) || {};
-    const sdeviceSectionKwsLower = getSdeviceAllSectionKeywordsLower();
+    const sdeviceSectionKwsLower = SDEVICE_ALL_SECTION_KEYWORDS_LOWER;
     // 小写→原始大小写映射，用于 hover 等需要原始键查找文档的场景
     const sdeviceLowerToCanon = new Map();
     for (const key of Object.keys(sdeviceDocs)) {

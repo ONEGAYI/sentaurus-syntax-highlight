@@ -103,18 +103,17 @@ function getSdeviceAllSectionKeywords() {
 }
 
 /**
- * 获取 sdevice 完整 section 关键词集合（全小写）。
+ * sdevice 完整 section 关键词集合（全小写）。
  * SDEVICE keywords are case insensitive (User Guide Table 193)。
  * 用于语义 Provider 的大小写不敏感匹配。
- * @returns {Set<string>}
  */
-function getSdeviceAllSectionKeywordsLower() {
-    return new Set([...getSdeviceAllSectionKeywords()].map(k => k.toLowerCase()));
-}
+const SDEVICE_ALL_SECTION_KEYWORDS_LOWER = new Set(
+    [...getSdeviceAllSectionKeywords()].map(k => k.toLowerCase())
+);
 
 module.exports = {
     isSectionCommand,
     getSdeviceAllSectionKeywords,
-    getSdeviceAllSectionKeywordsLower,
+    SDEVICE_ALL_SECTION_KEYWORDS_LOWER,
     SDEVICE_SUB_SECTIONS,
 };
