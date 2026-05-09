@@ -685,7 +685,7 @@ function activate(context) {
                 if (ch === '"') { i++; while (i < col && lineText[i] !== '"') { if (lineText[i] === '\\') i++; i++; } continue; }
                 if (ch === commentChars) {
                     // Tcl: # 开头后跟 define/ifdef/ifndef/undef/endif/elif/else/set/seth/include/error/rem/verbatim 是预处理器指令，不是注释
-                    if (langId !== 'sde' && /^\s*#\s*(define|undef|ifdef|ifndef|endif|elif|else|if\b|set|seth|include|error|rem|verbatim)\b/.test(lineText)) {
+                    if (langId !== 'sde' && /^\s*#(define|undef|ifdef|ifndef|endif|elif|else|if\b|set|seth|include|error|rem|verbatim)\b/.test(lineText)) {
                         return false;
                     }
                     return true;

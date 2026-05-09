@@ -189,11 +189,11 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
         const trimmed = lineText.trimStart();
 
         // #define / #ifdef / #ifndef / #undef 行的宏名 token（必须在 continue 之前）
-        const ppMatch = lineText.match(/^(\s*)(#\s*(?:define|undef|ifdef|ifndef))\s+(\w+)/);
+        const ppMatch = lineText.match(/^(\s*)(#(?:define|undef|ifdef|ifndef))\s+(\w+)/);
         if (ppMatch) {
             const ppKwCol = ppMatch[1].length;
             const nameCol = lineText.indexOf(ppMatch[3], ppKwCol + ppMatch[2].length);
-            const isDefine = /^#\s*define\b/.test(ppMatch[2]);
+            const isDefine = /^#define\b/.test(ppMatch[2]);
             tokens.push({
                 line: lineIdx,
                 col: nameCol,
