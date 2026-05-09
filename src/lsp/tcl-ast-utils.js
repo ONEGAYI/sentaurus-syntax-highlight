@@ -265,15 +265,11 @@ class ScopeIndex {
      * @returns {object|null}
      */
     _findLastDefBefore(defs, name, line) {
-        let lastBefore = null;
-        let lastOverall = null;
+        let result = null;
         for (const d of defs) {
-            if (d.name === name) {
-                lastOverall = d;
-                if (d.defLine <= line) lastBefore = d;
-            }
+            if (d.name === name && d.defLine <= line) result = d;
         }
-        return lastBefore || lastOverall;
+        return result;
     }
 
     /**

@@ -760,9 +760,12 @@ function activate(context) {
                         if (dollarRange) {
                             let dollarWord = document.getText(dollarRange);
                             if (dollarWord.startsWith('$')) dollarWord = dollarWord.slice(1);
-                            // Tcl: set 既是定义也是赋值，取最后一个匹配
+                            // Tcl: set 既是定义也是赋值，取光标前行号最大的匹配
+                            const cursorLine = position.line + 1;
                             for (const d of userDefs) {
-                                if (d.name === dollarWord) def = d;
+                                if (d.name === dollarWord && d.line <= cursorLine) {
+                                    if (!def || d.line > def.line) def = d;
+                                }
                             }
                             if (def) hoverRange = dollarRange;
                         }
