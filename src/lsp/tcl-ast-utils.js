@@ -541,6 +541,20 @@ function _collectLocalDefsForIndex(node, defs, scopeStart, scopeEnd) {
                     for (const d of _extractCommandVarDefs(child, cmdName, words)) {
                         defs.push({ name: d.name, defLine: d.line });
                     }
+                    // braced_word 在 word_list 内，用 _getCommandWords 穿透递归 body
+                    for (const w of words) {
+                        if (w.type === 'braced_word') {
+                            _collectLocalDefsForIndex(w, defs, scopeStart, scopeEnd);
+                        }
+                    }
+                } else if (cmdName === 'incr') {
+                    const words = _getCommandWords(child);
+                    if (words.length >= 2) {
+                        const varNode = words[1];
+                        if (varNode.type === 'simple_word' || varNode.type === 'id') {
+                            defs.push({ name: varNode.text, defLine: varNode.startPosition.row + 1 });
+                        }
+                    }
                 } else if (cmdName === 'lappend' || cmdName === 'append') {
                     const words = _getCommandWords(child);
                     for (const arg of words) {
@@ -834,6 +848,20 @@ function _collectLocalDefs(node, scopeMap, scopeStart, scopeEnd) {
                     for (const d of _extractCommandVarDefs(child, 'dict', words)) {
                         _addToScopeFromLine(scopeMap, d.name, d.line, scopeEnd);
                     }
+                    for (const w of words) {
+                        if (w.type === 'braced_word') {
+                            _collectLocalDefs(w, scopeMap, scopeStart, scopeEnd);
+                        }
+                    }
+                } else if (cmdName === 'incr') {
+                    const words = _getCommandWords(child);
+                    if (words.length >= 2) {
+                        const varNode = words[1];
+                        if (varNode.type === 'simple_word' || varNode.type === 'id') {
+                            const defLine = varNode.startPosition.row + 1;
+                            _addToScopeFromLine(scopeMap, varNode.text, defLine, scopeEnd);
+                        }
+                    }
                 } else if (cmdName === 'lappend' || cmdName === 'append') {
                     const words = _getCommandWords(child);
                     for (const arg of words) {
@@ -1080,12 +1108,10 @@ function _handleForeach(node, results, sourceText, lines) {
  * while {cond} { body }
  */
 function _handleWhile(node, results, sourceText, lines) {
-    // while 可能有多个 braced_word（条件 + body）
-    const bracedWords = _findChildrenByType(node, 'braced_word');
-    // 最后一个 braced_word 是 body
-    if (bracedWords.length > 0) {
-        for (const bw of bracedWords) {
-            _collectVariables(bw, results, sourceText, lines);
+    const words = _getCommandWords(node);
+    for (const w of words) {
+        if (w.type === 'braced_word') {
+            _collectVariables(w, results, sourceText, lines);
         }
     }
 }
@@ -1122,10 +1148,11 @@ function _handleCommand(node, results, sourceText, lines) {
                 kind: 'variable',
             });
         }
-        // 递归 braced_word 子节点（body/lmap body）
-        const bracedWords = _findChildrenByType(node, 'braced_word');
-        for (const bw of bracedWords) {
-            _collectVariables(bw, results, sourceText, lines);
+        // braced_word 在 word_list 内，必须用 _getCommandWords 穿透
+        for (const w of words) {
+            if (w.type === 'braced_word') {
+                _collectVariables(w, results, sourceText, lines);
+            }
         }
     } else if (cmdName === 'dict') {
         const words = _getCommandWords(node);
@@ -1143,12 +1170,28 @@ function _handleCommand(node, results, sourceText, lines) {
                 });
             }
         }
-        // 递归 braced_word（dict for body）
-        const bracedWords = _findChildrenByType(node, 'braced_word');
-        for (const bw of bracedWords) {
-            _collectVariables(bw, results, sourceText, lines);
+        for (const w of words) {
+            if (w.type === 'braced_word') {
+                _collectVariables(w, results, sourceText, lines);
+            }
         }
-    } else {
+    } else if (cmdName === 'incr') {
+        const words = _getCommandWords(node);
+        if (words.length >= 2) {
+            const varNode = words[1];
+            if (varNode.type === 'simple_word' || varNode.type === 'id') {
+                const defText = lines
+                    ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
+                    : node.text;
+                results.push({
+                    name: varNode.text,
+                    line: varNode.startPosition.row + 1,
+                    endLine: varNode.endPosition.row + 1,
+                    definitionText: defText,
+                    kind: 'variable',
+                });
+            }
+        }    } else {
         // 其他 command，递归子节点（可能包含嵌套结构）
         _collectVariables(node, results, sourceText, lines);
     }
@@ -1160,10 +1203,12 @@ function _handleCommand(node, results, sourceText, lines) {
  * → command: simple_word("for") + braced_word(init) + braced_word(cond) + braced_word(step) + braced_word(body)
  */
 function _handleFor(node, results, sourceText, lines) {
-    // 递归所有 braced_word 子节点（init 中可能有 set，body 中也可能有）
-    const bracedWords = _findChildrenByType(node, 'braced_word');
-    for (const bw of bracedWords) {
-        _collectVariables(bw, results, sourceText, lines);
+    // braced_word 在 word_list 内部，必须用 _getCommandWords 穿透
+    const words = _getCommandWords(node);
+    for (const w of words) {
+        if (w.type === 'braced_word') {
+            _collectVariables(w, results, sourceText, lines);
+        }
     }
 }
 
@@ -1659,9 +1704,11 @@ function _symbolFor(node, langId, out) {
         children: [],
     };
 
-    const bracedWords = _findChildrenByType(node, 'braced_word');
-    for (const bw of bracedWords) {
-        _collectSymbols(bw, langId, symbol.children);
+    const words = _getCommandWords(node);
+    for (const w of words) {
+        if (w.type === 'braced_word') {
+            _collectSymbols(w, langId, symbol.children);
+        }
     }
 
     out.push(symbol);

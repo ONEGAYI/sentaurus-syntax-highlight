@@ -405,6 +405,98 @@ test('多个变量定义混合提取', () => {
     assert.strictEqual(vars[3].kind, 'variable');
 });
 
+// ── lmap / dict for / incr ──（使用真实 WASM 解析器验证 AST 结构）
+console.log('\nlmap / dict for / incr:');
+
+test('lmap 单变量提取', () => {
+    const forNode = makeNode('command', 'lmap x {1 2 3} { body }', [
+        makeNode('simple_word', 'lmap', [], 0, 0, 0, 4),
+        makeNode('word_list', '', [
+            makeNode('simple_word', 'x', [], 0, 5, 0, 6),
+            makeNode('braced_word', '{1 2 3}', [], 0, 7, 0, 14),
+            makeNode('braced_word', '{ body }', [], 0, 15, 0, 24),
+        ], 0, 5, 0, 24),
+    ], 0, 0, 0, 24);
+
+    const root = makeNode('program', '', [forNode], 0, 0, 0, 24);
+    const vars = ast.getVariables(root);
+
+    assert.ok(vars.some(v => v.name === 'x'), '应提取 lmap 循环变量 x');
+});
+
+test('lmap 多变量提取（braced_word 形式）', () => {
+    const varBraced = makeNode('braced_word', '{a b}', [
+        makeNode('{', '{', [], 0, 5, 0, 6),
+        makeNode('command', 'a b', [
+            makeNode('simple_word', 'a', [], 0, 6, 0, 7),
+            makeNode('word_list', '', [
+                makeNode('simple_word', 'b', [], 0, 8, 0, 9),
+            ], 0, 8, 0, 9),
+        ], 0, 6, 0, 9),
+        makeNode('}', '}', [], 0, 9, 0, 10),
+    ], 0, 5, 0, 10);
+
+    const forNode = makeNode('command', 'lmap {a b} {1 2 3 4} { body }', [
+        makeNode('simple_word', 'lmap', [], 0, 0, 0, 4),
+        makeNode('word_list', '', [
+            varBraced,
+            makeNode('braced_word', '{1 2 3 4}', [], 0, 11, 0, 21),
+            makeNode('braced_word', '{ body }', [], 0, 22, 0, 31),
+        ], 0, 5, 0, 31),
+    ], 0, 0, 0, 31);
+
+    const root = makeNode('program', '', [forNode], 0, 0, 0, 31);
+    const vars = ast.getVariables(root);
+
+    assert.ok(vars.some(v => v.name === 'a'), '应提取 lmap 变量 a');
+    assert.ok(vars.some(v => v.name === 'b'), '应提取 lmap 变量 b');
+});
+
+test('dict for 键值变量提取', () => {
+    const varBraced = makeNode('braced_word', '{k v}', [
+        makeNode('{', '{', [], 0, 9, 0, 10),
+        makeNode('command', 'k v', [
+            makeNode('simple_word', 'k', [], 0, 10, 0, 11),
+            makeNode('word_list', '', [
+                makeNode('simple_word', 'v', [], 0, 12, 0, 13),
+            ], 0, 12, 0, 13),
+        ], 0, 10, 0, 13),
+        makeNode('}', '}', [], 0, 13, 0, 14),
+    ], 0, 9, 0, 14);
+
+    const dictNode = makeNode('command', 'dict for {k v} $d { body }', [
+        makeNode('simple_word', 'dict', [], 0, 0, 0, 4),
+        makeNode('word_list', '', [
+            makeNode('simple_word', 'for', [], 0, 5, 0, 8),
+            varBraced,
+            makeNode('variable_substitution', '$d', [], 0, 15, 0, 17),
+            makeNode('braced_word', '{ body }', [], 0, 18, 0, 27),
+        ], 0, 5, 0, 27),
+    ], 0, 0, 0, 27);
+
+    const root = makeNode('program', '', [dictNode], 0, 0, 0, 27);
+    const vars = ast.getVariables(root);
+
+    assert.ok(vars.some(v => v.name === 'k'), '应提取 dict for 键变量 k');
+    assert.ok(vars.some(v => v.name === 'v'), '应提取 dict for 值变量 v');
+});
+
+test('incr 变量提取', () => {
+    const incrNode = makeNode('command', 'incr counter', [
+        makeNode('simple_word', 'incr', [], 0, 0, 0, 4),
+        makeNode('word_list', '', [
+            makeNode('simple_word', 'counter', [], 0, 5, 0, 12),
+        ], 0, 5, 0, 12),
+    ], 0, 0, 0, 12);
+
+    const root = makeNode('program', '', [incrNode], 0, 0, 0, 12);
+    const vars = ast.getVariables(root);
+
+    assert.strictEqual(vars.length, 1, `应有 1 个变量，实际 ${vars.length}`);
+    assert.strictEqual(vars[0].name, 'counter');
+    assert.strictEqual(vars[0].kind, 'variable');
+});
+
 // ── 汇总 ──
 console.log(`\n${'='.repeat(40)}`);
 console.log(`  通过: ${passed}, 失败: ${failed}`);
