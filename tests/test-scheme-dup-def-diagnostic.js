@@ -1,4 +1,5 @@
 // tests/test-scheme-dup-def-diagnostic.js
+const { test, summary } = require('./helpers/test-runner');
 'use strict';
 
 const assert = require('assert');
@@ -6,11 +7,6 @@ const { parse } = require('../src/lsp/scheme-parser');
 const { buildScopeTree } = require('../src/lsp/scope-analyzer');
 const { buildPpBlocks } = require('../src/lsp/pp-utils');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 console.log('\n=== Scheme 重复定义检测测试 ===\n');
 
@@ -201,5 +197,4 @@ test('#if 块内同分支重复 define 仍被检测', () => {
     assert.strictEqual(dups[0].name, 'x');
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-if (failed > 0) process.exit(1);
+summary();

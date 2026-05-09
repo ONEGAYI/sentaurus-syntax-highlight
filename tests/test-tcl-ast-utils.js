@@ -1,22 +1,12 @@
 // tests/test-tcl-ast-utils.js
+const { test, summary } = require('./helpers/test-runner');
+const { makeNode } = require('./helpers/mock-ast-node');
 'use strict';
 
 const assert = require('assert');
 
 // 手动 mock web-tree-sitter 节点结构
 // 因为 WASM 解析器需要 VSCode 环境初始化，测试中直接构造节点树
-function makeNode(type, text, children, startRow, startCol, endRow, endCol) {
-    return {
-        type,
-        text,
-        children: children || [],
-        childCount: (children || []).length,
-        startPosition: { row: startRow || 0, column: startCol || 0 },
-        endPosition: { row: endRow || 0, column: endCol || 0 },
-        hasError: false,
-        child(i) { return this.children[i]; },
-    };
-}
 
 // 构建一个 sdevice 风格的 AST 片段:
 // Device {
@@ -58,11 +48,6 @@ function buildSampleAST() {
     ], 0, 0, 3, 1);
 }
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 const ast = require('../src/lsp/tcl-ast-utils');
 
@@ -180,6 +165,6 @@ test('包含所有 Tcl 方言语言 ID', () => {
 
 // ── 汇总 ──
 console.log(`\n${'='.repeat(40)}`);
-console.log(`  通过: ${passed}, 失败: ${failed}`);
 console.log(`${'='.repeat(40)}\n`);
-process.exit(failed > 0 ? 1 : 0);
+
+summary();

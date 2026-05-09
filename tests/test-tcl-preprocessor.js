@@ -1,13 +1,9 @@
 'use strict';
+const { test, summary } = require('./helpers/test-runner');
 
 const assert = require('assert');
 const { buildPpBlocks } = require('../src/lsp/pp-utils');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 console.log('\nbuildPpBlocks:');
 
@@ -216,5 +212,4 @@ test('没有 #if 的代码不产生折叠范围', () => {
     assert.strictEqual(foldingRanges.length, 0);
 });
 
-console.log(`\n${passed} passed, ${failed} failed`);
-process.exit(failed > 0 ? 1 : 0);
+summary();

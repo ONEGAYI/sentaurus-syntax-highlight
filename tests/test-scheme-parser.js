@@ -1,14 +1,10 @@
 // tests/test-scheme-parser.js
+const { test, summary } = require('./helpers/test-runner');
 const assert = require('assert');
 const { parse } = require('../src/lsp/scheme-parser');
 const { analyze } = require('../src/lsp/scheme-analyzer');
 const { extractSchemeDefinitions: oldExtract } = require('../src/definitions');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 console.log('\nparse:');
 
@@ -315,5 +311,4 @@ test('兼容: 多 define 混合格式一致', () => {
     }
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-process.exit(failed > 0 ? 1 : 0);
+summary();

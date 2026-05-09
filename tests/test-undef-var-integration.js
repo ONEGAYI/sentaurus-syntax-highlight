@@ -1,4 +1,5 @@
 // tests/test-undef-var-integration.js
+const { test, summary } = require('./helpers/test-runner');
 // 集成测试：用真实 WASM 解析器验证 buildScopeMap 对 word_list 包装命令的处理
 'use strict';
 
@@ -6,11 +7,6 @@ const Parser = require('web-tree-sitter');
 const path = require('path');
 const astUtils = require('../src/lsp/tcl-ast-utils');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 function assert(cond, msg) {
     if (!cond) throw new Error(msg || 'Assertion failed');
@@ -130,10 +126,11 @@ async function main() {
     });
 
     console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-    if (failed > 0) process.exit(1);
 }
 
 main().catch(e => {
     console.error('Fatal:', e);
     process.exit(1);
 });
+
+summary();

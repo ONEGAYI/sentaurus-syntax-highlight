@@ -1,14 +1,10 @@
 // tests/test-scheme-var-refs.js
+const { test, summary } = require('./helpers/test-runner');
 'use strict';
 
 const assert = require('assert');
 const { parse } = require('../src/lsp/scheme-parser');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 const { buildScopeTree, getSchemeRefs, getVisibleDefinitions } = require('../src/lsp/scope-analyzer');
 
@@ -74,5 +70,4 @@ test('未定义变量被收集', () => {
     assert.strictEqual(undefRefs.length, 1, '未定义变量应被收集');
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-if (failed > 0) process.exit(1);
+summary();

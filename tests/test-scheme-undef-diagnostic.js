@@ -1,15 +1,11 @@
 // tests/test-scheme-undef-diagnostic.js
+const { test, summary } = require('./helpers/test-runner');
 'use strict';
 
 const assert = require('assert');
 const { parse } = require('../src/lsp/scheme-parser');
 const { buildScopeTree, getVisibleDefinitions, getSchemeRefs } = require('../src/lsp/scope-analyzer');
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 console.log('\n=== Scheme 未定义变量检测集成测试 ===\n');
 
@@ -147,5 +143,4 @@ test('KEYWORD2 级别关键词不被误报', () => {
     assert.strictEqual(kwUndefs.length, 0, 'KEYWORD2 关键词不应被检测为未定义变量');
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-if (failed > 0) process.exit(1);
+summary();

@@ -1,25 +1,11 @@
 // tests/test-tcl-scope-index.js
+const { test, summary } = require('./helpers/test-runner');
+const { makeNode } = require('./helpers/mock-ast-node');
 'use strict';
 
 const assert = require('assert');
 
-function makeNode(type, text, children, startRow, startCol, endRow, endCol) {
-    return {
-        type, text,
-        children: children || [],
-        childCount: (children || []).length,
-        startPosition: { row: startRow || 0, column: startCol || 0 },
-        endPosition: { row: endRow || 0, column: endCol || 0 },
-        hasError: false,
-        child(i) { return this.children[i]; },
-    };
-}
 
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
 
 const ast = require('../src/lsp/tcl-ast-utils');
 
@@ -477,5 +463,4 @@ test('resolveDefinition: 仅循环内定义的变量在循环外仍可解析', (
     assert.strictEqual(resolved.defLine, 1, `应解析到行 1（for init set k 0），实际行 ${resolved.defLine}`);
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-if (failed > 0) process.exit(1);
+summary();

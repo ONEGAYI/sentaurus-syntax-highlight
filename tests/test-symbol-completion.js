@@ -1,41 +1,13 @@
 // tests/test-symbol-completion.js
 'use strict';
 
+const { test, summary } = require('./helpers/test-runner');
+const { SYMBOL_TABLE } = require('./helpers/symbol-fixtures');
 const assert = require('assert');
 const { parse } = require('../src/lsp/scheme-parser');
 const { extractSymbols } = require('../src/lsp/symbol-index');
 const dispatcher = require('../src/lsp/semantic-dispatcher');
 const { computeLineStarts } = require('../src/lsp/parse-cache');
-
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
-
-const SYMBOL_TABLE = {
-    'sdegeo:create-rectangle': {
-        symbolParams: [
-            { index: 2, role: 'def', type: 'material' },
-            { index: 3, role: 'def', type: 'region' },
-        ],
-    },
-    'sdegeo:define-contact-set': {
-        symbolParams: [
-            { index: 0, role: 'def', type: 'contact' },
-        ],
-    },
-    'sdedr:define-refinement-region': {
-        symbolParams: [
-            { index: 2, role: 'ref', type: 'region' },
-        ],
-    },
-    'sde:hide-region': {
-        symbolParams: [
-            { index: 0, role: 'ref', type: 'region' },
-        ],
-    },
-};
 
 /**
  * 模拟补全逻辑：给定代码和光标位置，确定需要补全的符号类型，
@@ -102,5 +74,4 @@ test('非符号参数位置无补全', () => {
     assert.strictEqual(completions.length, 0);
 });
 
-console.log(`\n结果: ${passed} 通过, ${failed} 失败\n`);
-process.exit(failed > 0 ? 1 : 0);
+summary();

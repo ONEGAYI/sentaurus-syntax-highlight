@@ -1,20 +1,9 @@
 // tests/test-sdevice-semantic.js
 'use strict';
 
+const { test, summary } = require('./helpers/test-runner');
+const { docs, index, sectionKeywords, decodeTokens } = require('./helpers/sdevice-setup');
 const assert = require('assert');
-const path = require('path');
-const fs = require('fs');
-
-// 加载测试数据
-const docsPath = path.join(__dirname, '..', 'syntaxes', 'sdevice_command_docs.json');
-const docs = JSON.parse(fs.readFileSync(docsPath, 'utf8'));
-
-let passed = 0, failed = 0;
-function test(name, fn) {
-    try { fn(); passed++; console.log(`  ✓ ${name}`); }
-    catch (e) { failed++; console.log(`  ✗ ${name}: ${e.message}`); }
-}
-
 const {
     buildKeywordSectionIndex, getSectionStack, scanStacksPerLine,
     extractSdeviceTokens, extractTokensFromStacks, createSdeviceSemanticProvider,
@@ -405,5 +394,4 @@ test('Transient with multi-line nested parentheses is tokenized as subSection', 
     assert.ok(foundTransient, 'Should find Transient token');
 });
 
-console.log(`\n${passed} passed, ${failed} failed`);
-if (failed) process.exit(1);
+summary();
