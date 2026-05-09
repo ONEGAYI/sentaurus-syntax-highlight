@@ -530,11 +530,16 @@ function activate(context) {
         { language: 'sde' },
         {
             provideSignatureHelp(document, position, token) {
-                return signatureProvider.provideSignatureHelp(
-                    document, position, token,
-                    modeDispatchTable, langFuncDocs.sde,
-                    schemeCache
-                );
+                try {
+                    return signatureProvider.provideSignatureHelp(
+                        document, position, token,
+                        modeDispatchTable, langFuncDocs.sde,
+                        schemeCache
+                    );
+                } catch (e) {
+                    console.error('Sentaurus: provideSignatureHelp error', e);
+                    return null;
+                }
             },
         },
         ' ', '\t', '"', '('
@@ -568,62 +573,67 @@ function activate(context) {
             { language: langId },
             {
                 provideCompletionItems(document, position) {
-                    if (langId !== 'sde') {
-                        const linePrefix = document.lineAt(position.line).text.substring(0, position.character);
-                        const subcmdContext = TCL_SUBCMD_COMPLETION_RE.exec(linePrefix);
-                        if (subcmdContext) {
-                            const parentCmd = subcmdContext[1];
-                            const subDocs = _docsCache.tclSub;
-                            if (subDocs && subDocs[parentCmd]) {
-                                return Object.entries(subDocs[parentCmd]).map(([name, doc]) => {
-                                    const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Method);
-                                    item.detail = 'Tcl 子命令';
-                                    item.documentation = new vscode.MarkdownString(doc.description);
-                                    return item;
-                                });
+                    try {
+                        if (langId !== 'sde') {
+                            const linePrefix = document.lineAt(position.line).text.substring(0, position.character);
+                            const subcmdContext = TCL_SUBCMD_COMPLETION_RE.exec(linePrefix);
+                            if (subcmdContext) {
+                                const parentCmd = subcmdContext[1];
+                                const subDocs = _docsCache.tclSub;
+                                if (subDocs && subDocs[parentCmd]) {
+                                    return Object.entries(subDocs[parentCmd]).map(([name, doc]) => {
+                                        const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Method);
+                                        item.detail = 'Tcl 子命令';
+                                        item.documentation = new vscode.MarkdownString(doc.description);
+                                        return item;
+                                    });
+                                }
                             }
                         }
-                    }
 
-                    const userDefs = defs.getDefinitions(document, langId);
-                    if (userDefs.length === 0) return items;
+                        const userDefs = defs.getDefinitions(document, langId);
+                        if (userDefs.length === 0) return items;
 
-                    // 单次遍历去重：同时排除静态关键词和重复用户变量
-                    const seenNames = new Set(items.map(it => it.label));
-                    let filteredDefs = userDefs.filter(d => {
-                        if (seenNames.has(d.name)) return false;
-                        seenNames.add(d.name);
-                        return true;
-                    });
+                        // 单次遍历去重：同时排除静态关键词和重复用户变量
+                        const seenNames = new Set(items.map(it => it.label));
+                        let filteredDefs = userDefs.filter(d => {
+                            if (seenNames.has(d.name)) return false;
+                            seenNames.add(d.name);
+                            return true;
+                        });
 
-                    // SDE (Scheme): 作用域感知过滤
-                    if (langId === 'sde') {
-                        const { scopeTree } = schemeCache.get(document);
-                        const visible = scopeAnalyzer.getVisibleDefinitions(scopeTree, position.line + 1);
-                        const visibleNames = new Set(visible.map(v => v.name));
-                        filteredDefs = filteredDefs.filter(d => visibleNames.has(d.name));
-                    }
-
-                    const maxWidth = vscode.workspace.getConfiguration('sentaurus').get('definitionMaxWidth', 60);
-                    const userItems = filteredDefs.map(d => {
-                        let itemKind = vscode.CompletionItemKind.Variable;
-                        let detail = 'User Variable';
-                        if (d.kind === 'function') {
-                            itemKind = vscode.CompletionItemKind.Function;
-                            detail = 'User Function';
+                        // SDE (Scheme): 作用域感知过滤
+                        if (langId === 'sde') {
+                            const { scopeTree } = schemeCache.get(document);
+                            const visible = scopeAnalyzer.getVisibleDefinitions(scopeTree, position.line + 1);
+                            const visibleNames = new Set(visible.map(v => v.name));
+                            filteredDefs = filteredDefs.filter(d => visibleNames.has(d.name));
                         }
-                        if (d.kind === 'ppDefine') {
-                            itemKind = vscode.CompletionItemKind.Constant;
-                            detail = d.value ? `#define = ${d.value}` : '#define';
-                        }
-                        const item = new vscode.CompletionItem(d.name, itemKind);
-                        item.detail = detail;
-                        item.sortText = '4' + d.name;
-                        item.documentation = new vscode.MarkdownString('```' + langId + '\n' + defs.truncateDefinitionText(d.definitionText, maxWidth, langId) + '\n```');
-                        return item;
-                    });
 
-                    return [...items, ...userItems];
+                        const maxWidth = vscode.workspace.getConfiguration('sentaurus').get('definitionMaxWidth', 60);
+                        const userItems = filteredDefs.map(d => {
+                            let itemKind = vscode.CompletionItemKind.Variable;
+                            let detail = 'User Variable';
+                            if (d.kind === 'function') {
+                                itemKind = vscode.CompletionItemKind.Function;
+                                detail = 'User Function';
+                            }
+                            if (d.kind === 'ppDefine') {
+                                itemKind = vscode.CompletionItemKind.Constant;
+                                detail = d.value ? `#define = ${d.value}` : '#define';
+                            }
+                            const item = new vscode.CompletionItem(d.name, itemKind);
+                            item.detail = detail;
+                            item.sortText = '4' + d.name;
+                            item.documentation = new vscode.MarkdownString('```' + langId + '\n' + defs.truncateDefinitionText(d.definitionText, maxWidth, langId) + '\n```');
+                            return item;
+                        });
+
+                        return [...items, ...userItems];
+                    } catch (e) {
+                        console.error('Sentaurus: provideCompletionItems error', e);
+                        return [];
+                    }
                 },
             }
         );
@@ -635,33 +645,38 @@ function activate(context) {
                 { language: 'sdevice' },
                 {
                     provideCompletionItems(document, position) {
-                        const lineText = document.lineAt(position.line).text;
-                        const col = position.character;
-                        if (col < 1 || lineText[col - 1] !== '/') return undefined;
+                        try {
+                            const lineText = document.lineAt(position.line).text;
+                            const col = position.character;
+                            if (col < 1 || lineText[col - 1] !== '/') return undefined;
 
-                        // 提取 / 前面的基础关键词
-                        let end = col - 1;
-                        let start = end;
-                        while (start > 0 && /[A-Za-z0-9_]/.test(lineText[start - 1])) start--;
-                        const baseKeyword = lineText.slice(start, end);
+                            // 提取 / 前面的基础关键词
+                            let end = col - 1;
+                            let start = end;
+                            while (start > 0 && /[A-Za-z0-9_]/.test(lineText[start - 1])) start--;
+                            const baseKeyword = lineText.slice(start, end);
 
-                        const suffixes = vectorKW.getSuffixesForBaseCI(baseKeyword);
-                        if (!suffixes) return undefined;
+                            const suffixes = vectorKW.getSuffixesForBaseCI(baseKeyword);
+                            if (!suffixes) return undefined;
 
-                        // 检查 section 上下文
-                        const stack = sdeviceStProvider.getSectionStackForDocument(document, position.line);
-                        if (!stack.some(s => vectorKW.VECTOR_SECTIONS_LOWER.has(s))) return undefined;
+                            // 检查 section 上下文
+                            const stack = sdeviceStProvider.getSectionStackForDocument(document, position.line);
+                            if (!stack.some(s => vectorKW.VECTOR_SECTIONS_LOWER.has(s))) return undefined;
 
-                        return suffixes.map(suffix => {
-                            const suffixPart = suffix.slice(1);
-                            const item = new vscode.CompletionItem(suffixPart, vscode.CompletionItemKind.Unit);
-                            item.detail = 'Vector suffix';
-                            item.insertText = suffixPart;
-                            item.sortText = '0' + suffixPart;
-                            item.label = baseKeyword + suffix;
-                            item.filterText = suffixPart;
-                            return item;
-                        });
+                            return suffixes.map(suffix => {
+                                const suffixPart = suffix.slice(1);
+                                const item = new vscode.CompletionItem(suffixPart, vscode.CompletionItemKind.Unit);
+                                item.detail = 'Vector suffix';
+                                item.insertText = suffixPart;
+                                item.sortText = '0' + suffixPart;
+                                item.label = baseKeyword + suffix;
+                                item.filterText = suffixPart;
+                                return item;
+                            });
+                        } catch (e) {
+                            console.error('Sentaurus: provideCompletionItems (vector) error', e);
+                            return undefined;
+                        }
                     },
                 },
                 '/'
@@ -695,6 +710,7 @@ function activate(context) {
             { language: langId },
             {
                 provideHover(document, position) {
+                    try {
                     if (isInComment(document, position)) return null;
                     const range = document.getWordRangeAtPosition(position, /\$?[\w:.\-<>?!+*/=]+/);
                     if (!range) return null;
@@ -849,6 +865,10 @@ function activate(context) {
                     }
 
                     return null;
+                    } catch (e) {
+                        console.error('Sentaurus: provideHover error', e);
+                        return null;
+                    }
                 },
             }
         );
@@ -859,6 +879,7 @@ function activate(context) {
             { language: langId },
             {
                 provideDefinition(document, position) {
+                    try {
                     if (isInComment(document, position)) return null;
                     const cursorLine = position.line + 1; // 1-based
 
@@ -948,6 +969,10 @@ function activate(context) {
                         document.uri,
                         new vscode.Range(defLine0, match.index, defLine0, match.index + word.length)
                     );
+                    } catch (e) {
+                        console.error('Sentaurus: provideDefinition error', e);
+                        return null;
+                    }
                 },
             }
         );
