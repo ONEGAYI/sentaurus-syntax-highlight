@@ -1,6 +1,8 @@
 // src/lsp/symbol-index.js
 'use strict';
 
+const { effectiveChildren } = require('./scheme-ast-utils');
+
 /**
  * 从 AST 节点解析符号名称字符串。
  * - String 节点 → 直接返回 value
@@ -32,14 +34,6 @@ function resolveSymbolName(node) {
     }
 
     return null;
-}
-
-/**
- * 过滤 Comment 节点后的有效子节点。
- * parseList 已过滤 Comment，但保留此函数作为安全防护。
- */
-function effectiveChildren(listNode) {
-    return listNode.children.filter(c => c.type !== 'Comment');
 }
 
 /**
@@ -205,4 +199,4 @@ function extractSymbols(ast, sourceText, symbolParamsTable, modeDispatchTable) {
     return { defs, refs };
 }
 
-module.exports = { extractSymbols, resolveSymbolName, effectiveChildren };
+module.exports = { extractSymbols, resolveSymbolName };

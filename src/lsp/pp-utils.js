@@ -306,4 +306,64 @@ function safeCol(lineStarts, line, offset) {
     return (idx >= 0 && idx < lineStarts.length) ? offset - lineStarts[idx] : 0;
 }
 
-module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens, escapeRegex, buildWordRegex, encodeTokenDelta, encodeDelta3, encodeDelta5, findUndefPpMacroRefs, offsetToLineCol, safeCol };
+/** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
+function decodeHtml(str) {
+    return str.replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+}
+
+/**
+ * 去除 Tcl 变量名前缀：${var} → var, $var → var, 其他不变。
+ * @param {string} word - 可能带 $ 前缀的标识符
+ * @returns {string} 去除前缀后的变量名
+ */
+function stripTclVarPrefix(word) {
+    if (word.startsWith('${') && word.endsWith('}')) {
+        return word.slice(2, -1);
+    } else if (word.startsWith('$')) {
+        return word.slice(1);
+    }
+    return word;
+}
+
+/**
+ * 查找 #define 宏的定义位置和所有引用位置，构建 Location 数组。
+ * Scheme 和 Tcl 路径的 #define 查找逻辑统一提取到此处。
+ *
+ * @param {vscode.Uri} uri - 文档 URI
+ * @param {string} word - 宏名
+ * @param {number} cursorLine - 光标行号（1-based）
+ * @param {Array<{name: string, line: number, startCol: number}>} ppDefs - 预处理器定义列表
+ * @param {string} text - 文档全文
+ * @param {{includeDeclaration?: boolean}} [options] - 查找选项
+ * @returns {vscode.Location[]|null} Location 数组，无匹配时返回 null
+ */
+function findPpDefineLocations(uri, word, cursorLine, ppDefs, text, options = {}) {
+    const vscode = require('vscode');
+
+    const ppDef = [...ppDefs].reverse().find(d => d.name === word && d.line <= cursorLine);
+    if (!ppDef) return null;
+
+    const locations = [];
+    if (options.includeDeclaration !== false) {
+        locations.push(new vscode.Location(
+            uri,
+            new vscode.Range(ppDef.line - 1, ppDef.startCol, ppDef.line - 1, ppDef.startCol + word.length)
+        ));
+    }
+    const ppRefs = findPpDefineRefs(text, ppDefs.filter(d => d.name === word));
+    for (const ref of ppRefs) {
+        const isDup = locations.some(loc =>
+            loc.range.start.line === ref.line - 1 &&
+            loc.range.start.character === ref.startCol
+        );
+        if (!isDup) {
+            locations.push(new vscode.Location(
+                uri,
+                new vscode.Range(ref.line - 1, ref.startCol, ref.line - 1, ref.startCol + word.length)
+            ));
+        }
+    }
+    return locations.length > 0 ? locations : null;
+}
+
+module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens, escapeRegex, buildWordRegex, encodeTokenDelta, encodeDelta3, encodeDelta5, findUndefPpMacroRefs, offsetToLineCol, safeCol, decodeHtml, stripTclVarPrefix, findPpDefineLocations };
