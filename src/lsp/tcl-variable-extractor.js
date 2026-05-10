@@ -12,6 +12,8 @@ const {
     _extractBracedWordVars,
     _extractCommandVarDefs,
     _extractErrorVarDefs,
+    _isSvisualVarDefCommand,
+    _extractSvisualOutVars,
 } = require('./tcl-ast-utils');
 
 /**
@@ -331,6 +333,21 @@ function _handleCommand(node, results, sourceText, lines) {
                 });
             }
         }
+    } else if (_isSvisualVarDefCommand(cmdName)) {
+        const words = _getCommandWords(node);
+        const defText = lines
+            ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
+            : node.text;
+        for (const d of _extractSvisualOutVars(words, cmdName)) {
+            results.push({
+                name: d.name,
+                line: d.line,
+                endLine: d.line,
+                definitionText: defText,
+                kind: 'variable',
+            });
+        }
+        _collectVariables(node, results, sourceText, lines);
     } else {
         // 其他 command，递归子节点（可能包含嵌套结构）
         _collectVariables(node, results, sourceText, lines);
