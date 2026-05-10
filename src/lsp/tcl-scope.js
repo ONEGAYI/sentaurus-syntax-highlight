@@ -12,6 +12,8 @@ const {
     _extractErrorVarDefs,
     _extractUpvarLocalNames,
     _extractVariableNames,
+    _isSvisualVarDefCommand,
+    _extractSvisualOutVars,
 } = require('./tcl-ast-utils');
 
 /**
@@ -288,6 +290,13 @@ function buildScopeIndex(root) {
                         globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
                     }
                 }
+                // Svisual: ext::/rfx::/ifm::* -out <var> 和 create_variable -name <var>
+                if (_isSvisualVarDefCommand(cmdName)) {
+                    const words = _getCommandWords(child);
+                    for (const d of _extractSvisualOutVars(words, cmdName)) {
+                        globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
+                    }
+                }
             }
         }
 
@@ -425,6 +434,11 @@ function _collectLocalDefsForIndex(node, defs) {
                                 break;
                             }
                         }
+                    }
+                } else if (_isSvisualVarDefCommand(cmdName)) {
+                    const words = _getCommandWords(child);
+                    for (const d of _extractSvisualOutVars(words, cmdName)) {
+                        defs.push({ name: d.name, defLine: d.line });
                     }
                 }
             }
