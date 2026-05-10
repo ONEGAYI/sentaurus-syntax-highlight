@@ -267,6 +267,10 @@
         {
           "match": "\\$\\{[^}]+\\}|\\$[A-Za-z_][A-Za-z0-9_:]*",
           "name": "variable.other.readwrite.tcl"
+        },
+        {
+          "match": "@[a-zA-Z_<][^@]*@",
+          "name": "constant.character.format.placeholder"
         }
       ]
     },
@@ -276,7 +280,7 @@
     },
     {
       "match": "@[a-zA-Z_<][^@]*@",
-      "name": "variable.parameter"
+      "name": "constant.character.format.placeholder"
     },
     {
       "match": "\\b(if|else|elseif|for|foreach|while|switch|break|continue|return)\\b",
