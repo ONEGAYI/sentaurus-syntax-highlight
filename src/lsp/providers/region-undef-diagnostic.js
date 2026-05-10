@@ -3,8 +3,7 @@
 
 const vscode = require('vscode');
 const { safeCol } = require('../pp-utils');
-
-const DEBOUNCE_MS = 500;
+const { createDiagnosticProvider } = require('./diagnostic-factory');
 
 /** @type {import('../parse-cache').SchemeParseCache} */
 let schemeCache;
@@ -12,40 +11,19 @@ let schemeCache;
 let builtinMaterials;
 /** @type {vscode.DiagnosticCollection} */
 let diagnosticCollection;
-/** @type {NodeJS.Timeout} */
-let debounceTimer;
 
 function activate(context, schemeCacheInstance, materials) {
     schemeCache = schemeCacheInstance;
     builtinMaterials = materials || new Set();
 
-    diagnosticCollection = vscode.languages.createDiagnosticCollection('sde-symbol-undef');
-    context.subscriptions.push(diagnosticCollection);
-
-    context.subscriptions.push(
-        vscode.workspace.onDidChangeTextDocument(event => {
-            if (event.document.languageId !== 'sde') return;
-            if (debounceTimer) clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => updateDiagnostics(event.document), DEBOUNCE_MS);
-        })
-    );
-
-    context.subscriptions.push(
-        vscode.workspace.onDidOpenTextDocument(doc => {
-            if (doc.languageId === 'sde') updateDiagnostics(doc);
-        })
-    );
-
-    context.subscriptions.push(
-        vscode.workspace.onDidCloseTextDocument(doc => {
-            if (doc.languageId === 'sde') diagnosticCollection.delete(doc.uri);
-        })
-    );
-
-    // 主动扫描已在编辑器中打开的文档
-    for (const doc of vscode.workspace.textDocuments) {
-        if (doc.languageId === 'sde') updateDiagnostics(doc);
-    }
+    const provider = createDiagnosticProvider({
+        name: 'sde-symbol-undef',
+        languageFilter: doc => doc.languageId === 'sde',
+        context,
+        updateFn: updateDiagnostics,
+    });
+    diagnosticCollection = provider.diagnosticCollection;
+    provider.initialScan();
 }
 
 function updateDiagnostics(doc) {

@@ -3,14 +3,12 @@
 
 const vscode = require('vscode');
 const astUtils = require('../tcl-ast-utils');
+const { createDiagnosticProvider } = require('./diagnostic-factory');
+
+const TCL_LANG_SET = new Set(astUtils.TCL_LANGS);
 
 /** @type {vscode.DiagnosticCollection} */
 let diagnosticCollection;
-/** @type {NodeJS.Timeout} */
-let debounceTimer;
-
-const DEBOUNCE_MS = 500;
-const TCL_LANG_SET = new Set(astUtils.TCL_LANGS);
 
 /**
  * Activate Tcl bracket diagnostics.
@@ -19,31 +17,14 @@ const TCL_LANG_SET = new Set(astUtils.TCL_LANGS);
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-    diagnosticCollection = vscode.languages.createDiagnosticCollection('tcl-brackets');
-    context.subscriptions.push(diagnosticCollection);
-
-    context.subscriptions.push(
-        vscode.workspace.onDidChangeTextDocument(event => {
-            const doc = event.document;
-            if (!TCL_LANG_SET.has(doc.languageId)) return;
-
-            if (debounceTimer) clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => updateDiagnostics(doc), DEBOUNCE_MS);
-        })
-    );
-
-    context.subscriptions.push(
-        vscode.workspace.onDidCloseTextDocument(doc => {
-            diagnosticCollection.delete(doc.uri);
-        })
-    );
-
-    // 主动扫描已在编辑器中打开的文档
-    for (const doc of vscode.workspace.textDocuments) {
-        if (TCL_LANG_SET.has(doc.languageId)) {
-            updateDiagnostics(doc);
-        }
-    }
+    const provider = createDiagnosticProvider({
+        name: 'tcl-brackets',
+        languageFilter: doc => TCL_LANG_SET.has(doc.languageId),
+        context,
+        updateFn: updateDiagnostics,
+    });
+    diagnosticCollection = provider.diagnosticCollection;
+    provider.initialScan();
 }
 
 /**
