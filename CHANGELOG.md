@@ -4,6 +4,17 @@
 
 ---
 
+## [1.16.1] - 2026-05-10
+
+### Bug 修复
+
+- **修复 `#rrggbb` 颜色值被注释高亮误判**（#42）：5 种 Tcl 语法文件新增 `constant.other.color.rgb` 颜色值匹配规则（`#RRGGBB` 和 `#rrggbb`），在 `comment.line.hash` 之前优先匹配，避免合法颜色值被当作行注释
+- **Tcl 命令参数 `-XXX` 正则兜底高亮，移除无意义短裸词**（#43）：为 sdevice/sprocess/svisual/emw/inspect 5 种语法添加 `-[a-zA-Z][a-zA-Z0-9_]*` 正则兜底规则，统一所有 `-` 前缀参数的高亮；同时从 svisual 移除 29 个无独立语义的纯参数缩写裸词（如 `op`/`z`/`f`/`i`/`dq` 等），从 inspect 移除 4 个方向缩写裸词（`ne`/`se`/`nw`/`sw`），消除参数缩写误匹配正常标识符
+- **统一 svisual `@Var@` SWB 参数高亮颜色并支持字符串内高亮**：将 `@Var@` 匹配的 scope 从 `variable.parameter`（浅蓝）改为 `constant.character.format.placeholder`（深蓝），与其余 5 种语言保持一致；同时在 Tcl 双引号字符串 patterns 中添加 `@Var@` 匹配规则，修复字符串内变量不高亮的问题
+- **移除 `.cmd` 扩展名，避免非 Sentaurus 文件被语言抢注**：从所有 6 种语言的 `extensions` 配置中移除 `.cmd`，文件关联完全依赖 `filenamePatterns`（如 `*_des.cmd`/`*_fps.cmd`），避免通用 `.cmd` 脚本被错误识别为 Sentaurus 语言
+
+---
+
 ## [1.16.0] - 2026-05-10
 
 ### 新功能
@@ -873,6 +884,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.16.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.16.0...v1.16.1
 [1.16.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.15.1...v1.16.0
 [1.15.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.15.0...v1.15.1
 [1.15.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.14.1...v1.15.0
