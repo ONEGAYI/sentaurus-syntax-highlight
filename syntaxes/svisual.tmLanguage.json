@@ -64,47 +64,47 @@
     {
       "patterns": [
         {
-          "match": "\\b(range|scale_font_family|label_font_att|DrudeDampFac|custom_text|axisX|label_font_family|EpsilonInf|nrow|op|noisename|fill_color|xscale|label_format|align|iplists|nofpoints|duplicate|WavelengthDep|title_font_factor|method|Model|parameter|font_color|type|MaxIterations|z2|Material|sort|integ_terminal_speed)(?![A-Za-z0-9_:-])",
+          "match": "\\b(range|scale_font_family|label_font_att|DrudeDampFac|custom_text|axisX|label_font_family|EpsilonInf|nrow|noisename|fill_color|xscale|label_format|align|iplists|nofpoints|duplicate|WavelengthDep|title_font_factor|method|Model|parameter|font_color|type|MaxIterations|Material|sort|integ_terminal_speed)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(minor_ticks_length|format|line1_color|size|port1|list|font_att|box|valueX|axisY|vo|title|points|freqpoint|biaspoint|StartTick|xLog|color_bg|geoms|title_font_family|integ_initial_step|label_font_size|NumberModLorentzPoles|arrow_width|materials|label_font_factor|plots|icon|SimplexMaxFunEvals|label_position)(?![A-Za-z0-9_:-])",
+          "match": "\\b(minor_ticks_length|format|line1_color|size|port1|list|font_att|box|valueX|axisY|title|points|freqpoint|biaspoint|StartTick|xLog|color_bg|geoms|title_font_family|integ_initial_step|label_font_size|NumberModLorentzPoles|arrow_width|materials|label_font_factor|plots|icon|SimplexMaxFunEvals|label_position)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(noisesource|nof_minor_ticks|sIFM|dq|origin|ModLorentzAmp|levels|line1_width|head_angle|NumberDebyePoles|line2_width|line_resolution|axisY2|head_shape|line_style|ModLorentzDampFac2|transformation|z|line_color|f|DebyeAmp|material_colors|default|label_font_color|info|anchor_pos|i|vtc_right|tdr_state|alpha)(?![A-Za-z0-9_:-])",
+          "match": "\\b(noisesource|nof_minor_ticks|sIFM|origin|ModLorentzAmp|levels|line1_width|head_angle|NumberDebyePoles|line2_width|line_resolution|axisY2|head_shape|line_style|ModLorentzDampFac2|transformation|line_color|DebyeAmp|material_colors|default|label_font_color|info|anchor_pos|vtc_right|tdr_state|alpha)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(scale_format|values|nof_labels|scale_padding|particles_size|start|powergain|width|help|csv|shift|dataset|handles_color|arrow_color|ids|scale|at|ModLorentzDampFac|nbin|weighted|smooth|position|xmax|regions|markers_type|script|vmin|conditions|normal_arrow)(?![A-Za-z0-9_:-])",
+          "match": "\\b(scale_format|values|nof_labels|scale_padding|particles_size|start|powergain|width|help|csv|shift|dataset|handles_color|arrow_color|scale|at|ModLorentzDampFac|nbin|weighted|smooth|position|xmax|regions|markers_type|script|vmin|conditions|normal_arrow)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(CRITableStep|curves|p2|point|LogFile|integ_max_steps|arrow_size|linestyle|DebyeRelaxTime|text|ncond|scale_font_size|LorentzDampFac|biasport|rvs|ref_plot|aoo|xmin|vin|scale_precision|out|SimplexTolX|moments|linewidth|vout|label|index|focal_point)(?![A-Za-z0-9_:-])",
+          "match": "\\b(CRITableStep|curves|p2|point|LogFile|integ_max_steps|arrow_size|linestyle|DebyeRelaxTime|text|ncond|scale_font_size|LorentzDampFac|biasport|ref_plot|xmin|scale_precision|out|SimplexTolX|moments|linewidth|vout|label|index|focal_point)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(title_font_att|name|fi|greater|view_angle|arrow_angle|border_color|factor|TickStep|scale_font_factor|datasets|tdr_state_index|label_size|reset|dB|z1|elements|rot_size|angle|biasportsign|scale_factor_uniform|line2_color|orientation|scale_font_color|vmax|LorentzAmp|io|line_pattern|min|padding)(?![A-Za-z0-9_:-])",
+          "match": "\\b(title_font_att|name|greater|view_angle|arrow_angle|border_color|factor|TickStep|scale_font_factor|datasets|tdr_state_index|label_size|reset|dB|elements|rot_size|angle|biasportsign|scale_factor_uniform|line2_color|orientation|scale_font_color|vmax|LorentzAmp|line_pattern|min|padding)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(sign|rfmatrix|ranges|plot|spacing|frame_width|font_factor|function|constant_arrow|geom|direction|EndTick|devicewidth|rotation|font_size|path|color_fg|ResultFile|ss|translucency_level|anchor|rotation_point|coord|view_up|contacts_color|region|occurrence|target|squares)(?![A-Za-z0-9_:-])",
+          "match": "\\b(sign|rfmatrix|ranges|plot|spacing|frame_width|font_factor|function|constant_arrow|geom|direction|EndTick|devicewidth|rotation|font_size|path|color_fg|ResultFile|translucency_level|anchor|rotation_point|coord|view_up|contacts_color|region|occurrence|target|squares)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(pos2|file|blank|normal|WavelengthRange|SimplexTolFun|files|slopedataset|psi|ModLorentzFreq|vtc_left|gq|pos1|line1_style|scale_factor_grid|rot_width|port2|setup|ncol|cons|color|rot_color|theta|font_family|ratio_xtoy|nrand|aoi|field|line2_style|xShift)(?![A-Za-z0-9_:-])",
+          "match": "\\b(pos2|file|blank|normal|WavelengthRange|SimplexTolFun|files|slopedataset|psi|ModLorentzFreq|vtc_left|pos1|line1_style|scale_factor_grid|rot_width|port2|setup|ncol|cons|color|rot_color|theta|font_family|ratio_xtoy|nrand|field|line2_style|xShift)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(xo|yLog|location|sifm|sgn|integ_max_propagation|plane|ParameterFile|npar|link|scale_font_att|title_font_size|rseed|desc|filename|segments|SimplexMaxIterations|value|pos|xaxis|border_width|title_font_color|special|frames|arrow_style|phi|style|p1)(?![A-Za-z0-9_:-])",
+          "match": "\\b(yLog|location|sifm|integ_max_propagation|plane|ParameterFile|npar|link|scale_font_att|title_font_size|rseed|desc|filename|segments|SimplexMaxIterations|value|pos|xaxis|border_width|title_font_color|special|frames|arrow_style|phi|style|p1)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(semdataset|label_pos|markers_size|axis|color_map|ydd|resolution|deriv|line_width|minor_ticks_position|nsam|frame_duration|arrow_step|rfparameter|dim|margins|NumberLorentzPoles|weights|CRITableFile|yShift|LorentzFreq|NumberDrudePoles|id|valueY|material|rsig|max|less|head_size)(?![A-Za-z0-9_:-])",
+          "match": "\\b(semdataset|label_pos|markers_size|axis|color_map|resolution|deriv|line_width|minor_ticks_position|nsam|frame_duration|arrow_step|rfparameter|dim|margins|NumberLorentzPoles|weights|CRITableFile|yShift|LorentzFreq|NumberDrudePoles|id|valueY|material|rsig|max|less|head_size)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(end|DrudeFreq|yScale|eps|xScale|path_depth|precision|window|log10|FinalPlot|custom_levels|dss|WeightImagEps|ticks_position)(?![A-Za-z0-9_:-])",
+          "match": "\\b(end|DrudeFreq|yScale|eps|xScale|path_depth|precision|window|log10|FinalPlot|custom_levels|WeightImagEps|ticks_position)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         }
       ]
@@ -305,6 +305,10 @@
     {
       "match": "\\b(abs|acos|asin|atan|atan2|bool|ceil|cos|cosh|double|entier|exp|floor|fmod|hypot|int|isqrt|log|log10|max|min|pow|rand|round|sin|sinh|sqrt|srand|tan|tanh|wide)\\b",
       "name": "support.function.math.tcl"
+    },
+    {
+      "match": "(?<![A-Za-z0-9_])(-[a-zA-Z][a-zA-Z0-9_]*)(?![A-Za-z0-9_])",
+      "name": "keyword.other.svisual"
     },
     {
       "match": "\\$\\{[^}]+\\}|\\$[A-Za-z_][A-Za-z0-9_:]*",
