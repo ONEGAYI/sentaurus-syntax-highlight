@@ -84,6 +84,7 @@ sentaurus-syntax-highlight/
 │   │
 │   ├── lsp/                                    ← 语义功能核心（AST 解析 + Provider 注册）
 │   │   ├── scheme-parser.js                    ← Scheme 词法分析器 + AST 解析器
+│   │   ├── scheme-ast-utils.js                 ← Scheme AST 通用工具（effectiveChildren 等）
 │   │   ├── scheme-analyzer.js                  ← Scheme AST 定义提取 + 折叠范围
 │   │   ├── scope-analyzer.js                   ← Scheme 作用域树构建（词法作用域追踪）
 │   │   ├── semantic-dispatcher.js              ← Scheme 函数调用语义模式分发
@@ -100,7 +101,7 @@ sentaurus-syntax-highlight/
 │   │   │
 │   │   └── providers/                          ← VSCode Provider 实现
 │   │       ├── folding-provider.js             ← Scheme 代码折叠 + 预处理器块折叠
-│   │       ├── bracket-diagnostic.js           ← Scheme 括号平衡诊断
+│   │       ├── diagnostic-factory.js           ← 诊断 Provider 工厂（统一 debounce/事件订阅/初始扫描）
 │   │       ├── signature-provider.js           ← Scheme 函数签名提示（内置 + 用户定义函数）
 │   │       ├── undef-var-diagnostic.js         ← 未定义/重复定义变量诊断（Scheme + Tcl 双语言）+ 未定义宏诊断
 │   │       ├── scheme-on-enter-logic.js        ← Scheme 括号内回车缩进判断逻辑（独立模块）

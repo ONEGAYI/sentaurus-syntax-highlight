@@ -4,6 +4,39 @@
 
 ---
 
+## [1.16.0] - 2026-05-10
+
+### 新功能
+
+- **SchemeParseCache 惰性符号缓存**（#39）：`SchemeParseCache` 新增 `getSymbols()` 方法，按需计算并缓存符号索引结果，避免每次 Provider 触发时重复提取。`extension.js` 传递 `symbolConfig` 到缓存层，三个 Provider（符号补全、未定义符号诊断、符号引用查找）迁移至惰性缓存模式
+
+### 性能优化
+
+- **findPpDefineRefs 单遍行扫描**（#38）：将 O(N×M) 嵌套循环（N 行 × M 宏定义）改为单遍行扫描 + 宏名直接查表，消除 `#define` 宏引用查找的冗余计算；同时消除 regex 重复编译和函数内代码重复
+- **SDEVICE_ALL_SECTION_KEYWORDS_LOWER 模块级预计算**（#38）：将 `sdevice-semantic-provider.js` 中每次调用时的 `.map(k => k.toLowerCase())` 改为模块加载时一次性计算常量，消除热路径重复转换
+- **provideSchemeReferences / checkSchemeUndefVars 按行缓存**（#39）：为 `getVisibleDefinitions` 添加行级缓存，同一 Provider 调用周期内对同一行的重复查询直接返回缓存结果，减少作用域遍历开销
+
+### Bug 修复
+
+- **修复诊断工厂初始扫描时 diagnosticCollection 未赋值的时序问题**（#39）：诊断 Provider 工厂函数在 `onDidChangeVisibleTextEditors` 事件触发初始扫描时，`vscode.DiagnosticCollection` 尚未完成赋值，导致首次扫描静默失败。将 collection 创建移至工厂函数入口确保同步可用
+- **REV-001 运行时崩溃与 Provider 异常防御**（#36, Issue #32）：修复多个 Provider 在边界条件下的未捕获异常——包括 Scheme 解析器空输入保护、`getSchemeKnownNames` 加载失败容错、`formatDoc` 参数校验等，消除扩展面板红色报错
+
+### 其他改进
+
+- **REV-004 可维护性重构——大文件拆分与结构优化**（#40）：将两个超大文件按职责拆分为 11 个独立模块
+  - `tcl-ast-utils.js`（1585 行）拆分为 6 个模块，缩减 79%：`tcl-scope.js`（作用域构建）、`tcl-variable-extractor.js`（变量提取）、`tcl-bracket-check.js`（括号检查）、`tcl-document-symbol.js`（文档大纲）、`scheme-ast-utils.js`（Scheme AST 工具）、保留核心 `tcl-ast-utils.js`
+  - `extension.js`（1293 行）拆分为 5 个模块，缩减 66%：`register-completion-providers.js`（补全/悬停/定义注册）、`register-sde-providers.js`（SDE Provider 注册）、`register-tcl-providers.js`（Tcl Provider 注册）、`docs-loader.js`（文档常量）、`commands/snippet-picker.js`（QuickPick 命令）；最终 `extension.js` 降至 439 行
+  - 新增 `providers/diagnostic-factory.js` 统一诊断 Provider 注册模式，消除 6 处重复的 debounce/事件订阅/初始扫描代码
+- **统一小型工具函数消除 5 处 DRY 违规**（#39）：提取 `truncateDefinitionText`、`safeLoadJson`、`isKnownName` 等工具函数为共享模块，消除跨文件的重复实现
+- **移除 tcl-ast-utils 旧管线死代码**（#38）：清除约 300 行已废弃的正则版 Tcl 解析器残留代码和未使用的导出函数
+- **REV-005 + REV-006 测试 DRY 消除与质量强化**（#37）：统一测试辅助函数（`computeLineStarts`、`countLinesUpTo`），消除 6 个测试文件中的重复定义；强化断言覆盖和错误消息可读性
+
+### 测试
+
+- 全量 34 项测试验证通过，覆盖模块拆分后的所有依赖路径
+
+---
+
 ## [1.15.1] - 2026-05-09
 
 ### 新功能
@@ -840,6 +873,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.16.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.15.1...v1.16.0
 [1.15.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.15.0...v1.15.1
 [1.15.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.14.1...v1.15.0
 [1.14.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.14.0...v1.14.1
