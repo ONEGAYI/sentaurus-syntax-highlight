@@ -9,7 +9,7 @@ const assert = require('assert');
 
 
 
-const { getDocumentSymbols, SymbolKind } = require('../src/lsp/tcl-ast-utils');
+const { getDocumentSymbols, SymbolKind } = require('../src/lsp/tcl-document-symbol');
 
 console.log('\n=== tcl-document-symbol \u6d4b\u8bd5 ===\n');
 

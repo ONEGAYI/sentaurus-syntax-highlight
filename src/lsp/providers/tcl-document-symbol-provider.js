@@ -2,7 +2,7 @@
 'use strict';
 
 const vscode = require('vscode');
-const astUtils = require('../tcl-ast-utils');
+const { getDocumentSymbols } = require('../tcl-document-symbol');
 
 /**
  * 创建 VSCode DocumentSymbolProvider for Tcl-based Sentaurus languages.
@@ -20,7 +20,7 @@ function createTclDocumentSymbolProvider(tclCache) {
             const entry = tclCache.get(document);
             if (!entry) return [];
 
-            const rawSymbols = astUtils.getDocumentSymbols(entry.tree.rootNode, document.languageId);
+            const rawSymbols = getDocumentSymbols(entry.tree.rootNode, document.languageId);
             return rawSymbols.map(s => toVscodeSymbol(s, document));
         },
     };
