@@ -7,7 +7,7 @@ const assert = require('assert');
 
 
 
-const ast = require('../src/lsp/tcl-ast-utils');
+const ast = require('../src/lsp/tcl-scope');
 const varExtractor = require('../src/lsp/tcl-variable-extractor');
 
 console.log('\n=== buildScopeMap 测试 ===\n');

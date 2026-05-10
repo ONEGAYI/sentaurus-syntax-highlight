@@ -84,7 +84,7 @@ test('lambda 参数引用', () => {
 // ===== Tcl 侧：resolveDefinition 作用域解析 =====
 console.log('\n=== Tcl 变量引用查找测试 ===\n');
 
-const tclAst = require('../src/lsp/tcl-ast-utils');
+const tclAst = require('../src/lsp/tcl-scope');
 const tclVarExtractor = require('../src/lsp/tcl-variable-extractor');
 
 

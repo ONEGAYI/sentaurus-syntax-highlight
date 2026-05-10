@@ -7,7 +7,7 @@ const assert = require('assert');
 
 
 
-const ast = require('../src/lsp/tcl-ast-utils');
+const ast = require('../src/lsp/tcl-scope');
 
 console.log('\n=== ScopeIndex / buildScopeIndex 测试 ===\n');
 

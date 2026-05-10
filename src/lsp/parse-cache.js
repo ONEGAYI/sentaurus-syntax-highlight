@@ -217,7 +217,7 @@ class TclParseCache {
         const entry = this.get(document);
         if (!entry) return null;
         if (!entry.scopeIndex) {
-            const { buildScopeIndex } = require('./tcl-ast-utils');
+            const { buildScopeIndex } = require('./tcl-scope');
             entry.scopeIndex = buildScopeIndex(entry.tree.rootNode);
         }
         return entry.scopeIndex;

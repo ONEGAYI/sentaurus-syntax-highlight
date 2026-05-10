@@ -15,7 +15,7 @@ try {
     throw e;
 }
 const path = require('path');
-const astUtils = require('../src/lsp/tcl-ast-utils');
+const astUtils = require('../src/lsp/tcl-scope');
 const varExtractor = require('../src/lsp/tcl-variable-extractor');
 
 async function main() {

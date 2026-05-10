@@ -422,6 +422,8 @@ async function runAsyncBenchmarks() {
     results.tclWasm.available = true;
 
     const tclAstUtils = require(path.join(PROJECT_ROOT, 'src/lsp/tcl-ast-utils.js'));
+    const tclVarExtractor = require(path.join(PROJECT_ROOT, 'src/lsp/tcl-variable-extractor.js'));
+    const tclScope = require(path.join(PROJECT_ROOT, 'src/lsp/tcl-scope.js'));
 
     // 直接注入 parser 到 astUtils
     // 由于 tcl-ast-utils 使用 tclParserWasm.parse()，我们需要通过模块接口
@@ -448,14 +450,14 @@ async function runAsyncBenchmarks() {
 
         // 4b. getVariables
         const varsResult = bench('getVariables', () => {
-            tclAstUtils.getVariables(tree.rootNode, text);
+            tclVarExtractor.getVariables(tree.rootNode, text);
         }, ITERATIONS);
         entry.getVariables = varsResult.ms;
         console.log(`    getVariables:    avg=${varsResult.ms.avg}ms  median=${varsResult.ms.median}ms`);
 
         // 4c. buildScopeMap — 关键 O(n²) 目标
         const scopeMapResult = bench('buildScopeMap', () => {
-            tclAstUtils.buildScopeMap(tree.rootNode);
+            tclScope.buildScopeMap(tree.rootNode);
         }, Math.max(3, Math.floor(ITERATIONS / 2)));
         entry.buildScopeMap = scopeMapResult.ms;
         console.log(`    buildScopeMap:   avg=${scopeMapResult.ms.avg}ms  median=${scopeMapResult.ms.median}ms`);
@@ -471,8 +473,8 @@ async function runAsyncBenchmarks() {
         const fullResult = bench('full Tcl pipeline', () => {
             const t = tclParse(text);
             try {
-                tclAstUtils.getVariables(t.rootNode, text);
-                tclAstUtils.buildScopeMap(t.rootNode);
+                tclVarExtractor.getVariables(t.rootNode, text);
+                tclScope.buildScopeMap(t.rootNode);
                 tclAstUtils.getFoldingRanges(t.rootNode);
             } finally {
                 t.delete();
@@ -493,7 +495,7 @@ async function runAsyncBenchmarks() {
         const text = generateTclCode(lineCount, procCount);
         const tree = tclParse(text);
         const result = bench(`buildScopeMap(${lineCount}L/${procCount}P)`, () => {
-            tclAstUtils.buildScopeMap(tree.rootNode);
+            tclScope.buildScopeMap(tree.rootNode);
         }, Math.max(3, Math.floor(ITERATIONS / 2)));
         scalingResults[lineCount] = { lines: lineCount, procs: procCount, ms: result.ms };
         console.log(`    ${lineCount} lines / ${procCount} procs: avg=${result.ms.avg}ms  median=${result.ms.median}ms`);
