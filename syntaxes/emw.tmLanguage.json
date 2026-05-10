@@ -107,7 +107,11 @@
     },
     {
       "name": "comment.line.hash",
-      "match": "#.*$"
+      "match": "^\\s*#.*$"
+    },
+    {
+      "name": "comment.line.hash",
+      "match": "(?<=;)\\s*#.*$"
     },
     {
       "name": "comment.line.asterisk",

@@ -57,7 +57,8 @@
   "repository": {
     "comments": {
       "patterns": [
-        { "name": "comment.line.hash", "match": "#.*$" },
+        { "name": "comment.line.hash", "match": "^\\s*#.*$" },
+        { "name": "comment.line.hash", "match": "(?<=;)\\s*#.*$" },
         { "name": "comment.line.asterisk", "match": "^\\s*\\*.*$" }
       ]
     },
