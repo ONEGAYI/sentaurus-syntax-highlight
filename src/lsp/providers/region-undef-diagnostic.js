@@ -16,12 +16,14 @@ function activate(context, schemeCacheInstance, materials) {
     schemeCache = schemeCacheInstance;
     builtinMaterials = materials || new Set();
 
-    ({ diagnosticCollection } = createDiagnosticProvider({
+    const provider = createDiagnosticProvider({
         name: 'sde-symbol-undef',
         languageFilter: doc => doc.languageId === 'sde',
         context,
         updateFn: updateDiagnostics,
-    }));
+    });
+    diagnosticCollection = provider.diagnosticCollection;
+    provider.initialScan();
 }
 
 function updateDiagnostics(doc) {

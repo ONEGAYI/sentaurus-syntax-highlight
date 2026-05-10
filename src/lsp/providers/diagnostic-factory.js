@@ -47,14 +47,18 @@ function createDiagnosticProvider({ name, languageFilter, context, updateFn, wat
         })
     );
 
-    // 初始扫描已在编辑器中打开的文档
-    if (watchOpen) {
-        for (const doc of vscode.workspace.textDocuments) {
-            if (languageFilter(doc)) updateFn(doc);
-        }
-    }
-
-    return { diagnosticCollection, updateDiagnostics: updateFn };
+    return {
+        diagnosticCollection,
+        updateDiagnostics: updateFn,
+        /** 执行初始扫描。必须在调用方完成 diagnosticCollection 赋值后调用。 */
+        initialScan() {
+            if (watchOpen) {
+                for (const doc of vscode.workspace.textDocuments) {
+                    if (languageFilter(doc)) updateFn(doc);
+                }
+            }
+        },
+    };
 }
 
 module.exports = { createDiagnosticProvider, DEBOUNCE_MS };

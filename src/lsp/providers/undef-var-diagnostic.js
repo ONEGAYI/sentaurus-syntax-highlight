@@ -38,12 +38,14 @@ function activate(context, schemeCacheInstance, tclCacheInstance) {
     schemeCache = schemeCacheInstance;
     tclCache = tclCacheInstance;
 
-    ({ diagnosticCollection } = createDiagnosticProvider({
+    const provider = createDiagnosticProvider({
         name: 'undef-var-tcl',
         languageFilter: doc => TCL_LANG_SET.has(doc.languageId) || doc.languageId === 'sde',
         context,
         updateFn: updateDiagnostics,
-    }));
+    });
+    diagnosticCollection = provider.diagnosticCollection;
+    provider.initialScan();
 }
 
 /**

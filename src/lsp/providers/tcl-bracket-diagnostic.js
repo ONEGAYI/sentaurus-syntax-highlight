@@ -17,12 +17,14 @@ let diagnosticCollection;
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-    ({ diagnosticCollection } = createDiagnosticProvider({
+    const provider = createDiagnosticProvider({
         name: 'tcl-brackets',
         languageFilter: doc => TCL_LANG_SET.has(doc.languageId),
         context,
         updateFn: updateDiagnostics,
-    }));
+    });
+    diagnosticCollection = provider.diagnosticCollection;
+    provider.initialScan();
 }
 
 /**
