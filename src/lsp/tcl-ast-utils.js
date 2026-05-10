@@ -244,7 +244,7 @@ function _extractCommandVarDefs(node, cmdName, words) {
 }
 
 /**
- * 从 ERROR 节点提取变量定义（lassign、variable 等）。
+ * 从 ERROR 节点提取变量定义（lassign、variable、Svisual -out 等）。
  */
 function _extractErrorVarDefs(node) {
     const defs = [];
@@ -269,6 +269,11 @@ function _extractErrorVarDefs(node) {
                 }
                 argIdx++;
             }
+        }
+    } else if (_isSvisualVarDefCommand(cmdName)) {
+        const words = _getCommandWords(node);
+        for (const d of _extractSvisualOutVars(words, cmdName)) {
+            defs.push(d);
         }
     }
     return defs;
@@ -309,6 +314,41 @@ function _extractVariableNames(words) {
     return names;
 }
 
+/** Svisual 变量定义命令命名空间前缀 */
+const _SVISUAL_NS_RE = /^(ext|rfx|ifm)::/;
+
+/**
+ * 判断命令名是否属于 Svisual 变量定义命令。
+ * ext::/rfx::/ifm:: 命名空间命令使用 -out 传递结果，create_variable 使用 -name。
+ */
+function _isSvisualVarDefCommand(cmdName) {
+    return cmdName === 'create_variable' || _SVISUAL_NS_RE.test(cmdName);
+}
+
+/**
+ * 从 Svisual 命令参数中提取 -out/-name 定义的变量名。
+ * flag 可出现在参数列表的任意位置（同一行内）。
+ * @param {object[]} words - _getCommandWords 返回的词列表
+ * @param {string} cmdName - 命令名（words[0].text）
+ * @returns {Array<{name: string, line: number}>}
+ */
+function _extractSvisualOutVars(words, cmdName) {
+    const defs = [];
+    const targetFlag = cmdName === 'create_variable' ? '-name' : '-out';
+
+    for (let i = 1; i < words.length - 1; i++) {
+        const w = words[i];
+        if (w.type === 'simple_word' && w.text === targetFlag) {
+            const next = words[i + 1];
+            if (next && (next.type === 'simple_word' || next.type === 'id') && !next.text.startsWith('$')) {
+                defs.push({ name: next.text, line: next.startPosition.row + 1 });
+            }
+        }
+    }
+
+    return defs;
+}
+
 module.exports = {
     parseSafe,
     walkNodes,
@@ -327,4 +367,6 @@ module.exports = {
     _extractErrorVarDefs,
     _extractUpvarLocalNames,
     _extractVariableNames,
+    _isSvisualVarDefCommand,
+    _extractSvisualOutVars,
 };
