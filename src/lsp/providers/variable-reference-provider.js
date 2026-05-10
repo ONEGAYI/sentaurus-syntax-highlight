@@ -2,7 +2,8 @@
 'use strict';
 
 const { getSchemeRefs, getVisibleDefinitions } = require('../scope-analyzer');
-const { getVariableRefs, TCL_LANGS } = require('../tcl-ast-utils');
+const { getVariableRefs } = require('../tcl-variable-extractor');
+const { TCL_LANGS } = require('../tcl-ast-utils');
 const ppUtils = require('../pp-utils');
 
 let schemeCache;

@@ -2,10 +2,9 @@
 'use strict';
 
 const vscode = require('vscode');
-const astUtils = require('../tcl-ast-utils');
+const { TCL_LANGS } = require('../tcl-ast-utils');
+const { findMismatchedBraces } = require('../tcl-bracket-check');
 const { createDiagnosticProvider } = require('./diagnostic-factory');
-
-const TCL_LANG_SET = new Set(astUtils.TCL_LANGS);
 
 /** @type {vscode.DiagnosticCollection} */
 let diagnosticCollection;
@@ -19,7 +18,7 @@ let diagnosticCollection;
 function activate(context) {
     const provider = createDiagnosticProvider({
         name: 'tcl-brackets',
-        languageFilter: doc => TCL_LANG_SET.has(doc.languageId),
+        languageFilter: doc => TCL_LANGS.has(doc.languageId),
         context,
         updateFn: updateDiagnostics,
     });
@@ -36,7 +35,7 @@ function updateDiagnostics(doc) {
         const text = doc.getText();
 
         // 使用文本级括号平衡检查，无需 WASM 解析器
-        const errors = astUtils.findMismatchedBraces(text);
+        const errors = findMismatchedBraces(text);
 
         const diagnostics = errors.map(err => {
             const range = new vscode.Range(

@@ -8,6 +8,7 @@ const assert = require('assert');
 
 
 const ast = require('../src/lsp/tcl-ast-utils');
+const varExtractor = require('../src/lsp/tcl-variable-extractor');
 
 console.log('\n=== getVariableRefs 测试 ===\n');
 
@@ -19,7 +20,7 @@ test('收集单个 $var 引用', () => {
     ], 0, 0, 0, 8);
     const root = makeNode('program', '', [cmdNode], 0, 0, 0, 8);
 
-    const refs = ast.getVariableRefs(root);
+    const refs = varExtractor.getVariableRefs(root);
     assert.strictEqual(refs.length, 1);
     assert.strictEqual(refs[0].name, 'x');
     assert.strictEqual(refs[0].line, 1);
@@ -31,7 +32,7 @@ test('收集多个 $var 引用', () => {
     const ref2 = makeNode('variable_substitution', '$b', [], 0, 3, 0, 5);
     const root = makeNode('program', '', [ref1, ref2], 0, 0, 0, 5);
 
-    const refs = ast.getVariableRefs(root);
+    const refs = varExtractor.getVariableRefs(root);
     assert.strictEqual(refs.length, 2);
     assert.strictEqual(refs[0].name, 'a');
     assert.strictEqual(refs[1].name, 'b');
@@ -42,14 +43,14 @@ test('跳过注释中的引用', () => {
     const refNode = makeNode('variable_substitution', '$y', [], 1, 0, 1, 2);
     const root = makeNode('program', '', [commentNode, refNode], 0, 0, 1, 2);
 
-    const refs = ast.getVariableRefs(root);
+    const refs = varExtractor.getVariableRefs(root);
     assert.strictEqual(refs.length, 1);
     assert.strictEqual(refs[0].name, 'y');
 });
 
 test('空 AST 返回空数组', () => {
     const root = makeNode('program', '', [], 0, 0, 0, 0);
-    const refs = ast.getVariableRefs(root);
+    const refs = varExtractor.getVariableRefs(root);
     assert.strictEqual(refs.length, 0);
 });
 
@@ -58,7 +59,7 @@ test('variable_substitution 嵌套在 braced_word 中', () => {
     const braced = makeNode('braced_word', '{expr $val}', [ref], 0, 0, 0, 11);
     const root = makeNode('program', '', [braced], 0, 0, 0, 11);
 
-    const refs = ast.getVariableRefs(root);
+    const refs = varExtractor.getVariableRefs(root);
     assert.strictEqual(refs.length, 1);
     assert.strictEqual(refs[0].name, 'val');
 });
