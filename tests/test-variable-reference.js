@@ -85,6 +85,7 @@ test('lambda 参数引用', () => {
 console.log('\n=== Tcl 变量引用查找测试 ===\n');
 
 const tclAst = require('../src/lsp/tcl-ast-utils');
+const tclVarExtractor = require('../src/lsp/tcl-variable-extractor');
 
 
 test('Tcl 全局变量引用过滤', () => {
@@ -97,7 +98,7 @@ test('Tcl 全局变量引用过滤', () => {
     const root = makeNode('program', '', [setNode, dollarNode], 0, 0, 1, 2);
 
     const scopeIndex = tclAst.buildScopeIndex(root);
-    const refs = tclAst.getVariableRefs(root);
+    const refs = tclVarExtractor.getVariableRefs(root);
 
     const targetDef = scopeIndex.resolveDefinition('x', 2);
     assert.ok(targetDef, '应找到 x 的定义');
@@ -132,7 +133,7 @@ test('Tcl proc 内同名变量隔离', () => {
     const root = makeNode('program', '', [globalSet, procNode, globalDollar], 0, 0, 5, 2);
 
     const scopeIndex = tclAst.buildScopeIndex(root);
-    const refs = tclAst.getVariableRefs(root);
+    const refs = tclVarExtractor.getVariableRefs(root);
 
     const innerDef = scopeIndex.resolveDefinition('x', 4);
     assert.ok(innerDef, 'proc 内应找到 x');

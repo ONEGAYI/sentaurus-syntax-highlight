@@ -16,6 +16,7 @@ try {
 }
 const path = require('path');
 const astUtils = require('../src/lsp/tcl-ast-utils');
+const varExtractor = require('../src/lsp/tcl-variable-extractor');
 
 async function main() {
     await Parser.init({
@@ -33,7 +34,7 @@ async function main() {
         const tree = parser.parse(code);
         try {
             const root = tree.rootNode;
-            const refs = astUtils.getVariableRefs(root);
+            const refs = varExtractor.getVariableRefs(root);
             const scopeMap = astUtils.buildScopeMap(root);
 
             for (const { name, line } of expectVisible) {

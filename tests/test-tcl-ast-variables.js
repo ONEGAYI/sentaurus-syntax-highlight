@@ -12,6 +12,7 @@ const assert = require('assert');
 
 
 const ast = require('../src/lsp/tcl-ast-utils');
+const varExtractor = require('../src/lsp/tcl-variable-extractor');
 
 console.log('\n=== getVariables 测试 ===\n');
 
@@ -28,7 +29,7 @@ test('提取 set 变量（带值）', () => {
     ], 0, 0, 0, 8);
 
     const root = makeNode('program', '', [setNode], 0, 0, 0, 8);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     assert.strictEqual(vars.length, 1, `应有 1 个变量，实际 ${vars.length}`);
     assert.strictEqual(vars[0].name, 'x');
@@ -46,7 +47,7 @@ test('提取 set 变量（仅赋值无值）', () => {
     ], 0, 0, 0, 5);
 
     const root = makeNode('program', '', [setNode], 0, 0, 0, 5);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     assert.strictEqual(vars.length, 1, `应有 1 个变量，实际 ${vars.length}`);
     assert.strictEqual(vars[0].name, 'x');
@@ -62,7 +63,7 @@ test('跳过 env() 变量', () => {
     ], 0, 0, 0, 22);
 
     const root = makeNode('program', '', [setNode], 0, 0, 0, 22);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     assert.strictEqual(vars.length, 0, `env() 变量不应被提取，实际 ${vars.length}`);
 });
@@ -74,7 +75,7 @@ test('set 无 id 子节点时跳过', () => {
     ], 0, 0, 0, 3);
 
     const root = makeNode('program', '', [setNode], 0, 0, 0, 3);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     assert.strictEqual(vars.length, 0, `无 id 子节点不应提取变量，实际 ${vars.length}`);
 });
@@ -110,7 +111,7 @@ test('提取 proc 函数名和参数', () => {
     ], 0, 0, 0, 28);
 
     const root = makeNode('program', '', [procNode], 0, 0, 0, 28);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     assert.strictEqual(vars.length, 3, `应有 3 个结果（1函数+2参数），实际 ${vars.length}`);
     // 第一个应为函数名
@@ -149,7 +150,7 @@ test('提取 proc 默认值参数 {b 1.0}', () => {
 		bodyNode,
 	], 0, 0, 1, 1);
 	const root = makeNode('program', '', [procNode], 0, 0, 1, 1);
-	const vars = ast.getVariables(root);
+	const vars = varExtractor.getVariables(root);
 
 	assert.strictEqual(vars.length, 3);
 	assert.strictEqual(vars[0].name, 'ADD');
@@ -179,7 +180,7 @@ test('提取 proc 函数名（无参数）', () => {
     ], 0, 0, 0, 23);
 
     const root = makeNode('program', '', [procNode], 0, 0, 0, 23);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     assert.strictEqual(vars.length, 1, `应有 1 个结果（只有函数名），实际 ${vars.length}`);
     assert.strictEqual(vars[0].name, 'myFunc');
@@ -210,7 +211,7 @@ test('提取 foreach 循环变量', () => {
     ], 0, 0, 0, 27);
 
     const root = makeNode('program', '', [foreachNode], 0, 0, 0, 27);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     assert.strictEqual(vars.length, 1, `应有 1 个变量，实际 ${vars.length}`);
     assert.strictEqual(vars[0].name, 'item');
@@ -256,7 +257,7 @@ test('for 循环提取 init 和 body 中的变量', () => {
     ], 0, 0, 1, 13);
 
     const root = makeNode('program', '', [forNode], 0, 0, 1, 13);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     // 应提取 init 中的 i 和 body 中的 x
     assert.strictEqual(vars.length, 2, `应恰好提取 2 个变量（i, x），实际 ${vars.length}：${vars.map(v=>v.name).join(',')}`);
@@ -297,7 +298,7 @@ test('proc body 内嵌套的 set 变量', () => {
     ], 0, 0, 2, 1);
 
     const root = makeNode('program', '', [procNode], 0, 0, 2, 1);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     assert.strictEqual(vars.length, 2, `应有 2 个结果（1函数+1变量），实际 ${vars.length}`);
     assert.strictEqual(vars[0].name, 'myFunc');
@@ -338,7 +339,7 @@ test('while 递归 body 中的 set 变量', () => {
     ], 0, 0, 0, 37);
 
     const root = makeNode('program', '', [whileNode], 0, 0, 0, 37);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     assert.strictEqual(vars.length, 1, `应有 1 个变量，实际 ${vars.length}`);
     assert.strictEqual(vars[0].name, 'i');
@@ -350,7 +351,7 @@ console.log('\n空 AST:');
 
 test('空 AST 返回空数组', () => {
     const root = makeNode('program', '', [], 0, 0, 0, 0);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
     assert.strictEqual(vars.length, 0, `空 AST 应返回空数组，实际 ${vars.length}`);
 });
 
@@ -361,7 +362,7 @@ test('无变量定义的 command 返回空数组', () => {
     ], 0, 0, 0, 12);
 
     const root = makeNode('program', '', [cmdNode], 0, 0, 0, 12);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     assert.strictEqual(vars.length, 0, `普通命令不应提取变量，实际 ${vars.length}`);
 });
@@ -407,7 +408,7 @@ test('多个变量定义混合提取', () => {
     ], 0, 9, 1, 13);
 
     const root = makeNode('program', '', [setX, procNode], 0, 0, 1, 13);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     // x:variable, myFunc:function, a:parameter, y:variable
     assert.strictEqual(vars.length, 4, `应有 4 个结果，实际 ${vars.length}`);
@@ -435,7 +436,7 @@ test('lmap 单变量提取', () => {
     ], 0, 0, 0, 24);
 
     const root = makeNode('program', '', [forNode], 0, 0, 0, 24);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     assert.strictEqual(vars.length, 1, `应恰好提取 1 个变量，实际 ${vars.length}：${vars.map(v=>v.name).join(',')}`);
     assert.strictEqual(vars[0].name, 'x', '应提取 lmap 循环变量 x');
@@ -463,7 +464,7 @@ test('lmap 多变量提取（braced_word 形式）', () => {
     ], 0, 0, 0, 31);
 
     const root = makeNode('program', '', [forNode], 0, 0, 0, 31);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     assert.strictEqual(vars.length, 2, `应恰好提取 2 个变量，实际 ${vars.length}：${vars.map(v=>v.name).join(',')}`);
     assert.strictEqual(vars[0].name, 'a', '应提取 lmap 变量 a');
@@ -493,7 +494,7 @@ test('dict for 键值变量提取', () => {
     ], 0, 0, 0, 27);
 
     const root = makeNode('program', '', [dictNode], 0, 0, 0, 27);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     assert.strictEqual(vars.length, 2, `应恰好提取 2 个变量，实际 ${vars.length}：${vars.map(v=>v.name).join(',')}`);
     assert.strictEqual(vars[0].name, 'k', '应提取 dict for 键变量 k');
@@ -509,7 +510,7 @@ test('incr 变量提取', () => {
     ], 0, 0, 0, 12);
 
     const root = makeNode('program', '', [incrNode], 0, 0, 0, 12);
-    const vars = ast.getVariables(root);
+    const vars = varExtractor.getVariables(root);
 
     // incr 也作为变量定义提取（确保 hover/def 可用）
     assert.strictEqual(vars.length, 1, `incr 应提取 counter 变量，实际 ${vars.length}`);

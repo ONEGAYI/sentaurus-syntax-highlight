@@ -8,6 +8,7 @@ const assert = require('assert');
 
 
 const ast = require('../src/lsp/tcl-ast-utils');
+const varExtractor = require('../src/lsp/tcl-variable-extractor');
 
 console.log('\n=== buildScopeMap 测试 ===\n');
 
@@ -148,7 +149,7 @@ test('白名单变量不报未定义', () => {
     const refNode = makeNode('variable_substitution', '$DesName', [], 0, 0, 0, 8);
     const root = makeNode('program', '', [refNode], 0, 0, 0, 8);
 
-    const refs = ast.getVariableRefs(root);
+    const refs = varExtractor.getVariableRefs(root);
     assert.strictEqual(refs.length, 1);
     assert.strictEqual(refs[0].name, 'DesName');
     // DesName 在白名单中，诊断模块应跳过

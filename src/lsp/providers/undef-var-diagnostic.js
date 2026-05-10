@@ -3,6 +3,7 @@
 
 const vscode = require('vscode');
 const astUtils = require('../tcl-ast-utils');
+const { getVariableRefs } = require('../tcl-variable-extractor');
 const scopeAnalyzer = require('../scope-analyzer');
 const ppUtils = require('../pp-utils');
 const { createDiagnosticProvider } = require('./diagnostic-factory');
@@ -81,7 +82,7 @@ function checkTclUndefVars(document) {
     if (!entry) return [];
 
     const root = entry.tree.rootNode;
-    const refs = astUtils.getVariableRefs(root);
+    const refs = getVariableRefs(root);
     const scopeIndex = tclCache.getScopeIndex(document);
     if (!scopeIndex) return [];
 

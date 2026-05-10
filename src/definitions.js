@@ -4,6 +4,7 @@
 const { parse } = require('./lsp/scheme-parser');
 const { analyze } = require('./lsp/scheme-analyzer');
 const tclAstUtils = require('./lsp/tcl-ast-utils');
+const tclVarExtractor = require('./lsp/tcl-variable-extractor');
 const { extractPpDefines } = require('./lsp/pp-utils');
 
 /**
@@ -53,7 +54,7 @@ function extractTclDefinitionsAst(text) {
     const tree = tclAstUtils.parseSafe(text);
     if (!tree) return results;
     try {
-        results.push(...tclAstUtils.getVariables(tree.rootNode, text));
+        results.push(...tclVarExtractor.getVariables(tree.rootNode, text));
     } finally {
         tree.delete();
     }
