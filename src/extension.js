@@ -2,13 +2,10 @@ const vscode = require('vscode');
 const path = require('path');
 const fs = require('fs');
 const defs = require('./definitions');
-const foldingProviderMod = require('./lsp/providers/folding-provider');
-const bracketDiagnostic = require('./lsp/providers/bracket-diagnostic');
 const scopeAnalyzer = require('./lsp/scope-analyzer');
-const signatureProvider = require('./lsp/providers/signature-provider');
-const semanticTokensMod = require('./lsp/providers/semantic-tokens-provider');
 const sdeviceSemanticMod = require('./lsp/providers/sdevice-semantic-provider');
 const tclFuncallSemantic = require('./lsp/providers/tcl-funcall-semantic');
+const { registerSdeProviders } = require('./register-sde-providers');
 const expressionConverter = require('./commands/expression-converter');
 const tclParserWasm = require('./lsp/tcl-parser-wasm');
 const astUtils = require('./lsp/tcl-ast-utils');
@@ -16,14 +13,10 @@ const tclFoldingMod = require('./lsp/providers/tcl-folding-provider');
 const tclBracketDiagnostic = require('./lsp/providers/tcl-bracket-diagnostic');
 const undefVarDiagnostic = require('./lsp/providers/undef-var-diagnostic');
 const tclDocSymbolMod = require('./lsp/providers/tcl-document-symbol-provider');
-const schemeOnEnterProvider = require('./lsp/providers/scheme-on-enter-provider');
 const unitAutoClose = require('./lsp/providers/unit-auto-close-provider');
 const quoteAutoDelete = require('./lsp/providers/quote-auto-delete-provider');
 const vectorKW = require('./lsp/providers/sdevice-vector-keywords');
-const regionUndefDiagnostic = require('./lsp/providers/region-undef-diagnostic');
 const variableReferenceProvider = require('./lsp/providers/variable-reference-provider');
-const symbolCompletion = require('./lsp/providers/symbol-completion');
-const symbolReferenceProvider = require('./lsp/providers/symbol-reference-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
 const { SDEVICE_ALL_SECTION_KEYWORDS_LOWER } = require('./lsp/tcl-symbol-configs');
 const ppUtils = require('./lsp/pp-utils');
@@ -260,20 +253,13 @@ function activate(context) {
 
     schemeCache.setSymbolConfig(symbolParamsTable, modeDispatchTable);
 
-    // FoldingRangeProvider (SDE only)
-    const foldingProvider = foldingProviderMod.createFoldingProvider(schemeCache);
-    context.subscriptions.push(
-        vscode.languages.registerFoldingRangeProvider(
-            { language: 'sde' },
-            foldingProvider
-        )
-    );
-
-    // Bracket diagnostic (SDE only)
-    bracketDiagnostic.activate(context, schemeCache);
-
-    // 括号内回车自动缩进 (SDE only)
-    schemeOnEnterProvider.activate(context);
+    // ── SDE Providers ──────────────────────────
+    registerSdeProviders(context, {
+        schemeCache,
+        modeDispatchTable,
+        langFuncDocs,
+        builtinMaterials,
+    });
 
     // Unit 自动配对（SPROCESS only）
     unitAutoClose.activate(context);
@@ -299,9 +285,6 @@ function activate(context) {
     // 未定义变量诊断
     undefVarDiagnostic.activate(context, schemeCache, tclCache);
 
-    // Region/Material/Contact 未定义语义诊断（SDE only）
-    regionUndefDiagnostic.activate(context, schemeCache, builtinMaterials);
-
     // DocumentSymbol / 面包屑导航（4 语言共用）
     const tclDocumentSymbolProvider = tclDocSymbolMod.createTclDocumentSymbolProvider(tclCache);
     for (const langId of astUtils.TCL_LANGS) {
@@ -312,20 +295,6 @@ function activate(context) {
             )
         );
     }
-
-    // Semantic Tokens (SDE only) — 用户定义函数调用高亮
-    const stLegend = new vscode.SemanticTokensLegend(
-        semanticTokensMod.TOKEN_TYPES,
-        semanticTokensMod.TOKEN_MODIFIERS
-    );
-    const stProvider = semanticTokensMod.createSemanticTokensProvider(schemeCache);
-    context.subscriptions.push(
-        vscode.languages.registerDocumentSemanticTokensProvider(
-            { language: 'sde' },
-            stProvider,
-            stLegend
-        )
-    );
 
     // Semantic Tokens (sdevice) — section 上下文感知着色
     const sdeviceDocs = loadDocsJson('sdevice_command_docs.json', false) || {};
@@ -380,33 +349,6 @@ function activate(context) {
             )
         );
     }
-
-    // Signature Help (SDE only)
-    const sigHelpDisposable = vscode.languages.registerSignatureHelpProvider(
-        { language: 'sde' },
-        {
-            provideSignatureHelp(document, position, token) {
-                try {
-                    return signatureProvider.provideSignatureHelp(
-                        document, position, token,
-                        modeDispatchTable, langFuncDocs.sde,
-                        schemeCache
-                    );
-                } catch (e) {
-                    console.error('Sentaurus: provideSignatureHelp error', e);
-                    return null;
-                }
-            },
-        },
-        ' ', '\t', '"', '('
-    );
-    context.subscriptions.push(sigHelpDisposable);
-
-    // Symbol completion (SDE only) — region/material/contact 补全
-    symbolCompletion.activate(context, schemeCache, modeDispatchTable, vscode);
-
-    // Find All References (SDE only) — region/material/contact
-    symbolReferenceProvider.activate(context, schemeCache, vscode);
 
     // Find All References — 用户自定义变量（全部 6 种语言）
     variableReferenceProvider.activate(context, schemeCache, tclCache, vscode);
