@@ -3,6 +3,7 @@
   "name": "Sentaurus SDEVICE",
   "patterns": [
     { "include": "#preprocessor" },
+    { "name": "constant.other.color.rgb", "match": "#[0-9A-Fa-f]{6}\\b|#[rR]{2}[gG]{2}[bB]{2}\\b" },
     { "include": "#comments" },
     { "include": "#strings" },
     { "include": "#tcl-variable" },
@@ -57,7 +58,6 @@
   "repository": {
     "comments": {
       "patterns": [
-        { "name": "constant.other.color.rgb", "match": "#[0-9A-Fa-f]{6}\\b|#[rR]{2}[gG]{2}[bB]{2}\\b" },
         { "name": "comment.line.hash", "match": "#.*$" },
         { "name": "comment.line.asterisk", "match": "^\\s*\\*.*$" }
       ]
