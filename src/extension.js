@@ -3,22 +3,17 @@ const path = require('path');
 const fs = require('fs');
 const defs = require('./definitions');
 const scopeAnalyzer = require('./lsp/scope-analyzer');
-const sdeviceSemanticMod = require('./lsp/providers/sdevice-semantic-provider');
-const tclFuncallSemantic = require('./lsp/providers/tcl-funcall-semantic');
 const { registerSdeProviders } = require('./register-sde-providers');
+const { registerTclProviders } = require('./register-tcl-providers');
 const expressionConverter = require('./commands/expression-converter');
 const tclParserWasm = require('./lsp/tcl-parser-wasm');
 const astUtils = require('./lsp/tcl-ast-utils');
-const tclFoldingMod = require('./lsp/providers/tcl-folding-provider');
-const tclBracketDiagnostic = require('./lsp/providers/tcl-bracket-diagnostic');
 const undefVarDiagnostic = require('./lsp/providers/undef-var-diagnostic');
-const tclDocSymbolMod = require('./lsp/providers/tcl-document-symbol-provider');
 const unitAutoClose = require('./lsp/providers/unit-auto-close-provider');
 const quoteAutoDelete = require('./lsp/providers/quote-auto-delete-provider');
 const vectorKW = require('./lsp/providers/sdevice-vector-keywords');
 const variableReferenceProvider = require('./lsp/providers/variable-reference-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
-const { SDEVICE_ALL_SECTION_KEYWORDS_LOWER } = require('./lsp/tcl-symbol-configs');
 const ppUtils = require('./lsp/pp-utils');
 const { decodeHtml, stripTclVarPrefix } = ppUtils;
 const {
@@ -267,88 +262,17 @@ function activate(context) {
     // 空引号对自动删除（所有语言）
     quoteAutoDelete.activate(context);
 
-    // ── Tcl Providers（4 语言共用）──────────────────
-    // 代码折叠
-    const tclFoldingProvider = tclFoldingMod.createTclFoldingProvider(tclCache);
-    for (const langId of astUtils.TCL_LANGS) {
-        context.subscriptions.push(
-            vscode.languages.registerFoldingRangeProvider(
-                { language: langId },
-                tclFoldingProvider
-            )
-        );
-    }
-
-    // 括号诊断
-    tclBracketDiagnostic.activate(context);
+    // ── Tcl Providers ──────────────────────────
+    const tclProviderResult = registerTclProviders(context, {
+        tclCache,
+        loadDocsJson,
+    });
+    sdeviceStProvider = tclProviderResult.sdeviceStProvider;
+    const sdeviceLowerToCanon = tclProviderResult.sdeviceLowerToCanon;
+    const sdeviceDocs = tclProviderResult.sdeviceDocs;
 
     // 未定义变量诊断
     undefVarDiagnostic.activate(context, schemeCache, tclCache);
-
-    // DocumentSymbol / 面包屑导航（4 语言共用）
-    const tclDocumentSymbolProvider = tclDocSymbolMod.createTclDocumentSymbolProvider(tclCache);
-    for (const langId of astUtils.TCL_LANGS) {
-        context.subscriptions.push(
-            vscode.languages.registerDocumentSymbolProvider(
-                { language: langId },
-                tclDocumentSymbolProvider
-            )
-        );
-    }
-
-    // Semantic Tokens (sdevice) — section 上下文感知着色
-    const sdeviceDocs = loadDocsJson('sdevice_command_docs.json', false) || {};
-    const sdeviceSectionKwsLower = SDEVICE_ALL_SECTION_KEYWORDS_LOWER;
-    // 小写→原始大小写映射，用于 hover 等需要原始键查找文档的场景
-    const sdeviceLowerToCanon = new Map();
-    for (const key of Object.keys(sdeviceDocs)) {
-        sdeviceLowerToCanon.set(key.toLowerCase(), key);
-    }
-    const sdeviceLegend = new vscode.SemanticTokensLegend(
-        sdeviceSemanticMod.TOKEN_TYPES,
-        sdeviceSemanticMod.TOKEN_MODIFIERS
-    );
-    sdeviceStProvider = sdeviceSemanticMod.createSdeviceSemanticProvider(
-        sdeviceDocs, sdeviceSectionKwsLower
-    );
-    context.subscriptions.push(
-        vscode.languages.registerDocumentSemanticTokensProvider(
-            { language: 'sdevice' },
-            sdeviceStProvider,
-            sdeviceLegend
-        )
-    );
-
-    // Semantic Tokens (sdevice) — proc 函数调用（补充到现有 section 语义着色之上）
-    const sdeviceFuncallLegend = new vscode.SemanticTokensLegend(
-        tclFuncallSemantic.FUNCALL_ONLY_TYPES,
-        []
-    );
-    const sdeviceFuncallProvider = tclFuncallSemantic.createTclFuncallSemanticProvider(tclCache, { includeMacro: false });
-    context.subscriptions.push(
-        vscode.languages.registerDocumentSemanticTokensProvider(
-            { language: 'sdevice' },
-            sdeviceFuncallProvider,
-            sdeviceFuncallLegend
-        )
-    );
-
-    // Semantic Tokens (其他 Tcl 工具) — proc 函数调用 + #define 宏着色
-    const tclPpLangs = ['sprocess', 'emw', 'inspect', 'svisual'];
-    const tclFuncallLegend = new vscode.SemanticTokensLegend(
-        tclFuncallSemantic.TOKEN_TYPES,
-        tclFuncallSemantic.TOKEN_MODIFIERS
-    );
-    const tclFuncallProvider = tclFuncallSemantic.createTclFuncallSemanticProvider(tclCache, { includeMacro: true });
-    for (const ppLang of tclPpLangs) {
-        context.subscriptions.push(
-            vscode.languages.registerDocumentSemanticTokensProvider(
-                { language: ppLang },
-                tclFuncallProvider,
-                tclFuncallLegend
-            )
-        );
-    }
 
     // Find All References — 用户自定义变量（全部 6 种语言）
     variableReferenceProvider.activate(context, schemeCache, tclCache, vscode);
