@@ -50,6 +50,7 @@ function buildSampleAST() {
 
 
 const ast = require('../src/lsp/tcl-ast-utils');
+const { findMismatchedBraces } = require('../src/lsp/tcl-bracket-check');
 
 console.log('\n=== tcl-ast-utils 测试 ===\n');
 
@@ -79,53 +80,53 @@ test('正常代码无括号错误', () => {
     Electrode { Name="gate" Voltage=0.0 }
     Physics { Mobility( PhuMob ) }
 }`;
-    const errors = ast.findMismatchedBraces(text);
+    const errors = findMismatchedBraces(text);
     assert.strictEqual(errors.length, 0, `不应有括号错误，但发现 ${errors.length} 个`);
 });
 
 test('检测到多余的 }', () => {
     const text = 'Device { }}';
-    const errors = ast.findMismatchedBraces(text);
+    const errors = findMismatchedBraces(text);
     assert.strictEqual(errors.length, 1, `应有 1 个错误，实际 ${errors.length}`);
     assert(errors[0].message.includes('多余的'), `消息应包含"多余的"，实际: ${errors[0].message}`);
 });
 
 test('检测到未闭合的 {', () => {
     const text = 'Device { Electrode { Name="gate"';
-    const errors = ast.findMismatchedBraces(text);
+    const errors = findMismatchedBraces(text);
     assert.strictEqual(errors.length, 2, `应有 2 个错误（2个未闭合的{），实际 ${errors.length}`);
     assert(errors[0].message.includes('未闭合'), `消息应包含"未闭合"，实际: ${errors[0].message}`);
 });
 
 test('忽略 # 注释中的花括号', () => {
     const text = 'set x 42 # { this is a comment';
-    const errors = ast.findMismatchedBraces(text);
+    const errors = findMismatchedBraces(text);
     assert.strictEqual(errors.length, 0, '# 注释中的花括号不应报错');
 });
 
 test('忽略 * 注释行中的花括号', () => {
     const text = `* { this comment has only open brace
 Device { Physics { Mobility() } }`;
-    const errors = ast.findMismatchedBraces(text);
+    const errors = findMismatchedBraces(text);
     assert.strictEqual(errors.length, 0, '* 注释行中的花括号不应报错');
 });
 
 test('* 不在行首时不应被视为注释', () => {
     const text = 'set x *{';
-    const errors = ast.findMismatchedBraces(text);
+    const errors = findMismatchedBraces(text);
     assert.strictEqual(errors.length, 1, '行中的 * 后的花括号应正常检测');
 });
 
 test('忽略缩进 * 注释行中的多余花括号', () => {
     const text = `  * }} extra close braces in comment
 Device { Physics { Mobility() } }`;
-    const errors = ast.findMismatchedBraces(text);
+    const errors = findMismatchedBraces(text);
     assert.strictEqual(errors.length, 0, '缩进 * 注释行中的花括号不应报错');
 });
 
 test('忽略字符串中的花括号', () => {
     const text = 'set msg "hello {world}"';
-    const errors = ast.findMismatchedBraces(text);
+    const errors = findMismatchedBraces(text);
     assert.strictEqual(errors.length, 0, '字符串中的花括号不应报错');
 });
 
@@ -138,7 +139,7 @@ Device {
         Mobility()
     }
 }`;
-    const errors = ast.findMismatchedBraces(text);
+    const errors = findMismatchedBraces(text);
     assert.strictEqual(errors.length, 0, `多行正常代码不应报错，但发现 ${errors.length} 个`);
 });
 
