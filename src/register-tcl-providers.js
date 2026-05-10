@@ -16,7 +16,7 @@ const { SDEVICE_ALL_SECTION_KEYWORDS_LOWER } = require('./lsp/tcl-symbol-configs
  * @param {object} deps
  * @param {object} deps.tclCache - TclParseCache instance
  * @param {function} deps.loadDocsJson - JSON loader from extension.js
- * @returns {{ sdeviceStProvider: object|null }} Provider instances needed by other modules
+ * @returns {{ sdeviceStProvider: object|null, sdeviceLowerToCanon: Map }} Provider instances needed by other modules
  */
 function registerTclProviders(context, deps) {
     const { tclCache, loadDocsJson } = deps;
@@ -104,7 +104,6 @@ function registerTclProviders(context, deps) {
     return {
         sdeviceStProvider,
         sdeviceLowerToCanon,
-        sdeviceDocs,
     };
 }
 

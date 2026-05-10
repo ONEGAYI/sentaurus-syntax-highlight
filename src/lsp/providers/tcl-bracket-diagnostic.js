@@ -6,8 +6,6 @@ const { TCL_LANGS } = require('../tcl-ast-utils');
 const { findMismatchedBraces } = require('../tcl-bracket-check');
 const { createDiagnosticProvider } = require('./diagnostic-factory');
 
-const TCL_LANG_SET = new Set(TCL_LANGS);
-
 /** @type {vscode.DiagnosticCollection} */
 let diagnosticCollection;
 
@@ -20,7 +18,7 @@ let diagnosticCollection;
 function activate(context) {
     const provider = createDiagnosticProvider({
         name: 'tcl-brackets',
-        languageFilter: doc => TCL_LANG_SET.has(doc.languageId),
+        languageFilter: doc => TCL_LANGS.has(doc.languageId),
         context,
         updateFn: updateDiagnostics,
     });

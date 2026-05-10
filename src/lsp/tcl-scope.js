@@ -9,7 +9,6 @@ const {
     _extractArgName,
     _extractForeachVarNames,
     _extractCommandVarDefs,
-    _extractBracedWordVars,
     _extractErrorVarDefs,
     _extractUpvarLocalNames,
     _extractVariableNames,
@@ -152,17 +151,17 @@ class ScopeIndex {
                 if (globalDef) return { defLine: globalDef.defLine, scope: 'imported' };
             }
 
-            const globalProc = this._globalDefs.find(d => d.name === name && d.isProc);
-            if (globalProc) return { defLine: globalProc.defLine, scope: 'global-proc' };
+            const globalProcLine = this._globalProcNames.get(name);
+            if (globalProcLine !== undefined) return { defLine: globalProcLine, scope: 'global-proc' };
 
             return null;
         }
 
-        const globalDef = this._findLastDefBefore(this._globalDefs, name, line, this._loopScopes);
+        const globalDef = this._findLastDefBefore(this._globalDefs, name, line);
         if (globalDef) return { defLine: globalDef.defLine, scope: 'global' };
 
-        const globalProc = this._globalDefs.find(d => d.name === name && d.isProc);
-        if (globalProc) return { defLine: globalProc.defLine, scope: 'global-proc' };
+        const globalProcLine = this._globalProcNames.get(name);
+        if (globalProcLine !== undefined) return { defLine: globalProcLine, scope: 'global-proc' };
 
         return null;
     }
@@ -226,7 +225,7 @@ function buildScopeIndex(root) {
                 }
 
                 const localDefs = [];
-                _collectLocalDefsForIndex(bodyNode, localDefs, bodyStart, bodyEnd);
+                _collectLocalDefsForIndex(bodyNode, localDefs);
 
                 const scopeImports = [];
                 _collectScopeImportsForIndex(bodyNode, scopeImports);
@@ -279,7 +278,7 @@ function buildScopeIndex(root) {
                     }
                     for (const w of words) {
                         if (w.type === 'braced_word') {
-                            _collectLocalDefsForIndex(w, globalDefs, 1, maxLine);
+                            _collectLocalDefsForIndex(w, globalDefs);
                         }
                     }
                 }
@@ -359,10 +358,8 @@ function _collectVarNamesFromNode(node, names) {
  * 与 _collectLocalDefs 逻辑相同，但推入数组而非操作 scopeMap。
  * @param {object} node - AST 节点
  * @param {Array<{name: string, defLine: number}>} defs - 输出数组
- * @param {number} scopeStart - 作用域起始行（1-based，用于过滤）
- * @param {number} scopeEnd - 作用域结束行（1-based）
  */
-function _collectLocalDefsForIndex(node, defs, scopeStart, scopeEnd) {
+function _collectLocalDefsForIndex(node, defs) {
     if (!node) return;
 
     for (let i = 0; i < node.childCount; i++) {
@@ -395,7 +392,7 @@ function _collectLocalDefsForIndex(node, defs, scopeStart, scopeEnd) {
                     const words = _getCommandWords(child);
                     for (const w of words) {
                         if (w.type === 'braced_word') {
-                            _collectLocalDefsForIndex(w, defs, scopeStart, scopeEnd);
+                            _collectLocalDefsForIndex(w, defs);
                         }
                     }
                 } else if (cmdName === 'lassign' || cmdName === 'lmap' || cmdName === 'dict') {
@@ -406,7 +403,7 @@ function _collectLocalDefsForIndex(node, defs, scopeStart, scopeEnd) {
                     // braced_word 在 word_list 内，用 _getCommandWords 穿透递归 body
                     for (const w of words) {
                         if (w.type === 'braced_word') {
-                            _collectLocalDefsForIndex(w, defs, scopeStart, scopeEnd);
+                            _collectLocalDefsForIndex(w, defs);
                         }
                     }
                 } else if (cmdName === 'incr') {
@@ -431,7 +428,7 @@ function _collectLocalDefsForIndex(node, defs, scopeStart, scopeEnd) {
                     }
                 }
             }
-            _collectLocalDefsForIndex(child, defs, scopeStart, scopeEnd);
+            _collectLocalDefsForIndex(child, defs);
         }
 
         // ERROR 节点：lassign、variable 等未识别命令
@@ -442,7 +439,7 @@ function _collectLocalDefsForIndex(node, defs, scopeStart, scopeEnd) {
         }
 
         if (child.type === 'braced_word') {
-            _collectLocalDefsForIndex(child, defs, scopeStart, scopeEnd);
+            _collectLocalDefsForIndex(child, defs);
         }
     }
 }
@@ -517,12 +514,7 @@ function buildScopeMap(root) {
 }
 
 function _countMaxLine(node) {
-    let maxLine = 0;
-    walkNodes(node, n => {
-        const endRow = n.endPosition.row + 1;
-        if (endRow > maxLine) maxLine = endRow;
-    });
-    return maxLine;
+    return node ? node.endPosition.row + 1 : 0;
 }
 
 module.exports = { ScopeIndex, buildScopeIndex, buildScopeMap };

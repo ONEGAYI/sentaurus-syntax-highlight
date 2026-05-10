@@ -90,7 +90,6 @@ function registerCompletionProviders(context, deps) {
         builtinMaterials,
         sdeviceStProvider,
         sdeviceLowerToCanon,
-        sdeviceDocs,
         useZh,
     } = deps;
 

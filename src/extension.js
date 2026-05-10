@@ -7,6 +7,7 @@ const { registerTclProviders } = require('./register-tcl-providers');
 const { registerCompletionProviders, loadDocsJson } = require('./register-completion-providers');
 const expressionConverter = require('./commands/expression-converter');
 const tclParserWasm = require('./lsp/tcl-parser-wasm');
+const astUtils = require('./lsp/tcl-ast-utils');
 const undefVarDiagnostic = require('./lsp/providers/undef-var-diagnostic');
 const unitAutoClose = require('./lsp/providers/unit-auto-close-provider');
 const quoteAutoDelete = require('./lsp/providers/quote-auto-delete-provider');
@@ -69,12 +70,11 @@ function activate(context) {
             }
 
             const langId = editor.document.languageId;
-            const TCL_LANGS = ['sdevice', 'sprocess', 'emw', 'inspect'];
 
             tclWasmChannel.appendLine(`\n${'='.repeat(60)}`);
             tclWasmChannel.appendLine(`[testTclWasm] 解析文档: ${editor.document.fileName}`);
             tclWasmChannel.appendLine(`  语言: ${langId}`);
-            tclWasmChannel.appendLine(`  是否为 Tcl 语言: ${TCL_LANGS.includes(langId)}`);
+            tclWasmChannel.appendLine(`  是否为 Tcl 语言: ${tclParserWasm.isReady() && astUtils.TCL_LANGS.has(langId)}`);
             tclWasmChannel.appendLine(`  解析器状态: ${tclParserWasm.isReady() ? '就绪' : '未初始化'}`);
 
             if (!tclParserWasm.isReady()) {
@@ -125,7 +125,6 @@ function activate(context) {
     const tclProviderResult = registerTclProviders(context, { tclCache, loadDocsJson });
     sdeviceStProvider = tclProviderResult.sdeviceStProvider;
     const sdeviceLowerToCanon = tclProviderResult.sdeviceLowerToCanon;
-    const sdeviceDocs = tclProviderResult.sdeviceDocs;
 
     // ── Completion/Hover/Definition Providers ──────────────────
     // Must come before registerSdeProviders — builds modeDispatchTable/symbolParamsTable
@@ -137,7 +136,6 @@ function activate(context) {
         builtinMaterials,
         sdeviceStProvider,
         sdeviceLowerToCanon,
-        sdeviceDocs,
         useZh,
     });
 
