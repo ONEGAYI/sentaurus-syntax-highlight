@@ -71,11 +71,16 @@ sentaurus-syntax-highlight/
 │   └── svisual.json                            ← Svisual 代码片段
 │
 ├── src/                                        ← 扩展源码（纯 CommonJS，无构建步骤）
-│   ├── extension.js                            ← 入口：激活、补全、悬停、QuickPick 命令注册
+│   ├── extension.js                            ← 入口：activate() 协调入口（~440行）
 │   ├── definitions.js                          ← 用户变量补全/悬停/跳转（Scheme + Tcl）
+│   ├── docs-loader.js                          ← 文档加载常量（KIND_MAP/SORT_PREFIX/DETAIL_LABEL）与格式化工具
+│   ├── register-sde-providers.js               ← SDE 语言 Provider 注册（Folding/Bracket/Signature/SemanticTokens）
+│   ├── register-tcl-providers.js               ← 5 种 Tcl 语言共用 Provider 注册（Folding/Bracket/SemanticTokens）
+│   ├── register-completion-providers.js        ← Completion/Hover/Definition Provider 注册（6 种语言共用循环）
 │   │
 │   ├── commands/                               ← VSCode 命令实现
-│   │   └── expression-converter.js             ← Scheme 前缀 ↔ 中缀表达式双向转换（含 CursorTracker 光标位置感知、尖括号连字符变量语法、QuickPick 变量补全和历史模式）
+│   │   ├── expression-converter.js             ← Scheme 前缀 ↔ 中缀表达式双向转换（含 CursorTracker 光标位置感知、尖括号连字符变量语法、QuickPick 变量补全和历史模式）
+│   │   └── snippet-picker.js                   ← QuickPick 代码片段命令（sentaurus.insertSnippet）
 │   │
 │   ├── lsp/                                    ← 语义功能核心（AST 解析 + Provider 注册）
 │   │   ├── scheme-parser.js                    ← Scheme 词法分析器 + AST 解析器
@@ -84,7 +89,11 @@ sentaurus-syntax-highlight/
 │   │   ├── semantic-dispatcher.js              ← Scheme 函数调用语义模式分发
 │   │   ├── symbol-index.js                    ← 符号提取引擎（Region/Material/Contact 声明式配置）
 │   │   ├── tcl-parser-wasm.js                  ← Tcl WASM 解析器接口（单例模式）
-│   │   ├── tcl-ast-utils.js                    ← Tcl AST 遍历/查询/折叠/变量提取
+│   │   ├── tcl-ast-utils.js                    ← Tcl AST 通用工具（parseSafe/walkNodes/辅助函数共享）
+│   │   ├── tcl-scope.js                        ← 作用域构建与索引（ScopeIndex/buildScopeIndex）
+│   │   ├── tcl-variable-extractor.js           ← 变量提取与引用查找（getVariables/getVariableRefs）
+│   │   ├── tcl-bracket-check.js                ← 括号平衡检查（findMismatchedBraces）
+│   │   ├── tcl-document-symbol.js              ← 文档大纲符号提取（getDocumentSymbols/SymbolKind）
 │   │   ├── tcl-symbol-configs.js               ← Tcl 工具 section 关键词 + 子 section 配置
 │   │   ├── pp-utils.js                         ← 预处理器分支分析 + #define 宏定义提取共享模块
 │   │   ├── parse-cache.js                      ← 统一解析缓存层（SchemeParseCache + TclParseCache）
@@ -185,7 +194,7 @@ sentaurus-syntax-highlight/
 双解析器架构，按语言方言分治：
 
 - **Scheme（SDE）**：手写解析器（`scheme-parser.js`），生成自定义 AST → `scheme-analyzer.js` 提取定义（含 define+lambda params 检测）和折叠范围 → `scope-analyzer.js` 构建词法作用域树 → `semantic-dispatcher.js` 按函数调用模式分发语义 → `symbol-index.js` 根据声明式 symbolParams 配置提取 Region/Material/Contact 的定义和引用（支持 string-append 静态推断和 modeDispatch 动态类型）
-- **Tcl（其余 5 种）**：`tree-sitter-tcl` WASM 解析器（`tcl-parser-wasm.js`）→ `tcl-ast-utils.js` 统一 AST 遍历/变量提取/折叠 → `tcl-symbol-configs.js` 配置各工具 section 关键词和子 section → `pp-utils.js` 提供预处理器分支分析（`#if`/`#endif` 块映射）和 #define 宏定义提取/引用查找
+- **Tcl（其余 5 种）**：`tree-sitter-tcl` WASM 解析器（`tcl-parser-wasm.js`）→ `tcl-ast-utils.js` 通用 AST 工具（parseSafe/walkNodes/辅助函数）→ `tcl-scope.js` 作用域构建与索引（ScopeIndex/buildScopeIndex）→ `tcl-variable-extractor.js` 变量提取与引用查找 → `tcl-document-symbol.js` 文档大纲符号 → `tcl-bracket-check.js` 括号平衡检查 → `tcl-symbol-configs.js` 配置各工具 section 关键词和子 section → `pp-utils.js` 提供预处理器分支分析（`#if`/`#endif` 块映射）和 #define 宏定义提取/引用查找
 
 SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依赖 WASM，通过文本扫描追踪 `{}` 嵌套栈构建 section 上下文，为顶层 section 名分配 `sectionName` token、为子 section（Quasistationary/Coupled 等）分配 `subSection` token、为 section 内关键词分配 `sectionKeyword` token、为 #define 宏分配 `macro` token，并缓存至 `document.version` 避免重复扫描。`sdevice-vector-keywords.js` 提供 Plot/CurrentPlot section 中 57 个矢量基础关键词和 3 种后缀的数据模块。
 
