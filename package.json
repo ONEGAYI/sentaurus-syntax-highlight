@@ -33,7 +33,6 @@
           "SDE"
         ],
         "extensions": [
-          ".cmd",
           ".scm"
         ],
         "filenames": [],
@@ -48,9 +47,7 @@
           "Sentaurus Device",
           "SDEVICE"
         ],
-        "extensions": [
-          ".cmd"
-        ],
+        "extensions": [],
         "filenames": [],
         "filenamePatterns": [
           "*_des.cmd"
@@ -64,7 +61,6 @@
           "SPROCESS"
         ],
         "extensions": [
-          ".cmd",
           ".fps"
         ],
         "filenames": [],
@@ -79,9 +75,7 @@
           "Sentaurus EMW",
           "EMW"
         ],
-        "extensions": [
-          ".cmd"
-        ],
+        "extensions": [],
         "filenames": [],
         "filenamePatterns": [
           "*_eml.cmd",
@@ -95,9 +89,7 @@
           "Sentaurus Inspect",
           "INSPECT"
         ],
-        "extensions": [
-          ".cmd"
-        ],
+        "extensions": [],
         "filenames": [],
         "filenamePatterns": [
           "*_ins.cmd"
