@@ -127,44 +127,51 @@ function findPpDefineRefs(text, defines) {
         undefMap.set(u.name, u.line);
     }
 
+    const defineMap = new Map();
     for (const def of defines) {
-        const undefLine = undefMap.get(def.name);
-        const regex = buildWordRegex(def.name);
+        if (!defineMap.has(def.name)) {
+            defineMap.set(def.name, []);
+        }
+        defineMap.get(def.name).push(def);
+    }
 
-        for (let i = 0; i < lines.length; i++) {
-            const lineNum = i + 1;
-            if (lineNum < def.line) continue;
-            if (undefLine !== undefined && lineNum > undefLine) continue;
+    const regexMap = new Map();
+    for (const name of defineMap.keys()) {
+        regexMap.set(name, buildWordRegex(name));
+    }
 
-            const line = lines[i];
+    const directiveRe = /^\s*#(ifdef|ifndef|undef)\s+(\w+)/;
+    const defineRe = /^\s*#define\s+(\w+)/;
+    const commentRe = /^#(if|ifdef|ifndef|elif|else|endif|define|undef|include|error|set|seth|rem|verbatim)\b/;
 
-            // 精确提取：#ifdef / #ifndef（允许前导空格，与 extractPpDefines 一致）
-            const ifdefMatch = line.match(/^\s*#(ifdef|ifndef)\s+(\w+)/);
-            if (ifdefMatch && ifdefMatch[2] === def.name) {
-                const nameStart = ifdefMatch.index + ifdefMatch[0].lastIndexOf(ifdefMatch[2]);
-                refs.push({ name: def.name, line: lineNum, startCol: nameStart, refType: ifdefMatch[1] });
-                continue;
+    for (let i = 0; i < lines.length; i++) {
+        const lineNum = i + 1;
+        const line = lines[i];
+
+        const directiveMatch = line.match(directiveRe);
+        if (directiveMatch) {
+            const [, type, name] = directiveMatch;
+            if (defineMap.has(name)) {
+                const nameStart = directiveMatch.index + directiveMatch[0].lastIndexOf(name);
+                refs.push({ name, line: lineNum, startCol: nameStart, refType: type });
             }
+            continue;
+        }
 
-            // 精确提取：#undef（允许前导空格）
-            const undefMatch = line.match(/^\s*#undef\s+(\w+)/);
-            if (undefMatch && undefMatch[1] === def.name) {
-                const nameStart = undefMatch.index + undefMatch[0].lastIndexOf(undefMatch[1]);
-                refs.push({ name: def.name, line: lineNum, startCol: nameStart, refType: 'undef' });
-                continue;
-            }
+        const defineMatch = line.match(defineRe);
+        if (defineMatch && defineMap.has(defineMatch[1])) continue;
 
-            // #define 定义行本身：跳过（允许前导空格）
-            const defineMatch = line.match(/^\s*#define\s+(\w+)/);
-            if (defineMatch && defineMatch[1] === def.name) continue;
+        const trimmed = line.trimStart();
+        if (trimmed.startsWith('#') && !commentRe.test(trimmed)) continue;
 
-            // 纯注释行 → 跳过
-            const trimmed = line.trimStart();
-            if (trimmed.startsWith('#') && !/^#(if|ifdef|ifndef|elif|else|endif|define|undef|include|error|set|seth|rem|verbatim)\b/.test(trimmed)) {
-                continue;
-            }
+        for (const [name, defs] of defineMap) {
+            const inScope = defs.some(def =>
+                lineNum >= def.line &&
+                (undefMap.get(name) === undefined || lineNum <= undefMap.get(name))
+            );
+            if (!inScope) continue;
 
-            // 裸词扫描
+            const regex = regexMap.get(name);
             regex.lastIndex = 0;
             let match;
             while ((match = regex.exec(line)) !== null) {
@@ -172,7 +179,7 @@ function findPpDefineRefs(text, defines) {
                 if (col > 0 && line[col - 1] === '$') continue;
                 if (col >= 2 && line[col - 1] === '{' && line[col - 2] === '$') continue;
                 if (isInQuotedString(line, col)) continue;
-                refs.push({ name: def.name, line: lineNum, startCol: col, refType: 'usage' });
+                refs.push({ name, line: lineNum, startCol: col, refType: 'usage' });
             }
         }
     }
@@ -299,4 +306,64 @@ function safeCol(lineStarts, line, offset) {
     return (idx >= 0 && idx < lineStarts.length) ? offset - lineStarts[idx] : 0;
 }
 
-module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens, escapeRegex, buildWordRegex, encodeTokenDelta, encodeDelta3, encodeDelta5, findUndefPpMacroRefs, offsetToLineCol, safeCol };
+/** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
+function decodeHtml(str) {
+    return str.replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
+}
+
+/**
+ * 去除 Tcl 变量名前缀：${var} → var, $var → var, 其他不变。
+ * @param {string} word - 可能带 $ 前缀的标识符
+ * @returns {string} 去除前缀后的变量名
+ */
+function stripTclVarPrefix(word) {
+    if (word.startsWith('${') && word.endsWith('}')) {
+        return word.slice(2, -1);
+    } else if (word.startsWith('$')) {
+        return word.slice(1);
+    }
+    return word;
+}
+
+/**
+ * 查找 #define 宏的定义位置和所有引用位置，构建 Location 数组。
+ * Scheme 和 Tcl 路径的 #define 查找逻辑统一提取到此处。
+ *
+ * @param {vscode.Uri} uri - 文档 URI
+ * @param {string} word - 宏名
+ * @param {number} cursorLine - 光标行号（1-based）
+ * @param {Array<{name: string, line: number, startCol: number}>} ppDefs - 预处理器定义列表
+ * @param {string} text - 文档全文
+ * @param {{includeDeclaration?: boolean}} [options] - 查找选项
+ * @returns {vscode.Location[]|null} Location 数组，无匹配时返回 null
+ */
+function findPpDefineLocations(uri, word, cursorLine, ppDefs, text, options = {}) {
+    const vscode = require('vscode');
+
+    const ppDef = [...ppDefs].reverse().find(d => d.name === word && d.line <= cursorLine);
+    if (!ppDef) return null;
+
+    const locations = [];
+    if (options.includeDeclaration !== false) {
+        locations.push(new vscode.Location(
+            uri,
+            new vscode.Range(ppDef.line - 1, ppDef.startCol, ppDef.line - 1, ppDef.startCol + word.length)
+        ));
+    }
+    const ppRefs = findPpDefineRefs(text, ppDefs.filter(d => d.name === word));
+    for (const ref of ppRefs) {
+        const isDup = locations.some(loc =>
+            loc.range.start.line === ref.line - 1 &&
+            loc.range.start.character === ref.startCol
+        );
+        if (!isDup) {
+            locations.push(new vscode.Location(
+                uri,
+                new vscode.Range(ref.line - 1, ref.startCol, ref.line - 1, ref.startCol + word.length)
+            ));
+        }
+    }
+    return locations.length > 0 ? locations : null;
+}
+
+module.exports = { buildPpBlocks, extractPpDefines, extractPpUndefs, findPpDefineRefs, buildPpDefineTokens, escapeRegex, buildWordRegex, encodeTokenDelta, encodeDelta3, encodeDelta5, findUndefPpMacroRefs, offsetToLineCol, safeCol, decodeHtml, stripTclVarPrefix, findPpDefineLocations };

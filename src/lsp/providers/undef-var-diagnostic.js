@@ -5,8 +5,7 @@ const vscode = require('vscode');
 const astUtils = require('../tcl-ast-utils');
 const scopeAnalyzer = require('../scope-analyzer');
 const ppUtils = require('../pp-utils');
-
-const DEBOUNCE_MS = 500;
+const { createDiagnosticProvider } = require('./diagnostic-factory');
 
 /** @type {import('../parse-cache').SchemeParseCache} */
 let schemeCache;
@@ -30,8 +29,6 @@ const TCL_LANG_SET = astUtils.TCL_LANGS;
 
 /** @type {vscode.DiagnosticCollection} */
 let diagnosticCollection;
-/** @type {NodeJS.Timeout} */
-let debounceTimer;
 
 /**
  * 注册未定义变量诊断（Tcl 方言部分）。
@@ -40,44 +37,15 @@ let debounceTimer;
 function activate(context, schemeCacheInstance, tclCacheInstance) {
     schemeCache = schemeCacheInstance;
     tclCache = tclCacheInstance;
-    diagnosticCollection = vscode.languages.createDiagnosticCollection('undef-var-tcl');
-    context.subscriptions.push(diagnosticCollection);
 
-    context.subscriptions.push(
-        vscode.workspace.onDidChangeTextDocument(event => {
-            const doc = event.document;
-            const langId = doc.languageId;
-            if (!TCL_LANG_SET.has(langId) && langId !== 'sde') return;
-
-            if (debounceTimer) clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => updateDiagnostics(doc), DEBOUNCE_MS);
-        })
-    );
-
-    context.subscriptions.push(
-        vscode.workspace.onDidOpenTextDocument(doc => {
-            const langId = doc.languageId;
-            if (!TCL_LANG_SET.has(langId) && langId !== 'sde') return;
-            updateDiagnostics(doc);
-        })
-    );
-
-    context.subscriptions.push(
-        vscode.workspace.onDidCloseTextDocument(doc => {
-            const langId = doc.languageId;
-            if (TCL_LANG_SET.has(langId) || langId === 'sde') {
-                diagnosticCollection.delete(doc.uri);
-            }
-        })
-    );
-
-    // 主动扫描已在编辑器中打开的文档（onDidOpenTextDocument 不覆盖激活前已打开的文件）
-    for (const doc of vscode.workspace.textDocuments) {
-        const langId = doc.languageId;
-        if (TCL_LANG_SET.has(langId) || langId === 'sde') {
-            updateDiagnostics(doc);
-        }
-    }
+    const provider = createDiagnosticProvider({
+        name: 'undef-var-tcl',
+        languageFilter: doc => TCL_LANG_SET.has(doc.languageId) || doc.languageId === 'sde',
+        context,
+        updateFn: updateDiagnostics,
+    });
+    diagnosticCollection = provider.diagnosticCollection;
+    provider.initialScan();
 }
 
 /**
@@ -168,7 +136,6 @@ function getSchemeKnownNames() {
     // 从 all_keywords.json 加载 SDE 所有等级的关键词（KEYWORD1/2、FUNCTION）
     // 这是普适规则：语法文件中定义的所有关键词均视为已知名称，不会被误报为未定义变量
     // XML 提取时 <, >, & 被转义为 HTML 实体，此处统一解码以匹配源码中的原始标识符
-    const _decodeHtmlEntities = (s) => s.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
     try {
         const allKw = require('../../../syntaxes/all_keywords.json');
         const sdeKw = allKw && allKw.sde;
@@ -176,7 +143,7 @@ function getSchemeKnownNames() {
             for (const cat of ['KEYWORD1', 'KEYWORD2', 'FUNCTION']) {
                 if (sdeKw[cat]) {
                     for (const name of sdeKw[cat]) {
-                        _schemeKnownNames.add(_decodeHtmlEntities(name));
+                        _schemeKnownNames.add(ppUtils.decodeHtml(name));
                     }
                 }
             }
@@ -281,12 +248,14 @@ function checkSchemeUndefVars(document) {
     // 收集 #define 宏名，避免将宏引用误报为未定义变量
     const ppMacroNames = new Set(ppDefs.map(d => d.name));
 
+    const visibleCache = new Map();
     const diagnostics = [];
     for (const ref of refs) {
         if (ppMacroNames.has(ref.name)) continue;
-        // 跳过已知名称（内置函数等已在 getSchemeRefs 中过滤）
-        // 这里额外检查作用域内可见性
-        const visible = scopeAnalyzer.getVisibleDefinitions(scopeTree, ref.line);
+        if (!visibleCache.has(ref.line)) {
+            visibleCache.set(ref.line, scopeAnalyzer.getVisibleDefinitions(scopeTree, ref.line));
+        }
+        const visible = visibleCache.get(ref.line);
         const isVisible = visible.some(d => d.name === ref.name);
 
         if (!isVisible) {

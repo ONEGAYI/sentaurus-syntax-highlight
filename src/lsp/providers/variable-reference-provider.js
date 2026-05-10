@@ -57,31 +57,10 @@ function provideSchemeReferences(document, position, options) {
     const cursorLine = position.line + 1;
 
     // #define 宏引用查找（优先于作用域变量，不依赖 AST）
-    // 从缓存 entry 获取 ppDefs（已在上面从 schemeCache.get 获取）
-    const ppDef = [...entry.ppDefs].reverse().find(d => d.name === word && d.line <= cursorLine);
-    if (ppDef) {
-        const locations = [];
-        if (options.includeDeclaration !== false) {
-            locations.push(new vscode.Location(
-                document.uri,
-                new vscode.Range(ppDef.line - 1, ppDef.startCol, ppDef.line - 1, ppDef.startCol + word.length)
-            ));
-        }
-        const ppRefs = ppUtils.findPpDefineRefs(docText, entry.ppDefs.filter(d => d.name === word));
-        for (const ref of ppRefs) {
-            const isDup = locations.some(loc =>
-                loc.range.start.line === ref.line - 1 &&
-                loc.range.start.character === ref.startCol
-            );
-            if (!isDup) {
-                locations.push(new vscode.Location(
-                    document.uri,
-                    new vscode.Range(ref.line - 1, ref.startCol, ref.line - 1, ref.startCol + word.length)
-                ));
-            }
-        }
-        if (locations.length > 0) return locations;
-    }
+    const ppLocations = ppUtils.findPpDefineLocations(
+        document.uri, word, cursorLine, entry.ppDefs, docText, options
+    );
+    if (ppLocations) return ppLocations;
 
     const visibleDefs = getVisibleDefinitions(scopeTree, cursorLine);
     const targetDef = visibleDefs.find(d => d.name === word);
@@ -101,12 +80,16 @@ function provideSchemeReferences(document, position, options) {
     }
 
     // Filter references — only include refs that resolve to the same definition
+    const visibleCache = new Map();
+    visibleCache.set(cursorLine, visibleDefs);
     for (const ref of refs) {
         if (ref.name !== word) continue;
-        // Skip the definition site itself (exact match)
         if (ref.line === targetDef.line && ref.start === targetDef.start && ref.end === targetDef.end) continue;
 
-        const refVisibleDefs = getVisibleDefinitions(scopeTree, ref.line);
+        if (!visibleCache.has(ref.line)) {
+            visibleCache.set(ref.line, getVisibleDefinitions(scopeTree, ref.line));
+        }
+        const refVisibleDefs = visibleCache.get(ref.line);
         const resolvesToSame = refVisibleDefs.some(
             d => d.name === word && d.line === targetDef.line && d.start === targetDef.start
         );
@@ -131,13 +114,7 @@ function provideTclReferences(document, position, options) {
     const range = bracedRange || dollarRange || plainRange;
     if (!range) return null;
 
-    let word = document.getText(range);
-    if (!word) return null;
-    if (word.startsWith('${') && word.endsWith('}')) {
-        word = word.slice(2, -1);
-    } else if (word.startsWith('$')) {
-        word = word.slice(1);
-    }
+    let word = ppUtils.stripTclVarPrefix(document.getText(range));
     if (!word) return null;
 
     // Skip comments: check for `#` before cursor on same line (outside strings)
@@ -152,30 +129,13 @@ function provideTclReferences(document, position, options) {
     const locations = [];
 
     // #define 裸词引用（不依赖 WASM/AST）
-    // entry 在前面获取，以便后续 WASM 段复用
     const entry = tclCache.get(document);
     const ppDefs = entry ? entry.ppDefs : [];
-    const ppDef = [...ppDefs].reverse().find(d => d.name === word && d.line <= cursorLine);
-    if (ppDef) {
-        if (options.includeDeclaration !== false) {
-            locations.push(new vscode.Location(
-                document.uri,
-                new vscode.Range(ppDef.line - 1, ppDef.startCol, ppDef.line - 1, ppDef.startCol + word.length)
-            ));
-        }
-        const ppRefs = ppUtils.findPpDefineRefs(entry.text, ppDefs.filter(d => d.name === word));
-        for (const ref of ppRefs) {
-            const isDup = locations.some(loc =>
-                loc.range.start.line === ref.line - 1 &&
-                loc.range.start.character === ref.startCol
-            );
-            if (!isDup) {
-                locations.push(new vscode.Location(
-                    document.uri,
-                    new vscode.Range(ref.line - 1, ref.startCol, ref.line - 1, ref.startCol + word.length)
-                ));
-            }
-        }
+    const ppLocations = ppUtils.findPpDefineLocations(
+        document.uri, word, cursorLine, ppDefs, entry ? entry.text : '', options
+    );
+    if (ppLocations) {
+        locations.push(...ppLocations);
     }
 
     // Tcl 变量引用（需要 WASM）

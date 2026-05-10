@@ -2,61 +2,28 @@
 'use strict';
 
 const vscode = require('vscode');
-const { extractSymbols } = require('../symbol-index');
 const { safeCol } = require('../pp-utils');
-
-const DEBOUNCE_MS = 500;
+const { createDiagnosticProvider } = require('./diagnostic-factory');
 
 /** @type {import('../parse-cache').SchemeParseCache} */
 let schemeCache;
-/** @type {object} */
-let symbolParamsTable;
-/** @type {object} */
-let modeDispatchTable;
 /** @type {Set<string>} */
 let builtinMaterials;
 /** @type {vscode.DiagnosticCollection} */
 let diagnosticCollection;
-/** @type {NodeJS.Timeout} */
-let debounceTimer;
 
-/**
- * 注册 Region/Material/Contact 未定义语义诊断。
- * @param {Set<string>} materials - 内置材料名白名单（从 all_keywords.json MATERIAL 加载）
- */
-function activate(context, schemeCacheInstance, symbolParams, modeDispatch, materials) {
+function activate(context, schemeCacheInstance, materials) {
     schemeCache = schemeCacheInstance;
-    symbolParamsTable = symbolParams;
-    modeDispatchTable = modeDispatch;
     builtinMaterials = materials || new Set();
 
-    diagnosticCollection = vscode.languages.createDiagnosticCollection('sde-symbol-undef');
-    context.subscriptions.push(diagnosticCollection);
-
-    context.subscriptions.push(
-        vscode.workspace.onDidChangeTextDocument(event => {
-            if (event.document.languageId !== 'sde') return;
-            if (debounceTimer) clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => updateDiagnostics(event.document), DEBOUNCE_MS);
-        })
-    );
-
-    context.subscriptions.push(
-        vscode.workspace.onDidOpenTextDocument(doc => {
-            if (doc.languageId === 'sde') updateDiagnostics(doc);
-        })
-    );
-
-    context.subscriptions.push(
-        vscode.workspace.onDidCloseTextDocument(doc => {
-            if (doc.languageId === 'sde') diagnosticCollection.delete(doc.uri);
-        })
-    );
-
-    // 主动扫描已在编辑器中打开的文档
-    for (const doc of vscode.workspace.textDocuments) {
-        if (doc.languageId === 'sde') updateDiagnostics(doc);
-    }
+    const provider = createDiagnosticProvider({
+        name: 'sde-symbol-undef',
+        languageFilter: doc => doc.languageId === 'sde',
+        context,
+        updateFn: updateDiagnostics,
+    });
+    diagnosticCollection = provider.diagnosticCollection;
+    provider.initialScan();
 }
 
 function updateDiagnostics(doc) {
@@ -64,7 +31,9 @@ function updateDiagnostics(doc) {
     if (!entry) return;
 
     const { ast, text, lineStarts } = entry;
-    const { defs, refs } = extractSymbols(ast, text, symbolParamsTable, modeDispatchTable);
+    const symbolsResult = schemeCache.getSymbols(doc);
+    if (!symbolsResult) return;
+    const { defs, refs } = symbolsResult;
     const definedNames = new Set(defs.map(d => `${d.type}:${d.name}`));
 
     const diagnostics = [];

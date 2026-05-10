@@ -2,15 +2,12 @@
 'use strict';
 
 const vscode = require('vscode');
+const { createDiagnosticProvider } = require('./diagnostic-factory');
 
-/** @type {vscode.DiagnosticCollection} */
-let diagnosticCollection;
-/** @type {NodeJS.Timeout} */
-let debounceTimer;
 /** @type {import('../parse-cache').SchemeParseCache} */
 let schemeCache;
-
-const DEBOUNCE_MS = 500;
+/** @type {vscode.DiagnosticCollection} */
+let diagnosticCollection;
 
 /**
  * Activate bracket diagnostics.
@@ -19,24 +16,14 @@ const DEBOUNCE_MS = 500;
  */
 function activate(context, cache) {
     schemeCache = cache;
-    diagnosticCollection = vscode.languages.createDiagnosticCollection('sde-brackets');
-    context.subscriptions.push(diagnosticCollection);
 
-    context.subscriptions.push(
-        vscode.workspace.onDidChangeTextDocument(event => {
-            const doc = event.document;
-            if (doc.languageId !== 'sde') return;
-
-            if (debounceTimer) clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(() => updateDiagnostics(doc), DEBOUNCE_MS);
-        })
-    );
-
-    context.subscriptions.push(
-        vscode.workspace.onDidCloseTextDocument(doc => {
-            diagnosticCollection.delete(doc.uri);
-        })
-    );
+    ({ diagnosticCollection } = createDiagnosticProvider({
+        name: 'sde-brackets',
+        languageFilter: doc => doc.languageId === 'sde',
+        context,
+        updateFn: updateDiagnostics,
+        watchOpen: false,
+    }));
 }
 
 /**

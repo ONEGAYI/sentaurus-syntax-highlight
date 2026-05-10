@@ -2,6 +2,7 @@
 'use strict';
 
 const { computeLineStarts } = require('./parse-cache');
+const { effectiveChildren } = require('./scheme-ast-utils');
 
 /**
  * 将绝对字符偏移转换为行内列位置（0-based）。
@@ -13,17 +14,6 @@ const { computeLineStarts } = require('./parse-cache');
 function toCol(absOffset, line, lineStarts) {
     const idx = line - 1;
     return idx >= 0 && idx < lineStarts.length ? absOffset - lineStarts[idx] : absOffset;
-}
-
-/**
- * 获取 List 节点中跳过 Comment 后的有效子节点。
- * Scheme 代码中 `( ; comment\n  func args)` 的 children[0] 是 Comment，
- * 而实际函数名在 children[1]。此辅助函数统一过滤 Comment 节点。
- * @param {object} listNode - List 类型的 AST 节点
- * @returns {object[]} 过滤 Comment 后的子节点数组
- */
-function effectiveChildren(listNode) {
-    return listNode.children.filter(c => c.type !== 'Comment');
 }
 
 /**

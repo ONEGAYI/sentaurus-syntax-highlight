@@ -25,8 +25,9 @@ const variableReferenceProvider = require('./lsp/providers/variable-reference-pr
 const symbolCompletion = require('./lsp/providers/symbol-completion');
 const symbolReferenceProvider = require('./lsp/providers/symbol-reference-provider');
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
-const { getSdeviceAllSectionKeywordsLower } = require('./lsp/tcl-symbol-configs');
+const { SDEVICE_ALL_SECTION_KEYWORDS_LOWER } = require('./lsp/tcl-symbol-configs');
 const ppUtils = require('./lsp/pp-utils');
+const { decodeHtml, stripTclVarPrefix } = ppUtils;
 
 const TCL_SUBCMD_COMPLETION_RE = /\b(string|file|info|array|dict)\s+$/;
 const TCL_SUBCMD_HOVER_RE = /\b(string|file|info|array|dict)\s+(\w+)$/;
@@ -36,11 +37,6 @@ let schemeCache;
 /** @type {TclParseCache} */
 let tclCache;
 let sdeviceStProvider;
-
-/** Decode HTML entities (&gt; &lt; &amp;) used in all_keywords.json. */
-function decodeHtml(str) {
-    return str.replace(/&gt;/g, '>').replace(/&lt;/g, '<').replace(/&amp;/g, '&');
-}
 
 /**
  * Map keyword categories to VSCode CompletionItemKind.
@@ -256,6 +252,29 @@ async function showToolSnippets(editor, snippetData, toolName) {
     }
 }
 
+/**
+ * 判断光标是否在注释行中。
+ * SDE (Scheme): ; 注释；其他 (Tcl): # 和 * 注释。
+ * Tcl 中 #define/#ifdef 等预处理器指令不算注释。
+ */
+function isInComment(document, position, langId) {
+    const lineText = document.lineAt(position.line).text;
+    const col = position.character;
+    const commentChars = langId === 'sde' ? ';' : '#';
+    for (let i = 0; i < col; i++) {
+        const ch = lineText[i];
+        if (ch === '"') { i++; while (i < col && lineText[i] !== '"') { if (lineText[i] === '\\') i++; i++; } continue; }
+        if (ch === commentChars) {
+            if (langId !== 'sde' && /^\s*#(define|undef|ifdef|ifndef|endif|elif|else|if\b|set|seth|include|error|rem|verbatim)\b/.test(lineText)) {
+                return false;
+            }
+            return true;
+        }
+        if (langId !== 'sde' && ch === '*' && (i === 0 || lineText.slice(0, i).trim() === '')) return true;
+    }
+    return false;
+}
+
 function activate(context) {
     const keywordsPath = path.join(__dirname, '..', 'syntaxes', 'all_keywords.json');
     let allKeywords;
@@ -404,6 +423,8 @@ function activate(context) {
         }
     }
 
+    schemeCache.setSymbolConfig(symbolParamsTable, modeDispatchTable);
+
     // FoldingRangeProvider (SDE only)
     const foldingProvider = foldingProviderMod.createFoldingProvider(schemeCache);
     context.subscriptions.push(
@@ -444,7 +465,7 @@ function activate(context) {
     undefVarDiagnostic.activate(context, schemeCache, tclCache);
 
     // Region/Material/Contact 未定义语义诊断（SDE only）
-    regionUndefDiagnostic.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, builtinMaterials);
+    regionUndefDiagnostic.activate(context, schemeCache, builtinMaterials);
 
     // DocumentSymbol / 面包屑导航（4 语言共用）
     const tclDocumentSymbolProvider = tclDocSymbolMod.createTclDocumentSymbolProvider(tclCache);
@@ -473,7 +494,7 @@ function activate(context) {
 
     // Semantic Tokens (sdevice) — section 上下文感知着色
     const sdeviceDocs = loadDocsJson('sdevice_command_docs.json', false) || {};
-    const sdeviceSectionKwsLower = getSdeviceAllSectionKeywordsLower();
+    const sdeviceSectionKwsLower = SDEVICE_ALL_SECTION_KEYWORDS_LOWER;
     // 小写→原始大小写映射，用于 hover 等需要原始键查找文档的场景
     const sdeviceLowerToCanon = new Map();
     for (const key of Object.keys(sdeviceDocs)) {
@@ -547,10 +568,10 @@ function activate(context) {
     context.subscriptions.push(sigHelpDisposable);
 
     // Symbol completion (SDE only) — region/material/contact 补全
-    symbolCompletion.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, vscode);
+    symbolCompletion.activate(context, schemeCache, modeDispatchTable, vscode);
 
     // Find All References (SDE only) — region/material/contact
-    symbolReferenceProvider.activate(context, schemeCache, symbolParamsTable, modeDispatchTable, vscode);
+    symbolReferenceProvider.activate(context, schemeCache, vscode);
 
     // Find All References — 用户自定义变量（全部 6 种语言）
     variableReferenceProvider.activate(context, schemeCache, tclCache, vscode);
@@ -684,26 +705,6 @@ function activate(context) {
             context.subscriptions.push(vectorCompDisposable);
         }
 
-        // 辅助函数：判断光标是否在注释行中
-        function isInComment(document, position) {
-            const lineText = document.lineAt(position.line).text;
-            const col = position.character;
-            // SDE (Scheme): ; 注释；其他 (Tcl): # 和 * 注释
-            const commentChars = langId === 'sde' ? ';' : '#';
-            for (let i = 0; i < col; i++) {
-                const ch = lineText[i];
-                if (ch === '"') { i++; while (i < col && lineText[i] !== '"') { if (lineText[i] === '\\') i++; i++; } continue; }
-                if (ch === commentChars) {
-                    // Tcl: # 开头后跟 define/ifdef/ifndef/undef/endif/elif/else/set/seth/include/error/rem/verbatim 是预处理器指令，不是注释
-                    if (langId !== 'sde' && /^\s*#(define|undef|ifdef|ifndef|endif|elif|else|if\b|set|seth|include|error|rem|verbatim)\b/.test(lineText)) {
-                        return false;
-                    }
-                    return true;
-                }
-                if (langId !== 'sde' && ch === '*' && (i === 0 || lineText.slice(0, i).trim() === '')) return true;
-            }
-            return false;
-        }
 
         // Register HoverProvider for function documentation
         const hoverDisposable = vscode.languages.registerHoverProvider(
@@ -711,7 +712,7 @@ function activate(context) {
             {
                 provideHover(document, position) {
                     try {
-                    if (isInComment(document, position)) return null;
+                    if (isInComment(document, position, langId)) return null;
                     const range = document.getWordRangeAtPosition(position, /\$?[\w:.\-<>?!+*/=]+/);
                     if (!range) return null;
                     const word = document.getText(range);
@@ -813,12 +814,7 @@ function activate(context) {
                         const bracedRange = document.getWordRangeAtPosition(position, /\$\{[\w:.\-<>?!+*/=]+\}/);
                         const dollarRange = bracedRange || document.getWordRangeAtPosition(position, /(?<!\\)\$[\w:-]+/);
                         if (dollarRange) {
-                            let dollarWord = document.getText(dollarRange);
-                            if (dollarWord.startsWith('${') && dollarWord.endsWith('}')) {
-                                dollarWord = dollarWord.slice(2, -1);
-                            } else if (dollarWord.startsWith('$')) {
-                                dollarWord = dollarWord.slice(1);
-                            }
+                            let dollarWord = stripTclVarPrefix(document.getText(dollarRange));
                             // 优先使用 scope-aware resolveDefinition（循环感知）
                             const cursorLine = position.line + 1;
                             const scopeIndex = tclCache.getScopeIndex(document);
@@ -880,7 +876,7 @@ function activate(context) {
             {
                 provideDefinition(document, position) {
                     try {
-                    if (isInComment(document, position)) return null;
+                    if (isInComment(document, position, langId)) return null;
                     const cursorLine = position.line + 1; // 1-based
 
                     if (langId === 'sde') {
@@ -928,12 +924,7 @@ function activate(context) {
                     const plainRange = document.getWordRangeAtPosition(position, /[\w:-]+/);
                     const range = bracedRange || dollarRange || plainRange;
                     if (!range) return null;
-                    let word = document.getText(range);
-                    if (word.startsWith('${') && word.endsWith('}')) {
-                        word = word.slice(2, -1);
-                    } else if (word.startsWith('$')) {
-                        word = word.slice(1);
-                    }
+                    let word = stripTclVarPrefix(document.getText(range));
                     if (!word) return null;
 
                     // #define 宏定义 fallback（不依赖 WASM）
