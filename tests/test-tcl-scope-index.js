@@ -461,4 +461,98 @@ test('resolveDefinition: 仅循环内定义的变量在循环外仍可解析', (
     assert.strictEqual(resolved.defLine, 1, `应解析到行 1（for init set k 0），实际行 ${resolved.defLine}`);
 });
 
+console.log('\n=== if 分支内变量定义回归测试 ===\n');
+
+// if {cond} { set legend_text_curve $legend } else { set legend_text_curve "@type@" }
+// set_curve_prop ... -label "$legend_text_curve"
+// legend_text_curve 在 if 分支内定义，应被 scope 识别为可见
+test('resolveDefinition: if 分支内 set 定义的变量可解析', () => {
+    // tree-sitter-tcl 将 if 解析为独立节点类型 'if'（非 command）
+    const ifBodySet = makeNode('set', 'set legend_text_curve $legend', [
+        makeNode('simple_word', 'set', [], 1, 4, 1, 7),
+        makeNode('id', 'legend_text_curve', [], 1, 8, 1, 26),
+        makeNode('variable_substitution', '$legend', [], 1, 27, 1, 34),
+    ], 1, 4, 1, 34);
+    const ifBraced = makeNode('braced_word', '{ set legend_text_curve $legend }', [
+        ifBodySet,
+    ], 0, 18, 2, 1);
+
+    // else 分支
+    const elseBodySet = makeNode('set', 'set legend_text_curve "@type@"', [
+        makeNode('simple_word', 'set', [], 3, 4, 3, 7),
+        makeNode('id', 'legend_text_curve', [], 3, 8, 3, 26),
+        makeNode('simple_word', '"@type@"', [], 3, 27, 3, 35),
+    ], 3, 4, 3, 35);
+    const elseBraced = makeNode('braced_word', '{ set legend_text_curve "@type@" }', [
+        elseBodySet,
+    ], 2, 8, 4, 1);
+    const elseNode = makeNode('else', 'else { ... }', [
+        makeNode('simple_word', 'else', [], 2, 3, 2, 7),
+        elseBraced,
+    ], 2, 3, 4, 1);
+
+    const ifNode = makeNode('if', 'if {...} { ... } else { ... }', [
+        makeNode('simple_word', 'if', [], 0, 0, 0, 2),
+        ifBraced,
+        elseNode,
+    ], 0, 0, 4, 1);
+
+    const root = makeNode('program', '', [ifNode], 0, 0, 4, 1);
+    const index = ast.buildScopeIndex(root);
+
+    // 在 if 之后的行（行 5+）应能解析到 legend_text_curve
+    const resolved = index.resolveDefinition('legend_text_curve', 5);
+    assert.ok(resolved, 'if 分支内定义的 legend_text_curve 应可解析');
+    assert.strictEqual(resolved.scope, 'global');
+});
+
+test('getVisibleAt: if 分支内定义的变量在后续行可见', () => {
+    const ifBodySet = makeNode('set', 'set legend_text_curve $legend', [
+        makeNode('simple_word', 'set', [], 1, 4, 1, 7),
+        makeNode('id', 'legend_text_curve', [], 1, 8, 1, 26),
+        makeNode('variable_substitution', '$legend', [], 1, 27, 1, 34),
+    ], 1, 4, 1, 34);
+    const ifBraced = makeNode('braced_word', '{ set legend_text_curve $legend }', [
+        ifBodySet,
+    ], 0, 18, 2, 1);
+
+    // tree-sitter-tcl: if 是独立节点类型
+    const ifNode = makeNode('if', 'if {...} { ... }', [
+        makeNode('simple_word', 'if', [], 0, 0, 0, 2),
+        ifBraced,
+    ], 0, 0, 2, 1);
+
+    const root = makeNode('program', '', [ifNode], 0, 0, 2, 1);
+    const index = ast.buildScopeIndex(root);
+
+    const visible = index.getVisibleAt(5);
+    assert.ok(visible.has('legend_text_curve'), 'if 分支内定义的变量在后续行应可见');
+});
+
+test('resolveDefinition: while body 内 set 定义的变量可解析', () => {
+    // tree-sitter-tcl 将 while 解析为独立节点类型 'while'（非 command）
+    const whileSet = makeNode('set', 'set result 1', [
+        makeNode('simple_word', 'set', [], 2, 4, 2, 7),
+        makeNode('id', 'result', [], 2, 8, 2, 14),
+        makeNode('simple_word', '1', [], 2, 15, 2, 16),
+    ], 2, 4, 2, 16);
+    const condBraced = makeNode('braced_word', '{1}', [], 1, 6, 1, 9);
+    const bodyBraced = makeNode('braced_word', '{ set result 1 }', [
+        whileSet,
+    ], 1, 10, 3, 1);
+
+    const whileNode = makeNode('while', 'while {1} { set result 1 }', [
+        makeNode('simple_word', 'while', [], 1, 0, 1, 5),
+        condBraced,
+        bodyBraced,
+    ], 1, 0, 3, 1);
+
+    const root = makeNode('program', '', [whileNode], 0, 0, 3, 1);
+    const index = ast.buildScopeIndex(root);
+
+    const resolved = index.resolveDefinition('result', 4);
+    assert.ok(resolved, 'while body 内定义的 result 应可解析');
+    assert.strictEqual(resolved.scope, 'global');
+});
+
 summary();
