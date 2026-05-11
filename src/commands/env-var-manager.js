@@ -54,6 +54,16 @@ function i18n() {
     return vscode.env.language.startsWith('zh') ? ZH : EN;
 }
 
+function getEnvVars() {
+    return vscode.workspace.getConfiguration('sentaurus').get(CONFIG_KEY, {});
+}
+
+function setEnvVars(vars) {
+    return vscode.workspace.getConfiguration('sentaurus').update(
+        CONFIG_KEY, vars, vscode.ConfigurationTarget.Global
+    );
+}
+
 /**
  * 注册"添加环境变量"命令。
  * 弹出输入框接收空格/换行分隔的变量名列表，去重后批量写入配置。
@@ -61,8 +71,7 @@ function i18n() {
 function registerAddEnvVarsCommand(context) {
     const disposable = vscode.commands.registerCommand('sentaurus.addEnvironmentVariables', async () => {
         const t = i18n();
-        const config = vscode.workspace.getConfiguration('sentaurus');
-        const current = config.get(CONFIG_KEY, {});
+        const current = getEnvVars();
 
         const input = await vscode.window.showInputBox({
             prompt: t.addPrompt,
@@ -80,12 +89,8 @@ function registerAddEnvVarsCommand(context) {
             return;
         }
 
-        const newEnvVars = { ...current };
-        for (const name of toAdd) {
-            newEnvVars[name] = '';
-        }
-
-        await config.update(CONFIG_KEY, newEnvVars, vscode.ConfigurationTarget.Global);
+        const additions = Object.fromEntries(toAdd.map(n => [n, '']));
+        await setEnvVars({ ...current, ...additions });
         await vscode.window.showInformationMessage(t.added(toAdd.length, toAdd.join(', ')));
     });
     context.subscriptions.push(disposable);
@@ -98,8 +103,7 @@ function registerAddEnvVarsCommand(context) {
 function registerRemoveEnvVarsCommand(context) {
     const disposable = vscode.commands.registerCommand('sentaurus.removeEnvironmentVariables', async () => {
         const t = i18n();
-        const config = vscode.workspace.getConfiguration('sentaurus');
-        const current = config.get(CONFIG_KEY, {});
+        const current = getEnvVars();
 
         const allItems = Object.entries(current).map(([name, doc]) => ({
             label: name,
@@ -167,12 +171,12 @@ function registerRemoveEnvVarsCommand(context) {
 
             if (selected.length === 0) return;
 
-            const newEnvVars = { ...current };
-            for (const name of selected) {
-                delete newEnvVars[name];
-            }
+            const toRemove = new Set(selected);
+            const remaining = Object.fromEntries(
+                Object.entries(current).filter(([k]) => !toRemove.has(k))
+            );
 
-            await config.update(CONFIG_KEY, newEnvVars, vscode.ConfigurationTarget.Global);
+            await setEnvVars(remaining);
             await vscode.window.showInformationMessage(t.removed(selected.length, selected.join(', ')));
         });
 
@@ -190,8 +194,7 @@ function validateEnvJson(obj) {
 function registerExportEnvVarsCommand(context) {
     const disposable = vscode.commands.registerCommand('sentaurus.exportEnvironmentVariables', async () => {
         const t = i18n();
-        const config = vscode.workspace.getConfiguration('sentaurus');
-        const current = config.get(CONFIG_KEY, {});
+        const current = getEnvVars();
 
         if (Object.keys(current).length === 0) {
             await vscode.window.showInformationMessage(t.noVars);
@@ -243,8 +246,7 @@ function registerImportEnvVarsCommand(context) {
             return;
         }
 
-        const config = vscode.workspace.getConfiguration('sentaurus');
-        const current = config.get(CONFIG_KEY, {});
+        const current = getEnvVars();
         const existing = new Set(Object.keys(current));
         const toAdd = Object.entries(parsed).filter(([k]) => !existing.has(k));
 
@@ -253,12 +255,8 @@ function registerImportEnvVarsCommand(context) {
             return;
         }
 
-        const newEnvVars = { ...current };
-        for (const [name, doc] of toAdd) {
-            newEnvVars[name] = doc;
-        }
-
-        await config.update(CONFIG_KEY, newEnvVars, vscode.ConfigurationTarget.Global);
+        const additions = Object.fromEntries(toAdd);
+        await setEnvVars({ ...current, ...additions });
         await vscode.window.showInformationMessage(t.imported(toAdd.length, toAdd.map(([k]) => k).join(', ')));
     });
     context.subscriptions.push(disposable);
