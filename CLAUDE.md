@@ -80,6 +80,7 @@ sentaurus-syntax-highlight/
 │   │
 │   ├── commands/                               ← VSCode 命令实现
 │   │   ├── expression-converter.js             ← Scheme 前缀 ↔ 中缀表达式双向转换（含 CursorTracker 光标位置感知、尖括号连字符变量语法、QuickPick 变量补全和历史模式）
+│   │   ├── env-var-manager.js                  ← SWB 环境变量管理命令（批量添加/搜索删除/导出/导入）
 │   │   └── snippet-picker.js                   ← QuickPick 代码片段命令（sentaurus.insertSnippet）
 │   │
 │   ├── lsp/                                    ← 语义功能核心（AST 解析 + Provider 注册）
@@ -113,6 +114,7 @@ sentaurus-syntax-highlight/
 │   │       ├── unit-auto-close-provider.js     ← SPROCESS Unit 括号自动配对 Provider
 │   │       ├── quote-auto-delete-logic.js      ← 空引号对自动删除判断逻辑
 │   │       ├── quote-auto-delete-provider.js   ← 空引号对自动删除 Provider（6 种语言共用）
+│   │       ├── tcl-env-var-semantic.js          ← SWB 环境变量 Semantic Token provider（粗体渲染 + 诊断豁免）
 │   │       ├── region-undef-diagnostic.js         ← Region/Material/Contact 未定义语义诊断（Scheme）
 │   │       ├── semantic-tokens-provider.js        ← SDE 用户定义函数调用 + #define 宏着色（Semantic Tokens）
 │   │       ├── tcl-funcall-semantic.js          ← Tcl proc 调用处函数名语义着色（WASM AST 驱动）
@@ -216,6 +218,11 @@ SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依
 - `symbol-completion.js` — Region/Material/Contact 符号补全（声明式 symbolParams 配置）
 - `variable-reference-provider.js` — 用户变量 + #define 宏引用查找（Scheme + Tcl 双语言，作用域感知过滤）
 - `symbol-reference-provider.js` — Find All References（Region/Material/Contact 交叉引用）
+- `tcl-env-var-semantic.js` — SWB 环境变量 Semantic Token provider（配置驱动白名单，粗体渲染，诊断豁免）
+
+**环境变量系统**：`sentaurus.environmentVariables` 配置驱动 SWB 环境变量白名单（键=变量名，值=Hover 文档）。`env-var-manager.js` 提供 4 个管理命令（批量添加/搜索删除/导出 JSON/导入 JSON）。`undef-var-diagnostic.js` 自动豁免白名单变量的未定义诊断。Hover/补全通过 `🏠 环境变量` 标记区分环境变量与用户变量。
+
+**国际化**：所有插件 UI 文字使用 `package.nls.json`（英文）+ `package.nls.zh-cn.json`（中文）的 i18n 映射，`package.json` 通过 `%key%` 引用。严禁硬编码面向用户的文字。
 
 **内存管理**：WASM `tree` 对象使用后必须 `tree.delete()` 释放，由 `parse-cache.js` 的 `TclParseCache` 统一管理生命周期。
 

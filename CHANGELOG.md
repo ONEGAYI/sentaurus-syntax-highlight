@@ -4,6 +4,23 @@
 
 ---
 
+## [1.17.0] - 2026-05-11
+
+### 新功能
+
+- **SWB 环境变量白名单系统**（#48）：将 SWB 环境变量从硬编码迁移为 `sentaurus.environmentVariables` 配置驱动（键=变量名，值=Hover 文档）；新增环境变量 Semantic Token provider（`tcl-env-var-semantic.js`），为白名单变量渲染粗体样式；未定义变量诊断自动豁免白名单中的环境变量；Hover 和补全中通过 `🏠 环境变量` 标记区分环境变量与用户变量；4 个管理命令——批量添加、搜索删除、导出 JSON、导入 JSON（合并去重）；设置界面 `markdownDescription` 提供全部命令快捷链接。新增 `src/commands/env-var-manager.js`（270 行）和 `src/lsp/providers/tcl-env-var-semantic.js`（53 行）
+- **设置菜单全面国际化**（#49）：将 `package.json` 中所有面向用户的文本（configuration title/description/markdownDescription、semanticTokenTypes/Modifiers description）从硬编码替换为 `%key%` 引用方式；修复 `definitionMaxWidth` description 错误使用中文的问题；移除不生效的 `.zh-CN` 行内后缀
+
+### Bug 修复
+
+- **Tcl 行内注释语法勘误**（#45）：裸 `#` 不再被识别为行内注释——修复 5 种 Tcl 语法文件中 `#` 在命令中间位置时被错误标记为注释起始符的问题，确保只有符合 Tcl 规范的注释（行首或分号后的 `#`）才被高亮
+- **Tcl if/while 分支内变量定义未被作用域索引识别**（#46）：修复 `if`/`while`/`for`/`foreach` 等分支体内的 `set` 变量定义未被作用域索引提取的问题，导致分支内定义的变量在后续代码中被误报为"未定义变量"
+- **引号内部退格不再误删闭合引号**（#47）：修复在引号对内部（如 `"xx $"`）退格时，光标前方的 `$` 被误识别为边界符，导致连带删除闭合引号的回归 bug
+- **Tcl 嵌套方括号导致后续变量定义全部丢失**（#50）：修复 tree-sitter-tcl 无法解析含嵌套 `[...]` 命令替换的 `set` 语句时，ERROR 级联吞噬后续所有语句的问题。新增三种回退提取策略：root=ERROR 空壳 set、proc 碎片恢复、binop_expr 容器回退；复用 `_extractSvisualOutVars` 并通过 `_addDefIfNew` 统一去重
+- **log/log10 数学函数被错误 scope 抢先匹配**：修复 svisual/inspect/sprocess 三个语法文件中 `log`/`log10` 数学函数的匹配模式被错误的 scope（字符串颜色）抢先匹配，改为正确的数学函数 scope（青绿色）
+
+---
+
 ## [1.16.2] - 2026-05-11
 
 ### Bug 修复
@@ -892,6 +909,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.17.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.16.2...v1.17.0
 [1.16.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.16.1...v1.16.2
 [1.16.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.16.0...v1.16.1
 [1.16.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.15.1...v1.16.0
