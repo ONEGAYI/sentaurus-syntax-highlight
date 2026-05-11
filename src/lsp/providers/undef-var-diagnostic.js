@@ -13,17 +13,18 @@ let schemeCache;
 /** @type {import('../parse-cache').TclParseCache} */
 let tclCache;
 
-/** Sentaurus 工具链隐式注入的变量白名单 */
-const TCL_BUILTIN_VARS = new Set([
-    'DesName', 'Pwd', 'Pd', 'ProjDir', 'Tooldir', 'env',
-    'TOOLS_PRE', 'TOOLS_POST',
-]);
-
 /** Scheme (SDE) 隐式变量白名单 */
 const SCHEME_BUILTIN_VARS = new Set([
     'argc', 'argv',
     'PI',         // SDE 预定义数学常量
 ]);
+
+/** 从配置读取环境变量白名单 */
+function getEnvVarSet() {
+    const config = vscode.workspace.getConfiguration('sentaurus');
+    const envVars = config.get('environmentVariables', {});
+    return new Set(Object.keys(envVars));
+}
 
 /** Tcl 语言集合 */
 const TCL_LANG_SET = astUtils.TCL_LANGS;
@@ -47,6 +48,13 @@ function activate(context, schemeCacheInstance, tclCacheInstance) {
     });
     diagnosticCollection = provider.diagnosticCollection;
     provider.initialScan();
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeConfiguration(event => {
+            if (event.affectsConfiguration('sentaurus.environmentVariables')) {
+                refreshAll();
+            }
+        })
+    );
 }
 
 /**
@@ -87,9 +95,10 @@ function checkTclUndefVars(document) {
     if (!scopeIndex) return [];
 
     const diagnostics = [];
+    const envVarSet = getEnvVarSet();
     for (const ref of refs) {
-        // 跳过白名单变量
-        if (TCL_BUILTIN_VARS.has(ref.name)) continue;
+        // 跳过环境变量白名单
+        if (envVarSet.has(ref.name)) continue;
 
         // 检查引用行是否可见该变量
         const visibleAtLine = scopeIndex.getVisibleAt(ref.line);
@@ -304,4 +313,4 @@ function refreshAll() {
     }
 }
 
-module.exports = { activate, refreshAll, checkTclUndefVars, checkSchemeUndefVars, checkSchemeDuplicateDefs, TCL_BUILTIN_VARS, SCHEME_BUILTIN_VARS };
+module.exports = { activate, refreshAll, checkTclUndefVars, checkSchemeUndefVars, checkSchemeDuplicateDefs, SCHEME_BUILTIN_VARS };
