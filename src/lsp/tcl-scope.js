@@ -175,6 +175,274 @@ const _HANDLED_CMDS = new Set([
 ]);
 
 /**
+ * 去重添加变量定义。键格式 "name@line" 确保同名变量在不同行各自独立。
+ */
+function _addDefIfNew(defs, captured, name, line) {
+    const key = name + '@' + line;
+    if (!captured.has(key)) {
+        captured.add(key);
+        defs.push({ name, defLine: line });
+    }
+}
+
+/**
+ * 从 binop_expr 等异常容器节点中递归提取变量定义。
+ * tree-sitter-tcl 在 ERROR 恢复失败时可能将后续代码吞噬进
+ * binop_expr 等非标准节点类型中，这些 ERROR 内的变量定义模式为：
+ * - set + id/simple_word 空壳对（_extractErrorVarDefs 已处理）
+ * - simple_word("set") + simple_word(name) — set 未被识别为 set 节点类型
+ * - ext::/rfx::/ifm:: 命名空间命令 + -out + variable（复用 _extractSvisualOutVars）
+ * - create_variable + -name + variable（复用 _extractSvisualOutVars）
+ */
+function _collectFallbackDefs(node, defs, captured) {
+    if (!captured) captured = new Set();
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (!child) continue;
+
+        if (child.type === 'ERROR') {
+            for (const d of _extractErrorVarDefs(child, true)) {
+                _addDefIfNew(defs, captured, d.name, d.line);
+            }
+            _scanErrorFallbackDefs(child, defs, captured);
+        }
+
+        _collectFallbackDefs(child, defs, captured);
+    }
+}
+
+/**
+ * 扫描 ERROR 节点中 binop_expr 特有的变量定义模式。
+ * 在 binop_expr 内的 ERROR 中，命令可能不在首个子节点位置，
+ * 需要遍历所有子节点查找 set 和 svisual 定义。
+ */
+function _scanErrorFallbackDefs(node, defs, captured) {
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (!child || child.type !== 'simple_word') continue;
+
+        if (child.text === 'set') {
+            const next = node.child(i + 1);
+            if (next && next.type === 'simple_word' && !next.text.startsWith('$') &&
+                !next.text.startsWith('-') && !/^\d/.test(next.text)) {
+                _addDefIfNew(defs, captured, next.text, next.startPosition.row + 1);
+            }
+        }
+
+        if (_isSvisualVarDefCommand(child.text)) {
+            const words = [];
+            for (let j = 0; j < node.childCount; j++) {
+                const w = node.child(j);
+                if (w && (w.type === 'simple_word' || w.type === 'id')) words.push(w);
+            }
+            for (const d of _extractSvisualOutVars(words, child.text)) {
+                _addDefIfNew(defs, captured, d.name, d.line);
+            }
+        }
+    }
+}
+
+/**
+ * 递归收集 ERROR 节点及其嵌套 ERROR 中的变量定义、proc 作用域和循环作用域。
+ * tree-sitter-tcl 对 set 值中的 [...] 命令替换支持不完整，
+ * 含 [] 的 set 语句会触发 ERROR 并可能级联吞噬后续语句，
+ * 导致 proc/foreach 等结构碎片化在 ERROR 内。
+ */
+function _collectErrorDefsRecursive(node, globalDefs, procScopes, loopScopes) {
+    for (const d of _extractErrorVarDefs(node, true)) {
+        globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
+    }
+
+    // 扫描 proc 结构（proc + name + args 在同一 ERROR 内）
+    _extractErrorProcScopes(node, globalDefs, procScopes);
+    // 扫描碎片化的 proc（proc + name + args 在嵌套 ERROR，body 在父 ERROR）
+    _findAndExtractErrorProcBodies(node, globalDefs, procScopes);
+
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (child && child.type === 'ERROR') {
+            _collectErrorDefsRecursive(child, globalDefs, procScopes, loopScopes);
+        }
+    }
+}
+
+/**
+ * 从 ERROR 节点中提取 proc 结构并构建 procScopes。
+ * ERROR 中 proc 被碎片化：proc + simple_word(名) + braced_word_simple(参数)
+ * body (braced_word_simple) 可能在本 ERROR 内、或父 ERROR 的下一个子节点中。
+ */
+function _extractErrorProcScopes(node, globalDefs, procScopes) {
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (child.type !== 'proc') continue;
+
+        const nameNode = node.child(i + 1);
+        const argsNode = node.child(i + 2);
+
+        if (!nameNode || nameNode.type !== 'simple_word') continue;
+
+        const procName = nameNode.text;
+        const procDefLine = nameNode.startPosition.row + 1;
+        globalDefs.push({ name: procName, defLine: procDefLine, isProc: true });
+
+        // 提取参数
+        const params = [];
+        if (argsNode && argsNode.type === 'braced_word_simple') {
+            for (let j = 0; j < argsNode.childCount; j++) {
+                const arg = argsNode.child(j);
+                if (arg && arg.type === 'simple_word') {
+                    params.push(arg.text);
+                }
+            }
+        }
+
+        // 查找 body：先在本 ERROR 内找，再向父节点找
+        let bodyNode = node.child(i + 3);
+        if (!bodyNode || bodyNode.type !== 'braced_word_simple') {
+            // body 可能在父 ERROR 中 argsNode 之后的下一个子节点
+            bodyNode = null;
+        }
+
+        if (bodyNode) {
+            _buildProcScope(procName, bodyNode, params, procScopes);
+        }
+        // 如果 body 未找到（碎片化在父节点），标记为延迟处理
+    }
+}
+
+/**
+ * 从 ERROR 节点的直接子节点中查找 proc 的 body（braced_word_simple）。
+ * 当 proc 碎片化在嵌套 ERROR 中时，body 可能在父 ERROR 的下一个子节点。
+ */
+function _findAndExtractErrorProcBodies(node, globalDefs, procScopes) {
+    // 查找所有包含 proc 关键字的嵌套 ERROR
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (child.type !== 'ERROR') continue;
+
+        // 检查这个 ERROR 内是否有 proc 关键字
+        let hasProc = false;
+        let procName = null;
+        let argsNode = null;
+        for (let j = 0; j < child.childCount; j++) {
+            const c = child.child(j);
+            if (c.type === 'proc') {
+                hasProc = true;
+            }
+            if (c.type === 'simple_word' && hasProc && !procName) {
+                procName = c.text;
+            }
+            if (c.type === 'braced_word_simple' && hasProc && !argsNode) {
+                argsNode = c;
+            }
+        }
+
+        if (!hasProc || !procName) continue;
+
+        // body 应该在父节点的下一个子节点
+        const bodyCandidate = node.child(i + 1);
+        if (bodyCandidate && bodyCandidate.type === 'braced_word_simple') {
+            // 提取参数
+            const params = [];
+            if (argsNode) {
+                for (let j = 0; j < argsNode.childCount; j++) {
+                    const arg = argsNode.child(j);
+                    if (arg && arg.type === 'simple_word') {
+                        params.push(arg.text);
+                    }
+                }
+            }
+
+            // 检查是否已被 _extractErrorProcScopes 处理
+            const bodyStart = bodyCandidate.startPosition.row + 1;
+            const alreadyProcessed = procScopes.some(p => p.name === procName && p.startLine === bodyStart);
+            if (!alreadyProcessed) {
+                _buildProcScope(procName, bodyCandidate, params, procScopes);
+            }
+        }
+    }
+}
+
+/**
+ * 构建 procScope 并添加到 procScopes 数组。
+ */
+function _buildProcScope(procName, bodyNode, params, procScopes) {
+    const bodyStart = bodyNode.startPosition.row + 1;
+    const bodyEnd = bodyNode.endPosition.row + 1;
+
+    const localDefs = [];
+    const scopeImports = [];
+    _extractBracedBodyDefs(bodyNode, localDefs);
+    _extractBracedBodyImports(bodyNode, scopeImports);
+
+    procScopes.push({
+        name: procName,
+        startLine: bodyStart,
+        endLine: bodyEnd,
+        params,
+        localDefs,
+        scopeImports,
+    });
+}
+
+/**
+ * 从 braced_word_simple 节点中提取 set 变量定义。
+ */
+function _extractBracedBodyDefs(node, defs) {
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (!child) continue;
+
+        if (child.type === 'simple_word' && child.text === 'set') {
+            const next = node.child(i + 1);
+            if (next && (next.type === 'simple_word' || next.type === 'id')) {
+                const name = next.text;
+                if (!name.startsWith('env(') && !/^\d/.test(name)) {
+                    defs.push({ name, defLine: next.startPosition.row + 1 });
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 从 braced_word_simple 节点中提取 global/upvar/variable 声明。
+ */
+function _extractBracedBodyImports(node, imports) {
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (!child || child.type !== 'simple_word') continue;
+
+        if (child.text === 'global') {
+            const next = node.child(i + 1);
+            if (next && next.type === 'simple_word') {
+                imports.push(next.text);
+            }
+        } else if (child.text === 'upvar' || child.text === 'variable') {
+            // upvar level srcVar localVar — 取最后一个参数
+            // variable name ?value? — 取 name
+            const words = [];
+            for (let j = i + 1; j < node.childCount; j++) {
+                const w = node.child(j);
+                if (w.type !== 'simple_word') break;
+                words.push(w.text);
+            }
+            if (child.text === 'upvar' && words.length >= 2) {
+                // upvar ?level? srcVar localVar — 跳过可能的 level 参数
+                let start = /^\d+$/.test(words[0]) ? 1 : 0;
+                for (let k = start; k < words.length - 1; k += 2) {
+                    imports.push(words[k + 1]);
+                }
+            } else if (child.text === 'variable') {
+                for (let k = 0; k < words.length; k += 2) {
+                    imports.push(words[k]);
+                }
+            }
+        }
+    }
+}
+
+/**
  * 收集节点内所有 braced_word 中的变量定义。
  * @param {object} node - AST 节点
  * @param {Array} defs - 输出定义数组
@@ -214,6 +482,11 @@ function buildScopeIndex(root) {
     const loopScopes = [];
     const maxLine = _countMaxLine(root) + 1;
 
+    // tree-sitter-tcl 对 set 值中的 [...] 命令替换支持不完整，
+    // 含 [] 的 set 可能导致 ERROR 级联吞噬后续语句甚至整个 root。
+    // root 为 ERROR 时仍需正常遍历子节点（proc/set 等可能作为 ERROR 的子节点存在）。
+    const isRootError = root.type === 'ERROR';
+
     for (let i = 0; i < root.childCount; i++) {
         const child = root.child(i);
         if (!child) continue;
@@ -228,6 +501,19 @@ function buildScopeIndex(root) {
                         defLine: idNode.startPosition.row + 1,
                         isProc: false,
                     });
+                }
+            } else if (isRootError) {
+                // 空壳 set：tree-sitter-tcl ERROR 中 set 无内部 id，变量名在下一个兄弟节点
+                const next = root.child(i + 1);
+                if (next && (next.type === 'id' || next.type === 'simple_word')) {
+                    const name = next.text;
+                    if (!name.startsWith('env(') && !/^\d/.test(name)) {
+                        globalDefs.push({
+                            name,
+                            defLine: next.startPosition.row + 1,
+                            isProc: false,
+                        });
+                    }
                 }
             }
         }
@@ -363,12 +649,27 @@ function buildScopeIndex(root) {
             }
         }
 
-        // ERROR 节点：tree-sitter 不识别的命令（lassign、variable 等）
+        // ERROR 节点：tree-sitter 不识别的命令（set 含 []、lassign、variable 等）
         if (child.type === 'ERROR') {
-            for (const d of _extractErrorVarDefs(child)) {
-                globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
+            _collectErrorDefsRecursive(child, globalDefs, procScopes, loopScopes);
+        }
+
+        // binop_expr 等异常容器：tree-sitter ERROR 恢复失败时将后续代码吞噬进
+        // binop_expr，其中嵌套的 ERROR 节点内仍有变量定义
+        if (child.type === 'binop_expr') {
+            const fallbackDefs = [];
+            _collectFallbackDefs(child, fallbackDefs);
+            for (const d of fallbackDefs) {
+                globalDefs.push({ name: d.name, defLine: d.defLine, isProc: false });
             }
         }
+    }
+
+    // root 为 ERROR 时，正常 procedure 节点可能不存在，
+    // proc 碎片化为 proc + simple_word + braced_word_simple，需要额外扫描。
+    if (isRootError) {
+        _extractErrorProcScopes(root, globalDefs, procScopes);
+        _findAndExtractErrorProcBodies(root, globalDefs, procScopes);
     }
 
     return new ScopeIndex(globalDefs, procScopes, loopScopes);

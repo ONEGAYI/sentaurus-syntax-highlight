@@ -28,8 +28,38 @@ const {
 function getVariables(root, sourceText) {
     const results = [];
     const lines = sourceText ? sourceText.split('\n') : null;
+    // tree-sitter-tcl 对 set 值中的 [...] 命令替换支持不完整，
+    // 含 [] 的 set 可能导致整个文档根节点变成 ERROR。
+    if (root.type === 'ERROR') {
+        _collectErrorVarsRecursive(root, results, lines);
+        return results;
+    }
     _collectVariables(root, results, sourceText, lines);
     return results;
+}
+
+/**
+ * 递归收集 ERROR 节点及其嵌套 ERROR 中的变量定义。
+ */
+function _collectErrorVarsRecursive(node, results, lines) {
+    const defs = _extractErrorVarDefs(node, true);
+    for (const d of defs) {
+        results.push({
+            name: d.name,
+            line: d.line,
+            endLine: d.line,
+            definitionText: lines
+                ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
+                : node.text,
+            kind: 'variable',
+        });
+    }
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (child && child.type === 'ERROR') {
+            _collectErrorVarsRecursive(child, results, lines);
+        }
+    }
 }
 
 /**
@@ -107,7 +137,7 @@ function _collectVariables(node, results, sourceText, lines) {
                 break;
 
             default:
-                // ERROR 节点中可能包含已知命令（lassign、variable 等）
+                // ERROR 节点中可能包含已知命令（set 含 []、lassign、variable 等）
                 if (child.type === 'ERROR') {
                     const errorDefs = _extractErrorVarDefs(child);
                     if (errorDefs.length > 0) {
