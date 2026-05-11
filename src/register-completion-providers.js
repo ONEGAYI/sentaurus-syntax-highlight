@@ -220,7 +220,23 @@ function registerCompletionProviders(context, deps) {
                             return item;
                         });
 
-                        return [...items, ...userItems];
+                        // 环境变量补全
+                        const envVars = vscode.workspace.getConfiguration('sentaurus').get('environmentVariables', {});
+                        const envVarItems = Object.keys(envVars)
+                            .filter(name => !seenNames.has(name))
+                            .map(name => {
+                                const item = new vscode.CompletionItem('$' + name, vscode.CompletionItemKind.Variable);
+                                item.detail = '🏠 环境变量';
+                                item.sortText = '4' + name;
+                                item.filterText = name;
+                                const docStr = envVars[name];
+                                if (docStr && docStr.trim()) {
+                                    item.documentation = new vscode.MarkdownString(docStr);
+                                }
+                                return item;
+                            });
+
+                        return [...items, ...envVarItems, ...userItems];
                     } catch (e) {
                         console.error('Sentaurus: provideCompletionItems error', e);
                         return [];
@@ -388,10 +404,21 @@ function registerCompletionProviders(context, deps) {
                                     }
                                 }
                             }
-                            if (def) hoverRange = dollarRange;
-                        } else {
-                            def = userDefs.find(d => d.name === word && d.kind !== 'variable');
-                        }
+                            if (def) {
+                                hoverRange = dollarRange;
+                            } else if (dollarRange) {
+                                // 检查是否为 SWB 环境变量
+                                const envVars = vscode.workspace.getConfiguration('sentaurus').get('environmentVariables', {});
+                                if (Object.prototype.hasOwnProperty.call(envVars, dollarWord)) {
+                                    const md = new vscode.MarkdownString();
+                                    md.appendMarkdown(`**${dollarWord}** (🏠 环境变量)`);
+                                    const docStr = envVars[dollarWord];
+                                    if (docStr && docStr.trim()) {
+                                        md.appendMarkdown('\n\n' + docStr);
+                                    }
+                                    return new vscode.Hover(md, dollarRange);
+                                }
+                            }
                     } else {
                         def = userDefs.find(d => d.name === word);
                         let hoverWord = word;
