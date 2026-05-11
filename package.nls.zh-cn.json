@@ -5,5 +5,7 @@
   "sentaurus.exprHelp": "Sentaurus: 表达式帮助",
   "sentaurus.testTclWasm": "Sentaurus: 测试 Tcl WASM 解析器",
   "sentaurus.addEnvironmentVariables": "Sentaurus: 添加环境变量",
-  "sentaurus.removeEnvironmentVariables": "Sentaurus: 搜索并删除环境变量"
+  "sentaurus.removeEnvironmentVariables": "Sentaurus: 搜索并删除环境变量",
+  "sentaurus.exportEnvironmentVariables": "Sentaurus: 导出环境变量",
+  "sentaurus.importEnvironmentVariables": "Sentaurus: 导入环境变量"
 }

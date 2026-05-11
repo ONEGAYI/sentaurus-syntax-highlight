@@ -160,6 +160,8 @@ function activate(context) {
     // ── 环境变量管理命令 ──────────────────────────
     envVarManager.registerAddEnvVarsCommand(context);
     envVarManager.registerRemoveEnvVarsCommand(context);
+    envVarManager.registerExportEnvVarsCommand(context);
+    envVarManager.registerImportEnvVarsCommand(context);
 
     // ── 表达式转换命令 ──────────────────────────
     const HISTORY_KEYS = {

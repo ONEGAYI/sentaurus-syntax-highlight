@@ -205,6 +205,14 @@
       {
         "command": "sentaurus.removeEnvironmentVariables",
         "title": "%sentaurus.removeEnvironmentVariables%"
+      },
+      {
+        "command": "sentaurus.exportEnvironmentVariables",
+        "title": "%sentaurus.exportEnvironmentVariables%"
+      },
+      {
+        "command": "sentaurus.importEnvironmentVariables",
+        "title": "%sentaurus.importEnvironmentVariables%"
       }
     ],
     "snippets": [
@@ -353,8 +361,8 @@
               "TOOLS_PRE": "",
               "TOOLS_POST": ""
             },
-            "description": "SWB 预注入的环境变量白名单。键为变量名，值为 Hover 文档（留空则仅显示变量名）。修改后自动生效",
-            "description.zh-CN": "SWB 预注入的环境变量白名单。键为变量名，值为 Hover 文档（留空则仅显示变量名）。修改后自动生效",
+            "markdownDescription": "SWB pre-injected environment variable whitelist. Key = variable name, value = hover doc (leave empty for name-only). Changes take effect immediately.\n\n[Add Environment Variables](command:sentaurus.addEnvironmentVariables) | [Search & Remove](command:sentaurus.removeEnvironmentVariables) | [Export](command:sentaurus.exportEnvironmentVariables) | [Import](command:sentaurus.importEnvironmentVariables)",
+            "markdownDescription.zh-CN": "SWB 预注入的环境变量白名单。键为变量名，值为 Hover 文档（留空则仅显示变量名）。修改后自动生效。\n\n[添加环境变量](command:sentaurus.addEnvironmentVariables) | [搜索并删除](command:sentaurus.removeEnvironmentVariables) | [导出](command:sentaurus.exportEnvironmentVariables) | [导入](command:sentaurus.importEnvironmentVariables)",
             "additionalProperties": { "type": "string" },
             "scope": "resource",
             "order": 1

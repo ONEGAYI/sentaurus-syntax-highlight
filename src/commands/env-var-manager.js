@@ -2,6 +2,7 @@
 'use strict';
 
 const vscode = require('vscode');
+const fs = require('fs');
 
 const CONFIG_KEY = 'environmentVariables';
 
@@ -16,6 +17,15 @@ const ZH = {
     regexTooltip: '点击切换正则表达式匹配模式',
     removed: (n, names) => `Sentaurus: 已删除 ${n} 个环境变量：${names}`,
     envVarLabel: '🏠 环境变量',
+    exportDefaultName: 'sentaurus-env-vars.json',
+    exportSuccess: (path) => `Sentaurus: 已导出环境变量到 ${path}`,
+    importTitle: '选择环境变量 JSON 文件',
+    importFilters: 'JSON 文件',
+    importNoVars: 'Sentaurus: 选择的文件中没有可导入的变量',
+    importAllExist: 'Sentaurus: 文件中的变量均已在白名单中',
+    imported: (n, names) => `Sentaurus: 已导入 ${n} 个环境变量：${names}`,
+    importReadError: (msg) => `Sentaurus: 读取文件失败：${msg}`,
+    importParseError: 'Sentaurus: 文件内容不是有效的环境变量 JSON（期望 { "VarName": "doc" } 格式）',
 };
 
 const EN = {
@@ -29,6 +39,15 @@ const EN = {
     regexTooltip: 'Toggle regex matching mode',
     removed: (n, names) => `Sentaurus: Removed ${n} environment variable(s): ${names}`,
     envVarLabel: '🏠 Env Variable',
+    exportDefaultName: 'sentaurus-env-vars.json',
+    exportSuccess: (path) => `Sentaurus: Exported environment variables to ${path}`,
+    importTitle: 'Select Environment Variables JSON File',
+    importFilters: 'JSON Files',
+    importNoVars: 'Sentaurus: No importable variables found in the file',
+    importAllExist: 'Sentaurus: All variables from the file are already in the whitelist',
+    imported: (n, names) => `Sentaurus: Imported ${n} environment variable(s): ${names}`,
+    importReadError: (msg) => `Sentaurus: Failed to read file: ${msg}`,
+    importParseError: 'Sentaurus: File is not valid environment variable JSON (expected { "VarName": "doc" } format)',
 };
 
 function i18n() {
@@ -163,4 +182,91 @@ function registerRemoveEnvVarsCommand(context) {
     context.subscriptions.push(disposable);
 }
 
-module.exports = { registerAddEnvVarsCommand, registerRemoveEnvVarsCommand };
+function validateEnvJson(obj) {
+    if (typeof obj !== 'object' || obj === null || Array.isArray(obj)) return false;
+    return Object.values(obj).every(v => typeof v === 'string');
+}
+
+function registerExportEnvVarsCommand(context) {
+    const disposable = vscode.commands.registerCommand('sentaurus.exportEnvironmentVariables', async () => {
+        const t = i18n();
+        const config = vscode.workspace.getConfiguration('sentaurus');
+        const current = config.get(CONFIG_KEY, {});
+
+        if (Object.keys(current).length === 0) {
+            await vscode.window.showInformationMessage(t.noVars);
+            return;
+        }
+
+        const uri = await vscode.window.showSaveDialog({
+            defaultUri: vscode.Uri.file(t.exportDefaultName),
+            filters: { [t.importFilters]: ['json'] },
+        });
+
+        if (!uri) return;
+
+        fs.writeFileSync(uri.fsPath, JSON.stringify(current, null, 2), 'utf8');
+        await vscode.window.showInformationMessage(t.exportSuccess(uri.fsPath));
+    });
+    context.subscriptions.push(disposable);
+}
+
+function registerImportEnvVarsCommand(context) {
+    const disposable = vscode.commands.registerCommand('sentaurus.importEnvironmentVariables', async () => {
+        const t = i18n();
+        const uris = await vscode.window.showOpenDialog({
+            canSelectMany: false,
+            openLabel: t.importTitle,
+            filters: { [t.importFilters]: ['json'] },
+        });
+
+        if (!uris || uris.length === 0) return;
+
+        let raw;
+        try {
+            raw = fs.readFileSync(uris[0].fsPath, 'utf8');
+        } catch (err) {
+            await vscode.window.showErrorMessage(t.importReadError(err.message));
+            return;
+        }
+
+        let parsed;
+        try {
+            parsed = JSON.parse(raw);
+        } catch (_) {
+            await vscode.window.showErrorMessage(t.importParseError);
+            return;
+        }
+
+        if (!validateEnvJson(parsed) || Object.keys(parsed).length === 0) {
+            await vscode.window.showErrorMessage(t.importParseError);
+            return;
+        }
+
+        const config = vscode.workspace.getConfiguration('sentaurus');
+        const current = config.get(CONFIG_KEY, {});
+        const existing = new Set(Object.keys(current));
+        const toAdd = Object.entries(parsed).filter(([k]) => !existing.has(k));
+
+        if (toAdd.length === 0) {
+            await vscode.window.showInformationMessage(t.importAllExist);
+            return;
+        }
+
+        const newEnvVars = { ...current };
+        for (const [name, doc] of toAdd) {
+            newEnvVars[name] = doc;
+        }
+
+        await config.update(CONFIG_KEY, newEnvVars, vscode.ConfigurationTarget.Global);
+        await vscode.window.showInformationMessage(t.imported(toAdd.length, toAdd.map(([k]) => k).join(', ')));
+    });
+    context.subscriptions.push(disposable);
+}
+
+module.exports = {
+    registerAddEnvVarsCommand,
+    registerRemoveEnvVarsCommand,
+    registerExportEnvVarsCommand,
+    registerImportEnvVarsCommand,
+};
