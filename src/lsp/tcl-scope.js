@@ -169,6 +169,41 @@ class ScopeIndex {
     }
 }
 
+/** buildScopeIndex 中已有专门处理的 command 名称 */
+const _HANDLED_CMDS = new Set([
+    'set', 'lappend', 'append', 'for', 'lassign', 'lmap', 'dict', 'incr',
+]);
+
+/**
+ * 收集节点内所有 braced_word 中的变量定义。
+ * @param {object} node - AST 节点
+ * @param {Array} defs - 输出定义数组
+ * @param {boolean} recurseIntoElse - 是否深入 else/elseif 子节点（if 节点需要）
+ */
+function _collectBracedWordDefs(node, defs, recurseIntoElse = false) {
+    const words = _getCommandWords(node);
+    for (const w of words) {
+        if (w.type === 'braced_word') {
+            _collectLocalDefsForIndex(w, defs);
+        }
+    }
+    if (!recurseIntoElse) return;
+    for (let i = 0; i < node.childCount; i++) {
+        const sub = node.child(i);
+        if (!sub) continue;
+        if (sub.type === 'braced_word') {
+            _collectLocalDefsForIndex(sub, defs);
+        } else if (sub.type === 'else' || sub.type === 'elseif') {
+            for (let j = 0; j < sub.childCount; j++) {
+                const inner = sub.child(j);
+                if (inner && inner.type === 'braced_word') {
+                    _collectLocalDefsForIndex(inner, defs);
+                }
+            }
+        }
+    }
+}
+
 /**
  * 单遍 AST 遍历，构建 ScopeIndex。
  * @param {object} root - AST 根节点
@@ -297,7 +332,19 @@ function buildScopeIndex(root) {
                         globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
                     }
                 }
+                // switch/catch 等其他命令：递归 braced_word 收集变量定义
+                if (!_HANDLED_CMDS.has(cmdName) && !_isSvisualVarDefCommand(cmdName)) {
+                    _collectBracedWordDefs(child, globalDefs);
+                }
             }
+        }
+
+        if (child.type === 'if') {
+            _collectBracedWordDefs(child, globalDefs, true);
+        }
+
+        if (child.type === 'while') {
+            _collectBracedWordDefs(child, globalDefs);
         }
 
         if (child.type === 'foreach') {
