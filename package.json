@@ -197,6 +197,14 @@
       {
         "command": "sentaurus.testTclWasm",
         "title": "%sentaurus.testTclWasm%"
+      },
+      {
+        "command": "sentaurus.addEnvironmentVariables",
+        "title": "%sentaurus.addEnvironmentVariables%"
+      },
+      {
+        "command": "sentaurus.removeEnvironmentVariables",
+        "title": "%sentaurus.removeEnvironmentVariables%"
       }
     ],
     "snippets": [
@@ -327,6 +335,29 @@
             "description": "用户定义变量/函数提示框中每行最大显示字符数。设为 0 时不截断",
             "description.zh-CN": "用户定义变量/函数提示框中每行最大显示字符数。设为 0 时不截断",
             "order": 11
+          }
+        }
+      },
+      {
+        "title": "Sentaurus 环境变量",
+        "properties": {
+          "sentaurus.environmentVariables": {
+            "type": "object",
+            "default": {
+              "DesName": "",
+              "Pwd": "",
+              "Pd": "",
+              "ProjDir": "",
+              "Tooldir": "",
+              "env": "",
+              "TOOLS_PRE": "",
+              "TOOLS_POST": ""
+            },
+            "description": "SWB 预注入的环境变量白名单。键为变量名，值为 Hover 文档（留空则仅显示变量名）。修改后自动生效",
+            "description.zh-CN": "SWB 预注入的环境变量白名单。键为变量名，值为 Hover 文档（留空则仅显示变量名）。修改后自动生效",
+            "additionalProperties": { "type": "string" },
+            "scope": "resource",
+            "order": 1
           }
         }
       }
