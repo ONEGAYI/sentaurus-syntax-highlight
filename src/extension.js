@@ -15,6 +15,7 @@ const variableReferenceProvider = require('./lsp/providers/variable-reference-pr
 const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
 const { DOC_LABELS } = require('./docs-loader');
 const { registerSnippetCommand } = require('./commands/snippet-picker');
+const envVarManager = require('./commands/env-var-manager');
 
 /** @type {SchemeParseCache} */
 let schemeCache;
@@ -155,6 +156,10 @@ function activate(context) {
 
     // === Snippet QuickPick Command ===
     registerSnippetCommand(context);
+
+    // ── 环境变量管理命令 ──────────────────────────
+    envVarManager.registerAddEnvVarsCommand(context);
+    envVarManager.registerRemoveEnvVarsCommand(context);
 
     // ── 表达式转换命令 ──────────────────────────
     const HISTORY_KEYS = {
