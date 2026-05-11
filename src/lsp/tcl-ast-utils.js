@@ -271,14 +271,18 @@ function _extractErrorVarDefs(node, includeCompleteSet = false) {
 
     // Pass 2: 完整 set 节点（ERROR 内正常解析的 set，有内部 id 子节点）
     if (includeCompleteSet) {
-        const captured = new Set(defs.map(d => d.name));
+        const captured = new Set(defs.map(d => d.name + '@' + d.line));
         for (let i = 0; i < node.childCount; i++) {
             const child = node.child(i);
             if (child && child.type === 'set') {
                 const idNode = _findChildByType(child, 'id');
-                if (idNode && !captured.has(idNode.text) && !idNode.text.startsWith('env(')) {
-                    defs.push({ name: idNode.text, line: idNode.startPosition.row + 1 });
-                    captured.add(idNode.text);
+                if (idNode && !idNode.text.startsWith('env(')) {
+                    const line = idNode.startPosition.row + 1;
+                    const key = idNode.text + '@' + line;
+                    if (!captured.has(key)) {
+                        defs.push({ name: idNode.text, line });
+                        captured.add(key);
+                    }
                 }
             }
         }
