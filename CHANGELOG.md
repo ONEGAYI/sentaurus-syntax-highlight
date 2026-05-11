@@ -4,6 +4,14 @@
 
 ---
 
+## [1.16.2] - 2026-05-11
+
+### Bug 修复
+
+- **Svisual 命名空间命令 `-out`/`-name` 参数变量定义识别**（#44）：`ext::`/`rfx::`/`ifm::` 命名空间命令通过 `-out` 参数传递结果到变量（如 `rfx::acquire -out result`），`create_variable` 使用 `-name` 参数定义变量——此前这些变量定义模式未被检测，导致使用处被误报为"未定义变量"警告。修复覆盖三套独立的变量定义管线（`tcl-variable-extractor` 悬停/补全、`tcl-scope` 作用域索引、`tcl-ast-utils` ERROR 节点 fallback），净增 74 行代码
+
+---
+
 ## [1.16.1] - 2026-05-10
 
 ### Bug 修复
@@ -884,6 +892,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.16.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.16.1...v1.16.2
 [1.16.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.16.0...v1.16.1
 [1.16.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.15.1...v1.16.0
 [1.15.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.15.0...v1.15.1
