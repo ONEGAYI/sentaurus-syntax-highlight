@@ -244,6 +244,7 @@ SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依
 - `*.Identifier` 文件已被 gitignore
 - 使用中文编写文档、提交和发布
 - 兼容性目标：CentOS 7 / VSCode v1.85.2 / GLIBC 2.17（无 TypeScript、无构建步骤、无原生二进制）
+- 所有插件 UI 文字使用 i18n 映射，而不是硬编码
 
 ## 发布流程
 
