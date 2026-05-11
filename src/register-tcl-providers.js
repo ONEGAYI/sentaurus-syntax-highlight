@@ -8,6 +8,7 @@ const tclBracketDiagnostic = require('./lsp/providers/tcl-bracket-diagnostic');
 const tclDocSymbolMod = require('./lsp/providers/tcl-document-symbol-provider');
 const sdeviceSemanticMod = require('./lsp/providers/sdevice-semantic-provider');
 const tclFuncallSemantic = require('./lsp/providers/tcl-funcall-semantic');
+const envVarSemantic = require('./lsp/providers/tcl-env-var-semantic');
 const { SDEVICE_ALL_SECTION_KEYWORDS_LOWER } = require('./lsp/tcl-symbol-configs');
 
 /**
@@ -97,6 +98,22 @@ function registerTclProviders(context, deps) {
                 { language: ppLang },
                 tclFuncallProvider,
                 tclFuncallLegend
+            )
+        );
+    }
+
+    // Semantic Tokens (5 种 Tcl 语言) — SWB 环境变量粗体渲染
+    const envVarLegend = new vscode.SemanticTokensLegend(
+        envVarSemantic.TOKEN_TYPES,
+        envVarSemantic.TOKEN_MODIFIERS
+    );
+    const envVarStProvider = envVarSemantic.createEnvVarSemanticProvider(tclCache);
+    for (const langId of astUtils.TCL_LANGS) {
+        context.subscriptions.push(
+            vscode.languages.registerDocumentSemanticTokensProvider(
+                { language: langId },
+                envVarStProvider,
+                envVarLegend
             )
         );
     }

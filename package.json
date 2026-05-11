@@ -197,6 +197,22 @@
       {
         "command": "sentaurus.testTclWasm",
         "title": "%sentaurus.testTclWasm%"
+      },
+      {
+        "command": "sentaurus.addEnvironmentVariables",
+        "title": "%sentaurus.addEnvironmentVariables%"
+      },
+      {
+        "command": "sentaurus.removeEnvironmentVariables",
+        "title": "%sentaurus.removeEnvironmentVariables%"
+      },
+      {
+        "command": "sentaurus.exportEnvironmentVariables",
+        "title": "%sentaurus.exportEnvironmentVariables%"
+      },
+      {
+        "command": "sentaurus.importEnvironmentVariables",
+        "title": "%sentaurus.importEnvironmentVariables%"
       }
     ],
     "snippets": [
@@ -329,6 +345,29 @@
             "order": 11
           }
         }
+      },
+      {
+        "title": "Sentaurus 环境变量",
+        "properties": {
+          "sentaurus.environmentVariables": {
+            "type": "object",
+            "default": {
+              "DesName": "",
+              "Pwd": "",
+              "Pd": "",
+              "ProjDir": "",
+              "Tooldir": "",
+              "env": "",
+              "TOOLS_PRE": "",
+              "TOOLS_POST": ""
+            },
+            "markdownDescription": "SWB pre-injected environment variable whitelist. Key = variable name, value = hover doc (leave empty for name-only). Changes take effect immediately.\n\n[Add Environment Variables](command:sentaurus.addEnvironmentVariables) | [Search & Remove](command:sentaurus.removeEnvironmentVariables) | [Export](command:sentaurus.exportEnvironmentVariables) | [Import](command:sentaurus.importEnvironmentVariables)",
+            "markdownDescription.zh-CN": "SWB 预注入的环境变量白名单。键为变量名，值为 Hover 文档（留空则仅显示变量名）。修改后自动生效。\n\n[添加环境变量](command:sentaurus.addEnvironmentVariables) | [搜索并删除](command:sentaurus.removeEnvironmentVariables) | [导出](command:sentaurus.exportEnvironmentVariables) | [导入](command:sentaurus.importEnvironmentVariables)",
+            "additionalProperties": { "type": "string" },
+            "scope": "resource",
+            "order": 1
+          }
+        }
       }
     ],
     "configurationDefaults": {
@@ -340,6 +379,12 @@
               "settings": {
                 "foreground": "#CE9178"
               }
+            },
+            {
+              "scope": "entity.name.variable.environment.tcl",
+              "settings": {
+                "fontStyle": "bold"
+              }
             }
           ]
         },
@@ -349,6 +394,12 @@
               "scope": "support.constant.unit",
               "settings": {
                 "foreground": "#D73A49"
+              }
+            },
+            {
+              "scope": "entity.name.variable.environment.tcl",
+              "settings": {
+                "fontStyle": "bold"
               }
             }
           ]
@@ -373,6 +424,9 @@
           ],
           "userFunctionCall": [
             "entity.name.function.sdevice"
+          ],
+          "environmentVariable": [
+            "entity.name.variable.environment.tcl"
           ]
         }
       },
@@ -384,6 +438,9 @@
           ],
           "macro": [
             "entity.name.type.sprocess"
+          ],
+          "environmentVariable": [
+            "entity.name.variable.environment.tcl"
           ]
         }
       },
@@ -395,6 +452,9 @@
           ],
           "macro": [
             "entity.name.type.emw"
+          ],
+          "environmentVariable": [
+            "entity.name.variable.environment.tcl"
           ]
         }
       },
@@ -406,6 +466,9 @@
           ],
           "macro": [
             "entity.name.type.inspect"
+          ],
+          "environmentVariable": [
+            "entity.name.variable.environment.tcl"
           ]
         }
       },
@@ -417,6 +480,9 @@
           ],
           "macro": [
             "entity.name.type.svisual"
+          ],
+          "environmentVariable": [
+            "entity.name.variable.environment.tcl"
           ]
         }
       }
