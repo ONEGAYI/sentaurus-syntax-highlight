@@ -188,12 +188,11 @@ function _collectBracedWordDefs(node, defs, recurseIntoElse = false) {
         }
     }
     if (!recurseIntoElse) return;
+    // 仅深入 else/elseif 子节点，跳过外层已处理的 braced_word
     for (let i = 0; i < node.childCount; i++) {
         const sub = node.child(i);
         if (!sub) continue;
-        if (sub.type === 'braced_word') {
-            _collectLocalDefsForIndex(sub, defs);
-        } else if (sub.type === 'else' || sub.type === 'elseif') {
+        if (sub.type === 'else' || sub.type === 'elseif') {
             for (let j = 0; j < sub.childCount; j++) {
                 const inner = sub.child(j);
                 if (inner && inner.type === 'braced_word') {
