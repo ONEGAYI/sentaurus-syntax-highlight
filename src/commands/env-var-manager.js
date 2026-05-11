@@ -6,6 +6,17 @@ const fs = require('fs');
 
 const CONFIG_KEY = 'environmentVariables';
 
+const DEFAULT_ENV_VARS = {
+    DesName: '',
+    Pd: '',
+    ProjDir: '',
+    Pwd: '',
+    TOOLS_POST: '',
+    TOOLS_PRE: '',
+    Tooldir: '',
+    env: '',
+};
+
 const ZH = {
     addPrompt: '输入要添加的环境变量名，以空格或换行分隔',
     addPlaceholder: '例如: VarA VarB VarC 或每行一个变量名',
@@ -58,9 +69,57 @@ function getEnvVars() {
     return vscode.workspace.getConfiguration('sentaurus').get(CONFIG_KEY, {});
 }
 
-function setEnvVars(vars) {
+function sortKeys(obj) {
+    return Object.keys(obj).sort().reduce((o, k) => { o[k] = obj[k]; return o; }, {});
+}
+
+function setEnvVars(vars, skipSort) {
+    const value = skipSort ? vars : sortKeys(vars);
     return vscode.workspace.getConfiguration('sentaurus').update(
-        CONFIG_KEY, vars, vscode.ConfigurationTarget.Global
+        CONFIG_KEY, value, vscode.ConfigurationTarget.Global
+    );
+}
+
+/** 防重入标志——避免 onDidChangeConfiguration 回调中的重排序再次触发自身 */
+let _reordering = false;
+
+function activateAutoSort(context) {
+    // 首次激活：若配置为空则写入默认值
+    const current = getEnvVars();
+    if (Object.keys(current).length === 0) {
+        setEnvVars(DEFAULT_ENV_VARS);
+    }
+
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeConfiguration(e => {
+            if (_reordering) return;
+            if (!e.affectsConfiguration(`sentaurus.${CONFIG_KEY}`)) return;
+
+            const cur = getEnvVars();
+            const keys = Object.keys(cur);
+
+            // 重置后恢复默认值
+            if (keys.length === 0) {
+                _reordering = true;
+                setEnvVars(DEFAULT_ENV_VARS).finally(() => { _reordering = false; });
+                return;
+            }
+
+            const sortedKeys = [...keys].sort();
+            if (keys.every((k, i) => k === sortedKeys[i])) return;
+
+            // 排序写入后 VS Code 设置 UI 不会刷新，通过添加再删除一个临时变量
+            // 触发两次 config.update() 强制 UI 重新渲染
+            _reordering = true;
+            const tmpKey = `__refresh_${Date.now()}__`;
+
+            const sorted = sortKeys({ ...cur, [tmpKey]: '' });
+            setEnvVars(sorted, true).then(() => {
+                const final = { ...sorted };
+                delete final[tmpKey];
+                setEnvVars(final, true).finally(() => { _reordering = false; });
+            }).catch(() => { _reordering = false; });
+        })
     );
 }
 
@@ -263,6 +322,7 @@ function registerImportEnvVarsCommand(context) {
 }
 
 module.exports = {
+    activateAutoSort,
     registerAddEnvVarsCommand,
     registerRemoveEnvVarsCommand,
     registerExportEnvVarsCommand,
