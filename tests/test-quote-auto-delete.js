@@ -101,4 +101,17 @@ test('shouldDelete: 混合引号不触发', () => {
     assert.strictEqual(shouldDelete({ text: '', rangeLength: 1 }, 'set x ', "'", '"'), false, "set x '|\" → 不触发");
 });
 
+test('shouldDelete: 引号内部退格不触发', () => {
+    // 核心回归："$" 删除后 linePrefix 含未闭合引号
+    assert.strictEqual(shouldDelete({ text: '', rangeLength: 1 }, '"xx $', '"', ''), false, '"xx $|" → 不触发（引号内部）');
+    assert.strictEqual(shouldDelete({ text: '', rangeLength: 1 }, '"hello ', '"', ''), false, '"hello |" → 不触发');
+    assert.strictEqual(shouldDelete({ text: '', rangeLength: 1 }, '"foo ', '"', ' '), false, '"foo | " → 不触发');
+    // 单引号同理
+    assert.strictEqual(shouldDelete({ text: '', rangeLength: 1 }, "'xx $", "'", ''), false, "'xx $|' → 不触发");
+    assert.strictEqual(shouldDelete({ text: '', rangeLength: 1 }, "'hello ", "'", ''), false, "'hello |' → 不触发");
+    // 空引号对中删除内容字符后仍应触发（无未闭合引号）
+    // 模拟：先输入 ""，再在中间输入 x 后退格：linePrefix 不含引号
+    assert.strictEqual(shouldDelete({ text: '', rangeLength: 1 }, 'set x ', '"', ''), true, 'set x "|" 仍触发（不在引号内）');
+});
+
 summary();

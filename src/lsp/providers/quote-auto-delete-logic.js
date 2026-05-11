@@ -5,11 +5,9 @@
  * 触发条件：
  * 1. 单字符删除（退格）：change.text === '' && rangeLength === 1
  * 2. 光标后紧跟同类型引号：charAfter === '"' 或 "'"
- * 3. 删除位置前为边界：linePrefix 为空或尾字符为分隔符
- * 4. 剩余引号后为边界：charAfterNext 为空或为分隔符
- *
- * 边界 = 行首/行尾、空白符、或非引号非@的非单词字符
- * （@ 为 SWB 参数分隔符，不应视为边界，防止 "Profile_@|" 退格误删闭合引号）
+ * 3. 光标不在引号内部：linePrefix 中不存在未闭合的同类型引号
+ * 4. 删除位置前为边界：linePrefix 为空或尾字符为分隔符
+ * 5. 剩余引号后为边界：charAfterNext 为空或为分隔符
  */
 
 /**
@@ -22,6 +20,14 @@
  */
 function isBoundary(ch) {
     return ch === '' || (!/\w/.test(ch) && !/['"`@]/.test(ch));
+}
+
+function isInsideQuote(linePrefix, quoteChar) {
+    let count = 0;
+    for (let i = 0; i < linePrefix.length; i++) {
+        if (linePrefix[i] === quoteChar) count++;
+    }
+    return count % 2 !== 0;
 }
 
 /**
@@ -41,13 +47,13 @@ function shouldDelete(change, linePrefix, charAfter, charAfterNext) {
     if (charAfter !== '"' && charAfter !== "'") return false;
     if (linePrefix == null) return false;
 
-    // 边界检查：删除位置前（linePrefix 尾字符或行首）
+    if (isInsideQuote(linePrefix, charAfter)) return false;
+
     const charBefore = linePrefix.length > 0
         ? linePrefix.charAt(linePrefix.length - 1)
         : '';
     if (!isBoundary(charBefore)) return false;
 
-    // 边界检查：剩余引号后
     const nextCh = charAfterNext != null ? charAfterNext : '';
     if (!isBoundary(nextCh)) return false;
 
