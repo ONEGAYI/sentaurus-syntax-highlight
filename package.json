@@ -371,6 +371,12 @@
               "settings": {
                 "foreground": "#CE9178"
               }
+            },
+            {
+              "scope": "entity.name.variable.environment.tcl",
+              "settings": {
+                "fontStyle": "bold"
+              }
             }
           ]
         },
@@ -380,6 +386,12 @@
               "scope": "support.constant.unit",
               "settings": {
                 "foreground": "#D73A49"
+              }
+            },
+            {
+              "scope": "entity.name.variable.environment.tcl",
+              "settings": {
+                "fontStyle": "bold"
               }
             }
           ]
@@ -404,6 +416,9 @@
           ],
           "userFunctionCall": [
             "entity.name.function.sdevice"
+          ],
+          "environmentVariable": [
+            "entity.name.variable.environment.tcl"
           ]
         }
       },
@@ -415,6 +430,9 @@
           ],
           "macro": [
             "entity.name.type.sprocess"
+          ],
+          "environmentVariable": [
+            "entity.name.variable.environment.tcl"
           ]
         }
       },
@@ -426,6 +444,9 @@
           ],
           "macro": [
             "entity.name.type.emw"
+          ],
+          "environmentVariable": [
+            "entity.name.variable.environment.tcl"
           ]
         }
       },
@@ -437,6 +458,9 @@
           ],
           "macro": [
             "entity.name.type.inspect"
+          ],
+          "environmentVariable": [
+            "entity.name.variable.environment.tcl"
           ]
         }
       },
@@ -448,6 +472,9 @@
           ],
           "macro": [
             "entity.name.type.svisual"
+          ],
+          "environmentVariable": [
+            "entity.name.variable.environment.tcl"
           ]
         }
       }
