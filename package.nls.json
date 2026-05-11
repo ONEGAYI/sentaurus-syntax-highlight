@@ -3,5 +3,7 @@
   "sentaurus.scheme2infix": "Sentaurus: Scheme → Infix",
   "sentaurus.infix2scheme": "Sentaurus: Infix → Scheme",
   "sentaurus.exprHelp": "Sentaurus: Expression Help",
-  "sentaurus.testTclWasm": "Sentaurus: Test Tcl WASM Parser"
+  "sentaurus.testTclWasm": "Sentaurus: Test Tcl WASM Parser",
+  "sentaurus.addEnvironmentVariables": "Sentaurus: Add Environment Variables",
+  "sentaurus.removeEnvironmentVariables": "Sentaurus: Search and Remove Environment Variables"
 }

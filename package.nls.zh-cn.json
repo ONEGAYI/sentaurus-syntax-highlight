@@ -3,5 +3,7 @@
   "sentaurus.scheme2infix": "Sentaurus: Scheme → 中缀表达式",
   "sentaurus.infix2scheme": "Sentaurus: 中缀表达式 → Scheme",
   "sentaurus.exprHelp": "Sentaurus: 表达式帮助",
-  "sentaurus.testTclWasm": "Sentaurus: 测试 Tcl WASM 解析器"
+  "sentaurus.testTclWasm": "Sentaurus: 测试 Tcl WASM 解析器",
+  "sentaurus.addEnvironmentVariables": "Sentaurus: 添加环境变量",
+  "sentaurus.removeEnvironmentVariables": "Sentaurus: 搜索并删除环境变量"
 }
