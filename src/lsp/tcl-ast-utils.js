@@ -244,11 +244,47 @@ function _extractCommandVarDefs(node, cmdName, words) {
 }
 
 /**
- * 从 ERROR 节点提取变量定义（lassign、variable、Svisual -out 等）。
+ * 从 ERROR 节点提取变量定义（set、lassign、variable、Svisual -out 等）。
+ * tree-sitter-tcl 对 set 值中的 [...] 命令替换支持不完整，
+ * 导致含 [] 的 set 语句触发 ERROR，此时 set 和变量名是同级节点。
+ * @param {object} node - ERROR 节点
+ * @param {boolean} [includeCompleteSet=false] - 是否提取完整 set 节点（有内部 id）。
+ *   当 root 为 ERROR 时调用方应传 true（无法通过 _collectVariables 的 set 分支处理）。
  */
-function _extractErrorVarDefs(node) {
+function _extractErrorVarDefs(node, includeCompleteSet = false) {
     const defs = [];
     if (node.childCount === 0) return defs;
+
+    // Pass 1: 扫描 set + id/simple_word 兄弟节点对（空壳 set）
+    for (let i = 0; i < node.childCount - 1; i++) {
+        const cur = node.child(i);
+        if (cur.type !== 'set' && cur.type !== 'id' && cur.type !== 'simple_word') continue;
+        if (cur.type !== 'set') continue;
+        const next = node.child(i + 1);
+        if (next && (next.type === 'id' || next.type === 'simple_word')) {
+            const name = next.text;
+            if (!name.startsWith('env(') && !/^\d/.test(name)) {
+                defs.push({ name, line: next.startPosition.row + 1 });
+            }
+        }
+    }
+
+    // Pass 2: 完整 set 节点（ERROR 内正常解析的 set，有内部 id 子节点）
+    if (includeCompleteSet) {
+        const captured = new Set(defs.map(d => d.name));
+        for (let i = 0; i < node.childCount; i++) {
+            const child = node.child(i);
+            if (child && child.type === 'set') {
+                const idNode = _findChildByType(child, 'id');
+                if (idNode && !captured.has(idNode.text) && !idNode.text.startsWith('env(')) {
+                    defs.push({ name: idNode.text, line: idNode.startPosition.row + 1 });
+                    captured.add(idNode.text);
+                }
+            }
+        }
+    }
+
+    // Pass 3: 原有逻辑 —— 命令首词匹配
     const first = node.child(0);
     if (!first || first.type !== 'simple_word') return defs;
     const cmdName = first.text;
