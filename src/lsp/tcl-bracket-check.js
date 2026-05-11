@@ -52,12 +52,17 @@ function findMismatchedBraces(text) {
             continue;
         }
 
-        // # 注释：跳过本行剩余内容
+        // # 注释：仅在命令位置（行首空白后或 ; 之后空白后）才跳过本行剩余内容
         if (!inString && ch === '#') {
-            const nlPos = text.indexOf('\n', i);
-            if (nlPos < 0) break;
-            i = nlPos - 1;
-            continue;
+            let j = i - 1;
+            while (j >= 0 && (text[j] === ' ' || text[j] === '\t')) j--;
+            const prev = j >= 0 ? text[j] : '\n';
+            if (prev === '\n' || prev === ';') {
+                const nlPos = text.indexOf('\n', i);
+                if (nlPos < 0) break;
+                i = nlPos - 1;
+                continue;
+            }
         }
 
         // 跳过转义字符（仅在字符串内）
