@@ -80,7 +80,7 @@ function registerAddEnvVarsCommand(context) {
 
         if (!input || !input.trim()) return;
 
-        const names = input.split(/\s+/).filter(Boolean);
+        const names = [...new Set(input.split(/\s+/).filter(Boolean))];
         const existing = new Set(Object.keys(current));
         const toAdd = names.filter(n => !existing.has(n));
 

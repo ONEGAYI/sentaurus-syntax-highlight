@@ -228,7 +228,6 @@ function registerCompletionProviders(context, deps) {
                                 const item = new vscode.CompletionItem('$' + name, vscode.CompletionItemKind.Variable);
                                 item.detail = useZh ? '🏠 环境变量' : '🏠 Env Variable';
                                 item.sortText = '4' + name;
-                                item.filterText = name;
                                 const docStr = envVars[name];
                                 if (docStr && docStr.trim()) {
                                     item.documentation = new vscode.MarkdownString(docStr);
