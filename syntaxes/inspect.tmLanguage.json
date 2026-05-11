@@ -169,8 +169,8 @@
       "match": "#[0-9A-Fa-f]{6}\\b|#[rR]{2}[gG]{2}[bB]{2}\\b"
     },
     {
-      "name": "comment.line.hash",
-      "match": "#.*$"
+      "name": "comment.line.hash.tcl",
+      "match": "(^|;)\\s*#.*$"
     },
     {
       "name": "comment.line.asterisk",

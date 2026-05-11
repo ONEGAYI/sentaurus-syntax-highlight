@@ -98,10 +98,16 @@ test('检测到未闭合的 {', () => {
     assert(errors[0].message.includes('未闭合'), `消息应包含"未闭合"，实际: ${errors[0].message}`);
 });
 
-test('忽略 # 注释中的花括号', () => {
-    const text = 'set x 42 # { this is a comment';
+test('裸 # 不是行内注释——花括号应被检测', () => {
+    const text = 'set x 42 # { this is NOT a comment';
     const errors = findMismatchedBraces(text);
-    assert.strictEqual(errors.length, 0, '# 注释中的花括号不应报错');
+    assert.strictEqual(errors.length, 1, '裸 # 后的花括号应报未闭合');
+});
+
+test('忽略 ;# 行内注释中的花括号', () => {
+    const text = 'set x 42 ;# { this is a comment';
+    const errors = findMismatchedBraces(text);
+    assert.strictEqual(errors.length, 0, ';# 注释中的花括号不应报错');
 });
 
 test('忽略 * 注释行中的花括号', () => {
