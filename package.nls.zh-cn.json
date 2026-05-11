@@ -7,5 +7,48 @@
   "sentaurus.addEnvironmentVariables": "Sentaurus: 添加环境变量",
   "sentaurus.removeEnvironmentVariables": "Sentaurus: 搜索并删除环境变量",
   "sentaurus.exportEnvironmentVariables": "Sentaurus: 导出环境变量",
-  "sentaurus.importEnvironmentVariables": "Sentaurus: 导入环境变量"
+  "sentaurus.importEnvironmentVariables": "Sentaurus: 导入环境变量",
+
+  "config.title.syntax": "Sentaurus TCAD 语法",
+  "config.title.envVars": "Sentaurus 环境变量",
+  "config.definitionMaxWidth.description": "用户定义变量/函数提示框中每行最大显示字符数。设为 0 时不截断",
+
+  "config.RW.desc": "细化求值窗口的前缀。",
+  "config.RW.mdDesc": "**细化求值窗口**的前缀。\n\n影响范围：\n- `Doping > Const-box` → `sdedr:define-refeval-window`\n- `Doping > Gauss` → `sdedr:define-refeval-window`\n- `Doping > Submesh` → `sdedr:define-refeval-window`\n- `Meshing > Ref-box` → `sdedr:define-refeval-window`",
+
+  "config.DC.desc": "恒定掺杂分布的前缀。",
+  "config.DC.mdDesc": "**恒定掺杂分布**的前缀。\n\n影响范围：\n- `Doping > Const-box` → `sdedr:define-constant-profile`\n- `Doping > Const-material` → `sdedr:define-constant-profile`\n- `Doping > Const-region` → `sdedr:define-constant-profile`",
+
+  "config.CPP.desc": "恒定掺杂放置的前缀。",
+  "config.CPP.mdDesc": "**恒定掺杂放置**的前缀。\n\n影响范围：\n- `Doping > Const-box` → `sdedr:define-constant-profile-placement`",
+
+  "config.CPM.desc": "恒定掺杂按材料/区域放置的前缀。",
+  "config.CPM.mdDesc": "**恒定掺杂按材料/区域放置**的前缀。\n\n影响范围：\n- `Doping > Const-material` → `sdedr:define-constant-profile-material`\n- `Doping > Const-region` → `sdedr:define-constant-profile-region`",
+
+  "config.GAUSS.desc": "高斯分析掺杂分布的前缀。",
+  "config.GAUSS.mdDesc": "**高斯分析掺杂分布**的前缀。\n\n影响范围：\n- `Doping > Gauss` → `sdedr:define-gaussian-profile`",
+
+  "config.IMP.desc": "分析（注入）掺杂放置的前缀。",
+  "config.IMP.mdDesc": "**分析（注入）掺杂放置**的前缀。\n\n影响范围：\n- `Doping > Gauss` → `sdedr:define-analytical-profile-placement`",
+
+  "config.SM.desc": "子网格定义的前缀。",
+  "config.SM.mdDesc": "**子网格定义**的前缀。\n\n影响范围：\n- `Doping > Submesh` → `sdedr:define-submesh`",
+
+  "config.PSM.desc": "子网格放置的前缀。",
+  "config.PSM.mdDesc": "**子网格放置**的前缀。\n\n影响范围：\n- `Doping > Submesh` → `sdedr:define-submesh-placement`",
+
+  "config.RS.desc": "网格细化尺寸的前缀。",
+  "config.RS.mdDesc": "**网格细化尺寸**的前缀。\n\n影响范围：\n- `Meshing > Ref-box` → `sdedr:define-refinement-size`\n- `Meshing > Ref-material` → `sdedr:define-refinement-size`\n- `Meshing > Ref-region` → `sdedr:define-refinement-size`",
+
+  "config.RP.desc": "网格细化放置的前缀。",
+  "config.RP.mdDesc": "**网格细化放置**的前缀。\n\n影响范围：\n- `Meshing > Ref-box` → `sdedr:define-refinement-placement`\n- `Meshing > Ref-material` → `sdedr:define-refinement-material`\n- `Meshing > Ref-region` → `sdedr:define-refinement-region`",
+
+  "config.envVars.mdDesc": "SWB 预注入的环境变量白名单。键为变量名，值为 Hover 文档（留空则仅显示变量名）。修改后自动生效。\n\n[添加环境变量](command:sentaurus.addEnvironmentVariables) | [搜索并删除](command:sentaurus.removeEnvironmentVariables) | [导出](command:sentaurus.exportEnvironmentVariables) | [导入](command:sentaurus.importEnvironmentVariables)",
+
+  "semanticToken.userFunctionCall": "用户定义的函数调用",
+  "semanticToken.sectionName": "SDEVICE 顶层 section 块名（如 File、Plot）",
+  "semanticToken.sectionKeyword": "SDEVICE section 内匹配的参数或关键词",
+  "semanticToken.subSection": "SDEVICE Solve 子 section 块名（如 Quasistationary、Coupled、Transient）",
+  "semanticToken.macro": "预处理器宏引用",
+  "semanticModifier.declaration": "宏定义声明位置"
 }

@@ -7,5 +7,48 @@
   "sentaurus.addEnvironmentVariables": "Sentaurus: Add Environment Variables",
   "sentaurus.removeEnvironmentVariables": "Sentaurus: Search and Remove Environment Variables",
   "sentaurus.exportEnvironmentVariables": "Sentaurus: Export Environment Variables",
-  "sentaurus.importEnvironmentVariables": "Sentaurus: Import Environment Variables"
+  "sentaurus.importEnvironmentVariables": "Sentaurus: Import Environment Variables",
+
+  "config.title.syntax": "Sentaurus TCAD Syntax",
+  "config.title.envVars": "Sentaurus Environment Variables",
+  "config.definitionMaxWidth.description": "Max characters per line in user-defined variable/function hover. Set to 0 to disable truncation.",
+
+  "config.RW.desc": "Prefix for Refinement Evaluation Window.",
+  "config.RW.mdDesc": "Prefix for **Refinement Evaluation Window**.\n\nAffects:\n- `Doping > Const-box` → `sdedr:define-refeval-window`\n- `Doping > Gauss` → `sdedr:define-refeval-window`\n- `Doping > Submesh` → `sdedr:define-refeval-window`\n- `Meshing > Ref-box` → `sdedr:define-refeval-window`",
+
+  "config.DC.desc": "Prefix for Doping Constant profile.",
+  "config.DC.mdDesc": "Prefix for **Doping Constant profile**.\n\nAffects:\n- `Doping > Const-box` → `sdedr:define-constant-profile`\n- `Doping > Const-material` → `sdedr:define-constant-profile`\n- `Doping > Const-region` → `sdedr:define-constant-profile`",
+
+  "config.CPP.desc": "Prefix for Constant Profile Placement.",
+  "config.CPP.mdDesc": "Prefix for **Constant Profile Placement**.\n\nAffects:\n- `Doping > Const-box` → `sdedr:define-constant-profile-placement`",
+
+  "config.CPM.desc": "Prefix for Constant Profile Material/Region placement.",
+  "config.CPM.mdDesc": "Prefix for **Constant Profile Material/Region placement**.\n\nAffects:\n- `Doping > Const-material` → `sdedr:define-constant-profile-material`\n- `Doping > Const-region` → `sdedr:define-constant-profile-region`",
+
+  "config.GAUSS.desc": "Prefix for Gaussian analytic profile.",
+  "config.GAUSS.mdDesc": "Prefix for **Gaussian analytic profile**.\n\nAffects:\n- `Doping > Gauss` → `sdedr:define-gaussian-profile`",
+
+  "config.IMP.desc": "Prefix for Analytical (Implant) profile placement.",
+  "config.IMP.mdDesc": "Prefix for **Analytical (Implant) profile placement**.\n\nAffects:\n- `Doping > Gauss` → `sdedr:define-analytical-profile-placement`",
+
+  "config.SM.desc": "Prefix for Submesh definition.",
+  "config.SM.mdDesc": "Prefix for **Submesh definition**.\n\nAffects:\n- `Doping > Submesh` → `sdedr:define-submesh`",
+
+  "config.PSM.desc": "Prefix for Submesh Placement.",
+  "config.PSM.mdDesc": "Prefix for **Submesh Placement**.\n\nAffects:\n- `Doping > Submesh` → `sdedr:define-submesh-placement`",
+
+  "config.RS.desc": "Prefix for Refinement Size specification.",
+  "config.RS.mdDesc": "Prefix for **Refinement Size specification**.\n\nAffects:\n- `Meshing > Ref-box` → `sdedr:define-refinement-size`\n- `Meshing > Ref-material` → `sdedr:define-refinement-size`\n- `Meshing > Ref-region` → `sdedr:define-refinement-size`",
+
+  "config.RP.desc": "Prefix for Refinement Placement.",
+  "config.RP.mdDesc": "Prefix for **Refinement Placement**.\n\nAffects:\n- `Meshing > Ref-box` → `sdedr:define-refinement-placement`\n- `Meshing > Ref-material` → `sdedr:define-refinement-material`\n- `Meshing > Ref-region` → `sdedr:define-refinement-region`",
+
+  "config.envVars.mdDesc": "SWB pre-injected environment variable whitelist. Key = variable name, value = hover doc (leave empty for name-only). Changes take effect immediately.\n\n[Add Environment Variables](command:sentaurus.addEnvironmentVariables) | [Search & Remove](command:sentaurus.removeEnvironmentVariables) | [Export](command:sentaurus.exportEnvironmentVariables) | [Import](command:sentaurus.importEnvironmentVariables)",
+
+  "semanticToken.userFunctionCall": "User-defined function call",
+  "semanticToken.sectionName": "SDEVICE top-level section name (e.g. File, Plot)",
+  "semanticToken.sectionKeyword": "SDEVICE section parameter or keyword",
+  "semanticToken.subSection": "SDEVICE Solve sub-section name (e.g. Quasistationary, Coupled, Transient)",
+  "semanticToken.macro": "Preprocessor macro reference",
+  "semanticModifier.declaration": "Macro definition location"
 }

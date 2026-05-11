@@ -116,33 +116,33 @@
       {
         "id": "userFunctionCall",
         "superType": "function",
-        "description": "用户定义的函数调用"
+        "description": "%semanticToken.userFunctionCall%"
       },
       {
         "id": "sectionName",
         "superType": "keyword",
-        "description": "sdevice 顶层 section 块名（如 File、Plot）"
+        "description": "%semanticToken.sectionName%"
       },
       {
         "id": "sectionKeyword",
         "superType": "type",
-        "description": "sdevice section 内匹配的参数或关键词"
+        "description": "%semanticToken.sectionKeyword%"
       },
       {
         "id": "subSection",
         "superType": "keyword",
-        "description": "sdevice Solve 子 section 块名（如 Quasistationary、Coupled、Transient）"
+        "description": "%semanticToken.subSection%"
       },
       {
         "id": "macro",
         "superType": "variable",
-        "description": "预处理器宏引用"
+        "description": "%semanticToken.macro%"
       }
     ],
     "semanticTokenModifiers": [
       {
         "id": "declaration",
-        "description": "宏定义声明位置"
+        "description": "%semanticModifier.declaration%"
       }
     ],
     "grammars": [
@@ -243,96 +243,76 @@
     ],
     "configuration": [
       {
-        "title": "Sentaurus TCAD Syntax",
+        "title": "%config.title.syntax%",
         "properties": {
           "sentaurus.snippetPrefixes.RW": {
             "type": "string",
             "default": "RW.",
-            "description": "Prefix for Refinement Evaluation Window.",
-            "description.zh-CN": "细化求值窗口的前缀。",
-            "markdownDescription": "Prefix for **Refinement Evaluation Window**.\n\nAffects:\n- `Doping > Const-box` → `sdedr:define-refeval-window`\n- `Doping > Gauss` → `sdedr:define-refeval-window`\n- `Doping > Submesh` → `sdedr:define-refeval-window`\n- `Meshing > Ref-box` → `sdedr:define-refeval-window`",
-            "markdownDescription.zh-CN": "**细化求值窗口**的前缀。\n\n影响范围：\n- `Doping > Const-box` → `sdedr:define-refeval-window`\n- `Doping > Gauss` → `sdedr:define-refeval-window`\n- `Doping > Submesh` → `sdedr:define-refeval-window`\n- `Meshing > Ref-box` → `sdedr:define-refeval-window`",
+            "description": "%config.RW.desc%",
+            "markdownDescription": "%config.RW.mdDesc%",
             "order": 1
           },
           "sentaurus.snippetPrefixes.DC": {
             "type": "string",
             "default": "DC.",
-            "description": "Prefix for Doping Constant profile.",
-            "description.zh-CN": "恒定掺杂分布的前缀。",
-            "markdownDescription": "Prefix for **Doping Constant profile**.\n\nAffects:\n- `Doping > Const-box` → `sdedr:define-constant-profile`\n- `Doping > Const-material` → `sdedr:define-constant-profile`\n- `Doping > Const-region` → `sdedr:define-constant-profile`",
-            "markdownDescription.zh-CN": "**恒定掺杂分布**的前缀。\n\n影响范围：\n- `Doping > Const-box` → `sdedr:define-constant-profile`\n- `Doping > Const-material` → `sdedr:define-constant-profile`\n- `Doping > Const-region` → `sdedr:define-constant-profile`",
+            "description": "%config.DC.desc%",
+            "markdownDescription": "%config.DC.mdDesc%",
             "order": 2
           },
           "sentaurus.snippetPrefixes.CPP": {
             "type": "string",
             "default": "CPP.",
-            "description": "Prefix for Constant Profile Placement.",
-            "description.zh-CN": "恒定掺杂放置的前缀。",
-            "markdownDescription": "Prefix for **Constant Profile Placement**.\n\nAffects:\n- `Doping > Const-box` → `sdedr:define-constant-profile-placement`",
-            "markdownDescription.zh-CN": "**恒定掺杂放置**的前缀。\n\n影响范围：\n- `Doping > Const-box` → `sdedr:define-constant-profile-placement`",
+            "description": "%config.CPP.desc%",
+            "markdownDescription": "%config.CPP.mdDesc%",
             "order": 3
           },
           "sentaurus.snippetPrefixes.CPM": {
             "type": "string",
             "default": "CPM.",
-            "description": "Prefix for Constant Profile Material/Region placement.",
-            "description.zh-CN": "恒定掺杂按材料/区域放置的前缀。",
-            "markdownDescription": "Prefix for **Constant Profile Material/Region placement**.\n\nAffects:\n- `Doping > Const-material` → `sdedr:define-constant-profile-material`\n- `Doping > Const-region` → `sdedr:define-constant-profile-region`",
-            "markdownDescription.zh-CN": "**恒定掺杂按材料/区域放置**的前缀。\n\n影响范围：\n- `Doping > Const-material` → `sdedr:define-constant-profile-material`\n- `Doping > Const-region` → `sdedr:define-constant-profile-region`",
+            "description": "%config.CPM.desc%",
+            "markdownDescription": "%config.CPM.mdDesc%",
             "order": 4
           },
           "sentaurus.snippetPrefixes.GAUSS": {
             "type": "string",
             "default": "GAUSS.",
-            "description": "Prefix for Gaussian analytic profile.",
-            "description.zh-CN": "高斯分析掺杂分布的前缀。",
-            "markdownDescription": "Prefix for **Gaussian analytic profile**.\n\nAffects:\n- `Doping > Gauss` → `sdedr:define-gaussian-profile`",
-            "markdownDescription.zh-CN": "**高斯分析掺杂分布**的前缀。\n\n影响范围：\n- `Doping > Gauss` → `sdedr:define-gaussian-profile`",
+            "description": "%config.GAUSS.desc%",
+            "markdownDescription": "%config.GAUSS.mdDesc%",
             "order": 5
           },
           "sentaurus.snippetPrefixes.IMP": {
             "type": "string",
             "default": "IMP.",
-            "description": "Prefix for Analytical (Implant) profile placement.",
-            "description.zh-CN": "分析（注入）掺杂放置的前缀。",
-            "markdownDescription": "Prefix for **Analytical (Implant) profile placement**.\n\nAffects:\n- `Doping > Gauss` → `sdedr:define-analytical-profile-placement`",
-            "markdownDescription.zh-CN": "**分析（注入）掺杂放置**的前缀。\n\n影响范围：\n- `Doping > Gauss` → `sdedr:define-analytical-profile-placement`",
+            "description": "%config.IMP.desc%",
+            "markdownDescription": "%config.IMP.mdDesc%",
             "order": 6
           },
           "sentaurus.snippetPrefixes.SM": {
             "type": "string",
             "default": "SM.",
-            "description": "Prefix for Submesh definition.",
-            "description.zh-CN": "子网格定义的前缀。",
-            "markdownDescription": "Prefix for **Submesh definition**.\n\nAffects:\n- `Doping > Submesh` → `sdedr:define-submesh`",
-            "markdownDescription.zh-CN": "**子网格定义**的前缀。\n\n影响范围：\n- `Doping > Submesh` → `sdedr:define-submesh`",
+            "description": "%config.SM.desc%",
+            "markdownDescription": "%config.SM.mdDesc%",
             "order": 7
           },
           "sentaurus.snippetPrefixes.PSM": {
             "type": "string",
             "default": "PSM.",
-            "description": "Prefix for Submesh Placement.",
-            "description.zh-CN": "子网格放置的前缀。",
-            "markdownDescription": "Prefix for **Submesh Placement**.\n\nAffects:\n- `Doping > Submesh` → `sdedr:define-submesh-placement`",
-            "markdownDescription.zh-CN": "**子网格放置**的前缀。\n\n影响范围：\n- `Doping > Submesh` → `sdedr:define-submesh-placement`",
+            "description": "%config.PSM.desc%",
+            "markdownDescription": "%config.PSM.mdDesc%",
             "order": 8
           },
           "sentaurus.snippetPrefixes.RS": {
             "type": "string",
             "default": "RS.",
-            "description": "Prefix for Refinement Size specification.",
-            "description.zh-CN": "网格细化尺寸的前缀。",
-            "markdownDescription": "Prefix for **Refinement Size specification**.\n\nAffects:\n- `Meshing > Ref-box` → `sdedr:define-refinement-size`\n- `Meshing > Ref-material` → `sdedr:define-refinement-size`\n- `Meshing > Ref-region` → `sdedr:define-refinement-size`",
-            "markdownDescription.zh-CN": "**网格细化尺寸**的前缀。\n\n影响范围：\n- `Meshing > Ref-box` → `sdedr:define-refinement-size`\n- `Meshing > Ref-material` → `sdedr:define-refinement-size`\n- `Meshing > Ref-region` → `sdedr:define-refinement-size`",
+            "description": "%config.RS.desc%",
+            "markdownDescription": "%config.RS.mdDesc%",
             "order": 9
           },
           "sentaurus.snippetPrefixes.RP": {
             "type": "string",
             "default": "RP.",
-            "description": "Prefix for Refinement Placement.",
-            "description.zh-CN": "网格细化放置的前缀。",
-            "markdownDescription": "Prefix for **Refinement Placement**.\n\nAffects:\n- `Meshing > Ref-box` → `sdedr:define-refinement-placement`\n- `Meshing > Ref-material` → `sdedr:define-refinement-material`\n- `Meshing > Ref-region` → `sdedr:define-refinement-region`",
-            "markdownDescription.zh-CN": "**网格细化放置**的前缀。\n\n影响范围：\n- `Meshing > Ref-box` → `sdedr:define-refinement-placement`\n- `Meshing > Ref-material` → `sdedr:define-refinement-material`\n- `Meshing > Ref-region` → `sdedr:define-refinement-region`",
+            "description": "%config.RP.desc%",
+            "markdownDescription": "%config.RP.mdDesc%",
             "order": 10
           },
           "sentaurus.definitionMaxWidth": {
@@ -340,14 +320,13 @@
             "default": 60,
             "minimum": 0,
             "maximum": 200,
-            "description": "用户定义变量/函数提示框中每行最大显示字符数。设为 0 时不截断",
-            "description.zh-CN": "用户定义变量/函数提示框中每行最大显示字符数。设为 0 时不截断",
+            "description": "%config.definitionMaxWidth.description%",
             "order": 11
           }
         }
       },
       {
-        "title": "Sentaurus 环境变量",
+        "title": "%config.title.envVars%",
         "properties": {
           "sentaurus.environmentVariables": {
             "type": "object",
@@ -361,8 +340,7 @@
               "TOOLS_PRE": "",
               "TOOLS_POST": ""
             },
-            "markdownDescription": "SWB pre-injected environment variable whitelist. Key = variable name, value = hover doc (leave empty for name-only). Changes take effect immediately.\n\n[Add Environment Variables](command:sentaurus.addEnvironmentVariables) | [Search & Remove](command:sentaurus.removeEnvironmentVariables) | [Export](command:sentaurus.exportEnvironmentVariables) | [Import](command:sentaurus.importEnvironmentVariables)",
-            "markdownDescription.zh-CN": "SWB 预注入的环境变量白名单。键为变量名，值为 Hover 文档（留空则仅显示变量名）。修改后自动生效。\n\n[添加环境变量](command:sentaurus.addEnvironmentVariables) | [搜索并删除](command:sentaurus.removeEnvironmentVariables) | [导出](command:sentaurus.exportEnvironmentVariables) | [导入](command:sentaurus.importEnvironmentVariables)",
+            "markdownDescription": "%config.envVars.mdDesc%",
             "additionalProperties": { "type": "string" },
             "scope": "resource",
             "order": 1
