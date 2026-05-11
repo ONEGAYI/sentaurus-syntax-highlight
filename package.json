@@ -330,16 +330,7 @@
         "properties": {
           "sentaurus.environmentVariables": {
             "type": "object",
-            "default": {
-              "DesName": "",
-              "Pwd": "",
-              "Pd": "",
-              "ProjDir": "",
-              "Tooldir": "",
-              "env": "",
-              "TOOLS_PRE": "",
-              "TOOLS_POST": ""
-            },
+            "default": {},
             "markdownDescription": "%config.envVars.mdDesc%",
             "additionalProperties": { "type": "string" },
             "scope": "resource",

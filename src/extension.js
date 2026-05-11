@@ -158,6 +158,7 @@ function activate(context) {
     registerSnippetCommand(context);
 
     // ── 环境变量管理命令 ──────────────────────────
+    envVarManager.activateAutoSort(context);
     envVarManager.registerAddEnvVarsCommand(context);
     envVarManager.registerRemoveEnvVarsCommand(context);
     envVarManager.registerExportEnvVarsCommand(context);
