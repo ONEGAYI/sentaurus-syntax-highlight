@@ -226,7 +226,7 @@ function registerCompletionProviders(context, deps) {
                             .filter(name => !seenNames.has(name))
                             .map(name => {
                                 const item = new vscode.CompletionItem('$' + name, vscode.CompletionItemKind.Variable);
-                                item.detail = '🏠 环境变量';
+                                item.detail = useZh ? '🏠 环境变量' : '🏠 Env Variable';
                                 item.sortText = '4' + name;
                                 item.filterText = name;
                                 const docStr = envVars[name];
@@ -411,7 +411,7 @@ function registerCompletionProviders(context, deps) {
                                 const envVars = vscode.workspace.getConfiguration('sentaurus').get('environmentVariables', {});
                                 if (Object.prototype.hasOwnProperty.call(envVars, dollarWord)) {
                                     const md = new vscode.MarkdownString();
-                                    md.appendMarkdown(`**${dollarWord}** (🏠 环境变量)`);
+                                    md.appendMarkdown(`**${dollarWord}** (${useZh ? '🏠 环境变量' : '🏠 Env Variable'})`);
                                     const docStr = envVars[dollarWord];
                                     if (docStr && docStr.trim()) {
                                         md.appendMarkdown('\n\n' + docStr);
@@ -419,6 +419,7 @@ function registerCompletionProviders(context, deps) {
                                     return new vscode.Hover(md, dollarRange);
                                 }
                             }
+                    }
                     } else {
                         def = userDefs.find(d => d.name === word);
                         let hoverWord = word;
