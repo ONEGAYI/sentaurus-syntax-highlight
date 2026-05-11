@@ -324,7 +324,7 @@
           "name": "entity.name.function.sprocess"
         },
         {
-          "match": "\\b(pow|split|floor|atan|atan2|throw|cd|msgcat|array|join|socket|vwait|append|double|return|lappend|log|tell|global|try|file|foreach|format|uplevel|catch|apply|unset|regexp|namespace|sin)(?![A-Za-z0-9_:-])",
+          "match": "\\b(pow|split|floor|atan|atan2|throw|cd|msgcat|array|join|socket|vwait|append|double|return|lappend|tell|global|try|file|foreach|format|uplevel|catch|apply|unset|regexp|namespace|sin)(?![A-Za-z0-9_:-])",
           "name": "entity.name.function.sprocess"
         },
         {
@@ -332,7 +332,7 @@
           "name": "entity.name.function.sprocess"
         },
         {
-          "match": "\\b(scan|binary|load|set|fcopy|pkg_mkIndex|upvar|error|trace|incr|sinh|dde|rename|fileevent|chan|lreplace|lreverse|expr|pid|unload|gets|linsert|for|pkg::create|tailcall|log10|lsearch|asin|llength|coroutine)(?![A-Za-z0-9_:-])",
+          "match": "\\b(scan|binary|load|set|fcopy|pkg_mkIndex|upvar|error|trace|incr|sinh|dde|rename|fileevent|chan|lreplace|lreverse|expr|pid|unload|gets|linsert|for|pkg::create|tailcall|lsearch|asin|llength|coroutine)(?![A-Za-z0-9_:-])",
           "name": "entity.name.function.sprocess"
         },
         {

@@ -104,7 +104,7 @@
           "name": "keyword.other.svisual"
         },
         {
-          "match": "\\b(end|DrudeFreq|yScale|eps|xScale|path_depth|precision|window|log10|FinalPlot|custom_levels|WeightImagEps|ticks_position)(?![A-Za-z0-9_:-])",
+          "match": "\\b(end|DrudeFreq|yScale|eps|xScale|path_depth|precision|window|FinalPlot|custom_levels|WeightImagEps|ticks_position)(?![A-Za-z0-9_:-])",
           "name": "keyword.other.svisual"
         }
       ]
@@ -180,7 +180,7 @@
           "name": "string.quoted.svisual"
         },
         {
-          "match": "\\b(y|head_solid|forward|circlef|arial|lightGray|grayscale|idsat|dot|fmmax|gray|vth|darkCyan|grid|free|constant|italic|plx|max|in|classic|darkBlue|normal|backward|bold|asinh|underline|squaref|log|horizontal)(?![A-Za-z0-9_:-])",
+          "match": "\\b(y|head_solid|forward|circlef|arial|lightGray|grayscale|idsat|dot|fmmax|gray|vth|darkCyan|grid|free|constant|italic|plx|max|in|classic|darkBlue|normal|backward|bold|asinh|underline|squaref|horizontal)(?![A-Za-z0-9_:-])",
           "name": "string.quoted.svisual"
         },
         {

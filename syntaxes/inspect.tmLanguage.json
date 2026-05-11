@@ -98,7 +98,7 @@
       ]
     },
     {
-      "match": "\\b(erfc|atan|floor|tanh|vecvalx|fftabs|fabs|sinh|atan2|acosh|hypot|veczero|diff|j1|maxslope|cfftim|y0|vecvaly|minslope|cifftre|double|cfftre|fmod|ifftre|vecmax|round|acos|gamma|integr|j0|y1|cos|cbrt|log|exp|tan|tangent|vecmin|ceil|ifftim|cifftim|log10|asin|cosh|sin|intercept|fftim|abs|atanh|asinh|lgamma|sqrt|erf|int|pow|fftre)(?![A-Za-z0-9_:-])",
+      "match": "\\b(erfc|atan|floor|tanh|vecvalx|fftabs|fabs|sinh|atan2|acosh|hypot|veczero|diff|j1|maxslope|cfftim|y0|vecvaly|minslope|cifftre|double|cfftre|fmod|ifftre|vecmax|round|acos|gamma|integr|j0|y1|cos|cbrt|exp|tan|tangent|vecmin|ceil|ifftim|cifftim|asin|cosh|sin|intercept|fftim|abs|atanh|asinh|lgamma|sqrt|erf|int|pow|fftre)(?![A-Za-z0-9_:-])",
       "name": "support.class.inspect"
     },
     {
