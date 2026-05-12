@@ -1,0 +1,47 @@
+{
+  "dict set": {
+    "signature": "dict set dictVar key ?key ...? value",
+    "description": "Sets a value in a dictionary variable at the given key path.",
+    "example": "dict set opts debug true"
+  },
+  "dict for": {
+    "signature": "dict for {keyVar valueVar} dictionary body",
+    "description": "Iterates over dictionary key-value pairs.",
+    "example": "dict for {k v} $opts { puts \"$k = $v\" }"
+  },
+  "dict map": {
+    "signature": "dict map {keyVar valueVar} dictionary body",
+    "description": "Maps over dictionary, collecting body results into a new dict (Tcl 8.7+).",
+    "example": "dict map {k v} $opts { string toupper $v }"
+  },
+  "dict update": {
+    "signature": "dict update dictVar key varName ?key varName ...? body",
+    "description": "Updates dictionary entries from variables after executing body.",
+    "example": "dict update opts voltage v { set v [expr {$v * 2}] }"
+  },
+  "dict with": {
+    "signature": "dict with dictVar ?key ...? body",
+    "description": "Creates variables from dictionary keys, executes body, writes back.",
+    "example": "dict with opts { puts $voltage }"
+  },
+  "dict unset": {
+    "signature": "dict unset dictVar key ?key ...?",
+    "description": "Removes the entry at the given key path from the dictionary.",
+    "example": "dict unset opts debug"
+  },
+  "array set": {
+    "signature": "array set arrayName list",
+    "description": "Sets array elements from a key-value list.",
+    "example": "array set opts {voltage 1.2 current 0.5}"
+  },
+  "file stat": {
+    "signature": "file stat name varName",
+    "description": "Stores file status information (atime, ctime, dev, gid, ino, mode, mtime, nlink, size, type, uid) in array varName.",
+    "example": "file stat $path arr; puts $arr(size)"
+  },
+  "info default": {
+    "signature": "info default procname arg varName",
+    "description": "Returns 1 if arg has a default value, stores it in varName.",
+    "example": "info default myProc voltage defVal"
+  }
+}

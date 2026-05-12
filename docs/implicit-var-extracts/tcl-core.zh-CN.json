@@ -1,0 +1,327 @@
+{
+  "set": {
+    "signature": "set varName ?value?",
+    "description": "读取或写入变量的值。指定 value 时，将变量设为该值并返回；否则返回变量当前值。这是 Tcl 中创建或修改变量的主要方式。",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "要读取或设置的变量名。"
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "可选。赋给变量的值。省略时返回当前值。"
+      }
+    ],
+    "example": "set voltage 1.2\nset current $voltage\nputs $current  ;# prints: 1.2"
+  },
+  "append": {
+    "signature": "append varName value ?value ...?",
+    "description": "将所有 value 参数追加到 varName 所指变量的当前值末尾。若变量不存在则自动创建。适合逐步构建长字符串。",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "要追加内容的变量名。不存在时自动创建。"
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "desc": "一个或多个要追加到变量末尾的字符串值。"
+      }
+    ],
+    "example": "set result \"Mesh: \"\nappend result \"region1\" \" \" \"region2\"\nputs $result  ;# prints: Mesh: region1 region2"
+  },
+  "lappend": {
+    "signature": "lappend varName value ?value ...?",
+    "description": "将每个 value 参数作为独立的 list 元素追加到 varName 所指变量。若变量不存在则创建为 list。将变量当前值视为 list。",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "要追加 list 元素的变量名。不存在时自动创建。"
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "一个或多个值，作为独立的 list 元素追加。"
+      }
+    ],
+    "example": "set layers {}\nlappend layers \"Silicon\" \"Oxide\" \"Metal\"\nputs $layers  ;# prints: Silicon Oxide Metal"
+  },
+  "incr": {
+    "signature": "incr varName ?increment?",
+    "description": "将变量的值增加指定数量。变量必须包含整数字符串。省略 increment 时默认为 1。使用负数可递减。",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "持有整数值的变量名。"
+      },
+      {
+        "name": "increment",
+        "type": "int",
+        "desc": "可选。要增加的数量（默认 1）。可为负数。"
+      }
+    ],
+    "example": "set count 0\nincr count       ;# count is now 1\nincr count 5     ;# count is now 6\nincr count -2    ;# count is now 4"
+  },
+  "foreach": {
+    "signature": "foreach varname list body ?varlist2 list2 ...? body",
+    "description": "遍历一个或多个列表，将元素赋值给变量并为每组元素执行循环体。可并行遍历多个列表；循环在所有列表耗尽时结束。",
+    "parameters": [
+      {
+        "name": "varname",
+        "type": "string",
+        "desc": "接收当前列表元素的变量。"
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "要遍历的列表。"
+      },
+      {
+        "name": "body",
+        "type": "script",
+        "desc": "为每个元素执行的脚本。"
+      }
+    ],
+    "example": "set voltages {0.0 0.5 1.0 2.0}\nforeach v $voltages {\n  puts \"Bias: $v V\"\n}\nforeach v $voltages i {1 2 3 4} {\n  puts \"Step $i: $v V\"\n}"
+  },
+  "lmap": {
+    "signature": "lmap varname list body ?varlist2 list2 ...? body",
+    "description": "对列表元素执行脚本并将结果收集为新列表。类似 foreach，但返回收集的结果。支持多列表遍历。Tcl 8.6+。",
+    "parameters": [
+      {
+        "name": "varname",
+        "type": "string",
+        "desc": "接收当前元素的变量。"
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "要映射的列表。"
+      },
+      {
+        "name": "body",
+        "type": "script",
+        "desc": "其结果作为输出列表对应元素的脚本。"
+      }
+    ],
+    "example": "set doubled [lmap v {1 2 3} {expr {$v * 2}}]  ;# returns {2 4 6}\nset squares [lmap x {0 1 2 3 4} {expr {$x * $x}}]  ;# returns {0 1 4 9 16}"
+  },
+  "lassign": {
+    "signature": "lassign list ?varName ...?",
+    "description": "将列表元素按顺序赋值给指定变量。返回剩余（未赋值）的元素。这是将列表解包到命名变量的便捷方式。Tcl 8.5+。",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "要赋值的列表。"
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "按顺序接收列表元素的变量名。"
+      }
+    ],
+    "example": "set pair {1.2 0.8}\nlassign $pair vg vd\nputs \"Vg=$vg, Vd=$vd\"  ;# 输出: Vg=1.2, Vd=0.8"
+  },
+  "gets": {
+    "signature": "gets channelId ?varName?",
+    "description": "从 channel 读取一行。指定 varName 时，将行内容存入该变量并返回读取的字符数（文件末尾返回 -1）。省略 varName 时直接返回行内容。",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "string",
+        "desc": "要读取的 channel。"
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "可选。存储行内容的变量名。返回字符数而非行内容本身。"
+      }
+    ],
+    "example": "set fid [open \"data.csv\" r]\nwhile {[gets $fid line] >= 0} {\n  puts $line\n}\nclose $fid"
+  },
+  "scan": {
+    "signature": "scan string formatString ?varName ...?",
+    "description": "根据格式字符串解析输入（类似 C 的 sscanf）。从输入字符串中提取值，可选地存入指定变量。返回成功匹配的项目数。",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "要解析的输入字符串。"
+      },
+      {
+        "name": "formatString",
+        "type": "string",
+        "desc": "描述预期输入格式的 C 风格格式说明符（%d、%f、%s 等）。"
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "可选。存储解析结果的变量名。"
+      }
+    ],
+    "example": "scan \"Vg=1.2 Vd=0.5\" \"Vg=%f Vd=%f\" vg vd\nputs \"Gate: $vg, Drain: $vd\"  ;# prints: Gate: 1.2, Drain: 0.5"
+  },
+  "regexp": {
+    "signature": "regexp ?-nocase? ?-all? ?-inline? ?-line? ?--? exp string ?matchVar? ?subMatchVar ...?",
+    "description": "将正则表达式与字符串进行匹配。匹配返回 1，否则返回 0。若指定了匹配变量，则设置为匹配文本及捕获的子表达式。支持标准正则表达式语法。",
+    "parameters": [
+      {
+        "name": "-nocase",
+        "type": "flag",
+        "desc": "可选。不区分大小写匹配。"
+      },
+      {
+        "name": "-all",
+        "type": "flag",
+        "desc": "可选。尽可能多地匹配。"
+      },
+      {
+        "name": "-inline",
+        "type": "flag",
+        "desc": "可选。以 list 形式返回匹配数据，而非设置变量。"
+      },
+      {
+        "name": "-line",
+        "type": "flag",
+        "desc": "可选。使 ^ 和 $ 匹配每行的开头和结尾，而非整个字符串。"
+      },
+      {
+        "name": "exp",
+        "type": "string",
+        "desc": "正则表达式模式。"
+      },
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "要搜索的字符串。"
+      },
+      {
+        "name": "matchVar",
+        "type": "string",
+        "desc": "可选。存储完整匹配的变量。"
+      },
+      {
+        "name": "subMatchVar",
+        "type": "string",
+        "desc": "可选。存储捕获的子表达式匹配的变量。"
+      }
+    ],
+    "example": "set line \"Id = 1.23e-3 A/V\"\nif {[regexp {Id\\s*=\\s*([\\d.e+-]+)} $line -> id_val]} {\n  puts \"Current: $id_val\"  ;# prints: Current: 1.23e-3\n}"
+  },
+  "regsub": {
+    "signature": "regsub ?-all? ?-nocase? ?--? exp string subSpec ?varName?",
+    "description": "对字符串执行正则表达式替换。将模式的第一个（或使用 -all 时的所有）匹配替换为指定内容。返回匹配数量。",
+    "parameters": [
+      {
+        "name": "-all",
+        "type": "flag",
+        "desc": "可选。替换所有匹配项，而非仅第一个。"
+      },
+      {
+        "name": "-nocase",
+        "type": "flag",
+        "desc": "可选。不区分大小写匹配。"
+      },
+      {
+        "name": "exp",
+        "type": "string",
+        "desc": "要匹配的正则表达式模式。"
+      },
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "要处理的输入字符串。"
+      },
+      {
+        "name": "subSpec",
+        "type": "string",
+        "desc": "替换字符串。使用 & 表示匹配文本，\\1-\\9 表示子匹配。"
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "可选。存储结果的变量。省略时直接返回结果。"
+      }
+    ],
+    "example": "set path \"/home/user/sim/run1_des.cmd\"\nregsub -all {/} $path \"\\\\\" winpath\nputs $winpath  ;# prints: \\home\\user\\sim\\run1_des.cmd"
+  },
+  "catch": {
+    "signature": "catch script ?resultVarName? ?optionsVarName?",
+    "description": "捕获脚本执行中的异常。脚本正常完成返回 0，出错返回 1（或其他错误码）。可选地将结果或错误信息及错误选项存入指定变量。",
+    "parameters": [
+      {
+        "name": "script",
+        "type": "script",
+        "desc": "要执行并监控错误的 Tcl 脚本。"
+      },
+      {
+        "name": "resultVarName",
+        "type": "string",
+        "desc": "可选。存储脚本返回值或错误消息的变量名。"
+      },
+      {
+        "name": "optionsVarName",
+        "type": "string",
+        "desc": "可选。存储错误选项字典的变量名（错误码、堆栈跟踪等）。"
+      }
+    ],
+    "example": "if {[catch {open \"data.txt\" r} fid]} {\n  puts \"Error opening file: $fid\"\n} else {\n  puts [read $fid]\n  close $fid\n}"
+  },
+  "variable": {
+    "signature": "variable ?name value ...?",
+    "description": "创建并可选地设置一个或多个命名空间变量。通常在 namespace eval 块内使用，定义属于该命名空间的变量。每个 name-value 对设置变量；仅有 name 无 value 则声明但不初始化。",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "要在当前命名空间中创建或设置的变量名。"
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "可选。赋给变量的值。"
+      }
+    ],
+    "example": "namespace eval Device {\n  variable thickness 0.1\n  variable material \"Silicon\"\n}\nputs $Device::thickness  ;# prints: 0.1"
+  },
+  "global": {
+    "signature": "global varName ?varName ...?",
+    "description": "在过程作用域内使一个或多个全局变量可访问。不使用此命令时，过程拥有独立的局部作用域，无法直接访问全局变量。",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "一个或多个要在过程内访问的全局变量名。"
+      }
+    ],
+    "example": "set device_name \"NMOS\"\nproc get_device {} {\n  global device_name\n  return $device_name\n}\nputs [get_device]  ;# prints: NMOS"
+  },
+  "upvar": {
+    "signature": "upvar ?level? otherVar myVar ?otherVar myVar ...?",
+    "description": "创建一个局部变量（myVar），链接到另一作用域中的变量（otherVar）。允许过程修改调用者作用域中的变量，类似其他语言的引用传递。",
+    "parameters": [
+      {
+        "name": "level",
+        "type": "string",
+        "desc": "可选。作用域层级（默认 1，即调用者作用域）。使用 #0 表示全局作用域。"
+      },
+      {
+        "name": "otherVar",
+        "type": "string",
+        "desc": "目标作用域中要链接的变量名。"
+      },
+      {
+        "name": "myVar",
+        "type": "string",
+        "desc": "将链接到 otherVar 的局部变量名。"
+      }
+    ],
+    "example": "proc double_value {varName} {\n  upvar 1 $varName var\n  set var [expr {$var * 2}]\n}\nset x 5\ndouble_value x\nputs $x  ;# prints: 10"
+  }
+}

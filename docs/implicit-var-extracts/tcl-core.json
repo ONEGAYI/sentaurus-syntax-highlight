@@ -1,0 +1,327 @@
+{
+  "set": {
+    "signature": "set varName ?value?",
+    "description": "Reads or writes the value of a variable. If value is specified, sets the variable to that value and returns it; otherwise returns the variable's current value. This is the primary way to create or modify variables in Tcl.",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Name of the variable to read or set."
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "Optional. The value to assign to the variable. If omitted, the current value is returned."
+      }
+    ],
+    "example": "set voltage 1.2\nset current $voltage\nputs $current  ;# prints: 1.2"
+  },
+  "append": {
+    "signature": "append varName value ?value ...?",
+    "description": "Appends all of the value arguments to the current value of the variable named by varName. If the variable does not exist, it is created. This is efficient for building large strings incrementally.",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Name of the variable to append to. Created if it does not exist."
+      },
+      {
+        "name": "value",
+        "type": "string",
+        "desc": "One or more string values to append to the variable."
+      }
+    ],
+    "example": "set result \"Mesh: \"\nappend result \"region1\" \" \" \"region2\"\nputs $result  ;# prints: Mesh: region1 region2"
+  },
+  "lappend": {
+    "signature": "lappend varName value ?value ...?",
+    "description": "Appends each value argument as a separate list element to the variable named by varName. If the variable does not exist, it is created as a list. Treats the variable's current value as a list.",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Name of the variable to append list elements to. Created if it does not exist."
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "One or more values to append as individual list elements."
+      }
+    ],
+    "example": "set layers {}\nlappend layers \"Silicon\" \"Oxide\" \"Metal\"\nputs $layers  ;# prints: Silicon Oxide Metal"
+  },
+  "incr": {
+    "signature": "incr varName ?increment?",
+    "description": "Increments the value of a variable by the given amount. The variable must contain an integer string. If increment is omitted, it defaults to 1. Use a negative increment to decrement.",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Name of the variable holding an integer value."
+      },
+      {
+        "name": "increment",
+        "type": "int",
+        "desc": "Optional. The amount to add (default 1). Can be negative."
+      }
+    ],
+    "example": "set count 0\nincr count       ;# count is now 1\nincr count 5     ;# count is now 6\nincr count -2    ;# count is now 4"
+  },
+  "foreach": {
+    "signature": "foreach varname list body ?varlist2 list2 ...? body",
+    "description": "Iterates over one or more lists, assigning elements to variables and executing the body for each set of elements. Multiple lists can be traversed in parallel; the loop continues until all lists are exhausted.",
+    "parameters": [
+      {
+        "name": "varname",
+        "type": "string",
+        "desc": "Variable to receive the current list element."
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "The list to iterate over."
+      },
+      {
+        "name": "body",
+        "type": "script",
+        "desc": "Script to execute for each element."
+      }
+    ],
+    "example": "set voltages {0.0 0.5 1.0 2.0}\nforeach v $voltages {\n  puts \"Bias: $v V\"\n}\nforeach v $voltages i {1 2 3 4} {\n  puts \"Step $i: $v V\"\n}"
+  },
+  "lmap": {
+    "signature": "lmap varname list body ?varlist2 list2 ...? body",
+    "description": "Maps a script over list elements and collects the results into a new list. Like foreach, but returns the collected results. Supports multiple list traversal. Tcl 8.6+.",
+    "parameters": [
+      {
+        "name": "varname",
+        "type": "string",
+        "desc": "Variable to receive the current element."
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "The list to map over."
+      },
+      {
+        "name": "body",
+        "type": "script",
+        "desc": "Script whose result becomes the corresponding element of the output list."
+      }
+    ],
+    "example": "set doubled [lmap v {1 2 3} {expr {$v * 2}}]  ;# returns {2 4 6}\nset squares [lmap x {0 1 2 3 4} {expr {$x * $x}}]  ;# returns {0 1 4 9 16}"
+  },
+  "lassign": {
+    "signature": "lassign list ?varName ...?",
+    "description": "Assigns list elements to the specified variables in order. Returns the remaining (unassigned) elements. This is a convenient way to unpack a list into named variables. Tcl 8.5+.",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "The list whose elements to assign."
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Variable names to receive list elements in order."
+      }
+    ],
+    "example": "set pair {1.2 0.8}\nlassign $pair vg vd\nputs \"Vg=$vg, Vd=$vd\"  ;# prints: Vg=1.2, Vd=0.8"
+  },
+  "gets": {
+    "signature": "gets channelId ?varName?",
+    "description": "Reads a single line from a channel. If varName is specified, stores the line in that variable and returns the number of characters read (-1 at end-of-file). If varName is omitted, returns the line itself.",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "string",
+        "desc": "The channel to read from."
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Optional. Variable name to store the line. Returns character count instead of the line itself."
+      }
+    ],
+    "example": "set fid [open \"data.csv\" r]\nwhile {[gets $fid line] >= 0} {\n  puts $line\n}\nclose $fid"
+  },
+  "scan": {
+    "signature": "scan string formatString ?varName ...?",
+    "description": "Parses a string according to a format string (like C sscanf). Extracts values from the input string and optionally stores them in the named variables. Returns the number of successfully matched items.",
+    "parameters": [
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "The input string to parse."
+      },
+      {
+        "name": "formatString",
+        "type": "string",
+        "desc": "C-style format specifiers (%d, %f, %s, etc.) describing the expected input format."
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Optional. Variable names to store the parsed values."
+      }
+    ],
+    "example": "scan \"Vg=1.2 Vd=0.5\" \"Vg=%f Vd=%f\" vg vd\nputs \"Gate: $vg, Drain: $vd\"  ;# prints: Gate: 1.2, Drain: 0.5"
+  },
+  "regexp": {
+    "signature": "regexp ?-nocase? ?-all? ?-inline? ?-line? ?--? exp string ?matchVar? ?subMatchVar ...?",
+    "description": "Matches a regular expression against a string. Returns 1 if a match is found, 0 otherwise. If match variables are specified, they are set to the matched text and any captured subexpressions. Supports standard regex syntax.",
+    "parameters": [
+      {
+        "name": "-nocase",
+        "type": "flag",
+        "desc": "Optional. Case-insensitive matching."
+      },
+      {
+        "name": "-all",
+        "type": "flag",
+        "desc": "Optional. Match as many times as possible."
+      },
+      {
+        "name": "-inline",
+        "type": "flag",
+        "desc": "Optional. Return the match data as a list instead of setting variables."
+      },
+      {
+        "name": "-line",
+        "type": "flag",
+        "desc": "Optional. Make ^ and $ match beginning/end of each line, not the whole string."
+      },
+      {
+        "name": "exp",
+        "type": "string",
+        "desc": "The regular expression pattern."
+      },
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "The string to search."
+      },
+      {
+        "name": "matchVar",
+        "type": "string",
+        "desc": "Optional. Variable to store the full match."
+      },
+      {
+        "name": "subMatchVar",
+        "type": "string",
+        "desc": "Optional. Variables to store captured subexpression matches."
+      }
+    ],
+    "example": "set line \"Id = 1.23e-3 A/V\"\nif {[regexp {Id\\s*=\\s*([\\d.e+-]+)} $line -> id_val]} {\n  puts \"Current: $id_val\"  ;# prints: Current: 1.23e-3\n}"
+  },
+  "regsub": {
+    "signature": "regsub ?-all? ?-nocase? ?--? exp string subSpec ?varName?",
+    "description": "Performs regular expression substitution on a string. Replaces the first (or all with -all) match of the pattern with the substitution specification. Returns the number of matches found.",
+    "parameters": [
+      {
+        "name": "-all",
+        "type": "flag",
+        "desc": "Optional. Replace all occurrences, not just the first."
+      },
+      {
+        "name": "-nocase",
+        "type": "flag",
+        "desc": "Optional. Case-insensitive matching."
+      },
+      {
+        "name": "exp",
+        "type": "string",
+        "desc": "The regular expression pattern to match."
+      },
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "The input string to process."
+      },
+      {
+        "name": "subSpec",
+        "type": "string",
+        "desc": "The replacement string. Use & for the matched text, \\1-\\9 for submatches."
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "Optional. Variable to store the result. If omitted, the result is returned."
+      }
+    ],
+    "example": "set path \"/home/user/sim/run1_des.cmd\"\nregsub -all {/} $path \"\\\\\" winpath\nputs $winpath  ;# prints: \\home\\user\\sim\\run1_des.cmd"
+  },
+  "catch": {
+    "signature": "catch script ?resultVarName? ?optionsVarName?",
+    "description": "Catches exceptions from the script. Returns 0 if the script completes normally, or 1 (or other error codes) if an error occurred. Optionally stores the result or error message and error options in the named variables.",
+    "parameters": [
+      {
+        "name": "script",
+        "type": "script",
+        "desc": "The Tcl script to execute and monitor for errors."
+      },
+      {
+        "name": "resultVarName",
+        "type": "string",
+        "desc": "Optional. Variable name to store the script's return value or error message."
+      },
+      {
+        "name": "optionsVarName",
+        "type": "string",
+        "desc": "Optional. Variable name to store the error options dictionary (error code, stack trace, etc.)."
+      }
+    ],
+    "example": "if {[catch {open \"data.txt\" r} fid]} {\n  puts \"Error opening file: $fid\"\n} else {\n  puts [read $fid]\n  close $fid\n}"
+  },
+  "variable": {
+    "signature": "variable ?name value ...?",
+    "description": "Creates and optionally sets one or more namespace variables. Typically used inside a namespace eval block to define variables that belong to that namespace. Each name-value pair sets the variable; a name without a value declares it without initialization.",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "Variable name to create or set within the current namespace."
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "Optional. Value to assign to the variable."
+      }
+    ],
+    "example": "namespace eval Device {\n  variable thickness 0.1\n  variable material \"Silicon\"\n}\nputs $Device::thickness  ;# prints: 0.1"
+  },
+  "global": {
+    "signature": "global varName ?varName ...?",
+    "description": "Makes one or more global variables accessible within a procedure scope. Without this command, procedures have their own local scope and cannot directly access global variables.",
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "One or more global variable names to access inside a procedure."
+      }
+    ],
+    "example": "set device_name \"NMOS\"\nproc get_device {} {\n  global device_name\n  return $device_name\n}\nputs [get_device]  ;# prints: NMOS"
+  },
+  "upvar": {
+    "signature": "upvar ?level? otherVar myVar ?otherVar myVar ...?",
+    "description": "Creates a local variable (myVar) that is linked to a variable in a different scope (otherVar). This allows procedures to modify variables in the caller's scope, similar to pass-by-reference in other languages.",
+    "parameters": [
+      {
+        "name": "level",
+        "type": "string",
+        "desc": "Optional. The scope level (default 1, meaning the caller's scope). Use #0 for global scope."
+      },
+      {
+        "name": "otherVar",
+        "type": "string",
+        "desc": "The variable name in the target scope to link to."
+      },
+      {
+        "name": "myVar",
+        "type": "string",
+        "desc": "The local variable name that will be linked to otherVar."
+      }
+    ],
+    "example": "proc double_value {varName} {\n  upvar 1 $varName var\n  set var [expr {$var * 2}]\n}\nset x 5\ndouble_value x\nputs $x  ;# prints: 10"
+  }
+}

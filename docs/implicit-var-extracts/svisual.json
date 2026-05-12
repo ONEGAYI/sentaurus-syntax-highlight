@@ -1,0 +1,2662 @@
+{
+  "create_variable": {
+    "section": "Calculation",
+    "signature": "create_variable -dataset <stringValue> (-function <stringValue>|-values <doubleList>) -name <stringValue>",
+    "description": "Creates a new variable in a dataset, either from a list of explicit values or by evaluating a mathematical function. Applies to xy plots only.",
+    "parameters": [
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "Required. Name of the dataset where the new variable will be added."
+      },
+      {
+        "name": "-function",
+        "type": "string",
+        "desc": "Expression to evaluate to generate variable values. Mutually exclusive with -values."
+      },
+      {
+        "name": "-values",
+        "type": "list",
+        "desc": "List of explicit double values to assign to the new variable. Mutually exclusive with -function."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Required. Name for the new variable."
+      }
+    ],
+    "example": "create_variable -name nVar -dataset idvd -values {0.1 0.3 0.5 0.7 0.9}\n##-> nVar",
+    "keywords": [
+      "dataset",
+      "values",
+      "function",
+      "name"
+    ]
+  },
+  "ext::AbsList": {
+    "signature": "ext::AbsList -out <list_name> -x <list_of_r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes the absolute value of all elements of a list and stores the results in a named list.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a list to store the list of absolute values."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "Input list of real numbers."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level: 0 (warnings/errors only), 1 (echo results), 2 (progress and debug), 3 (all debug). Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::AbsList -out Idabs -x $Ids"
+  },
+  "ext::DiffForwardList": {
+    "signature": "ext::DiffForwardList -out <array_name> -x <list_of_r> -y <list_of_r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes the first-order derivative of a curve using the forward finite difference method. The curve is represented by two Tcl lists of x-values and y-values. Results are stored in an array with elements 'x' (midpoint x-values) and 'dy' (derivative values).",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results. The array has string-valued indices 'x' and 'dy'."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "List of x-values (independent variable)."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "List of y-values (dependent variable)."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level: 0 (warnings/errors only), 1 (echo results), 2 (progress and debug), 3 (all debug). Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::DiffForwardList -out DyDx -x $Xs -y $Ys"
+  },
+  "ext::DiffList": {
+    "signature": "ext::DiffList -out <list_name> -x <list_of_r> -y <list_of_r> [-yLog 0|1] [-xLog 0|1] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes the first-order derivative of a curve using the central finite difference method with linear or logarithmic interpolation. The curve is represented by two Tcl lists of x-values and y-values.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a list to store the first-order derivative values."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "List of x-values (independent variable)."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "List of y-values (dependent variable)."
+      },
+      {
+        "name": "-yLog",
+        "type": "int",
+        "desc": "Optional. Selects linear (0) or logarithmic (1) interpolation for y-axis values when computing the derivative. Default: 0."
+      },
+      {
+        "name": "-xLog",
+        "type": "int",
+        "desc": "Optional. Selects linear (0) or logarithmic (1) interpolation for x-axis values when computing the derivative. Default: 0."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level: 0 (warnings/errors only), 1 (echo results), 2 (progress and debug), 3 (all debug). Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::DiffList -out dydx -x $Xs -y $Ys -yLog 1"
+  },
+  "ext::ExtractBVi": {
+    "signature": "ext::ExtractBVi -out <var_name> -v <list_of_r> -i <list_of_r> -io <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the breakdown voltage from an I-V curve, defined as the bias voltage at which the current reaches a specified level. The curve is represented by two Tcl lists of voltage and current values.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the breakdown voltage value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of current values."
+      },
+      {
+        "name": "-io",
+        "type": "float",
+        "desc": "Current level threshold (nonzero real number) at which breakdown voltage is defined."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"BVi\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3e\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractBVi -out BVcboi -name \"out\" -v $Vcbs -i $Ics -io 1e-12 -f \"%.3f\""
+  },
+  "ext::ExtractBVv": {
+    "signature": "ext::ExtractBVv -out <var_name> -v <list_of_r> -i <list_of_r> -sign <=1|-1> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the breakdown voltage from an I-V curve, defined as the maximum voltage that can be applied to a contact. The curve is represented by two Tcl lists of voltage and current values.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the breakdown voltage value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of current values."
+      },
+      {
+        "name": "-sign",
+        "type": "int",
+        "desc": "Distinguishes transistor type: +1 for n-p-n transistor, -1 for p-n-p transistor. In general, set to -1 if breakdown occurs at negative bias."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"BVv\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.2e\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractBVv -out BVcbov -name \"out\" -v $Vcbs -i $Ics -sign 1 -f \"%.3f\""
+  },
+  "ext::ExtractEarlyV": {
+    "signature": "ext::ExtractEarlyV -out <var_name> -v <list_of_r> -i <list_of_r> -vo <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the Early voltage from an Ic-Vce curve. The Early voltage is determined from the slope of the Ic-Vce curve at a specified bias point. The curve is represented by two Tcl lists of voltage and current values.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the Early voltage value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of collector-emitter voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of collector current values."
+      },
+      {
+        "name": "-vo",
+        "type": "float",
+        "desc": "Bias point at which the slope of the Ic-Vce curve is determined for the Early voltage computation."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"Va\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3e\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractEarlyV -out Va -name \"out\" -v $Vcs -i $absIcs -vo -1.25 -f \"%.2f\""
+  },
+  "ext::ExtractExtremum": {
+    "signature": "ext::ExtractExtremum -out <var_name> -x <list_of_r> -y <list_of_r> [-type \"max\"|\"min\"] [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the maximum or minimum value of a curve. The curve is represented by two Tcl lists of x-values and y-values.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the extremum value."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "List of x-values."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "List of y-values."
+      },
+      {
+        "name": "-type",
+        "type": "string",
+        "desc": "Optional. Selects whether to extract the minimum (\"min\") or maximum (\"max\") of the curve. Default: \"max\"."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"out\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3e\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractExtremum -out IdLin -name \"out\" -x $Vgs -y $Ids -type \"max\""
+  },
+  "ext::ExtractGm": {
+    "signature": "ext::ExtractGm -out <var_name> -v <list_of_r> -i <list_of_r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the maximum transconductance (gm = dId/dVg) from an Id-Vgs curve. The gate bias at which the maximum gm occurs is computed using parabolic interpolation. The curve is represented by two Tcl lists of voltage and current values.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the maximum transconductance value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of gate voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of drain current values."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"gm\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3e\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractGm -out gmLin -name \"out\" -v $Vgs -i $absIds"
+  },
+  "ext::ExtractIoff": {
+    "signature": "ext::ExtractIoff -out <var_name> -v <list_of_r> -i <list_of_r> -vo <r> [-log10 0|1] [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the drain leakage current at a specified gate voltage from an Id-Vgs curve (computed for a high drain bias). A small nonzero gate voltage is recommended to avoid noise, such as 0.1 mV for NMOS or -0.1 mV for PMOS.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the drain leakage current value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of gate voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of drain current values."
+      },
+      {
+        "name": "-vo",
+        "type": "float",
+        "desc": "Gate voltage at which the drain leakage current is extracted. Use a small but nonzero value."
+      },
+      {
+        "name": "-log10",
+        "type": "int",
+        "desc": "Optional. If set to 1, returns log10(Ioff) instead of Ioff. Default: 0."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"Ioff\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3e\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractIoff -out Ioff -name \"out\" -v $Vgs -i $absIds -vo -1e-4 -log10 0"
+  },
+  "ext::ExtractRdiff": {
+    "signature": "ext::ExtractRdiff -out <var_name> -v <list_of_r> -i <list_of_r> -vo <r> [-yLog 0|1] [-xLog 0|1] [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the differential resistance (Rdiff = dV/dI) from an I-V curve at a specified voltage. The curve is represented by two Tcl lists of voltage and current values.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the differential resistance value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of current values."
+      },
+      {
+        "name": "-vo",
+        "type": "float",
+        "desc": "Voltage at which the differential resistance is extracted."
+      },
+      {
+        "name": "-yLog",
+        "type": "int",
+        "desc": "Optional. Selects linear (0) or logarithmic (1) interpolation for y-axis values when computing the derivative. Default: 0."
+      },
+      {
+        "name": "-xLog",
+        "type": "int",
+        "desc": "Optional. Selects linear (0) or logarithmic (1) interpolation for x-axis values when computing the derivative. Default: 0."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"Rdiff\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3f\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractRdiff -out Ron -name \"out\" -v $Vcs -i $absIcs -vo -1.25 -f \"%.2e\""
+  },
+  "ext::ExtractRsh": {
+    "signature": "ext::ExtractRsh -out <array_name> -dataset <dataName> -semdataset <dataName> -type <x|y> -at <r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Calculates the sheet resistance (Ohm/sq) and p-n junction depth of semiconductor layers in the vertical direction in a 2D structure by creating an axis-aligned cutline. Also computes the total sheet resistance (sum of each layer). Applies only to 2D structures.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results. Contains elements: d (thickness per layer), Rsh (sheet resistance per layer), RshTotal (total sheet resistance), RshTop (top layer sheet resistance), xjTop (junction depth), X/Y (position values), DopingConcentration, eMobility, hMobility, eDensity, hDensity, Conductivity, and Resistivity."
+      },
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "Name of the dataset from which the outline will be generated."
+      },
+      {
+        "name": "-semdataset",
+        "type": "string",
+        "desc": "Name of the dataset containing the variables X/Y, DopingConcentration, eMobility, hMobility, eDensity, hDensity, Conductivity, and Resistivity."
+      },
+      {
+        "name": "-type",
+        "type": "string",
+        "desc": "Links the outline to the specified axis: \"x\" links to x-axis and creates outline aligned to y-axis (vertical), \"y\" links to y-axis and creates outline aligned to x-axis (vertical)."
+      },
+      {
+        "name": "-at",
+        "type": "float",
+        "desc": "Value where the axis-aligned outline cuts the linked axis."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractRsh -out Rsh -dataset Structure2d -semdataset RshProfile -type y -at 5.0"
+  },
+  "ext::ExtractSS": {
+    "signature": "ext::ExtractSS -out <var_name> -v <list_of_r> -i <list_of_r> -vo <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the subthreshold voltage swing (SS) in mV/decade at a specified gate voltage from an Id-Vgs curve. SS is defined as 1000 / (d/dVg * log10(Id)). Better results are obtained when the specified gate voltage is well below threshold and is a small nonzero value.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the subthreshold swing value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of gate voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of absolute drain current values."
+      },
+      {
+        "name": "-vo",
+        "type": "float",
+        "desc": "Gate voltage at which the slope is extracted. Should be a value well below the threshold voltage."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"SS\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3f\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractSS -out SSlin -name \"out\" -v $Vgs -i $Ids -vo 1e-2"
+  },
+  "ext::ExtractSsub": {
+    "signature": "ext::ExtractSsub -out <var_name> -v <list_of_r> -i <list_of_r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the subthreshold voltage swing (SS) in mV/decade from an Id-Vgs curve. SS is defined as 1000 / Max(d/dVg * log10(Id)), where the maximum slope is found automatically. Unlike ext::ExtractSS, no specific gate voltage needs to be specified.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the subthreshold swing value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of gate voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of absolute drain current values."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"ss\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3f\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractSsub -out Ssub -name \"out\" -v $Vgs -i $Ids"
+  },
+  "ext::ExtractValue": {
+    "signature": "ext::ExtractValue -out <var_name> -x <list_of_r> -y <list_of_r> -xo <r> [-occurrence <int>] [-yLog 0|1] [-xLog 0|1] [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "For a given target x-value, extracts the n-th interpolated y-value from a curve. To find the interpolated x-value for a given y-value, swap the -x and -y arguments. The curve is represented by two Tcl lists of x-values and y-values.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the interpolated y-value."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "List of x-values."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "List of y-values."
+      },
+      {
+        "name": "-xo",
+        "type": "float",
+        "desc": "Target x-value for interpolation."
+      },
+      {
+        "name": "-occurrence",
+        "type": "int",
+        "desc": "Optional. Specifies the n-th interpolated y-value to extract (1-based index). Default: 1."
+      },
+      {
+        "name": "-yLog",
+        "type": "int",
+        "desc": "Optional. Selects linear (0) or logarithmic (1) interpolation for y-axis values. Default: 0."
+      },
+      {
+        "name": "-xLog",
+        "type": "int",
+        "desc": "Optional. Selects linear (0) or logarithmic (1) interpolation for x-axis values. Default: 0."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"SS\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3f\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractValue -out Xlin -x $Ys -y $Xs -yLog 0 -xo 0"
+  },
+  "ext::ExtractVdlin": {
+    "signature": "ext::ExtractVdlin -out <var_name> -v <list_of_r> -i <list_of_r> -io <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the drain voltage for a given drain current level from an Id-Vds curve using linear interpolation. The curve is represented by two Tcl lists of voltage and current values.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the drain voltage value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of drain voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of drain current values."
+      },
+      {
+        "name": "-io",
+        "type": "float",
+        "desc": "Target drain current level."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"ss\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3f\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractVdlin -out Vdlin -name \"out\" -v $Vds -i $Ids -io 1e-4 -f \"%.4f\""
+  },
+  "ext::ExtractVdlog": {
+    "signature": "ext::ExtractVdlog -out <var_name> -v <list_of_r> -i <list_of_r> -io <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the drain voltage for a given drain current level from an Id-Vds curve using logarithmic interpolation. The curve is represented by two Tcl lists of voltage and current values.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the drain voltage value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of drain voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of drain current values."
+      },
+      {
+        "name": "-io",
+        "type": "float",
+        "desc": "Target drain current level."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"SS\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3f\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractVdlog -out Vdlog -name \"out\" -v $Vds -i $Ids -io 1e-4 -f \"%.4f\""
+  },
+  "ext::ExtractVglin": {
+    "signature": "ext::ExtractVglin -out <var_name> -v <list_of_r> -i <list_of_r> -io <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the gate voltage for a given drain current level from an Id-Vgs curve using linear interpolation. The curve is represented by two Tcl lists of voltage and current values.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the gate voltage value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of gate voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of drain current values."
+      },
+      {
+        "name": "-io",
+        "type": "float",
+        "desc": "Target drain current level."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"SS\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3f\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractVglin -out Vglin -name \"out\" -v $Vgs -i $Ids -io 1e-7 -f \"%.4f\""
+  },
+  "ext::ExtractVglog": {
+    "signature": "ext::ExtractVglog -out <var_name> -v <list_of_r> -i <list_of_r> -io <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the gate voltage for a given drain current level from an Id-Vgs curve using logarithmic interpolation. The curve is represented by two Tcl lists of voltage and current values.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the gate voltage value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of gate voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of drain current values."
+      },
+      {
+        "name": "-io",
+        "type": "float",
+        "desc": "Target drain current level."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"SS\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3f\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractVglog -out Vglog -name \"out\" -v $Vgs -i $Ids -io 1e-7 -f \"%.4f\""
+  },
+  "ext::ExtractVtgm": {
+    "signature": "ext::ExtractVtgm -out <var_name> -v <list_of_r> -i <list_of_r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the threshold voltage from an Id-Vgs curve using the maximum transconductance method. The threshold voltage is defined as the gate-voltage axis intercept of the tangent line at the maximum gm point. The gate bias at maximum gm is computed using parabolic interpolation.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the threshold voltage value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of gate voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of drain current values."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"ss\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3f\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractVtgm -out Vtgm -name \"out\" -v $Vgs -i $absIds"
+  },
+  "ext::ExtractVti": {
+    "signature": "ext::ExtractVti -out <var_name> -v <list_of_r> -i <list_of_r> -io <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the threshold voltage for a given subthreshold current level from an Id-Vgs curve. The threshold voltage is defined as the gate voltage at which the drain current reaches the specified current level.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the threshold voltage value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of gate voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of drain current values."
+      },
+      {
+        "name": "-io",
+        "type": "float",
+        "desc": "Subthreshold current level that defines the threshold voltage."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"SS\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3f\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractVti -out VtiLin -name \"out\" -v $Vgs -i $Ids -io $io"
+  },
+  "ext::ExtractVtsat": {
+    "signature": "ext::ExtractVtsat -out <var_name> -v <list_of_r> -i <list_of_r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Extracts the threshold voltage from a sqrt(Id)-Vgs curve. The threshold voltage is defined as the intercept with the gate-voltage axis from the point of maximum slope of the sqrt(Id)-Vgs curve, computed using parabolic interpolation.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the threshold voltage value."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of gate voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of drain current values."
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "Optional. Name for the extracted variable in the Sentaurus Workbench Family Tree. Use \"noprint\" to suppress extraction, \"out\" to use the -out variable name. Default: \"ss\"."
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "Optional. Format string for the extracted value written to the Sentaurus Workbench Family Tree. Default: \"%.3f\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::ExtractVtsat -out Vtsat -name \"out\" -v $Vgs -i $Ids"
+  },
+  "ext::FilterTable": {
+    "signature": "ext::FilterTable -out <array_name> -x <list_of_r> -y <list_of_r> -conditions <array_name> -ncond <int> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Filters Sentaurus Workbench Family Tree data to create a graph of one parameter (y-values) as a function of another parameter (x-values) for a subset of experiments matching specified conditions. Nonnumeric y-values are automatically ignored, allowing failed extractions to be omitted.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store filtered results. Contains elements X (filtered x-values in ascending order) and Y (corresponding filtered y-values)."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "List of x-values (a Sentaurus Workbench parameter for all experiments)."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "List of y-values (a Sentaurus Workbench parameter for all experiments)."
+      },
+      {
+        "name": "-conditions",
+        "type": "string",
+        "desc": "Name of a string-indexed array defining filter conditions. Each condition has two elements: \"Target\" (required parameter value) and \"Values\" (list of parameter values for all experiments). Conditions are enumerated starting from 1."
+      },
+      {
+        "name": "-ncond",
+        "type": "int",
+        "desc": "Number of conditions to apply from the -conditions array."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::FilterTable -out LgVt -x $Lgs -y $Vtgms -conditions Conditions -ncond 2"
+  },
+  "ext::FindExtrema": {
+    "signature": "ext::FindExtrema -out <array_name> -x <list_of_r> -y <list_of_r> [-type \"max\"|\"min\"] [-eps <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes all local extrema (maxima or minima) of a curve. If a curve exhibits a flat top or bottom (neighboring x-values with equal y-values), the last x-value is returned as the extremum point.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results. Contains elements X (x-values at extrema) and Y (extremum values)."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "List of x-values, must be in ascending or descending order."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "List of y-values."
+      },
+      {
+        "name": "-type",
+        "type": "string",
+        "desc": "Optional. Selects whether to find maxima (\"max\") or minima (\"min\"). Default: \"max\"."
+      },
+      {
+        "name": "-eps",
+        "type": "float",
+        "desc": "Optional. If the difference between two adjacent y-values is less than -eps, both elements are considered equal. Default: 1e-10."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::FindExtrema -out XY -x $Xs -y $Ys"
+  },
+  "ext::FindVals": {
+    "signature": "ext::FindVals -out <list_name> -x <list_of_r> -y <list_of_r> -xo <r> [-yLog 0|1] [-xLog 0|1] [-info 0|1|2|3] [-help 0|1]",
+    "description": "For a given target x-value, extracts all corresponding interpolated y-values from a curve. To find all interpolated x-values for a given y-value, swap the -x and -y arguments.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a list to store all interpolated y-values."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "List of x-values."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "List of y-values."
+      },
+      {
+        "name": "-xo",
+        "type": "float",
+        "desc": "Target x-value for interpolation."
+      },
+      {
+        "name": "-yLog",
+        "type": "int",
+        "desc": "Optional. Selects linear (0) or logarithmic (1) interpolation for y-axis values. Default: 0."
+      },
+      {
+        "name": "-xLog",
+        "type": "int",
+        "desc": "Optional. Selects linear (0) or logarithmic (1) interpolation for x-axis values. Default: 0."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::FindVals -out xos -x $Ys -y $Xs -xo 2.0"
+  },
+  "ext::LinFit": {
+    "signature": "ext::LinFit -out <array_name> -x <list_of_r> -y <list_of_r> -xmin <r> -xmax <r> [-npar 1|2] [-weighted \"off\"|\"on\"] [-weights <list_of_r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Performs a linear fit (y = x*m + b) to a curve using least-squares regression. Results are stored in an array containing X, Y, Yestimate, residuals, slope, yintercept, n, dof, and RMSE elements.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results. Contains elements: X (x-values in range), Y (y-values in range), Yestimate (estimated y-values), residuals (residuals), slope (estimated slope m), yintercept (estimated y-intercept b), n (number of data points), dof (degrees of freedom), and RMSE (root-mean-square error)."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "List of x-values, must be in ascending or descending order."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "List of y-values."
+      },
+      {
+        "name": "-xmin",
+        "type": "float",
+        "desc": "Minimum x-value for the fitting range."
+      },
+      {
+        "name": "-xmax",
+        "type": "float",
+        "desc": "Maximum x-value for the fitting range."
+      },
+      {
+        "name": "-npar",
+        "type": "int",
+        "desc": "Optional. Number of parameters: 1 computes only slope (y-intercept forced to 0), 2 computes both slope and y-intercept. Default: 2."
+      },
+      {
+        "name": "-weighted",
+        "type": "string",
+        "desc": "Optional. Selects unweighted (\"off\") or weighted (\"on\") linear regression. Default: \"off\"."
+      },
+      {
+        "name": "-weights",
+        "type": "list",
+        "desc": "Optional. List of weight values for each x-value. Required when -weighted is \"on\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::LinFit -out XY -x $Xs -y $Ys -xmin [lindex $Xs 0] -xmax [lindex $Xs end]"
+  },
+  "ext::Linspace": {
+    "signature": "ext::Linspace -out <list_name> -xmin <r> -xmax <r> -n <int> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Creates a list of n linearly spaced values between and including two real numbers (xmin and xmax).",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a list to store the linearly spaced values."
+      },
+      {
+        "name": "-xmin",
+        "type": "float",
+        "desc": "Minimum value (start of range)."
+      },
+      {
+        "name": "-xmax",
+        "type": "float",
+        "desc": "Maximum value (end of range)."
+      },
+      {
+        "name": "-n",
+        "type": "int",
+        "desc": "Number of values to create, must be a positive integer greater than 1."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::Linspace -out X -xmin 0 -xmax 1 -n 11"
+  },
+  "ext::LinTransList": {
+    "signature": "ext::LinTransList -out <list_name> -x <list_of_r> [-m <r>] [-b <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Applies a linear transformation (X' = X*m + b) to all elements of a list, storing the transformed values in a new list.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a list to store the transformed values."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "Input list of real numbers."
+      },
+      {
+        "name": "-m",
+        "type": "float",
+        "desc": "Optional. Slope (scaling factor) of the linear transformation. Default: 1.0."
+      },
+      {
+        "name": "-b",
+        "type": "float",
+        "desc": "Optional. Offset (shift) of the linear transformation. Default: 0.0."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::LinTransList -out VgTrans -x $Vgs -b 0.55"
+  },
+  "ext::Log10List": {
+    "signature": "ext::Log10List -out <list_name> -x <list_of_r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Applies the base-10 logarithm function to all elements of a list and stores the results in a new list.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a list to store the log10 values."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "Input list of real numbers."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::Log10List -out Ys -x $Xs"
+  },
+  "ext::RemoveDuplicates": {
+    "signature": "ext::RemoveDuplicates -out <array_name> -x <list_of_r> -y <list_of_r> [-eps <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "For a pair of lists x and y, removes duplicate elements from the x-list and the corresponding elements from the y-list. Elements are considered duplicates if their difference is less than the -eps tolerance.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results. Contains elements X (deduplicated x-values) and Y (corresponding y-values)."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "Input list of x-values to deduplicate."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "Input list of y-values (corresponding elements are removed when x-duplicates are found)."
+      },
+      {
+        "name": "-eps",
+        "type": "float",
+        "desc": "Optional. If the difference between two adjacent x-elements is less than -eps, the first element is removed as a duplicate. Default: 1e-40."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::RemoveDuplicates -out XY -x $x -y $y"
+  },
+  "ext::RemoveZeros": {
+    "signature": "ext::RemoveZeros -out <array_name> -x <list_of_r> -y <list_of_r> -iplists <\"x\"|\"y\"|\"xy\"> [-eps <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "For a pair of lists x and y, removes zero (or near-zero) elements from the specified list(s) and the corresponding elements from the paired list.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results. Contains elements X (remaining x-values) and Y (corresponding remaining y-values)."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "Input list of x-values."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "Input list of y-values."
+      },
+      {
+        "name": "-iplists",
+        "type": "string",
+        "desc": "Specifies which list(s) to remove zeros from: \"x\" removes zeros from the x-list only, \"y\" removes zeros from the y-list only, \"xy\" removes zeros from both lists."
+      },
+      {
+        "name": "-eps",
+        "type": "float",
+        "desc": "Optional. If an element's absolute value is less than -eps, it is treated as zero and removed. Default: 1e-40."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::RemoveZeros -out XY -x $xs -y $ys -iplists \"x\""
+  },
+  "ext::SubLists": {
+    "signature": "ext::SubLists -out <array_name> -x <list_of_r> -y <list_of_r> -xmin <r> -xmax <r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Creates a pair of sublists from a pair of lists by selecting elements within a specified range of x-values. To create sublists using a y-value range, swap -x and -y and specify the range with -xmin and -xmax.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results. Contains elements X (sublist of x-values in range) and Y (corresponding y-values)."
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "List of x-values, must be in ascending or descending order."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "List of y-values."
+      },
+      {
+        "name": "-xmin",
+        "type": "float",
+        "desc": "Minimum x-value defining the range."
+      },
+      {
+        "name": "-xmax",
+        "type": "float",
+        "desc": "Maximum x-value defining the range."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ext::SubLists -out XY -x $xs -y $ys -xmin 2 -xmax 5"
+  },
+  "ifm::Gauss": {
+    "signature": "ifm::Gauss -out <var_name> -x <r> -moments <array_name> [-help 0|1]",
+    "description": "Computes the y-value of a normalized Gaussian distribution for a given x-value. The Gaussian is defined by its norm (N), average (mu), and standard deviation (sigma).",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the computed y-value of the Gaussian distribution."
+      },
+      {
+        "name": "-x",
+        "type": "float",
+        "desc": "The x-value at which to evaluate the Gaussian."
+      },
+      {
+        "name": "-moments",
+        "type": "string",
+        "desc": "Name of an array with string-valued indices containing elements 'norm', 'ave', and 'std_dev' for the Gaussian parameters."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Moments(norm) 1.0\nset Moments(ave) 0.0\nset Moments(std_dev) 1.0\nifm::Gauss -out G -x 0.1 -moments Moments"
+  },
+  "ifm::GetDataQuantiles": {
+    "signature": "ifm::GetDataQuantiles -out <array_name> -rvs <list_of_r> [-help 0|1]",
+    "description": "Computes quantiles for a list of random variables. Sorts the values and associates each with a quantile between 0 and 1.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results with string-valued indices 'x' (sorted random variables) and 'y' (corresponding quantiles)."
+      },
+      {
+        "name": "-rvs",
+        "type": "list",
+        "desc": "List of random variable values (real numbers)."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set RanVals [list -1.657 0.766 2.142 1.189]\nifm::GetDataQuantiles -out DataQ -rvs $RanVals"
+  },
+  "ifm::GetGaussian": {
+    "signature": "ifm::GetGaussian -out <array_name> -moments <array_name> [-nsam <i>] [-type f|q] [-xmin <r>] [-xmax <r>] [-help 0|1]",
+    "description": "Computes a Gaussian curve or its quantiles based on given moments (norm, average, standard deviation). Returns x- and y-value lists suitable for plotting.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results with string-valued indices 'x' and 'y' for the Gaussian or quantile curve values."
+      },
+      {
+        "name": "-moments",
+        "type": "string",
+        "desc": "Name of an array with string-valued indices containing elements 'norm', 'ave', and 'std_dev'."
+      },
+      {
+        "name": "-nsam",
+        "type": "int",
+        "desc": "Optional. Number of sample points. Default: 80."
+      },
+      {
+        "name": "-type",
+        "type": "string",
+        "desc": "Optional. 'f' returns a Gaussian curve; 'q' returns the quantiles (cumulative distribution). Default: f."
+      },
+      {
+        "name": "-xmin",
+        "type": "float",
+        "desc": "Optional. Starting x-value. Default: -3.0."
+      },
+      {
+        "name": "-xmax",
+        "type": "float",
+        "desc": "Optional. Ending x-value. Default: 3.0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Moments(norm) 1.0\nset Moments(ave) 0.0\nset Moments(std_dev) 1.0\nifm::GetGaussian -out Gaussian -type f -moments Moments -nsam 100 -xmin -3.5 -xmax 3.5"
+  },
+  "ifm::GetHistogram": {
+    "signature": "ifm::GetHistogram -out <array_name> -rvs <list_of_r> -xmin <r> -xmax <r> [-nbin <i>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes x- and y-lists for plotting a histogram from a list of random variables within a specified range and number of bins.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results with string-valued indices 'x' and 'y' for the histogram bin values."
+      },
+      {
+        "name": "-rvs",
+        "type": "list",
+        "desc": "List of random variable values (real numbers)."
+      },
+      {
+        "name": "-xmin",
+        "type": "float",
+        "desc": "Starting x-value of the histogram range."
+      },
+      {
+        "name": "-xmax",
+        "type": "float",
+        "desc": "Ending x-value of the histogram range."
+      },
+      {
+        "name": "-nbin",
+        "type": "int",
+        "desc": "Optional. Number of bins for the histogram. Default: 40."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level: 0 (warnings/errors only), 1 (echo results), 2 (progress and debug), 3 (all debug). Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Rxs [list 1 1.1 2 5 5.1 5.3 6]\nifm::GetHistogram -out Histogram -rvs $Rxs -xmin 0 -xmax 6 -nbin 6"
+  },
+  "ifm::GetMoments": {
+    "signature": "ifm::GetMoments -out <array_name> -rvs <list_of_r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes statistical moments for a list of random variables: norm, average, root mean square (rms), standard deviation, skewness, and excess kurtosis.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results with string-valued indices 'norm', 'ave', 'rms', 'std_dev', 'skew', and 'kurtx'."
+      },
+      {
+        "name": "-rvs",
+        "type": "list",
+        "desc": "List of random variable values (real numbers)."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level: 0 (warnings/errors only), 1 (echo results), 2 (progress and debug), 3 (all debug). Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Vs [list 1 2 3 4 5]\nifm::GetMoments -out Moments -rvs $Vs"
+  },
+  "ifm::GetMOSIVs": {
+    "signature": "ifm::GetMOSIVs -out <array_name> -sifm <array_name> -nrow <var_name> -ncol <var_name> -v <list_of_r> -i <list_of_r> -y <list_of_r> -vmin <r> -vmax <r> -id <string> [-type IdVg] [-method dV|dI|weighted|SSweighted|exp] [-smooth yes|no] [-sgn 1|-1] [-ss <r> -dss <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Constructs randomized Id-Vg curves for MOS-type devices from sIFM linear current responses. Supports multiple construction methods: gate voltage adjustment (dV), drain current adjustment (dI), weighted switching (weighted), subthreshold-slope-based weighted (SSweighted), and exponential (exp).",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a two-indexed array to store I-V curves. First index is string ('X', 'Y'); second is integer (randomization index). Also contains 'maxdev' for maximum |dI/I| deviation."
+      },
+      {
+        "name": "-sifm",
+        "type": "string",
+        "desc": "Name of a three-indexed array containing sIFM data: first index is string (source IDs), second is integer (bias row), third is integer (randomization column)."
+      },
+      {
+        "name": "-nrow",
+        "type": "string",
+        "desc": "Variable name containing the number of rows (bias points) in the sIFM data."
+      },
+      {
+        "name": "-ncol",
+        "type": "string",
+        "desc": "Variable name containing the number of columns (randomizations) in the sIFM data."
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "List of reference voltage values."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "List of reference current values."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "List of reference Y-matrix (gate-to-drain admittance) values."
+      },
+      {
+        "name": "-vmin",
+        "type": "float",
+        "desc": "Minimum bias for dI/I monitoring range."
+      },
+      {
+        "name": "-vmax",
+        "type": "float",
+        "desc": "Maximum bias for dI/I monitoring range."
+      },
+      {
+        "name": "-id",
+        "type": "string",
+        "desc": "ID of the sIFM variability source."
+      },
+      {
+        "name": "-type",
+        "type": "string",
+        "desc": "Optional. Type of I-V curve. Currently only 'IdVg' is supported. Default: IdVg."
+      },
+      {
+        "name": "-method",
+        "type": "string",
+        "desc": "Optional. Construction method: 'dV' (gate voltage adjustment, guarantees positive currents), 'dI' (drain current adjustment, guarantees physical voltages), 'weighted' (auto-switches between dV and dI at maximal transconductance), 'SSweighted' (switches at user-defined subthreshold slope), 'exp' (exponential, ensures nonnegative currents). Default: weighted."
+      },
+      {
+        "name": "-smooth",
+        "type": "string",
+        "desc": "Optional. Activates smoothening at the transition point for the weighted method. Default: no."
+      },
+      {
+        "name": "-sgn",
+        "type": "int",
+        "desc": "Optional. Set to 1 for NMOS or -1 for PMOS. Default: 1."
+      },
+      {
+        "name": "-ss",
+        "type": "float",
+        "desc": "Optional. Subthreshold slope inflection point in mV/decade. Only needed for SSweighted method."
+      },
+      {
+        "name": "-dss",
+        "type": "float",
+        "desc": "Optional. Width of transition region in mV/decade for SSweighted method smoothing."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ifm::GetMOSIVs -out IV_rdf -sifm sIFM -nrow Nrow -ncol Ncol -method \"weighted\" -sgn 1.0 -v $Vgs -i $Ids -y $adgs -id \"rdfs\" -smooth yes"
+  },
+  "ifm::GetMOSWeights": {
+    "signature": "ifm::GetMOSWeights -out <list_name> -y <list_of_r> [-type IdVg_weighted|IdVg_SSweighted] [-i <list_of_r> -ss <r> -dss <r>] [-help 0|1]",
+    "description": "Computes weights between 1 and -1 for each bias point, indicating whether the gate-voltage adjustment method or drain-current adjustment method should be used in MOS I-V construction.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a list to store the computed weight values."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "List of reference Y-matrix (gate-to-drain admittance) values."
+      },
+      {
+        "name": "-type",
+        "type": "string",
+        "desc": "Optional. Weighting method: 'IdVg_weighted' (switches based on sign of transconductance derivative) or 'IdVg_SSweighted' (switches at user-defined subthreshold slope using error function smoothing). Default: IdVg_weighted."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "Optional. List of reference current values. Only needed for IdVg_SSweighted."
+      },
+      {
+        "name": "-ss",
+        "type": "float",
+        "desc": "Optional. Subthreshold slope inflection point in mV/decade. Only needed for IdVg_SSweighted."
+      },
+      {
+        "name": "-dss",
+        "type": "float",
+        "desc": "Optional. Width of transition region in mV/decade for smoothing. Only needed for IdVg_SSweighted."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ifm::GetMOSWeights -out Ws -y $adgs"
+  },
+  "ifm::GetNoiseStdDev": {
+    "signature": "ifm::GetNoiseStdDev -out <array_name> -s <list_of_r> -y <list_of_r> [-help 0|1]",
+    "description": "Computes drain current and gate voltage standard deviations from drain current noise spectral density and gate-to-drain admittance. The drain current std dev is sqrt(Sdd * 1Hz), and the gate voltage std dev is obtained by dividing by ydg.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array with string-valued indices 'I' (current standard deviations) and 'v' (voltage standard deviations)."
+      },
+      {
+        "name": "-s",
+        "type": "list",
+        "desc": "List of drain current noise spectral density values."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "List of gate-to-drain admittance (Y-matrix) values."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ifm::GetNoiseStdDev -out sigIV -s $S_Ids(noise) -y $adgs"
+  },
+  "ifm::GetQQ": {
+    "signature": "ifm::GetQQ -out <array_name> -dq <array_name> -gq <array_name> -moments <array_name> [-help 0|1]",
+    "description": "Generates a quantile-quantile (Q-Q) plot comparing the quantiles of a given data distribution with those of a Gaussian distribution. The data x-values corresponding to Gaussian quantile matches are plotted against normalized Gaussian values (x-mu)/sigma.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array with string-valued indices 'x' and 'y' for the Q-Q comparison curve values."
+      },
+      {
+        "name": "-dq",
+        "type": "string",
+        "desc": "Name of an array containing the quantiles of the given data distribution, with indices 'x' (sorted values) and 'y' (quantiles)."
+      },
+      {
+        "name": "-gq",
+        "type": "string",
+        "desc": "Name of an array containing the quantiles of the Gaussian distribution, with indices 'x' and 'y'."
+      },
+      {
+        "name": "-moments",
+        "type": "string",
+        "desc": "Name of an array with indices 'norm', 'ave', and 'std_dev' defining the Gaussian distribution."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ifm::GetQQ -out QQ -dq DataQ -gq GaussianQ -moments Moments"
+  },
+  "ifm::GetsIFMStdDev": {
+    "signature": "ifm::GetsIFMStdDev -out <array_name> -sIFM <string> -y <list_of_r> [-rsig <r> -ydd <list_of_r> -i <list_of_r>] [-help 0|1]",
+    "description": "Computes drain current and gate voltage standard deviations from sIFM linear current responses and gate-to-drain admittance. Also supports contact resistance variability computation when sIFM is set to 'crv'.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array with string-valued indices 'I' (current standard deviations) and 'v' (voltage standard deviations)."
+      },
+      {
+        "name": "-sIFM",
+        "type": "string",
+        "desc": "Name of a CSV file containing sIFM linear current responses. Set to 'crv' to compute contact resistance variability instead."
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "List of reference Y-matrix (gate-to-drain admittance) values."
+      },
+      {
+        "name": "-rsig",
+        "type": "float",
+        "desc": "Optional. Standard deviation of contact resistance in Ohm. Only needed when sIFM is set to 'crv'."
+      },
+      {
+        "name": "-ydd",
+        "type": "list",
+        "desc": "Optional. List of reference Y(d,d) matrix elements. Only needed when sIFM is set to 'crv'."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "Optional. List of reference current values. Only needed when sIFM is set to 'crv'."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ifm::GetsIFMStdDev -out sigIV -sIFM \"mos_rdf_I_ndrain.csv\" -y $adgs"
+  },
+  "ifm::GetSNM": {
+    "signature": "ifm::GetSNM -out <array_name> -squares <array_name> -vtc_left <array_name> -vtc_right <array_name> -ncol <var_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes static noise margins (SNMs) from butterfly curves for one or more randomization sources. The left and right SNMs are defined as the axis-aligned biggest squares that fit into the respective lobes of the butterfly curve. The effective SNM is the smaller of the two.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a string-indexed array with elements 'left', 'right', and 'eff' containing lists of SNM values for all randomizations."
+      },
+      {
+        "name": "-squares",
+        "type": "string",
+        "desc": "Name of a three-indexed array to store fitted squares: first index is 1 or 2 (left/right lobe), second is 'x' or 'y', third is randomization index."
+      },
+      {
+        "name": "-vtc_left",
+        "type": "string",
+        "desc": "Name of a two-indexed array with left VTC curves. First index is 'Header' or 'Data', second is integer (randomization index)."
+      },
+      {
+        "name": "-vtc_right",
+        "type": "string",
+        "desc": "Name of a two-indexed array with right VTC curves. Same structure as -vtc_left."
+      },
+      {
+        "name": "-ncol",
+        "type": "string",
+        "desc": "Variable name containing the number of randomizations in the VTC data."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level: 0 (warnings/errors only), 1 (echo results), 2 (progress and debug), 3 (all debug). Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ifm::ReadCSV -out VTC_L -file Left_VTC.csv -ncol Ncol\nifm::ReadCSV -out VTC_R -file Right_VTC.csv -ncol Ncol\nifm::GetSNM -out SNM -squares SQ -vtc_left VTC_L -vtc_right VTC_R -ncol Ncol"
+  },
+  "ifm::GetSRAMVTC": {
+    "signature": "ifm::GetSRAMVTC -out <array_name> -vin <list_of_r> -vout <list_of_r> -fi <list_of_r> -aoi <list_of_r> -aoo <list_of_r> -id <string> -sifm <array_name> -nrow <var_name> -ncol <var_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Constructs randomized voltage transfer characteristic (VTC) curves for an SRAM cell from sIFM linear current responses. Uses a rotation-based method to adjust both input and output voltages, ensuring physical and monotonous VTC curves by analyzing the current flow in the reference device.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a two-indexed array to store VTC curves. First index is 'Header' or 'Data'; second is integer (randomization index)."
+      },
+      {
+        "name": "-vin",
+        "type": "list",
+        "desc": "List of reference VTC input voltage values."
+      },
+      {
+        "name": "-vout",
+        "type": "list",
+        "desc": "List of reference VTC output voltage values."
+      },
+      {
+        "name": "-fi",
+        "type": "list",
+        "desc": "List of current-controlled angle values (radians) for the rotation method."
+      },
+      {
+        "name": "-aoi",
+        "type": "list",
+        "desc": "List of reference ReY(out,in) matrix values."
+      },
+      {
+        "name": "-aoo",
+        "type": "list",
+        "desc": "List of reference ReY(out,out) matrix values."
+      },
+      {
+        "name": "-id",
+        "type": "string",
+        "desc": "ID of the sIFM variability source."
+      },
+      {
+        "name": "-sifm",
+        "type": "string",
+        "desc": "Name of a three-indexed array containing sIFM data: first index is string (source IDs), second is integer (bias row), third is integer (randomization column)."
+      },
+      {
+        "name": "-nrow",
+        "type": "string",
+        "desc": "Variable name containing the number of rows (bias points) in the sIFM data."
+      },
+      {
+        "name": "-ncol",
+        "type": "string",
+        "desc": "Variable name containing the number of columns (randomizations) in the sIFM data."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level: 0 (warnings/errors only), 1 (echo results), 2 (progress and debug), 3 (all debug). Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ifm::GetSRAMVTC -out VTC -id \"rdf\" -vin $Vins -vout $Vots -fi $fis -aoi $aois -aoo $aoos -sifm sIFM -nrow Nrow -ncol Ncol"
+  },
+  "ifm::ReadCSV": {
+    "signature": "ifm::ReadCSV -out <array_name> -file <string> -ncol <var_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Reads a CSV file (one header line with dataset names followed by value rows) and stores the data in a Tcl array with 'Header' and 'Data' indices.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a two-indexed array to store the read data. First index is 'Header' or 'Data'; second is integer (column index)."
+      },
+      {
+        "name": "-file",
+        "type": "string",
+        "desc": "Path to the CSV file to read."
+      },
+      {
+        "name": "-ncol",
+        "type": "string",
+        "desc": "Variable name to store the number of columns found in the CSV file."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level: 0 (warnings/errors only), 1 (echo results), 2 (progress and debug), 3 (all debug). Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "ifm::ReadCSV -out ReadCSV -ncol ReadNcol -file \"my.csv\""
+  },
+  "ifm::ReadsIFM": {
+    "signature": "ifm::ReadsIFM -out <array_name> -files <list_of_strings> -ids <list_of_strings> -nrow <var_name> -ncol <var_name> [-rsig <r> -nrand <i> -rseed <i> -ydd <list_of_r> -i <list_of_r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Reads one or more sIFM CSV files containing linear current responses and stores the data in a three-indexed array. Supports computing combined responses (using 'SUM' identifier) and contact resistance variability (using 'crv' identifier).",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a three-indexed array: first index is string (source IDs), second is integer (bias row), third is integer (randomization column)."
+      },
+      {
+        "name": "-files",
+        "type": "list",
+        "desc": "List of sIFM CSV file paths."
+      },
+      {
+        "name": "-ids",
+        "type": "list",
+        "desc": "List of variability source identifiers. Include 'SUM' to automatically compute combined data from all sources."
+      },
+      {
+        "name": "-nrow",
+        "type": "string",
+        "desc": "Variable name to store the number of rows (bias points) found."
+      },
+      {
+        "name": "-ncol",
+        "type": "string",
+        "desc": "Variable name to store the number of columns (randomizations) found."
+      },
+      {
+        "name": "-rsig",
+        "type": "float",
+        "desc": "Optional. Standard deviation of contact resistance in Ohm. Only needed when ids contains 'crv'."
+      },
+      {
+        "name": "-nrand",
+        "type": "int",
+        "desc": "Optional. Number of random samples for contact resistance variability. Only needed when ids contains 'crv'."
+      },
+      {
+        "name": "-rseed",
+        "type": "int",
+        "desc": "Optional. Random number seed (1 to 2147483647) for contact resistance variability."
+      },
+      {
+        "name": "-ydd",
+        "type": "list",
+        "desc": "Optional. List of reference Y(d,d) matrix elements. Only needed when ids contains 'crv'."
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "Optional. List of reference current values. Only needed when ids contains 'crv'."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level: 0 (warnings/errors only), 1 (echo results), 2 (progress and debug), 3 (all debug). Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set IDs [list rdf ifft SUM]\nset FILES [list rdf_I_ndrain.csv ifft_I_ndrain.csv SUM_I_ndrain.csv]\nifm::ReadsIFM -out sIFM -nrow Nrow -ncol Ncol -files $FILES -ids $IDs"
+  },
+  "rfx::Abs2_v": {
+    "signature": "rfx::Abs2_v -out <list_name> -z <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes the square of the absolute value of a list of complex numbers. Results are stored in a named Tcl list.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a list to store the list of squared absolute values."
+      },
+      {
+        "name": "-z",
+        "type": "string",
+        "desc": "Name of an array containing a list of complex numbers. The array has indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Z(Re) [list 1 1 0 -1]\nset Z(Im) [list 0 1 1 1]\nrfx::Abs2_v -out abs2 -z Z\nputs \"square of abs values = $abs2\""
+  },
+  "rfx::Abs_v": {
+    "signature": "rfx::Abs_v -out <list_name> -z <array_name> [-dB 0|10|20] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes the absolute values of a list of complex numbers, optionally in units of 10 dB or 20 dB. Results are stored in a named Tcl list.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a list to store the list of absolute values."
+      },
+      {
+        "name": "-z",
+        "type": "string",
+        "desc": "Name of an array containing a list of complex numbers. The array has indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-dB",
+        "type": "int",
+        "desc": "Optional. Decibel level for absolute values: 0 (linear scale), 10 (10 dB scale), 20 (20 dB scale). Default: 0."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Z(Re) [list 0 0 0 0 0]\nset Z(Im) [list 1e0 1e1 1e2 1e3 1e4]\nrfx::Abs_v -out dBs -z Z -dB 10\nputs \"dBs= $dBs\""
+  },
+  "rfx::Add_v": {
+    "signature": "rfx::Add_v -out <array_name> -z1 <array_name> -z2 <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Adds two lists of complex numbers element-wise. Results are stored in a named Tcl array with 'Re' and 'Im' indices.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store the results with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-z1",
+        "type": "string",
+        "desc": "Name of an array containing the first list of complex numbers with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-z2",
+        "type": "string",
+        "desc": "Name of an array containing the second list of complex numbers with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Z1(Re) [list 0 1]\nset Z1(Im) [list 1 2]\nset Z2(Re) [list 1 2]\nset Z2(Im) [list 3 4]\nrfx::Add_v -out Z -z1 Z1 -z2 Z2"
+  },
+  "rfx::Cart2Polar_v": {
+    "signature": "rfx::Cart2Polar_v -out <array_name> -z <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Converts a list of complex numbers from Cartesian coordinates to polar coordinates. Results are stored in an array with 'Abs' and 'Phase' indices.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store the results with indices 'Abs' (absolute values) and 'Phase' (phases in degrees)."
+      },
+      {
+        "name": "-z",
+        "type": "string",
+        "desc": "Name of an array containing a list of complex numbers with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Z(Re) [list 1 1 0 -1]\nset Z(Im) [list 0 1 1 1]\nrfx::Cart2Polar_v -out polar -z Z\nputs \"abs = $polar(Abs), phases = $polar(Phase)\""
+  },
+  "rfx::Conj_v": {
+    "signature": "rfx::Conj_v -out <array_name> -z <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes the complex conjugate of a list of complex numbers element-wise. Results are stored in an array with 'Re' and 'Im' indices.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store the complex conjugate results with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-z",
+        "type": "string",
+        "desc": "Name of an array containing a list of complex numbers with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Z(Re) [list 1 1]\nset Z(Im) [list -1 1]\nrfx::Conj_v -out Conj -z Z\nputs \"$Conj(Re) $Conj(Im)\""
+  },
+  "rfx::Div_v": {
+    "signature": "rfx::Div_v -out <array_name> -z1 <array_name> -z2 <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Divides two lists of complex numbers element-wise. Results are stored in an array with 'Re' and 'Im' indices.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store the quotient results with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-z1",
+        "type": "string",
+        "desc": "Name of an array containing the dividend list of complex numbers with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-z2",
+        "type": "string",
+        "desc": "Name of an array containing the divisor list of complex numbers with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Z1(Re) [list 4 4]\nset Z1(Im) [list 7 2]\nset Z2(Re) [list 1 3]\nset Z2(Im) [list -3 -1]\nrfx::Div_v -out Z -z1 Z1 -z2 Z2"
+  },
+  "rfx::GetFK1": {
+    "signature": "rfx::GetFK1 -out <array_name> [-dataset <dataName>] [-xscale \"lin\"|\"log\"] [-scale <r>] [-target <r>] [-occurrence <i>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes the cutoff frequency for stability fK1 (the frequency at which the Rollett stability factor K equals a target value) at all bias points. Creates a dataset if -dataset is specified. Returns 0 if fK1 is not found.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results with indices 'fK1' (cutoff frequencies) and 'bias' (bias values)."
+      },
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "Optional. Name of a Sentaurus Visual dataset containing 'bias' and 'fK1' variables."
+      },
+      {
+        "name": "-xscale",
+        "type": "string",
+        "desc": "Optional. X-axis scale: \"lin\" (linear) or \"log\" (logarithmic). Default: \"log\"."
+      },
+      {
+        "name": "-scale",
+        "type": "float",
+        "desc": "Optional. Scaling factor to divide computed fK1 by (e.g., 1e9 for GHz). Default: 1.0."
+      },
+      {
+        "name": "-target",
+        "type": "float",
+        "desc": "Optional. The K value to search for. Default: 1.0."
+      },
+      {
+        "name": "-occurrence",
+        "type": "int",
+        "desc": "Optional. The n-th interpolated fK1 value to extract when multiple frequencies have the same K value. Default: 1."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "rfx::GetFK1 -out FK -dataset \"fK.bias\" -xscale \"log\" -target 1.0 -occurrence 1 -scale 1e9"
+  },
+  "rfx::GetFmax": {
+    "signature": "rfx::GetFmax -out <array_name> -parameter <r> [-method <string>] [-dataset <dataName>] [-slopedataset <dataName>] [-powergain \"MUG\"|\"MAG\"] [-xscale \"lin\"|\"log\"] [-scale <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes the maximum frequency of oscillation fmax at all bias points from the power gain (MUG or MAG) versus frequency curves. Supports three extraction methods: unit-gain-point (a), extract-at-dBPoint (b), and extract-at-frequency (c). Returns 0 if fmax is not found or the device is passive.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results with indices 'fmax' and 'bias'."
+      },
+      {
+        "name": "-parameter",
+        "type": "float",
+        "desc": "The dB point for method \"b\" (in dB), or the frequency point for method \"c\" (in Hz). Mandatory for methods \"b\" and \"c\"."
+      },
+      {
+        "name": "-method",
+        "type": "string",
+        "desc": "Optional. Extraction method: \"a\" or \"unit-gain-point\" (direct unit gain search), \"b\" or \"extract-at-dBPoint\" (extrapolate from dB drop point), \"c\" or \"extract-at-frequency\" (extrapolate from specified frequency). Default: \"a\"."
+      },
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "Optional. Name of a dataset containing 'bias' and 'fmax' variables."
+      },
+      {
+        "name": "-slopedataset",
+        "type": "string",
+        "desc": "Optional. Name of a dataset containing power gain derivative variables (dMUG or dMAG in dB/decade vs frequency) for each bias point."
+      },
+      {
+        "name": "-powergain",
+        "type": "string",
+        "desc": "Optional. Power gain type for extraction: \"MUG\" (Mason's unilateral gain) or \"MAG\" (maximum available gain). Default: \"MUG\"."
+      },
+      {
+        "name": "-xscale",
+        "type": "string",
+        "desc": "Optional. X-axis scale: \"lin\" (linear) or \"log\" (logarithmic). Default: \"log\"."
+      },
+      {
+        "name": "-scale",
+        "type": "float",
+        "desc": "Optional. Scaling factor to divide computed fmax by (e.g., 1e9 for GHz). Default: 1.0."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "rfx::GetFmax -out Fmax0 -method \"unit-gain-point\" -scale 1e9 -xscale \"log\" -dataset \"fmax0.bias\" -slopedataset \"MUG_slope_freq\""
+  },
+  "rfx::GetFt": {
+    "signature": "rfx::GetFt -out <array_name> -parameter <r> [-method <string>] [-dataset <dataName>] [-slopedataset <dataName>] [-xscale \"lin\"|\"log\"] [-scale <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes the cutoff frequency ft at all bias points from the current gain |h21| versus frequency curves. Supports three extraction methods: unit-gain-point (a), extract-at-dBPoint (b), and extract-at-frequency (c). Returns 0 if ft is not found or |h21| is less than or equal to 1.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results with indices 'ft' (cutoff frequencies) and 'bias'."
+      },
+      {
+        "name": "-parameter",
+        "type": "float",
+        "desc": "The dB point for method \"b\" (in dB), or the frequency point for method \"c\" (in Hz). Mandatory for methods \"b\" and \"c\"."
+      },
+      {
+        "name": "-method",
+        "type": "string",
+        "desc": "Optional. Extraction method: \"a\" or \"unit-gain-point\" (frequency where |h21|=0 dB), \"b\" or \"extract-at-dBPoint\" (extrapolate from dB drop point), \"c\" or \"extract-at-frequency\" (extrapolate from specified frequency). Default: \"a\"."
+      },
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "Optional. Name of a dataset containing 'bias' and 'ft' variables."
+      },
+      {
+        "name": "-slopedataset",
+        "type": "string",
+        "desc": "Optional. Name of a dataset containing |h21| derivative variables (dh21 in dB/decade vs frequency) for each bias point."
+      },
+      {
+        "name": "-xscale",
+        "type": "string",
+        "desc": "Optional. X-axis scale: \"lin\" (linear) or \"log\" (logarithmic). Default: \"log\"."
+      },
+      {
+        "name": "-scale",
+        "type": "float",
+        "desc": "Optional. Scaling factor to divide computed ft by (e.g., 1e9 for GHz). Default: 1.0."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "rfx::GetFt -out Ft0 -method \"unit-gain-point\" -scale 1e9 -xscale \"log\" -dataset \"ft0.bias\" -slopedataset \"h21_slope_freq\""
+  },
+  "rfx::GetNearestIndex": {
+    "signature": "rfx::GetNearestIndex -out <var_name> -target <r> -list <list_of_r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Finds the index of the entry in an ordered numeric list that is closest to the given target value. Commonly used to find the nearest frequency or bias point index. If the target is outside the range, returns the index of the first or last element.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Variable name to store the resulting index."
+      },
+      {
+        "name": "-target",
+        "type": "float",
+        "desc": "Target value to search for."
+      },
+      {
+        "name": "-list",
+        "type": "list",
+        "desc": "An ordered numeric list (ascending or descending order)."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "rfx::GetNearestIndex -out i_bias -target 0.5 -list $rfx::bias\nputs \"Nearest bias point index: $i_bias\""
+  },
+  "rfx::GetNoiseFigure": {
+    "signature": "rfx::GetNoiseFigure -out <array_name> [-xaxis \"frequency\"|\"bias\"] (-target <r> | -index <i>) [-dataset <dataName>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes the noise figure, noise parameters (NFmin, Rn, Gn, Yopt, Zopt), input-referred spectral densities (Svn, Sin, Svi), and noise correlation coefficients as a function of frequency or bias. Uses the rfx::z0 and rfx::Zs namespace variables for impedance values.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results. Indices include: NF, NFmin, F, Fmin, Rn, Gn, rn, gn, Gopt, Bopt, Ropt, Xopt, gopt, bopt, ropt, xopt, Gcor, Bcor, Gu, gu, Sv, Si, ReSvi, ImSvi, ReSiv, ImSiv, ReCi, ImCi, AbsCi, PhaseCi, ReCiv, ImCiv, AbsCiv, PhaseCiv, and freq or bias."
+      },
+      {
+        "name": "-xaxis",
+        "type": "string",
+        "desc": "Optional. Axis for computation: \"frequency\" (at fixed bias) or \"bias\" (at fixed frequency). Default: \"frequency\"."
+      },
+      {
+        "name": "-target",
+        "type": "float",
+        "desc": "Optional. Bias point (for -xaxis \"frequency\") or frequency point (for -xaxis \"bias\"). Specify only one of -target or -index."
+      },
+      {
+        "name": "-index",
+        "type": "int",
+        "desc": "Optional. Index of the bias point (for -xaxis \"frequency\") or frequency point (for -xaxis \"bias\"). Specify only one of -target or -index."
+      },
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "Optional. Name of a dataset containing the noise figure variables."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "rfx::GetNoiseFigure -out NFparam -dataset \"NF_freq\" -xaxis \"frequency\" -target 0.0"
+  },
+  "rfx::GetParsAtPoint": {
+    "signature": "rfx::GetParsAtPoint -out <array_name> -rfmatrix \"AC\"|\"Y\"|\"H\"|\"Z\"|\"S\" -biaspoint <r> -freqpoint <r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Accesses the RF parameters of an RF matrix at a given bias and frequency point. Results are stored in an array with indices 'bias', 'freq', '11', '12', '21', '22' (each containing a list of real and imaginary parts).",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results with indices 'bias', 'freq', '11', '12', '21', '22'."
+      },
+      {
+        "name": "-rfmatrix",
+        "type": "string",
+        "desc": "Name of the RF matrix: \"AC\", \"Y\", \"H\", \"Z\", or \"S\"."
+      },
+      {
+        "name": "-biaspoint",
+        "type": "float",
+        "desc": "Bias point value."
+      },
+      {
+        "name": "-freqpoint",
+        "type": "float",
+        "desc": "Frequency point value."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "rfx::GetParsAtPoint -out ReImData -rfmatrix \"AC\" -biaspoint 0.0 -freqpoint 1e8"
+  },
+  "rfx::GetPowerGain": {
+    "signature": "rfx::GetPowerGain -out <array_name> [-xaxis \"frequency\"|\"bias\"] (-target <r> | -index <i>) [-dataset <dataName>] [-powergain \"all\"|\"MUG\"|\"MSG\"|\"MAG\"] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes power gains and stability criteria as a function of frequency (at fixed bias) or bias (at fixed frequency). Results include Rollett stability factor K, stability condition delta, MSG, MAG, MUG (on linear and 10 dB scales), and unilateral figure of merit U.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store results. Indices include: K, delta, freq or bias, and optionally MUG, MUG_dB, MSG, MSG_dB, MAG, MAG_dB, U."
+      },
+      {
+        "name": "-xaxis",
+        "type": "string",
+        "desc": "Optional. Axis for computation: \"frequency\" or \"bias\". Default: \"frequency\"."
+      },
+      {
+        "name": "-target",
+        "type": "float",
+        "desc": "Optional. Bias point (for -xaxis \"frequency\") or frequency point (for -xaxis \"bias\"). Specify only one of -target or -index."
+      },
+      {
+        "name": "-index",
+        "type": "int",
+        "desc": "Optional. Index of the bias or frequency point. Specify only one of -target or -index."
+      },
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "Optional. Name of a dataset containing the power gain variables."
+      },
+      {
+        "name": "-powergain",
+        "type": "string",
+        "desc": "Optional. Power gains to compute: \"all\" (MSG, MAG, MUG, U), \"MUG\" (MUG and U only), \"MSG\" (MSG only), \"MAG\" (MAG only). Default: \"all\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "rfx::GetPowerGain -out gain -dataset \"Pgain_freq\" -powergain \"all\" -xaxis \"bias\" -target 0.0"
+  },
+  "rfx::Mul_v": {
+    "signature": "rfx::Mul_v -out <array_name> -z1 <array_name> -z2 <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Multiplies two lists of complex numbers element-wise. Results are stored in an array with 'Re' and 'Im' indices.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store the product results with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-z1",
+        "type": "string",
+        "desc": "Name of an array containing the first list of complex numbers with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-z2",
+        "type": "string",
+        "desc": "Name of an array containing the second list of complex numbers with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Z1(Re) [list 4 4]\nset Z1(Im) [list 7 2]\nset Z2(Re) [list 1 3]\nset Z2(Im) [list -3 -1]\nrfx::Mul_v -out Z -z1 Z1 -z2 Z2"
+  },
+  "rfx::Phase_v": {
+    "signature": "rfx::Phase_v -out <list_name> -z <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Computes the principal value of the phase (in degrees) of a list of complex numbers specified in Cartesian coordinates. Results are stored in a named Tcl list.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of a list to store the phase values in degrees."
+      },
+      {
+        "name": "-z",
+        "type": "string",
+        "desc": "Name of an array containing a list of complex numbers with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Z(Re) [list 1 1 0 -1]\nset Z(Im) [list 0 1 1 1]\nrfx::Phase_v -out phases -z Z\nputs \"phases = $phases\""
+  },
+  "rfx::Polar2Cart_v": {
+    "signature": "rfx::Polar2Cart_v -out <array_name> -z <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Converts a list of complex numbers from polar coordinates to Cartesian coordinates. Input array has indices 'Abs' and 'Phase'; output array has indices 'Re' and 'Im'.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store the results with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-z",
+        "type": "string",
+        "desc": "Name of an array containing a list of complex numbers in polar form with indices 'Abs' and 'Phase' (in degrees)."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Z(Abs) [list 1.414 1]\nset Z(Phase) [list 45 60]\nrfx::Polar2Cart_v -out ReIm -z Z"
+  },
+  "rfx::RFCList": {
+    "signature": "rfx::RFCList -out <array_name> -rfparameter <string> -index <i> [-noisename <string>] [-noisesource \"ee\"|\"hh\"|\"eeDiff\"|\"hhDiff\"|\"eeMonoGR\"|\"hhMonoGR\"|\"eeFlickerGR\"|\"hhFlickerGR\"] [-xaxis \"frequency\"|\"bias\"] [-info 0|1|2|3] [-help 0|1]",
+    "description": "Accesses a slice of the Y-, h-, Z-, S-matrix, or PSD matrices, typically to generate a curve of an RF parameter or PSD as a function of bias or frequency. Results are stored in an array with 'Re' and 'Im' indices.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store the results with indices 'Re' (real parts list) and 'Im' (imaginary parts list)."
+      },
+      {
+        "name": "-rfparameter",
+        "type": "string",
+        "desc": "Parameter identifier, e.g., \"h21\" for h-matrix element h21, \"z11\" for Z-matrix element z11, \"sv11\" or \"si11\" for PSD elements (with port numbers 11, 12, 21, 22)."
+      },
+      {
+        "name": "-index",
+        "type": "int",
+        "desc": "Index of the slice (bias point index for -xaxis \"frequency\", or frequency index for -xaxis \"bias\")."
+      },
+      {
+        "name": "-noisename",
+        "type": "string",
+        "desc": "Optional. Name of the noise specification. Required for PSD parameters when a named noise specification was used."
+      },
+      {
+        "name": "-noisesource",
+        "type": "string",
+        "desc": "Optional. Name of the noise source for partial PSDs: \"ee\" (electron), \"hh\" (hole), \"eeDiff\" (electron diffusion), \"hhDiff\" (hole diffusion), \"eeMonoGR\" (electron monopolar GR), \"hhMonoGR\" (hole monopolar GR), \"eeFlickerGR\" (electron flicker GR), \"hhFlickerGR\" (hole flicker GR)."
+      },
+      {
+        "name": "-xaxis",
+        "type": "string",
+        "desc": "Optional. Axis: \"frequency\" (RF parameter vs frequency at fixed bias) or \"bias\" (vs bias at fixed frequency). Default: \"frequency\"."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "rfx::RFCList -out ReImz11 -rfparameter \"z11\" -xaxis \"frequency\" -index $i_bias"
+  },
+  "rfx::Sub_v": {
+    "signature": "rfx::Sub_v -out <array_name> -z1 <array_name> -z2 <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "Subtracts two lists of complex numbers element-wise. Results are stored in an array with 'Re' and 'Im' indices.",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "Name of an array to store the difference results with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-z1",
+        "type": "string",
+        "desc": "Name of an array containing the minuend list of complex numbers with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-z2",
+        "type": "string",
+        "desc": "Name of an array containing the subtrahend list of complex numbers with indices 'Re' and 'Im'."
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "Optional. Sets local information level. Default: 0."
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "Optional. Prints a help screen if set to 1. Default: 0."
+      }
+    ],
+    "example": "set Z1(Re) [list 1 1]\nset Z1(Im) [list 0 2]\nset Z2(Re) [list 0 2]\nset Z2(Im) [list 1 4]\nrfx::Sub_v -out Z -z1 Z1 -z2 Z2"
+  }
+}
