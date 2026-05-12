@@ -26,3 +26,10 @@ benchmarks/**
 tests/**
 build/**
 temp/**
+
+# web-tree-sitter: 只保留运行时必需文件
+node_modules/web-tree-sitter/debug/**
+node_modules/web-tree-sitter/lib/**
+node_modules/web-tree-sitter/src/**
+node_modules/web-tree-sitter/*.map
+node_modules/web-tree-sitter/*.cjs

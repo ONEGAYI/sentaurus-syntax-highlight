@@ -4,6 +4,14 @@
 
 ---
 
+## [2.0.1] - 2026-05-12
+
+### 其他改进
+
+- **VSIX 包体积优化**：排除 `web-tree-sitter` 的 debug build、C 源码、TypeScript 源码和 source map，安装包从 2.98 MB 缩减至 1.43 MB
+
+---
+
 ## [2.0.0] - 2026-05-12
 
 ### ⚠️ 重大变更
@@ -942,6 +950,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.0.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.17.2...v2.0.0
 [1.17.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.17.1...v1.17.2
 [1.17.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.17.0...v1.17.1
