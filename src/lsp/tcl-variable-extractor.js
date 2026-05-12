@@ -83,12 +83,16 @@ function getVariableRefs(root) {
     walkNodes(root, node => {
         if (node.type === 'variable_substitution') {
             const raw = node.text;
-            let name = raw;
+            // tree-sitter-tcl bug: "] $var" 场景下节点文本包含前导空格（" $var"），
+            // 用 indexOf 定位真正的 $ 符号位置，跳过前导空白
+            const dollarIdx = raw.indexOf('$');
+            if (dollarIdx < 0) return;
+
+            let name = raw.slice(dollarIdx + 1);
+            if (!name) return;
             // 处理 ${varName} 形式
-            if (name.startsWith('${') && name.endsWith('}')) {
-                name = name.slice(2, -1);
-            } else if (name.startsWith('$')) {
-                name = name.slice(1);
+            if (name.startsWith('{') && name.endsWith('}')) {
+                name = name.slice(1, -1);
             }
             // 去除数组索引 $var(index) → var
             const parenIdx = name.indexOf('(');
@@ -99,7 +103,7 @@ function getVariableRefs(root) {
                 refs.push({
                     name,
                     line: node.startPosition.row + 1,
-                    startCol: node.startPosition.column,
+                    startCol: node.startPosition.column + dollarIdx,
                     endCol: node.endPosition.column,
                 });
             }
