@@ -4,6 +4,18 @@
 
 ---
 
+## [2.0.0] - 2026-05-12
+
+### ⚠️ 重大变更
+
+- **升级 web-tree-sitter 0.22.6 → 0.25.3**（#55）：WASM 运行时依赖大版本升级，API 接口不兼容（`Parser.init()` 改为静态方法、`Language` 改为顶层导出）。扩展行为无用户可感知的变化，但运行时环境要求更新
+
+### Bug 修复
+
+- **底层修复 tree-sitter-tcl 三个语法结构性 bug**（#55）：从 grammar.js 源码层定位并修复 `expr_cmd` 引用 `$.expr` 导致 `binop_expr` 在 `[]` 内回溯失败、`set` 不支持花括号变量名、`braced_word_simple` 内部 `simple_word` 排除圆括号导致 `expr {int(rand())}` 解析崩溃。重建 WASM 字节码（language version 15），20 个 Tcl 语法模式测试从 ~40% 通过提升至 100% 通过，全项目 36 个测试套件零回归
+
+---
+
 ## [1.17.2] - 2026-05-12
 
 ### 新功能
@@ -930,6 +942,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.0.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.17.2...v2.0.0
 [1.17.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.17.1...v1.17.2
 [1.17.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.17.0...v1.17.1
 [1.17.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.16.2...v1.17.0
