@@ -518,6 +518,64 @@ test('incr 变量提取', () => {
     assert.strictEqual(vars[0].kind, 'variable');
 });
 
+// ── ERROR 根节点内的 if/else 分支变量 ──
+console.log('\nERROR 根节点内 if/else 分支变量:');
+
+test('ERROR 根节点中 if/else 分支内 set 变量仍可提取', () => {
+    // 当 tree-sitter-tcl 解析含嵌套 [] 的 set 时可能将整个文档标记为 ERROR，
+    // 但 if/else 等结构仍然作为正常子节点存在。
+    // 模拟: ERROR → [if → [braced_word → [set x 1], else → [braced_word → [set x 2]]]]
+    const ifBodySet = makeNode('set', 'set x 1', [
+        makeNode('simple_word', 'set', [], 1, 4, 1, 7),
+        makeNode('id', 'x', [], 1, 8, 1, 9),
+        makeNode('simple_word', '1', [], 1, 10, 1, 11),
+    ], 1, 4, 1, 11);
+    const ifBody = makeNode('braced_word', '{ set x 1 }', [
+        makeNode('{', '{', [], 0, 13, 0, 14),
+        ifBodySet,
+        makeNode('}', '}', [], 1, 11, 1, 12),
+    ], 0, 13, 1, 12);
+
+    const elseBodySet = makeNode('set', 'set x 2', [
+        makeNode('simple_word', 'set', [], 2, 7, 2, 10),
+        makeNode('id', 'x', [], 2, 11, 2, 12),
+        makeNode('simple_word', '2', [], 2, 13, 2, 14),
+    ], 2, 7, 2, 14);
+    const elseBody = makeNode('braced_word', '{ set x 2 }', [
+        makeNode('{', '{', [], 1, 13, 1, 14),
+        elseBodySet,
+        makeNode('}', '}', [], 2, 14, 2, 15),
+    ], 1, 13, 2, 15);
+
+    const elseNode = makeNode('else', 'else { set x 2 }', [
+        makeNode('simple_word', 'else', [], 1, 12, 1, 16),
+        elseBody,
+    ], 1, 12, 2, 15);
+
+    const exprNode = makeNode('expr', '{1}', [
+        makeNode('{', '{', [], 0, 3, 0, 4),
+        makeNode('simple_word', '1', [], 0, 4, 0, 5),
+        makeNode('}', '}', [], 0, 5, 0, 6),
+    ], 0, 3, 0, 6);
+
+    const ifNode = makeNode('if', 'if {1} { set x 1 } else { set x 2 }', [
+        makeNode('simple_word', 'if', [], 0, 0, 0, 2),
+        exprNode,
+        ifBody,
+        elseNode,
+    ], 0, 0, 2, 15);
+
+    // root 是 ERROR 类型
+    const root = makeNode('ERROR', '', [ifNode], 0, 0, 2, 15);
+    const vars = varExtractor.getVariables(root);
+
+    assert.strictEqual(vars.length, 2, `ERROR 根中 if/else 应提取 2 个变量，实际 ${vars.length}：${vars.map(v => v.name).join(',')}`);
+    assert.strictEqual(vars[0].name, 'x');
+    assert.strictEqual(vars[0].line, 2);
+    assert.strictEqual(vars[1].name, 'x');
+    assert.strictEqual(vars[1].line, 3);
+});
+
 // ── 汇总 ──
 console.log(`\n${'='.repeat(40)}`);
 console.log(`${'='.repeat(40)}\n`);
