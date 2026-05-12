@@ -4,6 +4,18 @@
 
 ---
 
+## [1.17.2] - 2026-05-12
+
+### 新功能
+
+- **完整支持 15 种 Tcl 隐式变量声明函数的 hover/跳转/undef**（#54）：为 `gets`/`scan`/`regexp`/`regsub`/`catch`/`append`/`lappend`/`incr`/`variable`/`global`/`upvar`/`array`/`file`/`dict set`/`dict update` 等 15 种命令提供三层 LSP 支持（hover 悬停、跳转定义、no-undef 诊断豁免）。统一三模块（`tcl-ast-utils.js`/`tcl-scope.js`/`tcl-variable-extractor.js`）的命令处理逻辑，减少约 130 行重复代码；修复 `buildScopeIndex` 不递归进入 `command_substitution` 节点的深层 bug；新增 60 个 TDD 测试覆盖正常解析/ERROR 恢复/scope 可见性
+
+### Bug 修复
+
+- **字符串内 `] $var` 场景下变量引用提取失败导致 undef 误报**（#53）：tree-sitter-tcl 在 `"] $var"` 场景下 `variable_substitution` 节点文本包含前导空格，导致 `getVariableRefs` 的 `startsWith('$')` 匹配失败。改用 `indexOf('$')` 定位 `$` 符号真实位置并修正列偏移
+
+---
+
 ## [1.17.1] - 2026-05-12
 
 ### Bug 修复
@@ -918,6 +930,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.17.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.17.1...v1.17.2
 [1.17.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.17.0...v1.17.1
 [1.17.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.16.2...v1.17.0
 [1.16.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.16.1...v1.16.2

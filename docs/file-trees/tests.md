@@ -34,6 +34,7 @@ sentaurus-syntax-highlight/
 │   ├── test-region-undef-diagnostic.js         ← Region/Material/Contact 未定义诊断
 │   ├── test-symbol-completion.js               ← 符号补全过滤
 │   ├── test-symbol-reference.js                ← Find All References
+│   ├── test-implicit-var-functions.js           ← 15 种 Tcl 隐式变量声明函数测试（60 用例）
 │   └── benchmark.js                            ← 性能基准测试工具
 │   └── benchmark-firstload.js                  ← 首次加载性能诊断脚本
 ```

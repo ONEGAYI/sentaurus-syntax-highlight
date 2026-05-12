@@ -89,11 +89,11 @@ sentaurus-syntax-highlight/
 │   │   ├── scheme-analyzer.js                  ← Scheme AST 定义提取 + 折叠范围
 │   │   ├── scope-analyzer.js                   ← Scheme 作用域树构建（词法作用域追踪）
 │   │   ├── semantic-dispatcher.js              ← Scheme 函数调用语义模式分发
-│   │   ├── symbol-index.js                    ← 符号提取引擎（Region/Material/Contact 声明式配置）
+│   │   ├── symbol-index.js                     ← 符号提取引擎（Region/Material/Contact 声明式配置）
 │   │   ├── tcl-parser-wasm.js                  ← Tcl WASM 解析器接口（单例模式）
-│   │   ├── tcl-ast-utils.js                    ← Tcl AST 通用工具（parseSafe/walkNodes/辅助函数共享）
-│   │   ├── tcl-scope.js                        ← 作用域构建与索引（ScopeIndex/buildScopeIndex）
-│   │   ├── tcl-variable-extractor.js           ← 变量提取与引用查找（getVariables/getVariableRefs）
+│   │   ├── tcl-ast-utils.js                    ← Tcl AST 通用工具（parseSafe/walkNodes/15种隐式变量声明函数共享提取）
+│   │   ├── tcl-scope.js                        ← 作用域构建与索引（ScopeIndex/buildScopeIndex，18种命令覆盖）
+│   │   ├── tcl-variable-extractor.js           ← 变量提取与引用查找（getVariables/getVariableRefs，15种隐式变量命令）
 │   │   ├── tcl-bracket-check.js                ← 括号平衡检查（findMismatchedBraces）
 │   │   ├── tcl-document-symbol.js              ← 文档大纲符号提取（getDocumentSymbols/SymbolKind）
 │   │   ├── tcl-symbol-configs.js               ← Tcl 工具 section 关键词 + 子 section 配置
@@ -152,11 +152,14 @@ sentaurus-syntax-highlight/
 │   ├── glossary.json                           ← TCAD 术语数据库
 │   ├── 函数文档提取与编写规范.md                 ← 文档编写规范
 │   ├── scope-color-reference.md                ← 全语言 Scope + Color + KeywordType 查询表
+│   ├── implicit-var-functions-survey.md         ← 15 种 Tcl 隐式变量声明函数调研文档
+│   ├── implicit-var-extracts/                   ← 隐式变量函数文档片段（中英文双语）
+│   │   └── {tcl-core,tcl-subcmd,svisual}.{json,zh-CN.json}
 │   ├── file-trees/                             ← CLAUDE.md 折叠的子文件树
 │   │   └── tests.md                            ← tests/ 目录详细文件树
 │   ├── prompts/i18n/                           ← 国际化 prompt 模板
 │   └── superpowers/                            ← 开发 spec/plan 归档
-│       ├── plans/archived/                     ← 已完成的实现计划 (Working/Total: 1/43)
+│       ├── plans/archived/                     ← 已完成的实现计划 (Working/Total: 2/43)
 │       └── specs/archived/                     ← 已完成的设计规范 (Working/Total: 1/34)
 │
 ├── benchmarks/                                 ← 性能基准测试输出（JSON）
