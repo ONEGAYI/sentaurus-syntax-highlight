@@ -32,6 +32,14 @@ function getVariables(root, sourceText) {
     // 含 [] 的 set 可能导致整个文档根节点变成 ERROR。
     if (root.type === 'ERROR') {
         _collectErrorVarsRecursive(root, results, lines);
+        // ERROR 根节点内仍可能包含 if/command/foreach 等正常子节点，
+        // 需要递归提取其中的变量定义。
+        for (let i = 0; i < root.childCount; i++) {
+            const child = root.child(i);
+            if (child && child.type !== 'ERROR') {
+                _collectVariables(child, results, sourceText, lines);
+            }
+        }
         return results;
     }
     _collectVariables(root, results, sourceText, lines);
