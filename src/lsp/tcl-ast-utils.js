@@ -216,28 +216,112 @@ function _extractBracedWordVars(bracedNode, defs) {
 /**
  * 从 command/ERROR 节点提取命令级变量定义（lassign、lmap、dict for）。
  */
+function _isWordType(w) {
+    return w && (w.type === 'simple_word' || w.type === 'id');
+}
+
+/**
+ * 从 command 节点提取隐式变量定义。统一入口，供 extractor/scope 两模块共用。
+ * @param {object} node - command 节点
+ * @param {string} cmdName - 命令名
+ * @param {object[]} words - _getCommandWords 返回的词列表
+ * @returns {Array<{name: string, line: number}>}
+ */
 function _extractCommandVarDefs(node, cmdName, words) {
     const defs = [];
     if (cmdName === 'lassign') {
         for (let i = 2; i < words.length; i++) {
-            const w = words[i];
-            if (w.type === 'simple_word' || w.type === 'id') {
-                defs.push({ name: w.text, line: w.startPosition.row + 1 });
-            }
+            if (_isWordType(words[i])) defs.push({ name: words[i].text, line: words[i].startPosition.row + 1 });
         }
     } else if (cmdName === 'lmap') {
         for (let i = 1; i < words.length - 1; i += 2) {
             const w = words[i];
-            if (w.type === 'simple_word' || w.type === 'id') {
-                defs.push({ name: w.text, line: w.startPosition.row + 1 });
-            } else if (w.type === 'braced_word') {
-                _extractBracedWordVars(w, defs);
+            if (_isWordType(w)) defs.push({ name: w.text, line: w.startPosition.row + 1 });
+            else if (w.type === 'braced_word') _extractBracedWordVars(w, defs);
+        }
+    } else if (cmdName === 'incr' || cmdName === 'append' || cmdName === 'lappend') {
+        if (words.length >= 2 && _isWordType(words[1])) {
+            defs.push({ name: words[1].text, line: words[1].startPosition.row + 1 });
+        }
+    } else if (cmdName === 'gets') {
+        if (words.length >= 3 && _isWordType(words[2])) {
+            defs.push({ name: words[2].text, line: words[2].startPosition.row + 1 });
+        }
+    } else if (cmdName === 'catch') {
+        if (words.length >= 3 && _isWordType(words[2])) {
+            defs.push({ name: words[2].text, line: words[2].startPosition.row + 1 });
+        }
+        if (words.length >= 4 && _isWordType(words[3])) {
+            defs.push({ name: words[3].text, line: words[3].startPosition.row + 1 });
+        }
+    } else if (cmdName === 'scan') {
+        for (let i = 3; i < words.length; i++) {
+            if (_isWordType(words[i])) defs.push({ name: words[i].text, line: words[i].startPosition.row + 1 });
+        }
+    } else if (cmdName === 'regexp') {
+        let idx = 1;
+        while (idx < words.length && words[idx].text.startsWith('-')) idx++;
+        for (let i = idx + 2; i < words.length; i++) {
+            if (_isWordType(words[i])) defs.push({ name: words[i].text, line: words[i].startPosition.row + 1 });
+        }
+    } else if (cmdName === 'regsub') {
+        if (words.length >= 2) {
+            const last = words[words.length - 1];
+            if (last && last.type === 'simple_word' && !last.text.startsWith('-')) {
+                defs.push({ name: last.text, line: last.startPosition.row + 1 });
             }
         }
-    } else if (cmdName === 'dict' && words[1] && words[1].text === 'for') {
-        const bracedVars = words[2];
-        if (bracedVars && bracedVars.type === 'braced_word') {
-            _extractBracedWordVars(bracedVars, defs);
+    } else if (cmdName === 'variable') {
+        let argIdx = 0;
+        for (let i = 1; i < words.length; i++) {
+            if (_isWordType(words[i])) {
+                if (argIdx % 2 === 0) defs.push({ name: words[i].text, line: words[i].startPosition.row + 1 });
+                argIdx++;
+            }
+        }
+    } else if (cmdName === 'global') {
+        for (let i = 1; i < words.length; i++) {
+            if (_isWordType(words[i])) defs.push({ name: words[i].text, line: words[i].startPosition.row + 1 });
+        }
+    } else if (cmdName === 'upvar') {
+        for (const name of _extractUpvarLocalNames(words)) {
+            defs.push({ name, line: node.startPosition.row + 1 });
+        }
+    } else if (cmdName === 'dict') {
+        const subCmd = words[1] ? words[1].text : '';
+        if (subCmd === 'for' || subCmd === 'map') {
+            const bracedVars = words[2];
+            if (bracedVars && bracedVars.type === 'braced_word') _extractBracedWordVars(bracedVars, defs);
+        } else if (subCmd === 'set') {
+            if (_isWordType(words[2])) defs.push({ name: words[2].text, line: words[2].startPosition.row + 1 });
+        } else if (subCmd === 'update') {
+            for (let i = 4; i < words.length; i += 2) {
+                if (_isWordType(words[i])) defs.push({ name: words[i].text, line: words[i].startPosition.row + 1 });
+            }
+        }
+    } else if (cmdName === 'array') {
+        if (words[1] && words[1].text === 'set' && _isWordType(words[2])) {
+            defs.push({ name: words[2].text, line: words[2].startPosition.row + 1 });
+        }
+    } else if (cmdName === 'file') {
+        if (words[1] && words[1].text === 'stat' && _isWordType(words[3])) {
+            defs.push({ name: words[3].text, line: words[3].startPosition.row + 1 });
+        }
+    }
+    return defs;
+}
+
+/** 从 ERROR 节点中检测 id + command_substitution 兄弟模式（set VAR [cmd...] 吞噬后的残骸） */
+function _extractCmdSubstPatternDefs(node) {
+    const defs = [];
+    for (let i = 0; i < node.childCount - 1; i++) {
+        const cur = node.child(i);
+        if (!cur || (cur.type !== 'id' && cur.type !== 'simple_word')) continue;
+        const next = node.child(i + 1);
+        if (!next || next.type !== 'command_substitution') continue;
+        const name = cur.text;
+        if (!name.startsWith('env(') && !/^\d/.test(name) && name !== 'set') {
+            defs.push({ name, line: cur.startPosition.row + 1 });
         }
     }
     return defs;
@@ -258,8 +342,8 @@ function _extractErrorVarDefs(node, includeCompleteSet = false) {
     // Pass 1: 扫描 set + id/simple_word 兄弟节点对（空壳 set）
     for (let i = 0; i < node.childCount - 1; i++) {
         const cur = node.child(i);
-        if (cur.type !== 'set' && cur.type !== 'id' && cur.type !== 'simple_word') continue;
-        if (cur.type !== 'set') continue;
+        const isSet = cur.type === 'set' || (cur.type === 'simple_word' && cur.text === 'set');
+        if (!isSet) continue;
         const next = node.child(i + 1);
         if (next && (next.type === 'id' || next.type === 'simple_word')) {
             const name = next.text;
@@ -288,14 +372,22 @@ function _extractErrorVarDefs(node, includeCompleteSet = false) {
         }
     }
 
-    // Pass 3: 原有逻辑 —— 命令首词匹配
+    // Pass 3: 命令首词匹配
     const first = node.child(0);
     if (!first || first.type !== 'simple_word') return defs;
     const cmdName = first.text;
+
     if (cmdName === 'lassign') {
         for (let i = 2; i < node.childCount; i++) {
             const arg = node.child(i);
             if (arg && arg.type === 'simple_word') {
+                defs.push({ name: arg.text, line: arg.startPosition.row + 1 });
+            }
+        }
+    } else if (cmdName === 'incr' || cmdName === 'append' || cmdName === 'lappend' || cmdName === 'lmap') {
+        if (node.childCount >= 2) {
+            const arg = node.child(1);
+            if (arg && (arg.type === 'simple_word' || arg.type === 'id')) {
                 defs.push({ name: arg.text, line: arg.startPosition.row + 1 });
             }
         }
@@ -308,6 +400,65 @@ function _extractErrorVarDefs(node, includeCompleteSet = false) {
                     defs.push({ name: arg.text, line: arg.startPosition.row + 1 });
                 }
                 argIdx++;
+            }
+        }
+    } else if (cmdName === 'global') {
+        for (let i = 1; i < node.childCount; i++) {
+            const arg = node.child(i);
+            if (arg && arg.type === 'simple_word') {
+                defs.push({ name: arg.text, line: arg.startPosition.row + 1 });
+            }
+        }
+    } else if (cmdName === 'gets') {
+        if (node.childCount >= 3) {
+            const arg = node.child(2);
+            if (arg && (arg.type === 'simple_word' || arg.type === 'id')) {
+                defs.push({ name: arg.text, line: arg.startPosition.row + 1 });
+            }
+        }
+    } else if (cmdName === 'catch') {
+        for (let i = 2; i <= 3 && i < node.childCount; i++) {
+            const arg = node.child(i);
+            if (arg && arg.type === 'simple_word') {
+                defs.push({ name: arg.text, line: arg.startPosition.row + 1 });
+            }
+        }
+    } else if (cmdName === 'scan') {
+        for (let i = 3; i < node.childCount; i++) {
+            const arg = node.child(i);
+            if (arg && arg.type === 'simple_word') {
+                defs.push({ name: arg.text, line: arg.startPosition.row + 1 });
+            }
+        }
+    } else if (cmdName === 'regexp') {
+        let skip = 1;
+        while (skip < node.childCount) {
+            const a = node.child(skip);
+            if (a && a.type === 'simple_word' && a.text.startsWith('-')) { skip++; } else { break; }
+        }
+        // skip=exp, skip+1=string, skip+2+=varNames
+        for (let i = skip + 2; i < node.childCount; i++) {
+            const arg = node.child(i);
+            if (arg && arg.type === 'simple_word') {
+                defs.push({ name: arg.text, line: arg.startPosition.row + 1 });
+            }
+        }
+    } else if (cmdName === 'regsub') {
+        let skip = 1;
+        while (skip < node.childCount) {
+            const a = node.child(skip);
+            if (a && a.type === 'simple_word' && a.text.startsWith('-')) { skip++; } else { break; }
+        }
+        // skip=exp, skip+1=string, skip+2=subSpec, skip+3=varName（可选）
+        if (node.childCount >= skip + 4) {
+            const arg = node.child(skip + 3);
+            if (arg && arg.type === 'simple_word') {
+                defs.push({ name: arg.text, line: arg.startPosition.row + 1 });
+            }
+        } else if (node.childCount > skip + 2) {
+            const last = node.child(node.childCount - 1);
+            if (last && last.type === 'simple_word' && !last.text.startsWith('-')) {
+                defs.push({ name: last.text, line: last.startPosition.row + 1 });
             }
         }
     } else if (_isSvisualVarDefCommand(cmdName)) {
@@ -409,4 +560,5 @@ module.exports = {
     _extractVariableNames,
     _isSvisualVarDefCommand,
     _extractSvisualOutVars,
+    _extractCmdSubstPatternDefs,
 };

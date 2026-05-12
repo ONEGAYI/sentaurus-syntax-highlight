@@ -12,8 +12,10 @@ const {
     _extractBracedWordVars,
     _extractCommandVarDefs,
     _extractErrorVarDefs,
+    _extractUpvarLocalNames,
     _isSvisualVarDefCommand,
     _extractSvisualOutVars,
+    _extractCmdSubstPatternDefs,
 } = require('./tcl-ast-utils');
 
 /**
@@ -51,21 +53,88 @@ function getVariables(root, sourceText) {
  */
 function _collectErrorVarsRecursive(node, results, lines) {
     const defs = _extractErrorVarDefs(node, true);
+    const defText = lines
+        ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
+        : node.text;
     for (const d of defs) {
-        results.push({
-            name: d.name,
-            line: d.line,
-            endLine: d.line,
-            definitionText: lines
-                ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
-                : node.text,
-            kind: 'variable',
-        });
+        results.push({ name: d.name, line: d.line, endLine: d.line, definitionText: defText, kind: 'variable' });
     }
+
+    // ERROR 内 id + command_substitution 模式（set VAR [cmd ...] 吞噬后的残骸）
+    const existingKeys = new Set(results.map(r => r.name + '@' + r.line));
+    for (const d of _extractCmdSubstPatternDefs(node)) {
+        const key = d.name + '@' + d.line;
+        if (!existingKeys.has(key)) {
+            existingKeys.add(key);
+            results.push({ name: d.name, line: d.line, endLine: d.line, definitionText: defText, kind: 'variable' });
+        }
+    }
+
     for (let i = 0; i < node.childCount; i++) {
         const child = node.child(i);
         if (child && child.type === 'ERROR') {
             _collectErrorVarsRecursive(child, results, lines);
+        }
+        if (child && (child.type === 'braced_word_simple' || child.type === 'braced_word')) {
+            _collectBracedWordSimpleVars(child, results, lines);
+        }
+        if (child && child.type === 'command_substitution') {
+            _collectCmdSubstVars(child, results, lines);
+        }
+    }
+}
+
+/**
+ * 从 command_substitution 节点中提取变量定义。
+ * 例如 [lmap v $list {body}] 中的循环变量 v。
+ */
+function _collectCmdSubstVars(node, results, lines) {
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (!child) continue;
+        if (child.type === 'command') {
+            const firstChild = child.child(0);
+            if (firstChild && firstChild.type === 'simple_word') {
+                const cmdName = firstChild.text;
+                const words = _getCommandWords(child);
+                const defText = lines
+                    ? _extendNodeTextToLineEnd(child.text, child.endPosition.row, lines)
+                    : child.text;
+                if (cmdName === 'foreach') {
+                    for (const v of _extractForeachVarNames(child)) {
+                        results.push({ name: v.name, line: v.line, endLine: v.line, definitionText: defText, kind: 'variable' });
+                    }
+                } else {
+                    for (const d of _extractCommandVarDefs(child, cmdName, words)) {
+                        results.push({ name: d.name, line: d.line, endLine: d.line, definitionText: defText, kind: 'variable' });
+                    }
+                }
+            }
+        }
+        if (child.type === 'command_substitution') {
+            _collectCmdSubstVars(child, results, lines);
+        }
+        if (child.type === 'ERROR') {
+            _collectErrorVarsRecursive(child, results, lines);
+        }
+    }
+}
+
+/**
+ * 从 braced_word_simple / braced_word 节点中提取 set 变量定义。
+ * ERROR 内的 if/else body 可能被解析为 braced_word_simple，
+ * 内部结构为 { simple_word("set") simple_word(varName) ... }。
+ */
+function _collectBracedWordSimpleVars(node, results, lines) {
+    for (let i = 0; i < node.childCount - 1; i++) {
+        const child = node.child(i);
+        if (!child || child.type !== 'simple_word' || child.text !== 'set') continue;
+        const next = node.child(i + 1);
+        if (next && next.type === 'simple_word' && !next.text.startsWith('$') && !next.text.startsWith('env(') && !/^\d/.test(next.text)) {
+            const defText = lines
+                ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
+                : node.text;
+            results.push({ name: next.text, line: next.startPosition.row + 1, endLine: next.endPosition.row + 1, definitionText: defText, kind: 'variable' });
         }
     }
 }
@@ -146,22 +215,17 @@ function _collectVariables(node, results, sourceText, lines) {
 
             default:
                 // ERROR 节点中可能包含已知命令（set 含 []、lassign、variable 等）
+                // 使用 _collectErrorVarsRecursive 统一处理（含嵌套 ERROR 和 braced_word_simple）
                 if (child.type === 'ERROR') {
-                    const errorDefs = _extractErrorVarDefs(child);
-                    if (errorDefs.length > 0) {
-                        const defText = lines
-                            ? _extendNodeTextToLineEnd(child.text, child.endPosition.row, lines)
-                            : child.text;
-                        for (const d of errorDefs) {
-                            results.push({
-                                name: d.name,
-                                line: d.line,
-                                endLine: d.line,
-                                definitionText: defText,
-                                kind: 'variable',
-                            });
-                        }
-                    }
+                    _collectErrorVarsRecursive(child, results, lines);
+                    // 不再递归 _collectVariables(ERROR)，避免与 _collectErrorVarsRecursive 重复
+                    continue;
+                }
+                // braced_word_simple / braced_word 内可能包含 set 变量定义
+                // 仅处理父节点非 ERROR 的情况（ERROR 内的由 _collectErrorVarsRecursive 处理）
+                if ((child.type === 'braced_word_simple' || child.type === 'braced_word')
+                    && (!child.parent || child.parent.type !== 'ERROR')) {
+                    _collectBracedWordSimpleVars(child, results, lines);
                 }
                 // 其他节点类型递归处理子节点（如 program → command、word_list 等）
                 _collectVariables(child, results, sourceText, lines);
@@ -335,7 +399,8 @@ function _handleCommand(node, results, sourceText, lines) {
         }
     } else if (cmdName === 'dict') {
         const words = _getCommandWords(node);
-        if (words[1] && words[1].text === 'for') {
+        const subCmd = words[1] ? words[1].text : '';
+        if (subCmd === 'for' || subCmd === 'map' || subCmd === 'set' || subCmd === 'update') {
             const defText = lines
                 ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
                 : node.text;
@@ -370,6 +435,38 @@ function _handleCommand(node, results, sourceText, lines) {
                     kind: 'variable',
                 });
             }
+        }
+    } else if (cmdName === 'append' || cmdName === 'lappend') {
+        const words = _getCommandWords(node);
+        if (words.length >= 2) {
+            const varNode = words[1];
+            if (varNode.type === 'simple_word' || varNode.type === 'id') {
+                const defText = lines
+                    ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
+                    : node.text;
+                results.push({
+                    name: varNode.text,
+                    line: varNode.startPosition.row + 1,
+                    endLine: varNode.endPosition.row + 1,
+                    definitionText: defText,
+                    kind: 'variable',
+                });
+            }
+        }
+        _collectVariables(node, results, sourceText, lines);
+    } else if (cmdName === 'gets' || cmdName === 'catch' || cmdName === 'scan'
+        || cmdName === 'regexp' || cmdName === 'regsub' || cmdName === 'variable'
+        || cmdName === 'global' || cmdName === 'upvar' || cmdName === 'array'
+        || cmdName === 'file') {
+        const words = _getCommandWords(node);
+        const defText = lines
+            ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
+            : node.text;
+        for (const d of _extractCommandVarDefs(node, cmdName, words)) {
+            results.push({ name: d.name, line: d.line, endLine: d.line, definitionText: defText, kind: 'variable' });
+        }
+        if (cmdName === 'catch') {
+            _collectVariables(node, results, sourceText, lines);
         }
     } else if (_isSvisualVarDefCommand(cmdName)) {
         const words = _getCommandWords(node);

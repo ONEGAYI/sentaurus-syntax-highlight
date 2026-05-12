@@ -1,0 +1,2662 @@
+{
+  "create_variable": {
+    "section": "Calculation",
+    "signature": "create_variable -dataset <stringValue> (-function <stringValue>|-values <doubleList>) -name <stringValue>",
+    "description": "在数据集中创建一个新变量，可以通过显式值列表或通过计算数学函数来生成。仅适用于 xy 图。",
+    "parameters": [
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "必填。将添加新变量的数据集名称。"
+      },
+      {
+        "name": "-function",
+        "type": "string",
+        "desc": "用于生成变量值的表达式。与 -values 互斥。"
+      },
+      {
+        "name": "-values",
+        "type": "list",
+        "desc": "要分配给新变量的显式 double 值列表。与 -function 互斥。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "必填。新变量的名称。"
+      }
+    ],
+    "example": "create_variable -name nVar -dataset idvd -values {0.1 0.3 0.5 0.7 0.9}\n##-> nVar",
+    "keywords": [
+      "dataset",
+      "values",
+      "function",
+      "name"
+    ]
+  },
+  "ext::AbsList": {
+    "signature": "ext::AbsList -out <list_name> -x <list_of_r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "计算列表中所有元素的绝对值，并将结果存储在一个命名列表中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储绝对值列表的列表名称。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "输入的实数列表。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "可选。设置局部(细化类型)信息级别：0（仅警告/错误），1（回显结果），2（进度和调试），3（全部调试）。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ext::AbsList -out Idabs -x $Ids"
+  },
+  "ext::DiffForwardList": {
+    "signature": "ext::DiffForwardList -out <array_name> -x <list_of_r> -y <list_of_r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "使用前向有限差分方法计算曲线的一阶导数。曲线由两个 Tcl 列表表示，分别是 x 值和 y 值。结果存储在一个数组中，数组元素为 'x'（中点 x 值）和 'dy'（导数值）。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果的数组名称。该数组具有字符串值索引 'x' 和 'dy'。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "x 值（自变量）列表。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "y 值（因变量）列表。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "可选。设置局部(细化类型)信息级别：0（仅警告/错误），1（回显结果），2（进度和调试），3（全部调试）。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ext::DiffForwardList -out DyDx -x $Xs -y $Ys"
+  },
+  "ext::DiffList": {
+    "signature": "ext::DiffList -out <list_name> -x <list_of_r> -y <list_of_r> [-yLog 0|1] [-xLog 0|1] [-info 0|1|2|3] [-help 0|1]",
+    "description": "使用中心有限差分法计算曲线的一阶导数，支持线性或对数插值。曲线由两个 Tcl 列表表示，分别包含 x 值和 y 值。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储一阶导数值的列表名称。必填。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "x 值（自变量）列表。必填。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "y 值（因变量）列表。必填。"
+      },
+      {
+        "name": "-yLog",
+        "type": "int",
+        "desc": "计算导数时，为 y 轴值选择插值方式：0（线性）或 1（对数）。默认：0。可选。"
+      },
+      {
+        "name": "-xLog",
+        "type": "int",
+        "desc": "计算导数时，为 x 轴值选择插值方式：0（线性）或 1（对数）。默认：0。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别：0（仅警告/错误），1（回显结果），2（进度和调试），3（全部调试）。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::DiffList -out dydx -x $Xs -y $Ys -yLog 1"
+  },
+  "ext::ExtractBVi": {
+    "signature": "ext::ExtractBVi -out <var_name> -v <list_of_r> -i <list_of_r> -io <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "从 I-V 曲线中提取击穿电压，定义为电流达到指定水平时的偏置电压。曲线由两个 Tcl 列表表示，分别包含电压值和电流值。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储击穿电压值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "电压值列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "电流值列表。必填。"
+      },
+      {
+        "name": "-io",
+        "type": "float",
+        "desc": "定义击穿电压的电流水平阈值（非零实数）。必填。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "在 Sentaurus Workbench Family Tree 中为提取变量指定的名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则使用 -out 变量名。默认：\"BVi\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3e\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractBVi -out BVcboi -name \"out\" -v $Vcbs -i $Ics -io 1e-12 -f \"%.3f\""
+  },
+  "ext::ExtractBVv": {
+    "signature": "ext::ExtractBVv -out <var_name> -v <list_of_r> -i <list_of_r> -sign <=1|-1> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "从 I-V 曲线中提取击穿电压，定义为可施加到接触的最大电压。曲线由两个 Tcl 列表表示，分别包含电压值和电流值。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储击穿电压值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "电压值列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "电流值列表。必填。"
+      },
+      {
+        "name": "-sign",
+        "type": "int",
+        "desc": "区分晶体管类型：+1 表示 n-p-n 晶体管，-1 表示 p-n-p 晶体管。通常，如果击穿发生在负偏置下，则设置为 -1。必填。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "在 Sentaurus Workbench Family Tree 中为提取变量指定的名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则使用 -out 变量名。默认：\"BVv\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.2e\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractBVv -out BVcbov -name \"out\" -v $Vcbs -i $Ics -sign 1 -f \"%.3f\""
+  },
+  "ext::ExtractEarlyV": {
+    "signature": "ext::ExtractEarlyV -out <var_name> -v <list_of_r> -i <list_of_r> -vo <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "从 Ic-Vce 曲线中提取厄尔利电压(Early voltage)。厄尔利电压(Early voltage)根据指定偏置点处 Ic-Vce 曲线的斜率确定。曲线由两个 Tcl 列表表示，分别包含电压值和电流值。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储厄尔利电压(Early voltage)值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "集电极-发射极电压值列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "集电极电流值列表。必填。"
+      },
+      {
+        "name": "-vo",
+        "type": "float",
+        "desc": "用于厄尔利电压(Early voltage)计算的偏置点，在此点确定 Ic-Vce 曲线的斜率。必填。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "在 Sentaurus Workbench Family Tree 中为提取变量指定的名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则使用 -out 变量名。默认：\"Va\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3e\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractEarlyV -out Va -name \"out\" -v $Vcs -i $absIcs -vo -1.25 -f \"%.2f\""
+  },
+  "ext::ExtractExtremum": {
+    "signature": "ext::ExtractExtremum -out <var_name> -x <list_of_r> -y <list_of_r> [-type \"max\"|\"min\"] [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "提取曲线的最大值或最小值。曲线由两个 Tcl 列表表示，分别包含 x 值和 y 值。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储极值的变量名。必填。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "x 值列表。必填。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "y 值列表。必填。"
+      },
+      {
+        "name": "-type",
+        "type": "string",
+        "desc": "选择提取曲线的最小值（\"min\"）还是最大值（\"max\"）。默认：\"max\"。可选。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "在 Sentaurus Workbench Family Tree 中为提取变量指定的名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则使用 -out 变量名。默认：\"out\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3e\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractExtremum -out IdLin -name \"out\" -x $Vgs -y $Ids -type \"max\""
+  },
+  "ext::ExtractGm": {
+    "signature": "ext::ExtractGm -out <var_name> -v <list_of_r> -i <list_of_r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "从 Id-Vgs 曲线中提取最大跨导（gm = dId/dVg）。使用抛物线插值计算最大跨导出现的栅偏置。曲线由两个 Tcl 列表表示，分别包含电压值和电流值。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储最大跨导值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "栅电压值列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "漏电流值列表。必填。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "在 Sentaurus Workbench Family Tree 中为提取变量指定的名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则使用 -out 变量名。默认：\"gm\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3e\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractGm -out gmLin -name \"out\" -v $Vgs -i $absIds"
+  },
+  "ext::ExtractIoff": {
+    "signature": "ext::ExtractIoff -out <var_name> -v <list_of_r> -i <list_of_r> -vo <r> [-log10 0|1] [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "从 Id-Vgs 曲线（在高漏偏压下计算）中提取指定栅电压下的漏泄漏电流。建议使用小的非零栅电压以避免噪声，例如 NMOS 用 0.1 mV，PMOS 用 -0.1 mV。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储漏泄漏电流值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "栅电压值列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "漏电流值列表。必填。"
+      },
+      {
+        "name": "-vo",
+        "type": "float",
+        "desc": "提取漏泄漏电流的栅电压。使用一个小的非零值。必填。"
+      },
+      {
+        "name": "-log10",
+        "type": "int",
+        "desc": "如果设置为 1，则返回 log10(Ioff) 而不是 Ioff。默认：0。可选。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "在 Sentaurus Workbench Family Tree 中为提取变量指定的名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则使用 -out 变量名。默认：\"Ioff\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3e\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractIoff -out Ioff -name \"out\" -v $Vgs -i $absIds -vo -1e-4 -log10 0"
+  },
+  "ext::ExtractRdiff": {
+    "signature": "ext::ExtractRdiff -out <var_name> -v <list_of_r> -i <list_of_r> -vo <r> [-yLog 0|1] [-xLog 0|1] [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "从 I-V 曲线中提取指定电压下的微分电阻（Rdiff = dV/dI）。曲线由两个 Tcl 列表表示，分别包含电压值和电流值。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储微分电阻值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "电压值列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "电流值列表。必填。"
+      },
+      {
+        "name": "-vo",
+        "type": "float",
+        "desc": "提取微分电阻的电压。必填。"
+      },
+      {
+        "name": "-yLog",
+        "type": "int",
+        "desc": "计算导数时，为 y 轴值选择插值方式：0（线性）或 1（对数）。默认：0。可选。"
+      },
+      {
+        "name": "-xLog",
+        "type": "int",
+        "desc": "计算导数时，为 x 轴值选择插值方式：0（线性）或 1（对数）。默认：0。可选。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "在 Sentaurus Workbench Family Tree 中为提取变量指定的名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则使用 -out 变量名。默认：\"Rdiff\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3f\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractRdiff -out Ron -name \"out\" -v $Vcs -i $absIcs -vo -1.25 -f \"%.2e\""
+  },
+  "ext::ExtractRsh": {
+    "signature": "ext::ExtractRsh -out <array_name> -dataset <dataName> -semdataset <dataName> -type <x|y> -at <r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "通过创建轴对齐截线，计算二维结构中半导体层在纵向的薄层电阻（欧姆/方）和 p-n 结深度。同时计算总薄层电阻（各层之和）。仅适用于二维结构。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果的数组名称。包含以下单元：d（每层厚度）、Rsh（每层薄层电阻）、RshTotal（总薄层电阻）、RshTop（顶层薄层电阻）、xjTop（结深度）、X/Y（位置值）、DopingConcentration、eMobility、hMobility、eDensity、hDensity、Conductivity 和 Resistivity。必填。"
+      },
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "将从中生成截线的数据集名称。必填。"
+      },
+      {
+        "name": "-semdataset",
+        "type": "string",
+        "desc": "包含变量 X/Y、DopingConcentration、eMobility、hMobility、eDensity、hDensity、Conductivity 和 Resistivity 的数据集名称。必填。"
+      },
+      {
+        "name": "-type",
+        "type": "string",
+        "desc": "将截线链接到指定坐标轴：\"x\" 链接到 x 轴并创建与 y 轴对齐的截线（纵向），\"y\" 链接到 y 轴并创建与 x 轴对齐的截线（纵向）。必填。"
+      },
+      {
+        "name": "-at",
+        "type": "float",
+        "desc": "轴对齐截线切割链接坐标轴的位置值。必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractRsh -out Rsh -dataset Structure2d -semdataset RshProfile -type y -at 5.0"
+  },
+  "ext::ExtractSS": {
+    "signature": "ext::ExtractSS -out <var_name> -v <list_of_r> -i <list_of_r> -vo <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "从 Id-Vgs 曲线中提取指定栅电压下的亚阈值电压摆幅（SS），单位为 mV/十倍频程。SS 定义为 1000 / (d/dVg * log10(Id))。当指定的栅电压远低于阈值电压且为小的非零值时，可获得更好的结果。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储亚阈值摆幅值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "栅电压值列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "绝对漏电流值列表。必填。"
+      },
+      {
+        "name": "-vo",
+        "type": "float",
+        "desc": "提取斜率的栅电压。应为一个远低于阈值电压的值。必填。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "在 Sentaurus Workbench Family Tree 中为提取变量指定的名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则使用 -out 变量名。默认：\"SS\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3f\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractSS -out SSlin -name \"out\" -v $Vgs -i $Ids -vo 1e-2"
+  },
+  "ext::ExtractSsub": {
+    "signature": "ext::ExtractSsub -out <var_name> -v <list_of_r> -i <list_of_r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "从 Id-Vgs 曲线中提取亚阈值摆幅 (SS)，单位为 mV/十倍频程。SS 定义为 1000 / Max(d/dVg * log10(Id))，其中最大斜率自动确定。与 ext::ExtractSS 不同，无需指定特定的栅电压。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储亚阈值摆幅值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "-v list — 栅电压值的列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "-i list — 绝对漏电流值的列表。必填。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "-name string — 在 Sentaurus Workbench Family Tree 中为提取的变量指定名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则采用 -out 变量名。默认：\"ss\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "-f string — 写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3f\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 设置局部(细化类型)信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractSsub -out Ssub -name \"out\" -v $Vgs -i $Ids"
+  },
+  "ext::ExtractValue": {
+    "signature": "ext::ExtractValue -out <var_name> -x <list_of_r> -y <list_of_r> -xo <r> [-occurrence <int>] [-yLog 0|1] [-xLog 0|1] [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "对于给定的目标 x 值，从曲线中提取第 n 个插值 y 值。要查找给定 y 值对应的插值 x 值，请交换 -x 和 -y 参数。曲线由两个 Tcl 列表表示，分别包含 x 值和 y 值。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储插值 y 值的变量名。必填。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "-x list — x 值的列表。必填。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "-y list — y 值的列表。必填。"
+      },
+      {
+        "name": "-xo",
+        "type": "float",
+        "desc": "-xo float — 用于插值的目标 x 值。必填。"
+      },
+      {
+        "name": "-occurrence",
+        "type": "int",
+        "desc": "-occurrence int — 指定要提取的第 n 个插值 y 值（索引从 1 开始）。默认：1。可选。"
+      },
+      {
+        "name": "-yLog",
+        "type": "int",
+        "desc": "-yLog int — 为 y 轴值选择线性 (0) 或对数 (1) 插值。默认：0。可选。"
+      },
+      {
+        "name": "-xLog",
+        "type": "int",
+        "desc": "-xLog int — 为 x 轴值选择线性 (0) 或对数 (1) 插值。默认：0。可选。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "-name string — 在 Sentaurus Workbench Family Tree 中为提取的变量指定名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则采用 -out 变量名。默认：\"SS\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "-f string — 写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3f\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 设置局部(细化类型)信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractValue -out Xlin -x $Ys -y $Xs -yLog 0 -xo 0"
+  },
+  "ext::ExtractVdlin": {
+    "signature": "ext::ExtractVdlin -out <var_name> -v <list_of_r> -i <list_of_r> -io <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "使用线性插值从 Id-Vds 曲线中提取给定漏电流水平对应的漏电压。曲线由两个 Tcl 列表表示，分别包含电压值和电流值。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储漏电压值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "-v list — 漏电压值的列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "-i list — 漏电流值的列表。必填。"
+      },
+      {
+        "name": "-io",
+        "type": "float",
+        "desc": "-io float — 目标漏电流水平。必填。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "-name string — 在 Sentaurus Workbench Family Tree 中为提取的变量指定名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则采用 -out 变量名。默认：\"ss\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "-f string — 写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3f\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 设置局部(细化类型)信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractVdlin -out Vdlin -name \"out\" -v $Vds -i $Ids -io 1e-4 -f \"%.4f\""
+  },
+  "ext::ExtractVdlog": {
+    "signature": "ext::ExtractVdlog -out <var_name> -v <list_of_r> -i <list_of_r> -io <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "使用对数插值从 Id-Vds 曲线中提取给定漏电流水平对应的漏电压。曲线由两个 Tcl 列表表示，分别包含电压值和电流值。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储漏电压值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "-v list — 漏电压值的列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "-i list — 漏电流值的列表。必填。"
+      },
+      {
+        "name": "-io",
+        "type": "float",
+        "desc": "-io float — 目标漏电流水平。必填。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "-name string — 在 Sentaurus Workbench Family Tree 中为提取的变量指定名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则采用 -out 变量名。默认：\"SS\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "-f string — 写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3f\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 设置局部(细化类型)信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractVdlog -out Vdlog -name \"out\" -v $Vds -i $Ids -io 1e-4 -f \"%.4f\""
+  },
+  "ext::ExtractVglin": {
+    "signature": "ext::ExtractVglin -out <var_name> -v <list_of_r> -i <list_of_r> -io <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "使用线性插值从 Id-Vgs 曲线中提取给定漏电流水平对应的栅电压。曲线由两个 Tcl 列表表示，分别包含电压值和电流值。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储栅电压值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "-v list — 栅电压值的列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "-i list — 漏电流值的列表。必填。"
+      },
+      {
+        "name": "-io",
+        "type": "float",
+        "desc": "-io float — 目标漏电流水平。必填。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "-name string — 在 Sentaurus Workbench Family Tree 中为提取的变量指定名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则采用 -out 变量名。默认：\"SS\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "-f string — 写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3f\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 设置局部(细化类型)信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractVglin -out Vglin -name \"out\" -v $Vgs -i $Ids -io 1e-7 -f \"%.4f\""
+  },
+  "ext::ExtractVglog": {
+    "signature": "ext::ExtractVglog -out <var_name> -v <list_of_r> -i <list_of_r> -io <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "使用对数插值从 Id-Vgs 曲线中提取给定漏电流水平对应的栅电压。曲线由两个 Tcl 列表表示，分别包含电压值和电流值。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储栅电压值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "-v list — 栅电压值的列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "-i list — 漏电流值的列表。必填。"
+      },
+      {
+        "name": "-io",
+        "type": "float",
+        "desc": "-io float — 目标漏电流水平。必填。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "-name string — 在 Sentaurus Workbench Family Tree 中为提取的变量指定名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则采用 -out 变量名。默认：\"SS\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "-f string — 写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3f\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 设置局部(细化类型)信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractVglog -out Vglog -name \"out\" -v $Vgs -i $Ids -io 1e-7 -f \"%.4f\""
+  },
+  "ext::ExtractVtgm": {
+    "signature": "ext::ExtractVtgm -out <var_name> -v <list_of_r> -i <list_of_r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "使用最大跨导法从 Id-Vgs 曲线中提取阈值电压。阈值电压定义为最大 gm 点处切线与栅电压坐标轴的截距。最大 gm 处的栅偏置使用抛物线插值计算。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储阈值电压值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "-v list — 栅电压值的列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "-i list — 漏电流值的列表。必填。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "-name string — 在 Sentaurus Workbench Family Tree 中为提取的变量指定名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则采用 -out 变量名。默认：\"ss\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "-f string — 写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3f\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 设置局部(细化类型)信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractVtgm -out Vtgm -name \"out\" -v $Vgs -i $absIds"
+  },
+  "ext::ExtractVti": {
+    "signature": "ext::ExtractVti -out <var_name> -v <list_of_r> -i <list_of_r> -io <r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "从 Id-Vgs 曲线中提取给定亚阈值电流水平对应的阈值电压。阈值电压定义为漏电流达到指定电流水平时的栅电压。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储阈值电压值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "-v list — 栅电压值的列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "-i list — 漏电流值的列表。必填。"
+      },
+      {
+        "name": "-io",
+        "type": "float",
+        "desc": "-io float — 定义阈值电压的亚阈值电流水平。必填。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "-name string — 在 Sentaurus Workbench Family Tree 中为提取的变量指定名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则采用 -out 变量名。默认：\"SS\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "-f string — 写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3f\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 设置局部(细化类型)信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractVti -out VtiLin -name \"out\" -v $Vgs -i $Ids -io $io"
+  },
+  "ext::ExtractVtsat": {
+    "signature": "ext::ExtractVtsat -out <var_name> -v <list_of_r> -i <list_of_r> [-name <string>] [-f <string>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "从 sqrt(Id)-Vgs 曲线中提取阈值电压。阈值电压定义为 sqrt(Id)-Vgs 曲线最大斜率点处与栅电压坐标轴的截距，使用抛物线插值计算。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储阈值电压值的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "-v list — 栅电压值的列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "-i list — 漏电流值的列表。必填。"
+      },
+      {
+        "name": "-name",
+        "type": "string",
+        "desc": "-name string — 在 Sentaurus Workbench Family Tree 中为提取的变量指定名称。使用 \"noprint\" 可抑制提取，使用 \"out\" 则采用 -out 变量名。默认：\"ss\"。可选。"
+      },
+      {
+        "name": "-f",
+        "type": "string",
+        "desc": "-f string — 写入 Sentaurus Workbench Family Tree 的提取值的格式字符串。默认：\"%.3f\"。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 设置局部(细化类型)信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::ExtractVtsat -out Vtsat -name \"out\" -v $Vgs -i $Ids"
+  },
+  "ext::FilterTable": {
+    "signature": "ext::FilterTable -out <array_name> -x <list_of_r> -y <list_of_r> -conditions <array_name> -ncond <int> [-info 0|1|2|3] [-help 0|1]",
+    "description": "筛选 Sentaurus Workbench Family Tree 数据，为满足指定条件的实验子集创建一个参数（y 值）相对于另一个参数（x 值）的图。非数值 y 值会被自动忽略，从而可以省略失败的提取。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储筛选结果的数组名。包含元素 X（按升序排列的筛选后 x 值）和 Y（对应的筛选后 y 值）。必填。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "-x list — x 值的列表（所有实验的一个 Sentaurus Workbench 参数）。必填。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "-y list — y 值的列表（所有实验的一个 Sentaurus Workbench 参数）。必填。"
+      },
+      {
+        "name": "-conditions",
+        "type": "string",
+        "desc": "-conditions string — 定义筛选条件的字符串索引数组的名称。每个条件有两个元素：\"Target\"（必需的参数值）和 \"Values\"（所有实验的参数值列表）。条件从 1 开始枚举。必填。"
+      },
+      {
+        "name": "-ncond",
+        "type": "int",
+        "desc": "-ncond int — 要从 -conditions 数组中应用的条件数量。必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 设置局部(细化类型)信息级别。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ext::FilterTable -out LgVt -x $Lgs -y $Vtgms -conditions Conditions -ncond 2"
+  },
+  "ext::FindExtrema": {
+    "signature": "ext::FindExtrema -out <array_name> -x <list_of_r> -y <list_of_r> [-type \"max\"|\"min\"] [-eps <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "计算曲线的所有局部(细化类型)极值（最大值或最小值）。如果曲线呈现平坦的顶部或底部（相邻 x 值具有相等的 y 值），则最后一个 x 值将作为极值点返回。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out (类型: string) — 用于存储结果的数组名称。包含单元 X（极值处的 x 值）和 Y（极值）。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "-x (类型: list) — x 值列表，必须为升序或降序。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "-y (类型: list) — y 值列表。"
+      },
+      {
+        "name": "-type",
+        "type": "string",
+        "desc": "-type (类型: string) — 可选。选择查找最大值（\"max\"）还是最小值（\"min\"）。默认：\"max\"。"
+      },
+      {
+        "name": "-eps",
+        "type": "float",
+        "desc": "-eps (类型: float) — 可选。条件判断(if)两个相邻 y 值的差小于 -eps，则两个单元被视为相等。默认：1e-10。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info (类型: int) — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help (类型: int) — 可选。条件判断(if)设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ext::FindExtrema -out XY -x $Xs -y $Ys"
+  },
+  "ext::FindVals": {
+    "signature": "ext::FindVals -out <list_name> -x <list_of_r> -y <list_of_r> -xo <r> [-yLog 0|1] [-xLog 0|1] [-info 0|1|2|3] [-help 0|1]",
+    "description": "对于给定的目标 x 值，从曲线中提取所有对应的插值 y 值。要查找给定 y 值的所有插值 x 值，请交换 -x 和 -y 参数。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out (类型: string) — 用于存储所有插值 y 值的列表名称。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "-x (类型: list) — x 值列表。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "-y (类型: list) — y 值列表。"
+      },
+      {
+        "name": "-xo",
+        "type": "float",
+        "desc": "-xo (类型: float) — 用于插值的目标 x 值。"
+      },
+      {
+        "name": "-yLog",
+        "type": "int",
+        "desc": "-yLog (类型: int) — 可选。选择 y 坐标轴值的线性（0）或对数（1）插值。默认：0。"
+      },
+      {
+        "name": "-xLog",
+        "type": "int",
+        "desc": "-xLog (类型: int) — 可选。选择 x 坐标轴值的线性（0）或对数（1）插值。默认：0。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info (类型: int) — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help (类型: int) — 可选。条件判断(if)设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ext::FindVals -out xos -x $Ys -y $Xs -xo 2.0"
+  },
+  "ext::LinFit": {
+    "signature": "ext::LinFit -out <array_name> -x <list_of_r> -y <list_of_r> -xmin <r> -xmax <r> [-npar 1|2] [-weighted \"off\"|\"on\"] [-weights <list_of_r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "使用最小二乘回归对曲线执行线性拟合（y = x*m + b）。结果存储在包含 X、Y、Yestimate、残差、斜率、y 截距、n、dof 和 RMSE 单元的数组中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out (类型: string) — 用于存储结果的数组名称。包含单元：X（范围内的 x 值）、Y（范围内的 y 值）、Yestimate（估计的 y 值）、残差（残差）、斜率（估计的斜率 m）、yintercept（估计的 y 截距 b）、n（数据点数量）、dof（自由度）和 RMSE（均方根误差）。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "-x (类型: list) — x 值列表，必须为升序或降序。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "-y (类型: list) — y 值列表。"
+      },
+      {
+        "name": "-xmin",
+        "type": "float",
+        "desc": "-xmin (类型: float) — 拟合范围的最小 x 值。"
+      },
+      {
+        "name": "-xmax",
+        "type": "float",
+        "desc": "-xmax (类型: float) — 拟合范围的最大 x 值。"
+      },
+      {
+        "name": "-npar",
+        "type": "int",
+        "desc": "-npar (类型: int) — 可选。参数数量：1 仅计算斜率（y 截距强制为 0），2 计算斜率和 y 截距。默认：2。"
+      },
+      {
+        "name": "-weighted",
+        "type": "string",
+        "desc": "-weighted (类型: string) — 可选。选择未加权（\"off\"）或加权（\"on\"）线性回归。默认：\"off\"。"
+      },
+      {
+        "name": "-weights",
+        "type": "list",
+        "desc": "-weights (类型: list) — 可选。每个 x 值的权重值列表。当 -weighted 为 \"on\" 时必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info (类型: int) — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help (类型: int) — 可选。条件判断(if)设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ext::LinFit -out XY -x $Xs -y $Ys -xmin [lindex $Xs 0] -xmax [lindex $Xs end]"
+  },
+  "ext::Linspace": {
+    "signature": "ext::Linspace -out <list_name> -xmin <r> -xmax <r> -n <int> [-info 0|1|2|3] [-help 0|1]",
+    "description": "创建两个实数（xmin 和 xmax）之间（包括两端）的 n 个线性间隔值的列表。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out (类型: string) — 用于存储线性间隔值的列表名称。"
+      },
+      {
+        "name": "-xmin",
+        "type": "float",
+        "desc": "-xmin (类型: float) — 最小值（范围起点）。"
+      },
+      {
+        "name": "-xmax",
+        "type": "float",
+        "desc": "-xmax (类型: float) — 最大值（范围终点）。"
+      },
+      {
+        "name": "-n",
+        "type": "int",
+        "desc": "-n (类型: int) — 要创建的数值数量，必须是大于 1 的正整数。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info (类型: int) — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help (类型: int) — 可选。条件判断(if)设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ext::Linspace -out X -xmin 0 -xmax 1 -n 11"
+  },
+  "ext::LinTransList": {
+    "signature": "ext::LinTransList -out <list_name> -x <list_of_r> [-m <r>] [-b <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "对列表的所有单元应用线性变换（X' = X*m + b），并将变换后的值存储在新列表中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out (类型: string) — 用于存储变换后值的列表名称。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "-x (类型: list) — 实数的输入列表。"
+      },
+      {
+        "name": "-m",
+        "type": "float",
+        "desc": "-m (类型: float) — 可选。线性变换的斜率（缩放因子）。默认：1.0。"
+      },
+      {
+        "name": "-b",
+        "type": "float",
+        "desc": "-b (类型: float) — 可选。线性变换的偏移量（平移）。默认：0.0。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info (类型: int) — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help (类型: int) — 可选。条件判断(if)设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ext::LinTransList -out VgTrans -x $Vgs -b 0.55"
+  },
+  "ext::Log10List": {
+    "signature": "ext::Log10List -out <list_name> -x <list_of_r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "对列表的所有单元应用以 10 为底的对数函数，并将结果存储在新列表中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out (类型: string) — 用于存储 log10 值的列表名称。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "-x (类型: list) — 实数的输入列表。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info (类型: int) — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help (类型: int) — 可选。条件判断(if)设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ext::Log10List -out Ys -x $Xs"
+  },
+  "ext::RemoveDuplicates": {
+    "signature": "ext::RemoveDuplicates -out <array_name> -x <list_of_r> -y <list_of_r> [-eps <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "对于一对列表 x 和 y，从 x 列表中移除重复单元，并从 y 列表中移除对应的单元。如果两个单元的差小于 -eps 容差，则视为重复。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out (类型: string) — 用于存储结果的数组名称。包含单元 X（去重后的 x 值）和 Y（对应的 y 值）。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "-x (类型: list) — 要去重的 x 值输入列表。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "-y (类型: list) — y 值输入列表（当发现 x 重复时，对应的单元将被移除）。"
+      },
+      {
+        "name": "-eps",
+        "type": "float",
+        "desc": "-eps (类型: float) — 可选。条件判断(if)两个相邻 x 单元的差小于 -eps，则第一个单元作为重复项被移除。默认：1e-40。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info (类型: int) — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help (类型: int) — 可选。条件判断(if)设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ext::RemoveDuplicates -out XY -x $x -y $y"
+  },
+  "ext::RemoveZeros": {
+    "signature": "ext::RemoveZeros -out <array_name> -x <list_of_r> -y <list_of_r> -iplists <\"x\"|\"y\"|\"xy\"> [-eps <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "对于一对列表 x 和 y，从指定的列表中移除零（或接近零）单元，并从配对的列表中移除对应的单元。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out (类型: string) — 用于存储结果的数组名称。包含单元 X（剩余的 x 值）和 Y（对应的剩余 y 值）。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "-x (类型: list) — x 值输入列表。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "-y (类型: list) — y 值输入列表。"
+      },
+      {
+        "name": "-iplists",
+        "type": "string",
+        "desc": "-iplists (类型: string) — 指定从哪个列表中移除零：\"x\" 仅从 x 列表移除零，\"y\" 仅从 y 列表移除零，\"xy\" 从两个列表中移除零。"
+      },
+      {
+        "name": "-eps",
+        "type": "float",
+        "desc": "-eps (类型: float) — 可选。条件判断(if)一个单元的绝对值小于 -eps，则将其视为零并移除。默认：1e-40。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info (类型: int) — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help (类型: int) — 可选。条件判断(if)设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ext::RemoveZeros -out XY -x $xs -y $ys -iplists \"x\""
+  },
+  "ext::SubLists": {
+    "signature": "ext::SubLists -out <array_name> -x <list_of_r> -y <list_of_r> -xmin <r> -xmax <r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "通过选中指定 x 值范围内的单元，从一对列表中创建一对子列表。要使用 y 值范围创建子列表，请交换 -x 和 -y 并使用 -xmin 和 -xmax 指定范围。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out (类型: string) — 用于存储结果的数组名称。包含单元 X（范围内的 x 值子列表）和 Y（对应的 y 值）。"
+      },
+      {
+        "name": "-x",
+        "type": "list",
+        "desc": "-x (类型: list) — x 值列表，必须为升序或降序。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "-y (类型: list) — y 值列表。"
+      },
+      {
+        "name": "-xmin",
+        "type": "float",
+        "desc": "-xmin (类型: float) — 定义范围的最小 x 值。"
+      },
+      {
+        "name": "-xmax",
+        "type": "float",
+        "desc": "-xmax (类型: float) — 定义范围的最大 x 值。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info (类型: int) — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help (类型: int) — 可选。条件判断(if)设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ext::SubLists -out XY -x $xs -y $ys -xmin 2 -xmax 5"
+  },
+  "ifm::Gauss": {
+    "signature": "ifm::Gauss -out <var_name> -x <r> -moments <array_name> [-help 0|1]",
+    "description": "计算给定 x 值处归一化高斯(Gaussian)分布的 y 值。该高斯(Gaussian)由其范数 (N)、平均值 (mu) 和标准偏差 (sigma) 定义。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out (类型: string) — 用于存储计算出的高斯(Gaussian)分布 y 值的变量名称。"
+      },
+      {
+        "name": "-x",
+        "type": "float",
+        "desc": "-x (类型: float) — 评估高斯(Gaussian)的 x 值。"
+      },
+      {
+        "name": "-moments",
+        "type": "string",
+        "desc": "-moments (类型: string) — 包含高斯(Gaussian)参数 'norm'、'ave' 和 'std_dev' 单元的、具有字符串值索引的数组名称。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help (类型: int) — 可选。条件判断(if)设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Moments(norm) 1.0\nset Moments(ave) 0.0\nset Moments(std_dev) 1.0\nifm::Gauss -out G -x 0.1 -moments Moments"
+  },
+  "ifm::GetDataQuantiles": {
+    "signature": "ifm::GetDataQuantiles -out <array_name> -rvs <list_of_r> [-help 0|1]",
+    "description": "计算一组随机变量的分位数。对数值进行排序，并将每个值与0到1之间的一个分位数关联。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果的数组名，其字符串索引为 'x'（排序后的随机变量）和 'y'（对应的分位数）。必填。"
+      },
+      {
+        "name": "-rvs",
+        "type": "list",
+        "desc": "随机变量值（实数）的列表。必填。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set RanVals [list -1.657 0.766 2.142 1.189]\nifm::GetDataQuantiles -out DataQ -rvs $RanVals"
+  },
+  "ifm::GetGaussian": {
+    "signature": "ifm::GetGaussian -out <array_name> -moments <array_name> [-nsam <i>] [-type f|q] [-xmin <r>] [-xmax <r>] [-help 0|1]",
+    "description": "根据给定的矩（norm、average、standard deviation）计算高斯(Gaussian)曲线或其分位数。返回适用于绘图的 x 值和 y 值列表。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果的数组名，其字符串索引 'x' 和 'y' 对应高斯(Gaussian)或分位数曲线的值。必填。"
+      },
+      {
+        "name": "-moments",
+        "type": "string",
+        "desc": "包含元素 'norm'、'ave' 和 'std_dev' 的数组名，其索引为字符串。必填。"
+      },
+      {
+        "name": "-nsam",
+        "type": "int",
+        "desc": "可选。采样点数量。默认：80。"
+      },
+      {
+        "name": "-type",
+        "type": "string",
+        "desc": "可选。'f' 返回高斯(Gaussian)曲线；'q' 返回分位数（累积分布）。默认：f。"
+      },
+      {
+        "name": "-xmin",
+        "type": "float",
+        "desc": "可选。起始 x 值。默认：-3.0。"
+      },
+      {
+        "name": "-xmax",
+        "type": "float",
+        "desc": "可选。结束 x 值。默认：3.0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Moments(norm) 1.0\nset Moments(ave) 0.0\nset Moments(std_dev) 1.0\nifm::GetGaussian -out Gaussian -type f -moments Moments -nsam 100 -xmin -3.5 -xmax 3.5"
+  },
+  "ifm::GetHistogram": {
+    "signature": "ifm::GetHistogram -out <array_name> -rvs <list_of_r> -xmin <r> -xmax <r> [-nbin <i>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "在指定范围和箱数内，根据随机变量列表计算用于绘制直方图的 x 和 y 列表。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果的数组名，其字符串索引 'x' 和 'y' 对应直方图箱的值。必填。"
+      },
+      {
+        "name": "-rvs",
+        "type": "list",
+        "desc": "随机变量值（实数）的列表。必填。"
+      },
+      {
+        "name": "-xmin",
+        "type": "float",
+        "desc": "直方图范围的起始 x 值。必填。"
+      },
+      {
+        "name": "-xmax",
+        "type": "float",
+        "desc": "直方图范围的结束 x 值。必填。"
+      },
+      {
+        "name": "-nbin",
+        "type": "int",
+        "desc": "可选。直方图的箱数。默认：40。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "可选。设置局部(细化类型)信息级别：0（仅警告/错误），1（回显结果），2（进度和调试），3（全部调试）。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Rxs [list 1 1.1 2 5 5.1 5.3 6]\nifm::GetHistogram -out Histogram -rvs $Rxs -xmin 0 -xmax 6 -nbin 6"
+  },
+  "ifm::GetMoments": {
+    "signature": "ifm::GetMoments -out <array_name> -rvs <list_of_r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "计算一组随机变量的统计矩：norm、average、root mean square (rms)、standard deviation、skewness 和 excess kurtosis。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果的数组名，其字符串索引为 'norm'、'ave'、'rms'、'std_dev'、'skew' 和 'kurtx'。必填。"
+      },
+      {
+        "name": "-rvs",
+        "type": "list",
+        "desc": "随机变量值（实数）的列表。必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "可选。设置局部(细化类型)信息级别：0（仅警告/错误），1（回显结果），2（进度和调试），3（全部调试）。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Vs [list 1 2 3 4 5]\nifm::GetMoments -out Moments -rvs $Vs"
+  },
+  "ifm::GetMOSIVs": {
+    "signature": "ifm::GetMOSIVs -out <array_name> -sifm <array_name> -nrow <var_name> -ncol <var_name> -v <list_of_r> -i <list_of_r> -y <list_of_r> -vmin <r> -vmax <r> -id <string> [-type IdVg] [-method dV|dI|weighted|SSweighted|exp] [-smooth yes|no] [-sgn 1|-1] [-ss <r> -dss <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "根据 sIFM 线性电流响应，为金属-氧化物-半导体(MOS)型器件构建随机的 Id-Vg 曲线。支持多种构建方法：栅电压调整(dV)、漏电流调整(dI)、加权切换(weighted)、基于亚阈值斜率的加权(SSweighted)和指数方法(exp)。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储 I-V 曲线的双索引数组名。第一索引是字符串('X', 'Y')；第二索引是整数（随机化索引）。还包含用于最大 |dI/I| 偏差的 'maxdev'。必填。"
+      },
+      {
+        "name": "-sifm",
+        "type": "string",
+        "desc": "包含 sIFM 数据的三索引数组名：第一索引是字符串（源 ID），第二是整数（偏置行），第三是整数（随机化列）。必填。"
+      },
+      {
+        "name": "-nrow",
+        "type": "string",
+        "desc": "包含 sIFM 数据中行数（偏置点）的变量名。必填。"
+      },
+      {
+        "name": "-ncol",
+        "type": "string",
+        "desc": "包含 sIFM 数据中列数（随机化）的变量名。必填。"
+      },
+      {
+        "name": "-v",
+        "type": "list",
+        "desc": "参考电压值的列表。必填。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "参考电流值的列表。必填。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "参考 Y 矩阵（栅到漏导纳）值的列表。必填。"
+      },
+      {
+        "name": "-vmin",
+        "type": "float",
+        "desc": "用于 dI/I 监测范围的最小偏置。必填。"
+      },
+      {
+        "name": "-vmax",
+        "type": "float",
+        "desc": "用于 dI/I 监测范围的最大偏置。必填。"
+      },
+      {
+        "name": "-id",
+        "type": "string",
+        "desc": "sIFM 可变性源的 ID。必填。"
+      },
+      {
+        "name": "-type",
+        "type": "string",
+        "desc": "可选。I-V 曲线类型。目前仅支持 'IdVg'。默认：IdVg。"
+      },
+      {
+        "name": "-method",
+        "type": "string",
+        "desc": "可选。构建方法：'dV'（栅电压调整，保证正电流），'dI'（漏电流调整，保证物理电压），'weighted'（在最大跨导处自动在 dV 和 dI 之间切换），'SSweighted'（在用户定义的亚阈值斜率处切换），'exp'（指数方法，确保非负电流）。默认：weighted。"
+      },
+      {
+        "name": "-smooth",
+        "type": "string",
+        "desc": "可选。为加权方法在过渡点激活平滑处理。默认：no。"
+      },
+      {
+        "name": "-sgn",
+        "type": "int",
+        "desc": "可选。NMOS 设为 1，PMOS 设为 -1。默认：1。"
+      },
+      {
+        "name": "-ss",
+        "type": "float",
+        "desc": "可选。亚阈值斜率拐点，单位为 mV/十倍频程。仅 SSweighted 方法需要。"
+      },
+      {
+        "name": "-dss",
+        "type": "float",
+        "desc": "可选。SSweighted 方法平滑处理的过渡区域宽度，单位为 mV/十倍频程。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ifm::GetMOSIVs -out IV_rdf -sifm sIFM -nrow Nrow -ncol Ncol -method \"weighted\" -sgn 1.0 -v $Vgs -i $Ids -y $adgs -id \"rdfs\" -smooth yes"
+  },
+  "ifm::GetMOSWeights": {
+    "signature": "ifm::GetMOSWeights -out <list_name> -y <list_of_r> [-type IdVg_weighted|IdVg_SSweighted] [-i <list_of_r> -ss <r> -dss <r>] [-help 0|1]",
+    "description": "为每个偏置点计算介于 1 和 -1 之间的权重，指示在 MOS I-V 构建中应使用栅电压调整方法还是漏电流调整方法。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储计算出的权重值的列表名。必填。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "参考 Y 矩阵（栅到漏导纳）值的列表。必填。"
+      },
+      {
+        "name": "-type",
+        "type": "string",
+        "desc": "可选。加权方法：'IdVg_weighted'（基于跨导导数的符号切换）或 'IdVg_SSweighted'（在用户定义的亚阈值斜率处使用误差函数平滑切换）。默认：IdVg_weighted。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "可选。参考电流值的列表。仅 IdVg_SSweighted 需要。"
+      },
+      {
+        "name": "-ss",
+        "type": "float",
+        "desc": "可选。亚阈值斜率拐点，单位为 mV/十倍频程。仅 IdVg_SSweighted 需要。"
+      },
+      {
+        "name": "-dss",
+        "type": "float",
+        "desc": "可选。用于平滑处理的过渡区域宽度，单位为 mV/十倍频程。仅 IdVg_SSweighted 需要。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ifm::GetMOSWeights -out Ws -y $adgs"
+  },
+  "ifm::GetNoiseStdDev": {
+    "signature": "ifm::GetNoiseStdDev -out <array_name> -s <list_of_r> -y <list_of_r> [-help 0|1]",
+    "description": "根据漏电流噪声功率谱密度和栅到漏导纳计算漏电流和栅电压的标准差。漏电流标准差为 sqrt(Sdd * 1Hz)，栅电压标准差通过除以 ydg 获得。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "包含字符串索引 'I'（电流标准差）和 'v'（电压标准差）的数组名。必填。"
+      },
+      {
+        "name": "-s",
+        "type": "list",
+        "desc": "漏电流噪声功率谱密度值的列表。必填。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "栅到漏导纳（Y 矩阵）值的列表。必填。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ifm::GetNoiseStdDev -out sigIV -s $S_Ids(noise) -y $adgs"
+  },
+  "ifm::GetQQ": {
+    "signature": "ifm::GetQQ -out <array_name> -dq <array_name> -gq <array_name> -moments <array_name> [-help 0|1]",
+    "description": "生成分位数-分位数(Q-Q)图，比较给定数据分布的分位数与高斯(Gaussian)分布的分位数。将数据 x 值（与高斯(Gaussian)分位数匹配）相对于归一化的高斯(Gaussian)值 (x-mu)/sigma 进行绘图。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "包含字符串索引 'x' 和 'y'（对应 Q-Q 比较曲线的值）的数组名。必填。"
+      },
+      {
+        "name": "-dq",
+        "type": "string",
+        "desc": "包含给定数据分布分位数的数组名，其索引为 'x'（排序后的值）和 'y'（分位数）。必填。"
+      },
+      {
+        "name": "-gq",
+        "type": "string",
+        "desc": "包含高斯(Gaussian)分布分位数的数组名，其索引为 'x' 和 'y'。必填。"
+      },
+      {
+        "name": "-moments",
+        "type": "string",
+        "desc": "包含定义高斯(Gaussian)分布的索引 'norm'、'ave' 和 'std_dev' 的数组名。必填。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ifm::GetQQ -out QQ -dq DataQ -gq GaussianQ -moments Moments"
+  },
+  "ifm::GetsIFMStdDev": {
+    "signature": "ifm::GetsIFMStdDev -out <array_name> -sIFM <string> -y <list_of_r> [-rsig <r> -ydd <list_of_r> -i <list_of_r>] [-help 0|1]",
+    "description": "根据 sIFM 线性电流响应和栅到漏导纳计算漏电流和栅电压的标准差。当 sIFM 设置为 'crv' 时，也支持接触电阻可变性计算。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "包含字符串索引 'I'（电流标准差）和 'v'（电压标准差）的数组名。必填。"
+      },
+      {
+        "name": "-sIFM",
+        "type": "string",
+        "desc": "包含 sIFM 线性电流响应的 CSV 文件名。设置为 'crv' 以计算接触电阻可变性。必填。"
+      },
+      {
+        "name": "-y",
+        "type": "list",
+        "desc": "参考 Y 矩阵（栅到漏导纳）值的列表。必填。"
+      },
+      {
+        "name": "-rsig",
+        "type": "float",
+        "desc": "可选。接触电阻的标准差，单位为 Ohm。仅当 sIFM 设置为 'crv' 时需要。"
+      },
+      {
+        "name": "-ydd",
+        "type": "list",
+        "desc": "可选。参考 Y(d,d) 矩阵元素的列表。仅当 sIFM 设置为 'crv' 时需要。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "可选。参考电流值的列表。仅当 sIFM 设置为 'crv' 时需要。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ifm::GetsIFMStdDev -out sigIV -sIFM \"mos_rdf_I_ndrain.csv\" -y $adgs"
+  },
+  "ifm::GetSNM": {
+    "signature": "ifm::GetSNM -out <array_name> -squares <array_name> -vtc_left <array_name> -vtc_right <array_name> -ncol <var_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "根据一个或多个随机化源的蝶形曲线计算静态噪声容限(SNM)。左、右 SNM 定义为能分别放入蝶形曲线左右瓣内的轴对齐最大正方形。有效 SNM 是两者中较小的一个。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "包含元素 'left'、'right' 和 'eff' 的字符串索引数组名，这些元素包含所有随机化的 SNM 值列表。必填。"
+      },
+      {
+        "name": "-squares",
+        "type": "string",
+        "desc": "用于存储拟合正方形的三索引数组名：第一索引是 1 或 2（左/右瓣），第二是 'x' 或 'y'，第三是随机化索引。必填。"
+      },
+      {
+        "name": "-vtc_left",
+        "type": "string",
+        "desc": "包含左 VTC 曲线的双索引数组名。第一索引是 'Header' 或 'Data'，第二是整数（随机化索引）。必填。"
+      },
+      {
+        "name": "-vtc_right",
+        "type": "string",
+        "desc": "包含右 VTC 曲线的双索引数组名。结构与 -vtc_left 相同。必填。"
+      },
+      {
+        "name": "-ncol",
+        "type": "string",
+        "desc": "包含 VTC 数据中随机化数量的变量名。必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "可选。设置局部(细化类型)信息级别：0（仅警告/错误），1（回显结果），2（进度和调试），3（全部调试）。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "ifm::ReadCSV -out VTC_L -file Left_VTC.csv -ncol Ncol\nifm::ReadCSV -out VTC_R -file Right_VTC.csv -ncol Ncol\nifm::GetSNM -out SNM -squares SQ -vtc_left VTC_L -vtc_right VTC_R -ncol Ncol"
+  },
+  "ifm::GetSRAMVTC": {
+    "signature": "ifm::GetSRAMVTC -out <array_name> -vin <list_of_r> -vout <list_of_r> -fi <list_of_r> -aoi <list_of_r> -aoo <list_of_r> -id <string> -sifm <array_name> -nrow <var_name> -ncol <var_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "基于 sIFM 线性电流响应，为 SRAM 单元构建随机化的电压传输特性(VTC)曲线。使用基于旋转的方法调整输入和输出电压，通过分析参考器件中的电流，确保生成物理且单调的 VTC 曲线。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out (类型: string) — 用于存储 VTC 曲线的双索引数组名称。第一个索引是 'Header' 或 'Data'；第二个是整数（随机化索引）。必填。"
+      },
+      {
+        "name": "-vin",
+        "type": "list",
+        "desc": "-vin (类型: list) — 参考 VTC 输入电压值的列表。必填。"
+      },
+      {
+        "name": "-vout",
+        "type": "list",
+        "desc": "-vout (类型: list) — 参考 VTC 输出电压值的列表。必填。"
+      },
+      {
+        "name": "-fi",
+        "type": "list",
+        "desc": "-fi (类型: list) — 用于旋转方法的电流控制角度值（弧度）列表。必填。"
+      },
+      {
+        "name": "-aoi",
+        "type": "list",
+        "desc": "-aoi (类型: list) — 参考 ReY(out,in) 矩阵值的列表。必填。"
+      },
+      {
+        "name": "-aoo",
+        "type": "list",
+        "desc": "-aoo (类型: list) — 参考 ReY(out,out) 矩阵值的列表。必填。"
+      },
+      {
+        "name": "-id",
+        "type": "string",
+        "desc": "-id (类型: string) — sIFM 可变性源的 ID。必填。"
+      },
+      {
+        "name": "-sifm",
+        "type": "string",
+        "desc": "-sifm (类型: string) — 包含 sIFM 数据的三索引数组名称：第一个索引是字符串（源 ID），第二个是整数（偏置行），第三个是整数（随机化列）。必填。"
+      },
+      {
+        "name": "-nrow",
+        "type": "string",
+        "desc": "-nrow (类型: string) — 包含 sIFM 数据中行数（偏置点）的变量名。必填。"
+      },
+      {
+        "name": "-ncol",
+        "type": "string",
+        "desc": "-ncol (类型: string) — 包含 sIFM 数据中列数（随机化次数）的变量名。必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info (类型: int) — 设置局部(细化类型)信息级别：0（仅警告/错误），1（回显结果），2（进度和调试），3（全部调试）。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help (类型: int) — 如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ifm::GetSRAMVTC -out VTC -id \"rdf\" -vin $Vins -vout $Vots -fi $fis -aoi $aois -aoo $aoos -sifm sIFM -nrow Nrow -ncol Ncol"
+  },
+  "ifm::ReadCSV": {
+    "signature": "ifm::ReadCSV -out <array_name> -file <string> -ncol <var_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "读取 CSV 文件（一行包含数据集名称的标题行，后跟数值行），并将数据存储在具有 'Header' 和 'Data' 索引的 Tcl 数组中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out (类型: string) — 用于存储读取数据的双索引数组名称。第一个索引是 'Header' 或 'Data'；第二个是整数（列索引）。必填。"
+      },
+      {
+        "name": "-file",
+        "type": "string",
+        "desc": "-file (类型: string) — 要读取的 CSV 文件的路径。必填。"
+      },
+      {
+        "name": "-ncol",
+        "type": "string",
+        "desc": "-ncol (类型: string) — 用于存储 CSV 文件中找到的列数的变量名。必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info (类型: int) — 设置局部(细化类型)信息级别：0（仅警告/错误），1（回显结果），2（进度和调试），3（全部调试）。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help (类型: int) — 如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "ifm::ReadCSV -out ReadCSV -ncol ReadNcol -file \"my.csv\""
+  },
+  "ifm::ReadsIFM": {
+    "signature": "ifm::ReadsIFM -out <array_name> -files <list_of_strings> -ids <list_of_strings> -nrow <var_name> -ncol <var_name> [-rsig <r> -nrand <i> -rseed <i> -ydd <list_of_r> -i <list_of_r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "读取一个或多个包含线性电流响应的 sIFM CSV 文件，并将数据存储在三索引数组中。支持计算组合响应（使用 'SUM' 标识符）和接触电阻可变性（使用 'crv' 标识符）。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out (类型: string) — 三索引数组的名称：第一个索引是字符串（源 ID），第二个是整数（偏置行），第三个是整数（随机化列）。必填。"
+      },
+      {
+        "name": "-files",
+        "type": "list",
+        "desc": "-files (类型: list) — sIFM CSV 文件路径的列表。必填。"
+      },
+      {
+        "name": "-ids",
+        "type": "list",
+        "desc": "-ids (类型: list) — 可变性源标识符的列表。包含 'SUM' 以自动计算所有源的组合数据。必填。"
+      },
+      {
+        "name": "-nrow",
+        "type": "string",
+        "desc": "-nrow (类型: string) — 用于存储找到的行数（偏置点）的变量名。必填。"
+      },
+      {
+        "name": "-ncol",
+        "type": "string",
+        "desc": "-ncol (类型: string) — 用于存储找到的列数（随机化次数）的变量名。必填。"
+      },
+      {
+        "name": "-rsig",
+        "type": "float",
+        "desc": "-rsig (类型: float) — 接触电阻的标准差，单位为欧姆。仅在 ids 包含 'crv' 时需要。可选。"
+      },
+      {
+        "name": "-nrand",
+        "type": "int",
+        "desc": "-nrand (类型: int) — 接触电阻可变性的随机样本数。仅在 ids 包含 'crv' 时需要。可选。"
+      },
+      {
+        "name": "-rseed",
+        "type": "int",
+        "desc": "-rseed (类型: int) — 用于接触电阻可变性的随机数种子（1 到 2147483647）。可选。"
+      },
+      {
+        "name": "-ydd",
+        "type": "list",
+        "desc": "-ydd (类型: list) — 参考 Y(d,d) 矩阵元素的列表。仅在 ids 包含 'crv' 时需要。可选。"
+      },
+      {
+        "name": "-i",
+        "type": "list",
+        "desc": "-i (类型: list) — 参考电流值的列表。仅在 ids 包含 'crv' 时需要。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info (类型: int) — 设置局部(细化类型)信息级别：0（仅警告/错误），1（回显结果），2（进度和调试），3（全部调试）。默认：0。可选。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help (类型: int) — 如果设置为 1，则打印帮助屏幕。默认：0。可选。"
+      }
+    ],
+    "example": "set IDs [list rdf ifft SUM]\nset FILES [list rdf_I_ndrain.csv ifft_I_ndrain.csv SUM_I_ndrain.csv]\nifm::ReadsIFM -out sIFM -nrow Nrow -ncol Ncol -files $FILES -ids $IDs"
+  },
+  "rfx::Abs2_v": {
+    "signature": "rfx::Abs2_v -out <list_name> -z <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "计算一个复数列表的绝对值的平方。结果存储在一个命名的 Tcl 列表中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储平方绝对值列表的列表名称。"
+      },
+      {
+        "name": "-z",
+        "type": "string",
+        "desc": "包含复数列表的数组名称。该数组具有 'Re' 和 'Im' 索引。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Z(Re) [list 1 1 0 -1]\nset Z(Im) [list 0 1 1 1]\nrfx::Abs2_v -out abs2 -z Z\nputs \"square of abs values = $abs2\""
+  },
+  "rfx::Abs_v": {
+    "signature": "rfx::Abs_v -out <list_name> -z <array_name> [-dB 0|10|20] [-info 0|1|2|3] [-help 0|1]",
+    "description": "计算一个复数列表的绝对值，可选择以 10 dB 或 20 dB 为单位。结果存储在一个命名的 Tcl 列表中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储绝对值列表的列表名称。必填。"
+      },
+      {
+        "name": "-z",
+        "type": "string",
+        "desc": "-z string — 包含复数列表的数组名称。该数组具有 'Re' 和 'Im' 索引。必填。"
+      },
+      {
+        "name": "-dB",
+        "type": "int",
+        "desc": "-dB int — 可选。绝对值的分贝级别：0（线性刻度）、10（10 dB 刻度）、20（20 dB 刻度）。默认：0。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 可选。如果设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Z(Re) [list 0 0 0 0 0]\nset Z(Im) [list 1e0 1e1 1e2 1e3 1e4]\nrfx::Abs_v -out dBs -z Z -dB 10\nputs \"dBs= $dBs\""
+  },
+  "rfx::Add_v": {
+    "signature": "rfx::Add_v -out <array_name> -z1 <array_name> -z2 <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "将两个复数列表按单元相加。结果存储在一个具有 'Re' 和 'Im' 索引的命名 Tcl 数组中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储结果的数组名称，具有 'Re' 和 'Im' 索引。必填。"
+      },
+      {
+        "name": "-z1",
+        "type": "string",
+        "desc": "-z1 string — 包含第一个复数列表的数组名称，具有 'Re' 和 'Im' 索引。必填。"
+      },
+      {
+        "name": "-z2",
+        "type": "string",
+        "desc": "-z2 string — 包含第二个复数列表的数组名称，具有 'Re' 和 'Im' 索引。必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 可选。如果设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Z1(Re) [list 0 1]\nset Z1(Im) [list 1 2]\nset Z2(Re) [list 1 2]\nset Z2(Im) [list 3 4]\nrfx::Add_v -out Z -z1 Z1 -z2 Z2"
+  },
+  "rfx::Cart2Polar_v": {
+    "signature": "rfx::Cart2Polar_v -out <array_name> -z <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "将复数列表从笛卡尔坐标转换为极坐标。结果存储在一个具有 'Abs' 和 'Phase' 索引的数组中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储结果的数组名称，具有 'Abs'（绝对值）和 'Phase'（以度为单位的相位）索引。必填。"
+      },
+      {
+        "name": "-z",
+        "type": "string",
+        "desc": "-z string — 包含复数列表的数组名称，具有 'Re' 和 'Im' 索引。必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 可选。如果设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Z(Re) [list 1 1 0 -1]\nset Z(Im) [list 0 1 1 1]\nrfx::Cart2Polar_v -out polar -z Z\nputs \"abs = $polar(Abs), phases = $polar(Phase)\""
+  },
+  "rfx::Conj_v": {
+    "signature": "rfx::Conj_v -out <array_name> -z <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "按单元计算复数列表的复共轭。结果存储在一个具有 'Re' 和 'Im' 索引的数组中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储复共轭结果的数组名称，具有 'Re' 和 'Im' 索引。必填。"
+      },
+      {
+        "name": "-z",
+        "type": "string",
+        "desc": "-z string — 包含复数列表的数组名称，具有 'Re' 和 'Im' 索引。必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 可选。如果设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Z(Re) [list 1 1]\nset Z(Im) [list -1 1]\nrfx::Conj_v -out Conj -z Z\nputs \"$Conj(Re) $Conj(Im)\""
+  },
+  "rfx::Div_v": {
+    "signature": "rfx::Div_v -out <array_name> -z1 <array_name> -z2 <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "将两个复数列表按单元相除。结果存储在一个具有 'Re' 和 'Im' 索引的数组中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储商结果的数组名称，具有 'Re' 和 'Im' 索引。必填。"
+      },
+      {
+        "name": "-z1",
+        "type": "string",
+        "desc": "-z1 string — 包含被除数复数列表的数组名称，具有 'Re' 和 'Im' 索引。必填。"
+      },
+      {
+        "name": "-z2",
+        "type": "string",
+        "desc": "-z2 string — 包含除数复数列表的数组名称，具有 'Re' 和 'Im' 索引。必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 可选。如果设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Z1(Re) [list 4 4]\nset Z1(Im) [list 7 2]\nset Z2(Re) [list 1 3]\nset Z2(Im) [list -3 -1]\nrfx::Div_v -out Z -z1 Z1 -z2 Z2"
+  },
+  "rfx::GetFK1": {
+    "signature": "rfx::GetFK1 -out <array_name> [-dataset <dataName>] [-xscale \"lin\"|\"log\"] [-scale <r>] [-target <r>] [-occurrence <i>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "在所有偏置点计算稳定性截止频率 fK1（Rollett 稳定性因子 K 等于目标值时的频率）。如果指定了 -dataset，则创建一个数据集。如果未找到 fK1，则返回 0。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果的数组名，索引为 'fK1'（截止频率）和 'bias'（偏置值）。必填。"
+      },
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "包含 'bias' 和 'fK1' 变量的 Sentaurus Visual 数据集名称。可选。"
+      },
+      {
+        "name": "-xscale",
+        "type": "string",
+        "desc": "X 坐标轴刻度：\"lin\"（线性）或 \"log\"（对数）。可选。默认：\"log\"。"
+      },
+      {
+        "name": "-scale",
+        "type": "float",
+        "desc": "用于除以计算出的 fK1 的缩放因子（例如，1e9 表示 GHz）。可选。默认：1.0。"
+      },
+      {
+        "name": "-target",
+        "type": "float",
+        "desc": "要搜索的 K 值。可选。默认：1.0。"
+      },
+      {
+        "name": "-occurrence",
+        "type": "int",
+        "desc": "当多个频率具有相同 K 值时，要提取的第 n 个插值 fK1 值。可选。默认：1。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。可选。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。可选。默认：0。"
+      }
+    ],
+    "example": "rfx::GetFK1 -out FK -dataset \"fK.bias\" -xscale \"log\" -target 1.0 -occurrence 1 -scale 1e9"
+  },
+  "rfx::GetFmax": {
+    "signature": "rfx::GetFmax -out <array_name> -parameter <r> [-method <string>] [-dataset <dataName>] [-slopedataset <dataName>] [-powergain \"MUG\"|\"MAG\"] [-xscale \"lin\"|\"log\"] [-scale <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "根据功率增益（MUG 或 MAG）与频率曲线，在所有偏置点计算最大振荡频率 fmax。支持三种提取方法：单位增益点(a)、在 dB 点提取(b) 和在频率点提取(c)。如果未找到 fmax 或器件为无源，则返回 0。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果的数组名，索引为 'fmax' 和 'bias'。必填。"
+      },
+      {
+        "name": "-parameter",
+        "type": "float",
+        "desc": "方法 \"b\" 的 dB 点（单位 dB），或方法 \"c\" 的频率点（单位 Hz）。对于方法 \"b\" 和 \"c\" 为必填。"
+      },
+      {
+        "name": "-method",
+        "type": "string",
+        "desc": "提取方法：\"a\" 或 \"unit-gain-point\"（直接搜索单位增益），\"b\" 或 \"extract-at-dBPoint\"（从 dB 下降点外推），\"c\" 或 \"extract-at-frequency\"（从指定频率外推）。可选。默认：\"a\"。"
+      },
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "包含 'bias' 和 'fmax' 变量的数据集名称。可选。"
+      },
+      {
+        "name": "-slopedataset",
+        "type": "string",
+        "desc": "包含每个偏置点功率增益导数变量（dMUG 或 dMAG，单位 dB/十倍频程 对 频率）的数据集名称。可选。"
+      },
+      {
+        "name": "-powergain",
+        "type": "string",
+        "desc": "用于提取的功率增益类型：\"MUG\"（Mason 单向增益）或 \"MAG\"（最大可用增益）。可选。默认：\"MUG\"。"
+      },
+      {
+        "name": "-xscale",
+        "type": "string",
+        "desc": "X 坐标轴刻度：\"lin\"（线性）或 \"log\"（对数）。可选。默认：\"log\"。"
+      },
+      {
+        "name": "-scale",
+        "type": "float",
+        "desc": "用于除以计算出的 fmax 的缩放因子（例如，1e9 表示 GHz）。可选。默认：1.0。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。可选。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。可选。默认：0。"
+      }
+    ],
+    "example": "rfx::GetFmax -out Fmax0 -method \"unit-gain-point\" -scale 1e9 -xscale \"log\" -dataset \"fmax0.bias\" -slopedataset \"MUG_slope_freq\""
+  },
+  "rfx::GetFt": {
+    "signature": "rfx::GetFt -out <array_name> -parameter <r> [-method <string>] [-dataset <dataName>] [-slopedataset <dataName>] [-xscale \"lin\"|\"log\"] [-scale <r>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "根据电流增益 |h21| 与频率曲线，在所有偏置点计算截止频率 ft。支持三种提取方法：单位增益点(a)、在 dB 点提取(b) 和在频率点提取(c)。如果未找到 ft 或 |h21| 小于等于 1，则返回 0。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果的数组名，索引为 'ft'（截止频率）和 'bias'。必填。"
+      },
+      {
+        "name": "-parameter",
+        "type": "float",
+        "desc": "方法 \"b\" 的 dB 点（单位 dB），或方法 \"c\" 的频率点（单位 Hz）。对于方法 \"b\" 和 \"c\" 为必填。"
+      },
+      {
+        "name": "-method",
+        "type": "string",
+        "desc": "提取方法：\"a\" 或 \"unit-gain-point\"（|h21|=0 dB 时的频率），\"b\" 或 \"extract-at-dBPoint\"（从 dB 下降点外推），\"c\" 或 \"extract-at-frequency\"（从指定频率外推）。可选。默认：\"a\"。"
+      },
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "包含 'bias' 和 'ft' 变量的数据集名称。可选。"
+      },
+      {
+        "name": "-slopedataset",
+        "type": "string",
+        "desc": "包含每个偏置点 |h21| 导数变量（dh21，单位 dB/十倍频程 对 频率）的数据集名称。可选。"
+      },
+      {
+        "name": "-xscale",
+        "type": "string",
+        "desc": "X 坐标轴刻度：\"lin\"（线性）或 \"log\"（对数）。可选。默认：\"log\"。"
+      },
+      {
+        "name": "-scale",
+        "type": "float",
+        "desc": "用于除以计算出的 ft 的缩放因子（例如，1e9 表示 GHz）。可选。默认：1.0。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。可选。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。可选。默认：0。"
+      }
+    ],
+    "example": "rfx::GetFt -out Ft0 -method \"unit-gain-point\" -scale 1e9 -xscale \"log\" -dataset \"ft0.bias\" -slopedataset \"h21_slope_freq\""
+  },
+  "rfx::GetNearestIndex": {
+    "signature": "rfx::GetNearestIndex -out <var_name> -target <r> -list <list_of_r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "在有序数值列表中查找最接近给定目标值的条目的索引。通常用于查找最近的频率或偏置点索引。如果目标值超出范围，则返回第一个或最后一个单元的索引。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果索引的变量名。必填。"
+      },
+      {
+        "name": "-target",
+        "type": "float",
+        "desc": "要搜索的目标值。必填。"
+      },
+      {
+        "name": "-list",
+        "type": "list",
+        "desc": "一个有序数值列表（升序或降序）。必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。可选。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。可选。默认：0。"
+      }
+    ],
+    "example": "rfx::GetNearestIndex -out i_bias -target 0.5 -list $rfx::bias\nputs \"Nearest bias point index: $i_bias\""
+  },
+  "rfx::GetNoiseFigure": {
+    "signature": "rfx::GetNoiseFigure -out <array_name> [-xaxis \"frequency\"|\"bias\"] (-target <r> | -index <i>) [-dataset <dataName>] [-info 0|1|2|3] [-help 0|1]",
+    "description": "计算噪声系数、噪声参数（NFmin、Rn、Gn、Yopt、Zopt）、输入参考谱密度（Svn、Sin、Svi）和噪声相关系数作为频率或偏置的函数。使用 rfx::z0 和 rfx::Zs 命名空间变量作为阻抗值。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果的数组名。索引包括：NF、NFmin、F、Fmin、Rn、Gn、rn、gn、Gopt、Bopt、Ropt、Xopt、gopt、bopt、ropt、xopt、Gcor、Bcor、Gu、gu、Sv、Si、ReSvi、ImSvi、ReSiv、ImSiv、ReCi、ImCi、AbsCi、PhaseCi、ReCiv、ImCiv、AbsCiv、PhaseCiv，以及 freq 或 bias。必填。"
+      },
+      {
+        "name": "-xaxis",
+        "type": "string",
+        "desc": "计算坐标轴：\"frequency\"（在固定偏置下）或 \"bias\"（在固定频率下）。可选。默认：\"frequency\"。"
+      },
+      {
+        "name": "-target",
+        "type": "float",
+        "desc": "偏置点（用于 -xaxis \"frequency\"）或频率点（用于 -xaxis \"bias\"）。仅指定 -target 或 -index 中的一个。可选。"
+      },
+      {
+        "name": "-index",
+        "type": "int",
+        "desc": "偏置点（用于 -xaxis \"frequency\"）或频率点（用于 -xaxis \"bias\"）的索引。仅指定 -target 或 -index 中的一个。可选。"
+      },
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "包含噪声系数变量的数据集名称。可选。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。可选。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。可选。默认：0。"
+      }
+    ],
+    "example": "rfx::GetNoiseFigure -out NFparam -dataset \"NF_freq\" -xaxis \"frequency\" -target 0.0"
+  },
+  "rfx::GetParsAtPoint": {
+    "signature": "rfx::GetParsAtPoint -out <array_name> -rfmatrix \"AC\"|\"Y\"|\"H\"|\"Z\"|\"S\" -biaspoint <r> -freqpoint <r> [-info 0|1|2|3] [-help 0|1]",
+    "description": "在给定的偏置和频率点访问 RF 矩阵的 RF 参数。结果存储在数组中，索引为 'bias'、'freq'、'11'、'12'、'21'、'22'（每个包含实部和虚部的列表）。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果的数组名，索引为 'bias'、'freq'、'11'、'12'、'21'、'22'。必填。"
+      },
+      {
+        "name": "-rfmatrix",
+        "type": "string",
+        "desc": "RF 矩阵名称：\"AC\"、\"Y\"、\"H\"、\"Z\" 或 \"S\"。必填。"
+      },
+      {
+        "name": "-biaspoint",
+        "type": "float",
+        "desc": "偏置点值。必填。"
+      },
+      {
+        "name": "-freqpoint",
+        "type": "float",
+        "desc": "频率点值。必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。可选。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。可选。默认：0。"
+      }
+    ],
+    "example": "rfx::GetParsAtPoint -out ReImData -rfmatrix \"AC\" -biaspoint 0.0 -freqpoint 1e8"
+  },
+  "rfx::GetPowerGain": {
+    "signature": "rfx::GetPowerGain -out <array_name> [-xaxis \"frequency\"|\"bias\"] (-target <r> | -index <i>) [-dataset <dataName>] [-powergain \"all\"|\"MUG\"|\"MSG\"|\"MAG\"] [-info 0|1|2|3] [-help 0|1]",
+    "description": "计算功率增益和稳定性判据作为频率（在固定偏置下）或偏置（在固定频率下）的函数。结果包括 Rollett 稳定性因子 K、稳定性条件 delta、MSG、MAG、MUG（线性和 10 dB 刻度）以及单向品质因数 U。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果的数组名。索引包括：K、delta、freq 或 bias，以及可选的 MUG、MUG_dB、MSG、MSG_dB、MAG、MAG_dB、U。必填。"
+      },
+      {
+        "name": "-xaxis",
+        "type": "string",
+        "desc": "计算坐标轴：\"frequency\" 或 \"bias\"。可选。默认：\"frequency\"。"
+      },
+      {
+        "name": "-target",
+        "type": "float",
+        "desc": "偏置点（用于 -xaxis \"frequency\"）或频率点（用于 -xaxis \"bias\"）。仅指定 -target 或 -index 中的一个。可选。"
+      },
+      {
+        "name": "-index",
+        "type": "int",
+        "desc": "偏置点或频率点的索引。仅指定 -target 或 -index 中的一个。可选。"
+      },
+      {
+        "name": "-dataset",
+        "type": "string",
+        "desc": "包含功率增益变量的数据集名称。可选。"
+      },
+      {
+        "name": "-powergain",
+        "type": "string",
+        "desc": "要计算的功率增益：\"all\"（MSG、MAG、MUG、U）、\"MUG\"（仅 MUG 和 U）、\"MSG\"（仅 MSG）、\"MAG\"（仅 MAG）。可选。默认：\"all\"。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "设置局部信息级别。可选。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "如果设置为 1，则打印帮助屏幕。可选。默认：0。"
+      }
+    ],
+    "example": "rfx::GetPowerGain -out gain -dataset \"Pgain_freq\" -powergain \"all\" -xaxis \"bias\" -target 0.0"
+  },
+  "rfx::Mul_v": {
+    "signature": "rfx::Mul_v -out <array_name> -z1 <array_name> -z2 <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "逐元素计算两个复数列表的乘积。结果存储在具有 'Re' 和 'Im' 索引的数组中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储乘积结果的数组名称，索引为 'Re' 和 'Im'。"
+      },
+      {
+        "name": "-z1",
+        "type": "string",
+        "desc": "包含第一个复数列表的数组名称，索引为 'Re' 和 'Im'。"
+      },
+      {
+        "name": "-z2",
+        "type": "string",
+        "desc": "包含第二个复数列表的数组名称，索引为 'Re' 和 'Im'。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Z1(Re) [list 4 4]\nset Z1(Im) [list 7 2]\nset Z2(Re) [list 1 3]\nset Z2(Im) [list -3 -1]\nrfx::Mul_v -out Z -z1 Z1 -z2 Z2"
+  },
+  "rfx::Phase_v": {
+    "signature": "rfx::Phase_v -out <list_name> -z <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "计算以笛卡尔坐标指定的复数列表的相位主值（以度为单位）。结果存储在指定的 Tcl 列表中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储相位值（以度为单位）的列表名称。"
+      },
+      {
+        "name": "-z",
+        "type": "string",
+        "desc": "包含复数列表的数组名称，索引为 'Re' 和 'Im'。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Z(Re) [list 1 1 0 -1]\nset Z(Im) [list 0 1 1 1]\nrfx::Phase_v -out phases -z Z\nputs \"phases = $phases\""
+  },
+  "rfx::Polar2Cart_v": {
+    "signature": "rfx::Polar2Cart_v -out <array_name> -z <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "将复数列表从极坐标转换为笛卡尔坐标。输入数组索引为 'Abs' 和 'Phase'；输出数组索引为 'Re' 和 'Im'。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "用于存储结果的数组名称，索引为 'Re' 和 'Im'。"
+      },
+      {
+        "name": "-z",
+        "type": "string",
+        "desc": "包含极坐标形式复数列表的数组名称，索引为 'Abs' 和 'Phase'（以度为单位）。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "可选。设置局部(细化类型)信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "可选。如果设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Z(Abs) [list 1.414 1]\nset Z(Phase) [list 45 60]\nrfx::Polar2Cart_v -out ReIm -z Z"
+  },
+  "rfx::RFCList": {
+    "signature": "rfx::RFCList -out <array_name> -rfparameter <string> -index <i> [-noisename <string>] [-noisesource \"ee\"|\"hh\"|\"eeDiff\"|\"hhDiff\"|\"eeMonoGR\"|\"hhMonoGR\"|\"eeFlickerGR\"|\"hhFlickerGR\"] [-xaxis \"frequency\"|\"bias\"] [-info 0|1|2|3] [-help 0|1]",
+    "description": "访问 Y、h、Z、S 矩阵或 PSD 矩阵的一个切片，通常用于生成 RF 参数或 PSD 随偏置或频率变化的曲线。结果存储在一个包含 'Re' 和 'Im' 索引的数组中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储结果的数组名，包含 'Re'（实部列表）和 'Im'（虚部列表）索引。必填。"
+      },
+      {
+        "name": "-rfparameter",
+        "type": "string",
+        "desc": "-rfparameter string — 参数标识符，例如，h 矩阵单元 h21 为 \"h21\"，Z 矩阵单元 z11 为 \"z11\"，PSD 单元为 \"sv11\" 或 \"si11\"（端口号 11, 12, 21, 22）。必填。"
+      },
+      {
+        "name": "-index",
+        "type": "int",
+        "desc": "-index int — 切片的索引（当 -xaxis 为 \"frequency\" 时是偏置点索引，当 -xaxis 为 \"bias\" 时是频率索引）。必填。"
+      },
+      {
+        "name": "-noisename",
+        "type": "string",
+        "desc": "-noisename string — 可选。噪声规格的名称。当使用命名的噪声规格时，PSD 参数需要此参数。"
+      },
+      {
+        "name": "-noisesource",
+        "type": "string",
+        "desc": "-noisesource string — 可选。部分 PSD 的噪声源名称：\"ee\"（电子）、\"hh\"（空穴）、\"eeDiff\"（电子扩散）、\"hhDiff\"（空穴扩散）、\"eeMonoGR\"（电子单极 GR）、\"hhMonoGR\"（空穴单极 GR）、\"eeFlickerGR\"（电子闪烁 GR）、\"hhFlickerGR\"（空穴闪烁 GR）。"
+      },
+      {
+        "name": "-xaxis",
+        "type": "string",
+        "desc": "-xaxis string — 可选。坐标轴：\"frequency\"（固定偏置下 RF 参数随频率变化）或 \"bias\"（固定频率下随偏置变化）。默认：\"frequency\"。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 可选。设置局部信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 可选。如果设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "rfx::RFCList -out ReImz11 -rfparameter \"z11\" -xaxis \"frequency\" -index $i_bias"
+  },
+  "rfx::Sub_v": {
+    "signature": "rfx::Sub_v -out <array_name> -z1 <array_name> -z2 <array_name> [-info 0|1|2|3] [-help 0|1]",
+    "description": "逐元素相减两个复数列表。结果存储在包含 'Re' 和 'Im' 索引的数组中。",
+    "parameters": [
+      {
+        "name": "-out",
+        "type": "string",
+        "desc": "-out string — 用于存储差值结果的数组名，包含 'Re' 和 'Im' 索引。必填。"
+      },
+      {
+        "name": "-z1",
+        "type": "string",
+        "desc": "-z1 string — 包含被减数复数列表的数组名，该数组包含 'Re' 和 'Im' 索引。必填。"
+      },
+      {
+        "name": "-z2",
+        "type": "string",
+        "desc": "-z2 string — 包含减数复数列表的数组名，该数组包含 'Re' 和 'Im' 索引。必填。"
+      },
+      {
+        "name": "-info",
+        "type": "int",
+        "desc": "-info int — 可选。设置局部信息级别。默认：0。"
+      },
+      {
+        "name": "-help",
+        "type": "int",
+        "desc": "-help int — 可选。如果设置为 1，则打印帮助屏幕。默认：0。"
+      }
+    ],
+    "example": "set Z1(Re) [list 1 1]\nset Z1(Im) [list 0 2]\nset Z2(Re) [list 0 2]\nset Z2(Im) [list 1 4]\nrfx::Sub_v -out Z -z1 Z1 -z2 Z2"
+  }
+}

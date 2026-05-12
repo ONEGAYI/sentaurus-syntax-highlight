@@ -14,6 +14,7 @@ const {
     _extractVariableNames,
     _isSvisualVarDefCommand,
     _extractSvisualOutVars,
+    _extractCmdSubstPatternDefs,
 } = require('./tcl-ast-utils');
 
 /**
@@ -172,6 +173,8 @@ class ScopeIndex {
 /** buildScopeIndex 中已有专门处理的 command 名称 */
 const _HANDLED_CMDS = new Set([
     'set', 'lappend', 'append', 'for', 'lassign', 'lmap', 'dict', 'incr',
+    'gets', 'scan', 'regexp', 'regsub', 'catch', 'variable', 'global', 'upvar',
+    'array', 'file',
 ]);
 
 /**
@@ -204,41 +207,19 @@ function _collectFallbackDefs(node, defs, captured) {
             for (const d of _extractErrorVarDefs(child, true)) {
                 _addDefIfNew(defs, captured, d.name, d.line);
             }
-            _scanErrorFallbackDefs(child, defs, captured);
+        }
+
+        if (child.type === 'command_substitution') {
+            _collectCmdSubstDefs(child, defs);
+            continue;
+        }
+
+        if (child.type === 'braced_word_simple' || child.type === 'braced_word') {
+            _collectBracedWordSimpleDefs(child, defs);
+            continue;
         }
 
         _collectFallbackDefs(child, defs, captured);
-    }
-}
-
-/**
- * 扫描 ERROR 节点中 binop_expr 特有的变量定义模式。
- * 在 binop_expr 内的 ERROR 中，命令可能不在首个子节点位置，
- * 需要遍历所有子节点查找 set 和 svisual 定义。
- */
-function _scanErrorFallbackDefs(node, defs, captured) {
-    for (let i = 0; i < node.childCount; i++) {
-        const child = node.child(i);
-        if (!child || child.type !== 'simple_word') continue;
-
-        if (child.text === 'set') {
-            const next = node.child(i + 1);
-            if (next && next.type === 'simple_word' && !next.text.startsWith('$') &&
-                !next.text.startsWith('-') && !/^\d/.test(next.text)) {
-                _addDefIfNew(defs, captured, next.text, next.startPosition.row + 1);
-            }
-        }
-
-        if (_isSvisualVarDefCommand(child.text)) {
-            const words = [];
-            for (let j = 0; j < node.childCount; j++) {
-                const w = node.child(j);
-                if (w && (w.type === 'simple_word' || w.type === 'id')) words.push(w);
-            }
-            for (const d of _extractSvisualOutVars(words, child.text)) {
-                _addDefIfNew(defs, captured, d.name, d.line);
-            }
-        }
     }
 }
 
@@ -253,15 +234,91 @@ function _collectErrorDefsRecursive(node, globalDefs, procScopes, loopScopes) {
         globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
     }
 
-    // 扫描 proc 结构（proc + name + args 在同一 ERROR 内）
+    // ERROR 内 id + command_substitution 模式（set VAR [cmd ...] 吞噬后的残骸）
+    const existingKeys = new Set(globalDefs.map(d => d.name + '@' + d.defLine));
+    for (const d of _extractCmdSubstPatternDefs(node)) {
+        const key = d.name + '@' + d.line;
+        if (!existingKeys.has(key)) {
+            existingKeys.add(key);
+            globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
+        }
+    }
+
+    // 扫描 proc 结构
     _extractErrorProcScopes(node, globalDefs, procScopes);
-    // 扫描碎片化的 proc（proc + name + args 在嵌套 ERROR，body 在父 ERROR）
     _findAndExtractErrorProcBodies(node, globalDefs, procScopes);
 
     for (let i = 0; i < node.childCount; i++) {
         const child = node.child(i);
         if (child && child.type === 'ERROR') {
             _collectErrorDefsRecursive(child, globalDefs, procScopes, loopScopes);
+        }
+        if (child && child.type === 'command_substitution') {
+            _collectCmdSubstDefs(child, globalDefs);
+        }
+        if (child && (child.type === 'braced_word_simple' || child.type === 'braced_word')) {
+            _collectBracedWordSimpleDefs(child, globalDefs);
+        }
+    }
+}
+
+/**
+ * 从 braced_word_simple / braced_word 节点中提取 set 变量定义。
+ * ERROR 内的 if/else body 可能被解析为 braced_word_simple，
+ * 内部结构为 { simple_word("set") simple_word(varName) ... }。
+ */
+function _collectBracedWordSimpleDefs(node, defs) {
+    for (let i = 0; i < node.childCount - 1; i++) {
+        const child = node.child(i);
+        if (!child || child.type !== 'simple_word' || child.text !== 'set') continue;
+        const next = node.child(i + 1);
+        if (next && next.type === 'simple_word' && !next.text.startsWith('$') && !next.text.startsWith('env(') && !/^\d/.test(next.text)) {
+            defs.push({ name: next.text, defLine: next.startPosition.row + 1, isProc: false });
+        }
+    }
+}
+
+/**
+ * 从 command_substitution 节点中提取变量定义。
+ * command_substitution 内含 command 节点，需对其内部命令应用变量提取逻辑。
+ * 例如 set VAR [lmap v $list {body}] 中 lmap 的循环变量 v 需要被提取。
+ */
+function _collectCmdSubstDefs(node, globalDefs) {
+    for (let i = 0; i < node.childCount; i++) {
+        const child = node.child(i);
+        if (!child) continue;
+
+        if (child.type === 'command') {
+            const firstChild = child.child(0);
+            if (firstChild && firstChild.type === 'simple_word') {
+                const cmdName = firstChild.text;
+                const words = _getCommandWords(child);
+                if (cmdName === 'set' || cmdName === 'lappend' || cmdName === 'append') {
+                    for (const arg of words) {
+                        if (arg.type === 'id' || arg.type === 'simple_word') {
+                            const name = arg.text;
+                            if (name !== cmdName && !name.startsWith('env(') && !/^\d/.test(name)) {
+                                globalDefs.push({ name, defLine: arg.startPosition.row + 1, isProc: false });
+                                break;
+                            }
+                        }
+                    }
+                } else if (cmdName === 'foreach') {
+                    for (const v of _extractForeachVarNames(child)) {
+                        globalDefs.push({ name: v.name, defLine: v.line, isProc: false });
+                    }
+                } else {
+                    for (const d of _extractCommandVarDefs(child, cmdName, words)) {
+                        globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
+                    }
+                }
+            }
+        }
+        if (child.type === 'command_substitution') {
+            _collectCmdSubstDefs(child, globalDefs);
+        }
+        if (child.type === 'ERROR') {
+            _collectErrorDefsRecursive(child, globalDefs, [], []);
         }
     }
 }
@@ -583,15 +640,21 @@ function buildScopeIndex(root) {
                         }
                     }
                 }
-                if (cmdName === 'for') {
+                if (cmdName === 'incr') {
+                    const words = _getCommandWords(child);
+                    if (words.length >= 2) {
+                        const varNode = words[1];
+                        if (varNode && (varNode.type === 'simple_word' || varNode.type === 'id')) {
+                            globalDefs.push({ name: varNode.text, defLine: varNode.startPosition.row + 1, isProc: false });
+                        }
+                    }
+                } else if (cmdName === 'for') {
                     const words = _getCommandWords(child);
                     const bracedWords = words.filter(w => w.type === 'braced_word');
-                    // body 是最后一个 braced_word，用它确定循环范围
                     const bodyBraced = bracedWords.length > 0 ? bracedWords[bracedWords.length - 1] : null;
                     if (bodyBraced) {
                         const loopStart = child.startPosition.row + 1;
                         const loopEnd = child.endPosition.row + 1;
-                        // 收集 init/next 中的变量名（循环临时变量）
                         const loopVarNames = new Set();
                         for (let bi = 0; bi < bracedWords.length - 1; bi++) {
                             _collectVarNamesFromNode(bracedWords[bi], loopVarNames);
@@ -603,17 +666,14 @@ function buildScopeIndex(root) {
                             _collectLocalDefsForIndex(w, globalDefs);
                         }
                     }
-                }
-                if (cmdName === 'lassign' || cmdName === 'lmap' || cmdName === 'dict') {
-                    const words = _getCommandWords(child);
-                    for (const d of _extractCommandVarDefs(child, cmdName, words)) {
-                        globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
-                    }
-                }
-                // Svisual: ext::/rfx::/ifm::* -out <var> 和 create_variable -name <var>
-                if (_isSvisualVarDefCommand(cmdName)) {
+                } else if (_isSvisualVarDefCommand(cmdName)) {
                     const words = _getCommandWords(child);
                     for (const d of _extractSvisualOutVars(words, cmdName)) {
+                        globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
+                    }
+                } else if (cmdName !== 'set' && cmdName !== 'lappend' && cmdName !== 'append') {
+                    const words = _getCommandWords(child);
+                    for (const d of _extractCommandVarDefs(child, cmdName, words)) {
                         globalDefs.push({ name: d.name, defLine: d.line, isProc: false });
                     }
                 }
@@ -751,12 +811,11 @@ function _collectLocalDefsForIndex(node, defs) {
                             _collectLocalDefsForIndex(w, defs);
                         }
                     }
-                } else if (cmdName === 'lassign' || cmdName === 'lmap' || cmdName === 'dict') {
+                } else if (cmdName === 'lassign' || cmdName === 'lmap') {
                     const words = _getCommandWords(child);
                     for (const d of _extractCommandVarDefs(child, cmdName, words)) {
                         defs.push({ name: d.name, defLine: d.line });
                     }
-                    // braced_word 在 word_list 内，用 _getCommandWords 穿透递归 body
                     for (const w of words) {
                         if (w.type === 'braced_word') {
                             _collectLocalDefsForIndex(w, defs);
@@ -787,6 +846,20 @@ function _collectLocalDefsForIndex(node, defs) {
                     for (const d of _extractSvisualOutVars(words, cmdName)) {
                         defs.push({ name: d.name, defLine: d.line });
                     }
+                } else {
+                    // 统一使用 _extractCommandVarDefs 处理所有其他隐式变量声明命令
+                    const words = _getCommandWords(child);
+                    for (const d of _extractCommandVarDefs(child, cmdName, words)) {
+                        defs.push({ name: d.name, defLine: d.line });
+                    }
+                    // dict for/map 的 braced_word 需要递归 body
+                    if (cmdName === 'dict') {
+                        for (const w of words) {
+                            if (w.type === 'braced_word') {
+                                _collectLocalDefsForIndex(w, defs);
+                            }
+                        }
+                    }
                 }
             }
             _collectLocalDefsForIndex(child, defs);
@@ -800,6 +873,10 @@ function _collectLocalDefsForIndex(node, defs) {
         }
 
         if (child.type === 'braced_word') {
+            _collectLocalDefsForIndex(child, defs);
+        }
+
+        if (child.type === 'command_substitution') {
             _collectLocalDefsForIndex(child, defs);
         }
     }

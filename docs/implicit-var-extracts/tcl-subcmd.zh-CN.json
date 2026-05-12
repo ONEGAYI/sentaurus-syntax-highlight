@@ -1,0 +1,47 @@
+{
+  "dict set": {
+    "signature": "dict set dictVar key ?key ...? value",
+    "description": "在字典变量的指定键路径设置值。",
+    "example": "dict set opts debug true"
+  },
+  "dict for": {
+    "signature": "dict for {keyVar valueVar} dictionary body",
+    "description": "遍历字典的键值对。",
+    "example": "dict for {k v} $opts { puts \"$k = $v\" }"
+  },
+  "dict map": {
+    "signature": "dict map {keyVar valueVar} dictionary body",
+    "description": "映射遍历字典，将 body 结果收集为新字典（Tcl 8.7+）。",
+    "example": "dict map {k v} $opts { string toupper $v }"
+  },
+  "dict update": {
+    "signature": "dict update dictVar key varName ?key varName ...? body",
+    "description": "从字典中提取值到变量，执行 body 后写回。",
+    "example": "dict update opts voltage v { set v [expr {$v * 2}] }"
+  },
+  "dict with": {
+    "signature": "dict with dictVar ?key ...? body",
+    "description": "从字典键创建变量，执行 body 后自动写回。",
+    "example": "dict with opts { puts $voltage }"
+  },
+  "dict unset": {
+    "signature": "dict unset dictVar key ?key ...?",
+    "description": "从字典变量中移除指定键路径的条目。",
+    "example": "dict unset opts debug"
+  },
+  "array set": {
+    "signature": "array set arrayName list",
+    "description": "从键值对列表设置数组元素。",
+    "example": "array set opts {voltage 1.2 current 0.5}"
+  },
+  "file stat": {
+    "signature": "file stat name varName",
+    "description": "将文件状态信息（atime、ctime、dev、gid、ino、mode、mtime、nlink、size、type、uid）存入数组 varName。",
+    "example": "file stat $path arr; puts $arr(size)"
+  },
+  "info default": {
+    "signature": "info default procname arg varName",
+    "description": "判断过程参数是否有默认值，如有则存入 varName，返回 1 或 0。",
+    "example": "info default myProc voltage defVal"
+  }
+}
