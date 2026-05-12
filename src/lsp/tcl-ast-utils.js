@@ -265,11 +265,11 @@ function _extractCommandVarDefs(node, cmdName, words) {
             if (_isWordType(words[i])) defs.push({ name: words[i].text, line: words[i].startPosition.row + 1 });
         }
     } else if (cmdName === 'regsub') {
-        if (words.length >= 2) {
-            const last = words[words.length - 1];
-            if (last && last.type === 'simple_word' && !last.text.startsWith('-')) {
-                defs.push({ name: last.text, line: last.startPosition.row + 1 });
-            }
+        let ridx = 1;
+        while (ridx < words.length && words[ridx].text.startsWith('-')) ridx++;
+        // ridx=exp, ridx+1=string, ridx+2=subSpec, ridx+3=varName(可选)
+        if (ridx + 3 < words.length && _isWordType(words[ridx + 3])) {
+            defs.push({ name: words[ridx + 3].text, line: words[ridx + 3].startPosition.row + 1 });
         }
     } else if (cmdName === 'variable') {
         let argIdx = 0;
@@ -454,11 +454,6 @@ function _extractErrorVarDefs(node, includeCompleteSet = false) {
             const arg = node.child(skip + 3);
             if (arg && arg.type === 'simple_word') {
                 defs.push({ name: arg.text, line: arg.startPosition.row + 1 });
-            }
-        } else if (node.childCount > skip + 2) {
-            const last = node.child(node.childCount - 1);
-            if (last && last.type === 'simple_word' && !last.text.startsWith('-')) {
-                defs.push({ name: last.text, line: last.startPosition.row + 1 });
             }
         }
     } else if (_isSvisualVarDefCommand(cmdName)) {
