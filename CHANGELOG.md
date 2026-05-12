@@ -4,6 +4,15 @@
 
 ---
 
+## [1.17.1] - 2026-05-12
+
+### Bug 修复
+
+- **环境变量设置 UI 自动字典序排序与实时刷新**（#51）：修复通过 VSCode 设置界面直接添加环境变量时顺序混乱、重置后所有项丢失的问题。新增 `activateAutoSort()` 自动排序机制——配置变更时检测键序并按字母重排，通过临时变量两次写入强制 UI 刷新；重置操作自动恢复 8 个默认环境变量（DesName/Pd/ProjDir 等）；默认值从 `package.json` 迁移至运行时定义，消除发布时配置残留
+- **ERROR 根节点内 if/else 分支变量定义在 hover/补全中不可见**（#52）：修复 `getVariables` 在 ERROR 根节点时仅调用 `_collectErrorVarsRecursive` 后直接 return，导致 if/else/foreach 等正常子节点中的 `set` 变量定义未被提取的回归。现在处理完 ERROR 恢复后额外遍历非 ERROR 子节点递归提取变量，新增回归测试覆盖
+
+---
+
 ## [1.17.0] - 2026-05-11
 
 ### 新功能
@@ -909,6 +918,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[1.17.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.17.0...v1.17.1
 [1.17.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.16.2...v1.17.0
 [1.16.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.16.1...v1.16.2
 [1.16.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.16.0...v1.16.1
