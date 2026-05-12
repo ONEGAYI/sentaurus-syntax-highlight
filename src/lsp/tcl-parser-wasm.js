@@ -1,7 +1,7 @@
 // src/lsp/tcl-parser-wasm.js
 'use strict';
 
-const Parser = require('web-tree-sitter');
+const wt = require('web-tree-sitter');
 const path = require('path');
 
 let _parser = null;       // 单例 Parser 实例
@@ -64,22 +64,7 @@ async function init(context, outputChannel) {
         try {
             // Step 1: 初始化 web-tree-sitter WASM 运行时
             debug('Step 1: 初始化 web-tree-sitter 运行时...');
-            const wasmRuntimePath = path.join(
-                context.extensionPath,
-                'node_modules', 'web-tree-sitter', 'web-tree-sitter.wasm'
-            );
-            debug(`  WASM runtime 路径: ${wasmRuntimePath}`);
-
-            await Parser.init({
-                locateFile(scriptName /*, scriptDirectory */) {
-                    const resolved = path.join(
-                        context.extensionPath,
-                        'node_modules', 'web-tree-sitter', scriptName
-                    );
-                    debug(`  locateFile 解析: ${scriptName} -> ${resolved}`);
-                    return resolved;
-                },
-            });
+            await wt.Parser.init();
             debug('  web-tree-sitter 运行时初始化成功!');
 
             // Step 2: 加载 tree-sitter-tcl 语法 WASM
@@ -90,15 +75,15 @@ async function init(context, outputChannel) {
             );
             debug(`  语法 WASM 路径: ${grammarPath}`);
 
-            // 0.22.6: Parser.Language 在 init() 之后才可用
-            _tclLanguage = await Parser.Language.load(grammarPath);
+            // v0.25+: Language 是顶层导出
+            _tclLanguage = await wt.Language.load(grammarPath);
             debug(`  Tcl 语法加载成功!`);
             debug(`  语言节点类型数量: ${_tclLanguage.nodeTypeCount}`);
             debug(`  语言字段数量: ${_tclLanguage.fieldCount}`);
 
             // Step 3: 创建 Parser 实例
             debug('Step 3: 创建 Parser 实例...');
-            _parser = new Parser();
+            _parser = new wt.Parser();
             _parser.setLanguage(_tclLanguage);
             debug('  Parser 实例创建成功!');
 

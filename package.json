@@ -332,7 +332,9 @@
             "type": "object",
             "default": {},
             "markdownDescription": "%config.envVars.mdDesc%",
-            "additionalProperties": { "type": "string" },
+            "additionalProperties": {
+              "type": "string"
+            },
             "scope": "resource",
             "order": 1
           }
@@ -458,6 +460,6 @@
     ]
   },
   "dependencies": {
-    "web-tree-sitter": "^0.22.6"
+    "web-tree-sitter": "^0.25.3"
   }
 }
