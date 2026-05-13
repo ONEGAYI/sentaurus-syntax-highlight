@@ -505,6 +505,7 @@ function _extractBracedBodyImports(node, imports) {
  * @param {Array} defs - 输出定义数组
  * @param {boolean} recurseIntoElse - 是否深入 else/elseif 子节点（if 节点需要）
  */
+
 function _collectBracedWordDefs(node, defs, recurseIntoElse = false) {
     const words = _getCommandWords(node);
     for (const w of words) {
@@ -572,6 +573,10 @@ function buildScopeIndex(root) {
                         });
                     }
                 }
+            }
+            // set VAR [command ...] 中的隐式变量声明（lmap、lassign 等）
+            for (const sub of _findChildrenByType(child, 'command_substitution')) {
+                _collectCmdSubstDefs(sub, globalDefs);
             }
         }
 
