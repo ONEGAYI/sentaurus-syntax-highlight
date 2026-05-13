@@ -420,12 +420,13 @@ function registerCompletionProviders(context, deps) {
                             }
                         }
                         // ppDefine 兜底：无 $ 前缀的宏引用（如 _Vds_）
-                        // word 可能包含前导符号（如 =_Vds_），需提取纯标识符
+                        // word 可能含符号（如 Voltage=_Vds_），需提取纯标识符
                         if (!def) {
                             const cursorLine = position.line + 1;
-                            const ppWord = word.replace(/^[^A-Za-z_]+/, '');
-                            if (ppWord) {
-                                def = [...userDefs].reverse().find(d => d.kind === 'ppDefine' && d.name === ppWord && d.line <= cursorLine);
+                            const idents = word.match(/[A-Za-z_]\w*/g) || [];
+                            for (const id of idents) {
+                                def = [...userDefs].reverse().find(d => d.kind === 'ppDefine' && d.name === id && d.line <= cursorLine);
+                                if (def) break;
                             }
                         }
                     } else {

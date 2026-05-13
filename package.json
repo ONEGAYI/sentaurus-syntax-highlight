@@ -135,7 +135,7 @@
       },
       {
         "id": "macro",
-        "superType": "variable",
+        "superType": "keyword",
         "description": "%semanticToken.macro%"
       }
     ],
