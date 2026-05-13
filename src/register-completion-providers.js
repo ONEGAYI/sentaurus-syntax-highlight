@@ -418,7 +418,12 @@ function registerCompletionProviders(context, deps) {
                                     return new vscode.Hover(md, dollarRange);
                                 }
                             }
-                    }
+                        }
+                        // ppDefine 兜底：无 $ 前缀的宏引用（如 _Vds_）
+                        if (!def) {
+                            const cursorLine = position.line + 1;
+                            def = [...userDefs].reverse().find(d => d.kind === 'ppDefine' && d.name === word && d.line <= cursorLine);
+                        }
                     } else {
                         def = userDefs.find(d => d.name === word);
                         let hoverWord = word;

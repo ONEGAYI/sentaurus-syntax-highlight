@@ -198,7 +198,7 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
                 line: lineIdx,
                 col: nameCol,
                 len: ppMatch[3].length,
-                type: 2, // macro
+                type: 3, // macro (index 3 in TOKEN_TYPES)
                 modifier: isDefine ? 1 : 0, // declaration
             });
         }
@@ -295,7 +295,7 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
                 if (ppDefines) {
                     const ppDef = ppDefines.find(d => d.name === word && d.line <= lineIdx + 1);
                     if (ppDef) {
-                        tokens.push({ line: lineIdx, col, len: word.length, type: 2, modifier: 0 });
+                        tokens.push({ line: lineIdx, col, len: word.length, type: 3, modifier: 0 });
                     }
                 }
                 continue;
