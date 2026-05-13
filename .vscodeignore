@@ -32,4 +32,4 @@ node_modules/web-tree-sitter/debug/**
 node_modules/web-tree-sitter/lib/**
 node_modules/web-tree-sitter/src/**
 node_modules/web-tree-sitter/*.map
-node_modules/web-tree-sitter/*.cjs
+# node_modules/web-tree-sitter/*.cjs — 不能排除，CommonJS require 入口

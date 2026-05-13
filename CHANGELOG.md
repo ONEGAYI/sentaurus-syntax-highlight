@@ -4,6 +4,14 @@
 
 ---
 
+## [2.0.2] - 2026-05-13
+
+### Bug 修复
+
+- **修复打包后 WASM 解析器加载失败**：`.vscodeignore` 中 `*.cjs` 通配符误排除 `tree-sitter.cjs`（CommonJS 入口），导致 `require('web-tree-sitter')` 失败、扩展激活崩溃。F5 开发模式不受影响，仅影响安装的 VSIX
+
+---
+
 ## [2.0.1] - 2026-05-12
 
 ### 其他改进
@@ -950,6 +958,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.0.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.17.2...v2.0.0
 [1.17.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.17.1...v1.17.2
