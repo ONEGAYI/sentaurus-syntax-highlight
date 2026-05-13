@@ -299,14 +299,12 @@ function registerCompletionProviders(context, deps) {
                     if (!range) return null;
                     const word = document.getText(range);
 
-                    // 纯标识符版本：用于 docs/关键词查找，避免 =+- 等符号干扰
                     const identRange = document.getWordRangeAtPosition(position, /[\w]+/) || range;
                     const identWord = document.getText(identRange);
 
                     const vectorBase = vectorKW.resolveBaseKeywordCI(identWord);
                     const effectiveWord = vectorBase || identWord;
                     const wordLower = effectiveWord.toLowerCase();
-                    const effectiveWordLower = wordLower;
 
                     const docs = getDocs(langId) || {};
 
@@ -351,8 +349,8 @@ function registerCompletionProviders(context, deps) {
                                         return new vscode.Hover(md, identRange);
                                     }
                                 }
-                                if (Array.isArray(secDoc.keywords) && secDoc.keywords.some(k => k.toLowerCase() === effectiveWordLower)) {
-                                    const kwCanon = sdeviceLowerToCanon.get(effectiveWordLower);
+                                if (Array.isArray(secDoc.keywords) && secDoc.keywords.some(k => k.toLowerCase() === wordLower)) {
+                                    const kwCanon = sdeviceLowerToCanon.get(wordLower);
                                     const kwDoc = kwCanon ? docs[kwCanon] : docs[effectiveWord];
                                     if (kwDoc) {
                                         const ctxDesc = kwDoc.contexts && kwDoc.contexts[secName];
@@ -379,7 +377,7 @@ function registerCompletionProviders(context, deps) {
                         }
                     }
 
-                    const canonKey = sdeviceLowerToCanon.get(effectiveWordLower);
+                    const canonKey = sdeviceLowerToCanon.get(wordLower);
                     const doc = (canonKey && docs[canonKey]) || docs[effectiveWord] || docs[decodeHtml(effectiveWord)];
                     if (doc) return new vscode.Hover(formatDoc(doc, langId), identRange);
 
@@ -424,30 +422,16 @@ function registerCompletionProviders(context, deps) {
                             }
                         }
                         // ppDefine 兜底：无 $ 前缀的宏引用（如 _Vds_）
-                        // 用纯标识符范围匹配，避免符号粘连时影响其他词的 hover
                         if (!def) {
                             const cursorLine = position.line + 1;
-                            const narrowRange = document.getWordRangeAtPosition(position, /[\w]+/);
-                            if (narrowRange) {
-                                const narrowWord = document.getText(narrowRange);
-                                const ppDef = [...userDefs].reverse().find(d => d.kind === 'ppDefine' && d.name === narrowWord && d.line <= cursorLine);
-                                if (ppDef) {
-                                    def = ppDef;
-                                    hoverRange = narrowRange;
-                                }
+                            const ppDef = [...userDefs].reverse().find(d => d.kind === 'ppDefine' && d.name === identWord && d.line <= cursorLine);
+                            if (ppDef) {
+                                def = ppDef;
+                                hoverRange = identRange;
                             }
                         }
                     } else {
                         def = userDefs.find(d => d.name === identWord);
-                        let hoverWord = identWord;
-                        if (!def) {
-                            const narrowRange = document.getWordRangeAtPosition(position, /[\w]+/);
-                            if (narrowRange) {
-                                hoverWord = document.getText(narrowRange);
-                                def = userDefs.find(d => d.name === hoverWord);
-                                if (def) hoverRange = narrowRange;
-                            }
-                        }
                     }
 
                     if (def) {

@@ -198,7 +198,7 @@ function extractTokensFromStacks(lines, stacksPerLine, keywordIndex, sectionKeyw
                 line: lineIdx,
                 col: nameCol,
                 len: ppMatch[3].length,
-                type: 3, // macro (index 3 in TOKEN_TYPES)
+                type: 3,
                 modifier: isDefine ? 1 : 0, // declaration
             });
         }
