@@ -161,6 +161,7 @@
         { "include": "#strings" },
         { "include": "#numbers" },
         { "include": "#swb-params" },
+        { "include": "#solve-subsections" },
         { "include": "#section-keywords" },
         { "include": "#section-constants" },
         { "include": "#vector-keywords" },
