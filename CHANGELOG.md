@@ -4,6 +4,15 @@
 
 ---
 
+## [2.0.3] - 2026-05-13
+
+### Bug 修复
+
+- **修复 `set VAR [lmap v ...]` 中循环变量被误报为未定义**（#56）：`lmap` 的循环变量在 `set` 命令的命令替换上下文中未被作用域索引识别为变量定义，导致后续使用处触发未定义诊断
+- **修复 SDEVICE 预编译宏无语义高亮和 Hover 的回归**（#57）：v2.0.0 升级引入的多个回归——macro token 类型名与 VSCode 内置 token 冲突（重命名为 `ppMacro`）；`superType` 覆盖导致高亮颜色丢失；复合标识符（如 `_Vds_`）hover 因符号干扰提取失败；子 section 嵌套高亮丢失。同步简化 hover 提供器冗余调用
+
+---
+
 ## [2.0.2] - 2026-05-13
 
 ### Bug 修复
@@ -958,6 +967,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.0.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v1.17.2...v2.0.0
