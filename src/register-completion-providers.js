@@ -420,13 +420,17 @@ function registerCompletionProviders(context, deps) {
                             }
                         }
                         // ppDefine 兜底：无 $ 前缀的宏引用（如 _Vds_）
-                        // word 可能含符号（如 Voltage=_Vds_），需提取纯标识符
+                        // 用纯标识符范围匹配，避免符号粘连时影响其他词的 hover
                         if (!def) {
                             const cursorLine = position.line + 1;
-                            const idents = word.match(/[A-Za-z_]\w*/g) || [];
-                            for (const id of idents) {
-                                def = [...userDefs].reverse().find(d => d.kind === 'ppDefine' && d.name === id && d.line <= cursorLine);
-                                if (def) break;
+                            const narrowRange = document.getWordRangeAtPosition(position, /[\w]+/);
+                            if (narrowRange) {
+                                const narrowWord = document.getText(narrowRange);
+                                const ppDef = [...userDefs].reverse().find(d => d.kind === 'ppDefine' && d.name === narrowWord && d.line <= cursorLine);
+                                if (ppDef) {
+                                    def = ppDef;
+                                    hoverRange = narrowRange;
+                                }
                             }
                         }
                     } else {
