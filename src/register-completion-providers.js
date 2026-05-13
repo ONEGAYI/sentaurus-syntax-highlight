@@ -299,10 +299,14 @@ function registerCompletionProviders(context, deps) {
                     if (!range) return null;
                     const word = document.getText(range);
 
-                    const vectorBase = vectorKW.resolveBaseKeywordCI(word);
-                    const effectiveWord = vectorBase || word;
-                    const wordLower = word.toLowerCase();
-                    const effectiveWordLower = effectiveWord.toLowerCase();
+                    // 纯标识符版本：用于 docs/关键词查找，避免 =+- 等符号干扰
+                    const identRange = document.getWordRangeAtPosition(position, /[\w]+/) || range;
+                    const identWord = document.getText(identRange);
+
+                    const vectorBase = vectorKW.resolveBaseKeywordCI(identWord);
+                    const effectiveWord = vectorBase || identWord;
+                    const wordLower = effectiveWord.toLowerCase();
+                    const effectiveWordLower = wordLower;
 
                     const docs = getDocs(langId) || {};
 
@@ -341,10 +345,10 @@ function registerCompletionProviders(context, deps) {
                                     );
                                     if (param && typeof param === 'object') {
                                         const md = new vscode.MarkdownString();
-                                        md.appendMarkdown(`**${word}** (${secName} 参数)\n\n`);
-                                        md.appendCodeblock(`${word} = <${param.type}>`, langId);
+                                        md.appendMarkdown(`**${identWord}** (${secName} 参数)\n\n`);
+                                        md.appendCodeblock(`${identWord} = <${param.type}>`, langId);
                                         md.appendMarkdown(`\n${param.desc}`);
-                                        return new vscode.Hover(md, range);
+                                        return new vscode.Hover(md, identRange);
                                     }
                                 }
                                 if (Array.isArray(secDoc.keywords) && secDoc.keywords.some(k => k.toLowerCase() === effectiveWordLower)) {
@@ -354,7 +358,7 @@ function registerCompletionProviders(context, deps) {
                                         const ctxDesc = kwDoc.contexts && kwDoc.contexts[secName];
                                         if (ctxDesc) {
                                             const md = new vscode.MarkdownString();
-                                            md.appendMarkdown(`**${word}** (${secName})\n\n`);
+                                            md.appendMarkdown(`**${identWord}** (${secName})\n\n`);
                                             md.appendMarkdown(ctxDesc);
                                             if (kwDoc.parameters && kwDoc.parameters.length) {
                                                 md.appendMarkdown('\n\n**Parameters:**\n');
@@ -366,9 +370,9 @@ function registerCompletionProviders(context, deps) {
                                                 md.appendMarkdown('\n**Example:**\n');
                                                 md.appendCodeblock(kwDoc.example, langId);
                                             }
-                                            return new vscode.Hover(md, range);
+                                            return new vscode.Hover(md, identRange);
                                         }
-                                        return new vscode.Hover(formatDoc(kwDoc, langId), range);
+                                        return new vscode.Hover(formatDoc(kwDoc, langId), identRange);
                                     }
                                 }
                             }
@@ -377,11 +381,11 @@ function registerCompletionProviders(context, deps) {
 
                     const canonKey = sdeviceLowerToCanon.get(effectiveWordLower);
                     const doc = (canonKey && docs[canonKey]) || docs[effectiveWord] || docs[decodeHtml(effectiveWord)];
-                    if (doc) return new vscode.Hover(formatDoc(doc, langId), range);
+                    if (doc) return new vscode.Hover(formatDoc(doc, langId), identRange);
 
                     const userDefs = defs.getDefinitions(document, langId);
                     let def = null;
-                    let hoverRange = range;
+                    let hoverRange = identRange;
 
                     if (astUtils.TCL_LANGS.has(langId)) {
                         const bracedRange = document.getWordRangeAtPosition(position, /\$\{[\w:.\-<>?!+*/=]+\}/);
@@ -434,8 +438,8 @@ function registerCompletionProviders(context, deps) {
                             }
                         }
                     } else {
-                        def = userDefs.find(d => d.name === word);
-                        let hoverWord = word;
+                        def = userDefs.find(d => d.name === identWord);
+                        let hoverWord = identWord;
                         if (!def) {
                             const narrowRange = document.getWordRangeAtPosition(position, /[\w]+/);
                             if (narrowRange) {

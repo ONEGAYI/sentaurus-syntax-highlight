@@ -5,7 +5,7 @@ const { BASE_TO_SUFFIXES_LOWER, VECTOR_SECTIONS_LOWER } = require('./sdevice-vec
 const { SDEVICE_SUB_SECTIONS } = require('../tcl-symbol-configs');
 const { extractPpDefines, encodeTokenDelta } = require('../pp-utils');
 
-const TOKEN_TYPES = ['sectionName', 'sectionKeyword', 'subSection', 'macro'];
+const TOKEN_TYPES = ['sectionName', 'sectionKeyword', 'subSection', 'ppMacro'];
 const TOKEN_MODIFIERS = ['declaration'];
 
 // 不应被 sectionKeyword 语义 token 覆盖的关键词：

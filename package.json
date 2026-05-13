@@ -134,7 +134,7 @@
         "description": "%semanticToken.subSection%"
       },
       {
-        "id": "macro",
+        "id": "ppMacro",
         "superType": "keyword",
         "description": "%semanticToken.macro%"
       }
@@ -390,7 +390,7 @@
           "subSection": [
             "entity.name.type.sdevice"
           ],
-          "macro": [
+          "ppMacro": [
             "entity.name.type.sdevice"
           ],
           "userFunctionCall": [
@@ -407,7 +407,7 @@
           "userFunctionCall": [
             "entity.name.function.sprocess"
           ],
-          "macro": [
+          "ppMacro": [
             "entity.name.type.sprocess"
           ],
           "environmentVariable": [
@@ -421,7 +421,7 @@
           "userFunctionCall": [
             "entity.name.function.emw"
           ],
-          "macro": [
+          "ppMacro": [
             "entity.name.type.emw"
           ],
           "environmentVariable": [
@@ -435,7 +435,7 @@
           "userFunctionCall": [
             "entity.name.function.inspect"
           ],
-          "macro": [
+          "ppMacro": [
             "entity.name.type.inspect"
           ],
           "environmentVariable": [
@@ -449,7 +449,7 @@
           "userFunctionCall": [
             "entity.name.function.svisual"
           ],
-          "macro": [
+          "ppMacro": [
             "entity.name.type.svisual"
           ],
           "environmentVariable": [
