@@ -2,7 +2,7 @@
 
 const ppUtils = require('../pp-utils');
 
-const TOKEN_TYPES = ['userFunctionCall', 'macro'];
+const TOKEN_TYPES = ['userFunctionCall', 'ppMacro'];
 const TOKEN_MODIFIERS = ['declaration'];
 
 /**

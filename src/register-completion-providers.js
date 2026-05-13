@@ -299,10 +299,12 @@ function registerCompletionProviders(context, deps) {
                     if (!range) return null;
                     const word = document.getText(range);
 
-                    const vectorBase = vectorKW.resolveBaseKeywordCI(word);
-                    const effectiveWord = vectorBase || word;
-                    const wordLower = word.toLowerCase();
-                    const effectiveWordLower = effectiveWord.toLowerCase();
+                    const identRange = document.getWordRangeAtPosition(position, /[\w]+/) || range;
+                    const identWord = document.getText(identRange);
+
+                    const vectorBase = vectorKW.resolveBaseKeywordCI(identWord);
+                    const effectiveWord = vectorBase || identWord;
+                    const wordLower = effectiveWord.toLowerCase();
 
                     const docs = getDocs(langId) || {};
 
@@ -341,20 +343,20 @@ function registerCompletionProviders(context, deps) {
                                     );
                                     if (param && typeof param === 'object') {
                                         const md = new vscode.MarkdownString();
-                                        md.appendMarkdown(`**${word}** (${secName} 参数)\n\n`);
-                                        md.appendCodeblock(`${word} = <${param.type}>`, langId);
+                                        md.appendMarkdown(`**${identWord}** (${secName} 参数)\n\n`);
+                                        md.appendCodeblock(`${identWord} = <${param.type}>`, langId);
                                         md.appendMarkdown(`\n${param.desc}`);
-                                        return new vscode.Hover(md, range);
+                                        return new vscode.Hover(md, identRange);
                                     }
                                 }
-                                if (Array.isArray(secDoc.keywords) && secDoc.keywords.some(k => k.toLowerCase() === effectiveWordLower)) {
-                                    const kwCanon = sdeviceLowerToCanon.get(effectiveWordLower);
+                                if (Array.isArray(secDoc.keywords) && secDoc.keywords.some(k => k.toLowerCase() === wordLower)) {
+                                    const kwCanon = sdeviceLowerToCanon.get(wordLower);
                                     const kwDoc = kwCanon ? docs[kwCanon] : docs[effectiveWord];
                                     if (kwDoc) {
                                         const ctxDesc = kwDoc.contexts && kwDoc.contexts[secName];
                                         if (ctxDesc) {
                                             const md = new vscode.MarkdownString();
-                                            md.appendMarkdown(`**${word}** (${secName})\n\n`);
+                                            md.appendMarkdown(`**${identWord}** (${secName})\n\n`);
                                             md.appendMarkdown(ctxDesc);
                                             if (kwDoc.parameters && kwDoc.parameters.length) {
                                                 md.appendMarkdown('\n\n**Parameters:**\n');
@@ -366,22 +368,22 @@ function registerCompletionProviders(context, deps) {
                                                 md.appendMarkdown('\n**Example:**\n');
                                                 md.appendCodeblock(kwDoc.example, langId);
                                             }
-                                            return new vscode.Hover(md, range);
+                                            return new vscode.Hover(md, identRange);
                                         }
-                                        return new vscode.Hover(formatDoc(kwDoc, langId), range);
+                                        return new vscode.Hover(formatDoc(kwDoc, langId), identRange);
                                     }
                                 }
                             }
                         }
                     }
 
-                    const canonKey = sdeviceLowerToCanon.get(effectiveWordLower);
+                    const canonKey = sdeviceLowerToCanon.get(wordLower);
                     const doc = (canonKey && docs[canonKey]) || docs[effectiveWord] || docs[decodeHtml(effectiveWord)];
-                    if (doc) return new vscode.Hover(formatDoc(doc, langId), range);
+                    if (doc) return new vscode.Hover(formatDoc(doc, langId), identRange);
 
                     const userDefs = defs.getDefinitions(document, langId);
                     let def = null;
-                    let hoverRange = range;
+                    let hoverRange = identRange;
 
                     if (astUtils.TCL_LANGS.has(langId)) {
                         const bracedRange = document.getWordRangeAtPosition(position, /\$\{[\w:.\-<>?!+*/=]+\}/);
@@ -418,18 +420,18 @@ function registerCompletionProviders(context, deps) {
                                     return new vscode.Hover(md, dollarRange);
                                 }
                             }
-                    }
-                    } else {
-                        def = userDefs.find(d => d.name === word);
-                        let hoverWord = word;
+                        }
+                        // ppDefine 兜底：无 $ 前缀的宏引用（如 _Vds_）
                         if (!def) {
-                            const narrowRange = document.getWordRangeAtPosition(position, /[\w]+/);
-                            if (narrowRange) {
-                                hoverWord = document.getText(narrowRange);
-                                def = userDefs.find(d => d.name === hoverWord);
-                                if (def) hoverRange = narrowRange;
+                            const cursorLine = position.line + 1;
+                            const ppDef = [...userDefs].reverse().find(d => d.kind === 'ppDefine' && d.name === identWord && d.line <= cursorLine);
+                            if (ppDef) {
+                                def = ppDef;
+                                hoverRange = identRange;
                             }
                         }
+                    } else {
+                        def = userDefs.find(d => d.name === identWord);
                     }
 
                     if (def) {
