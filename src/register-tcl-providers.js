@@ -54,7 +54,8 @@ function registerTclProviders(context, deps) {
     // 小写→原始大小写映射，用于 hover 等需要原始键查找文档的场景
     const sdeviceLowerToCanon = new Map();
     for (const key of Object.keys(sdeviceDocs)) {
-        sdeviceLowerToCanon.set(key.toLowerCase(), key);
+        const lower = key.toLowerCase();
+        if (!sdeviceLowerToCanon.has(lower)) sdeviceLowerToCanon.set(lower, key);
     }
     const sdeviceLegend = new vscode.SemanticTokensLegend(
         sdeviceSemanticMod.TOKEN_TYPES,

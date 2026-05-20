@@ -4000,9 +4000,13 @@
       "hThermionic"
     ],
     "contexts": {
-      "Solve": "CondInsulator 作为 Coupled 方程列表中的方程名称"
+      "Solve": "CondInsulator 作为 Coupled 方程列表中的方程名称",
+      "Coupled": "在导电绝缘体区域（如 Si3N4）中求解费米势，模拟介质层漏电流。需在区域 Physics 中声明 CondInsulator，材料参数在 Resistivity 参数集中指定。"
     },
-    "example": "Physics (Region=\"insulator\") {\n  CondInsulator\n}\nSolve {\n  Coupled { Poisson Electron Hole CondInsulator }\n}"
+    "example": "Physics (Region=\"insulator\") {\n  CondInsulator\n}\nSolve {\n  Coupled { Poisson Electron Hole CondInsulator }\n}",
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole CondInsulator } }"
+    }
   },
   "Condition": {
     "section": "Solve",
@@ -4600,62 +4604,65 @@
       {
         "name": "Iterations",
         "type": "int",
-        "desc": "最大牛顿迭代次数。类型：INTEGER"
+        "desc": "最大牛顿迭代次数"
       },
       {
         "name": "Method",
         "type": "string",
-        "desc": "线性求解器方法：Blocked、ILS、ParDiSo、Direct、Super。类型：STRING"
+        "desc": "线性求解器方法：Blocked、ILS、ParDiSo、Direct、Super"
       },
       {
         "name": "SubMethod",
         "type": "string",
-        "desc": "块分解求解器的内部方法。类型：STRING"
+        "desc": "块分解求解器的内部方法"
       },
       {
         "name": "Digits",
         "type": "int",
-        "desc": "相对误差控制的有效数字位数。类型：INTEGER"
+        "desc": "相对误差控制的有效数字位数"
       },
       {
         "name": "RelErrControl",
         "type": "bool",
-        "desc": "使用相对误差控制（默认）。类型：BOOLEAN"
+        "desc": "使用相对误差控制（默认）"
       },
       {
         "name": "IncompleteNewton",
         "type": "bool",
-        "desc": "启用不完全牛顿（牛顿-理查德森）算法。类型：BOOLEAN"
+        "desc": "启用不完全牛顿（牛顿-理查德森）算法"
       }
     ],
-    "example": "Solve {\n  Coupled { Poisson Electron Hole }\n}",
     "keywords": [
-      "Iterations",
-      "Method",
-      "SubMethod",
-      "Digits",
-      "ErrRef",
-      "Error",
-      "RelErrControl",
-      "RhsFactor",
-      "RhsMin",
-      "RhsMax",
-      "RhsMaxQ",
-      "UpdateMax",
-      "UpdateIncrease",
-      "LineSearchDamping",
-      "NotDamped",
-      "Numerically",
-      "IncompleteNewton",
-      "Poisson",
-      "Electron",
-      "Hole",
+      "Charge",
       "Circuit",
+      "CondInsulator",
       "Contact",
-      "Temperature",
+      "Electron",
+      "eQuantumPotential",
+      "eSHEDistribution",
       "eTemperature",
-      "hTemperature"
-    ]
+      "FEPolarization",
+      "Hole",
+      "hQuantumPotential",
+      "hSHEDistribution",
+      "hTemperature",
+      "HydrogenAtom",
+      "HydrogenIon",
+      "HydrogenMolecule",
+      "HydrogenSpeciesA",
+      "HydrogenSpeciesB",
+      "HydrogenSpeciesC",
+      "LLG",
+      "Mechanics",
+      "Poisson",
+      "SingletExciton",
+      "TCircuit",
+      "TContact",
+      "Temperature",
+      "Traps"
+    ],
+    "example": "Solve {\n  Coupled { Poisson Electron Hole }\n}",
+    "contexts": {}
   },
   "CritConc": {
     "section": "Physics",
@@ -7621,7 +7628,13 @@
       "eQuasiFermi",
       "eDensity"
     ],
-    "example": ""
+    "example": "",
+    "contexts": {
+      "Coupled": "求解电子连续性方程以获得电子密度。必须与 Poisson（通常还有 Hole）联合求解以实现自洽的漂移-扩散仿真。需在 Physics 中声明合适的迁移率和复合模型。"
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron } }"
+    }
   },
   "ElectronAffinity": {
     "section": "Plot",
@@ -8849,9 +8862,13 @@
     "contexts": {
       "Physics": "在区域/材料中激活铁电模型",
       "Solve": "将 FEPolarization 添加到耦合方程组进行求解",
-      "Plot": "FEPolarization/Vector 或 FEPolarization/Element/Vector 用于可视化"
+      "Plot": "FEPolarization/Vector 或 FEPolarization/Element/Vector 用于可视化",
+      "Coupled": "求解 Ginzburg-Landau-Khalatnikov 方程，模拟铁电极化动力学，计算外加电场下的极化矢量场，建模畴翻转和磁滞行为。需在区域 Physics 中声明 FEPolarization，材料须属于 Insulator 组。建议瞬态仿真。"
     },
-    "example": "Physics (Region=\"GateOxide\") {\n  FEPolarization\n}\nSolve {\n  Poisson\n  Transient (InitialTime=0 FinalTime=1) {\n    Coupled { Poisson FEPolarization }\n  }\n}"
+    "example": "Physics (Region=\"GateOxide\") {\n  FEPolarization\n}\nSolve {\n  Poisson\n  Transient (InitialTime=0 FinalTime=1) {\n    Coupled { Poisson FEPolarization }\n  }\n}",
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson FEPolarization } }"
+    }
   },
   "FEScalar": {
     "section": "Math",
@@ -11662,7 +11679,13 @@
       "Coupled",
       "Plot"
     ],
-    "example": "Plot { HydrogenSpeciesA HydrogenSpeciesB HydrogenSpeciesC }"
+    "example": "Plot { HydrogenSpeciesA HydrogenSpeciesB HydrogenSpeciesC }",
+    "contexts": {
+      "Coupled": "求解用户自定义氢物种 A 的浓度连续性方程，用于氢输运退化模型（如 NBTI）。需在 Physics 中声明 HydrogenDiffusion 并通过 HydrogenSpeciesA(Diffusivity=..., Alpha=...) 定义扩散参数。"
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole HydrogenSpeciesA } }"
+    }
   },
   "HydrogenSpeciesB": {
     "section": "Plot",
@@ -11680,7 +11703,13 @@
       "Coupled",
       "Plot"
     ],
-    "example": "Plot { HydrogenSpeciesB }"
+    "example": "Plot { HydrogenSpeciesB }",
+    "contexts": {
+      "Coupled": "求解用户自定义氢物种 B 的浓度连续性方程，用于氢输运退化模型。需在 Physics 中声明 HydrogenDiffusion 并通过 HydrogenSpeciesB(Diffusivity=..., Alpha=...) 定义扩散参数。"
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole HydrogenSpeciesB } }"
+    }
   },
   "HydrogenSpeciesC": {
     "section": "Plot",
@@ -11698,7 +11727,13 @@
       "Coupled",
       "Plot"
     ],
-    "example": "Plot { HydrogenSpeciesC }"
+    "example": "Plot { HydrogenSpeciesC }",
+    "contexts": {
+      "Coupled": "求解用户自定义氢物种 C 的浓度连续性方程，用于氢输运退化模型。需在 Physics 中声明 HydrogenDiffusion 并通过 HydrogenSpeciesC(Diffusivity=..., Alpha=...) 定义扩散参数。"
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole HydrogenSpeciesC } }"
+    }
   },
   "IALMob": {
     "section": "Physics",
@@ -13227,7 +13262,13 @@
       "Anisotropy",
       "Ferromagnetic"
     ],
-    "example": "Physics {\n  Magnetism(LLG())\n}"
+    "example": "Physics {\n  Magnetism(LLG())\n}",
+    "contexts": {
+      "Coupled": "在铁磁层中求解 Landau-Lifshitz-Gilbert 方程，模拟磁化动力学（自旋转移力矩、磁化进动/翻转）。需在区域 Physics 中声明 Magnetism(...) 定义钉扎层/自由层。需要极小的瞬态时间步长。"
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole Contact LLG } }"
+    }
   },
   "LNVSD": {
     "section": "Plot",
@@ -20344,7 +20385,13 @@
       "FEPolarization",
       "Mechanics"
     ],
-    "example": ""
+    "example": "",
+    "contexts": {
+      "Coupled": "求解泊松方程以获得静电势。这是器件仿真中最基本的方程，几乎所有 Coupled 语句都需要包含。默认误差参考值为 0.0258 V（300 K 热电压）。"
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson } }"
+    }
   },
   "Polarization": {
     "section": "Plot",
@@ -27121,7 +27168,13 @@
       "Circuit",
       "Contact"
     ],
-    "example": "Solve {\n  Coupled { Poisson Electron Hole Temperature TCircuit TContact }\n}"
+    "example": "Solve {\n  Coupled { Poisson Electron Hole Temperature TCircuit TContact }\n}",
+    "contexts": {
+      "Coupled": "在混合模式仿真中激活热路方程求解，通过热极将外部热路连接到器件。需在 Thermode 中定义热接触，在 System 中定义热路元件。"
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole Temperature TCircuit } }"
+    }
   },
   "TContact": {
     "section": "Solve",
@@ -27134,7 +27187,13 @@
       "Circuit",
       "Contact"
     ],
-    "example": "Solve {\n  Coupled { Poisson Electron Hole Temperature TCircuit TContact }\n}"
+    "example": "Solve {\n  Coupled { Poisson Electron Hole Temperature TCircuit TContact }\n}",
+    "contexts": {
+      "Coupled": "在混合模式仿真中激活热极处的热界面条件求解，将器件热场与外部热边界耦合。与 Contact（自动添加）不同，TContact 须在 Coupled 中显式指定。"
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole Temperature TContact } }"
+    }
   },
   "TE": {
     "section": "Physics",
@@ -27377,9 +27436,13 @@
     "contexts": {
       "Thermode": "热边界条件的接触温度，与SurfaceResistance或SurfaceConductance一起使用。",
       "Goal": "准静态斜坡的目标温度值。",
-      "Physics": "各种物理上下文中的通用模型参数（例如Splice_Temperature, Spice_Temperature）。"
+      "Physics": "各种物理上下文中的通用模型参数（例如Splice_Temperature, Spice_Temperature）。",
+      "Coupled": "求解晶格热方程以模拟自加热效应。未在 Physics 中声明 Thermodynamic 时，载流子温度统一归入晶格温度；声明后额外加入焦耳热、汤姆逊热和珀尔帖热项。需在 Physics 中声明 Thermodynamic 以激活热电耦合。"
     },
-    "example": "Thermode {\n  Name=\"body\" Temperature=300\n}\nQuasistationary {\n  Goal { Name=\"contact1\" Temperature=400 }\n}"
+    "example": "Thermode {\n  Name=\"body\" Temperature=300\n}\nQuasistationary {\n  Goal { Name=\"contact1\" Temperature=400 }\n}",
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole Temperature } }"
+    }
   },
   "TemperatureDep": {
     "section": "Physics",

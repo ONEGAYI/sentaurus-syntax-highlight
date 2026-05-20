@@ -356,6 +356,11 @@ function registerCompletionProviders(context, deps) {
                                         const ctxDesc = kwDoc.contexts && kwDoc.contexts[secName];
                                         if (ctxDesc) {
                                             const md = new vscode.MarkdownString();
+                                            const ctxSig = kwDoc.contextSignatures && kwDoc.contextSignatures[secName];
+                                            if (ctxSig) {
+                                                md.appendCodeblock(ctxSig, langId);
+                                                md.appendMarkdown('\n');
+                                            }
                                             md.appendMarkdown(`**${identWord}** (${secName})\n\n`);
                                             md.appendMarkdown(ctxDesc);
                                             if (kwDoc.parameters && kwDoc.parameters.length) {

@@ -4119,7 +4119,11 @@
     ],
     "example": "Physics (Region=\"insulator\") {\n  CondInsulator\n}\nSolve {\n  Coupled { Poisson Electron Hole CondInsulator }\n}",
     "contexts": {
-      "Solve": "CondInsulator as equation name in Coupled equation list"
+      "Solve": "CondInsulator as equation name in Coupled equation list",
+      "Coupled": "Solves the Fermi potential in conductive insulator regions (e.g., Si3N4), enabling leakage current through dielectric layers. Requires CondInsulator in the region-specific Physics and resistivity parameters in the material Resistivity set."
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole CondInsulator } }"
     }
   },
   "Condition": {
@@ -4765,34 +4769,36 @@
         "desc": "Enable incomplete Newton (Newton-Richardson) algorithm"
       }
     ],
-    "example": "Solve {\n  Coupled { Poisson Electron Hole }\n}",
     "keywords": [
-      "Iterations",
-      "Method",
-      "SubMethod",
-      "Digits",
-      "ErrRef",
-      "Error",
-      "RelErrControl",
-      "RhsFactor",
-      "RhsMin",
-      "RhsMax",
-      "RhsMaxQ",
-      "UpdateMax",
-      "UpdateIncrease",
-      "LineSearchDamping",
-      "NotDamped",
-      "Numerically",
-      "IncompleteNewton",
-      "Poisson",
-      "Electron",
-      "Hole",
+      "Charge",
       "Circuit",
+      "CondInsulator",
       "Contact",
-      "Temperature",
+      "Electron",
+      "eQuantumPotential",
+      "eSHEDistribution",
       "eTemperature",
-      "hTemperature"
+      "FEPolarization",
+      "Hole",
+      "hQuantumPotential",
+      "hSHEDistribution",
+      "hTemperature",
+      "HydrogenAtom",
+      "HydrogenIon",
+      "HydrogenMolecule",
+      "HydrogenSpeciesA",
+      "HydrogenSpeciesB",
+      "HydrogenSpeciesC",
+      "LLG",
+      "Mechanics",
+      "Poisson",
+      "SingletExciton",
+      "TCircuit",
+      "TContact",
+      "Temperature",
+      "Traps"
     ],
+    "example": "Solve {\n  Coupled { Poisson Electron Hole }\n}",
     "contexts": {}
   },
   "CritConc": {
@@ -7843,7 +7849,12 @@
       "eQuasiFermi",
       "eDensity"
     ],
-    "contexts": {}
+    "contexts": {
+      "Coupled": "Solves the electron continuity equation for electron density. Must be coupled with Poisson (and typically Hole) for self-consistent drift-diffusion simulation. Requires appropriate mobility and recombination models in Physics."
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron } }"
+    }
   },
   "ElectronAffinity": {
     "section": "Plot",
@@ -9108,7 +9119,11 @@
     "contexts": {
       "Physics": "Activate ferroelectric model in region/material",
       "Solve": "Add FEPolarization to Coupled equation set for solving",
-      "Plot": "FEPolarization/Vector or FEPolarization/Element/Vector for visualization"
+      "Plot": "FEPolarization/Vector or FEPolarization/Element/Vector for visualization",
+      "Coupled": "Solves the Ginzburg-Landau-Khalatnikov equation for ferroelectric polarization dynamics. Computes the spatially dependent polarization vector field, modeling domain switching and hysteresis. Requires FEPolarization in the region-specific Physics; material must be Insulator group. Transient simulation recommended."
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson FEPolarization } }"
     }
   },
   "FEScalar": {
@@ -11998,7 +12013,12 @@
       "Plot"
     ],
     "example": "Plot { HydrogenSpeciesA HydrogenSpeciesB HydrogenSpeciesC }",
-    "contexts": {}
+    "contexts": {
+      "Coupled": "Solves the continuity equation for user-defined hydrogen species A density in the hydrogen transport degradation model (e.g., NBTI). Requires HydrogenDiffusion with HydrogenSpeciesA(Diffusivity=..., Alpha=...) in Physics."
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole HydrogenSpeciesA } }"
+    }
   },
   "HydrogenSpeciesB": {
     "section": "Plot",
@@ -12017,7 +12037,12 @@
       "Plot"
     ],
     "example": "Plot { HydrogenSpeciesB }",
-    "contexts": {}
+    "contexts": {
+      "Coupled": "Solves the continuity equation for user-defined hydrogen species B density in the hydrogen transport degradation model. Requires HydrogenDiffusion with HydrogenSpeciesB(Diffusivity=..., Alpha=...) in Physics."
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole HydrogenSpeciesB } }"
+    }
   },
   "HydrogenSpeciesC": {
     "section": "Plot",
@@ -12036,7 +12061,12 @@
       "Plot"
     ],
     "example": "Plot { HydrogenSpeciesC }",
-    "contexts": {}
+    "contexts": {
+      "Coupled": "Solves the continuity equation for user-defined hydrogen species C density in the hydrogen transport degradation model. Requires HydrogenDiffusion with HydrogenSpeciesC(Diffusivity=..., Alpha=...) in Physics."
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole HydrogenSpeciesC } }"
+    }
   },
   "IALMob": {
     "section": "Physics",
@@ -13649,7 +13679,12 @@
       "Ferromagnetic"
     ],
     "example": "Physics {\n  Magnetism(LLG())\n}",
-    "contexts": {}
+    "contexts": {
+      "Coupled": "Solves the Landau-Lifshitz-Gilbert equation for magnetization dynamics in ferromagnetic layers, modeling spin-transfer torque and magnetization precession/switching. Requires Magnetism(...) in region Physics to define pinned/free layers. Needs very small transient time steps."
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole Contact LLG } }"
+    }
   },
   "LNVSD": {
     "section": "Plot",
@@ -20974,7 +21009,12 @@
       "FEPolarization",
       "Mechanics"
     ],
-    "contexts": {}
+    "contexts": {
+      "Coupled": "Solves the Poisson equation for electrostatic potential. This is the most fundamental equation in device simulation, required in virtually every Coupled statement. Default error reference is 0.0258 V (thermal voltage at 300 K)."
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson } }"
+    }
   },
   "Polarization": {
     "section": "Plot",
@@ -27891,7 +27931,13 @@
       "Circuit",
       "Contact"
     ],
-    "example": "Solve {\n  Coupled { Poisson Electron Hole Temperature TCircuit TContact }\n}"
+    "example": "Solve {\n  Coupled { Poisson Electron Hole Temperature TCircuit TContact }\n}",
+    "contexts": {
+      "Coupled": "Activates thermal circuit equation solving in mixed-mode simulations, coupling external thermal circuits to the device via thermodes. Requires thermodes in the Thermode section and thermal circuit elements in the System section."
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole Temperature TCircuit } }"
+    }
   },
   "TContact": {
     "section": "Solve",
@@ -27904,7 +27950,13 @@
       "Circuit",
       "Contact"
     ],
-    "example": "Solve {\n  Coupled { Poisson Electron Hole Temperature TCircuit TContact }\n}"
+    "example": "Solve {\n  Coupled { Poisson Electron Hole Temperature TCircuit TContact }\n}",
+    "contexts": {
+      "Coupled": "Activates thermal interface condition solving at thermodes in mixed-mode simulations, coupling the device thermal field to external thermal boundaries. Unlike Contact (auto-added), TContact must be explicitly specified in Coupled for thermal coupling."
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole Temperature TContact } }"
+    }
   },
   "TE": {
     "section": "Physics",
@@ -28142,7 +28194,11 @@
     "contexts": {
       "Thermode": "Contact temperature for thermal boundary condition, used with SurfaceResistance or SurfaceConductance.",
       "Goal": "Target temperature value for quasistationary ramp.",
-      "Physics": "General model parameter in various physics contexts (e.g., Splice_Temperature, Spice_Temperature)."
+      "Physics": "General model parameter in various physics contexts (e.g., Splice_Temperature, Spice_Temperature).",
+      "Coupled": "Solves the lattice heat equation for self-heating effects. Without Thermodynamic in Physics, all carrier temperatures collapse into the lattice temperature; with Thermodynamic, extra Joule/Thomson/Peltier heating terms are added. Requires Thermodynamic in Physics for thermoelectric coupling."
+    },
+    "contextSignatures": {
+      "Coupled": "Solve { Coupled { Poisson Electron Hole Temperature } }"
     }
   },
   "TemperatureDep": {
