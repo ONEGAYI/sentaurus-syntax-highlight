@@ -40,6 +40,7 @@ sentaurus-syntax-highlight/
 ├── icon.png                                    ← 扩展图标
 ├── language-configuration.json                 ← 遗留配置（已被 language-configurations/ 取代）
 ├── .vscodeignore                               ← VSIX 打包排除规则
+├── AGENTS.md                                   ← AI 辅助开发项目概述与指引
 │
 ├── syntaxes/                                   ← TextMate 语法 + 函数文档数据
 │   ├── sde.tmLanguage.json                     ← SDE (Scheme) 语法高亮规则

@@ -4,6 +4,22 @@
 
 ---
 
+## [2.0.5] - 2026-05-20
+
+### 新功能
+
+- **Coupled 方程名专属高亮与 Hover 文档**：为 SDEVICE `Coupled {}` 子 section 内的 11 个方程名（Poisson/Electron/Hole/Temperature 等）添加 TextMate 高亮和上下文感知 Hover 文档。Hover 在 `Coupled` 上下文中优先展示方程用途说明和 `Coupled` 签名示例，而非通用 keyword 描述
+
+### Bug 修复
+
+- **补齐 SDEVICE 8 个遗漏的热相关关键词高亮与补全**（#59）：添加 AnalyticTEP、DistrThermalResist、HeatCapacity、HeatPreFactor、Hydrodynamic、MSPeltierHeat、OpticalAbsorptionHeat、PostTemperature 等 8 个热力学关键词。修复 `sdeviceLowerToCanon` 映射因重复键覆盖导致的热相关关键词补全失效
+
+### 其他改进
+
+- 添加 AGENTS.md 项目文档，提供 AI 辅助开发的项目概述与指引
+
+---
+
 ## [2.0.4] - 2026-05-20
 
 ### Bug 修复
@@ -975,6 +991,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.0.5]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.4...v2.0.5
 [2.0.4]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.1...v2.0.2
