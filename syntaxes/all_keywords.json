@@ -4651,7 +4651,11 @@
       "hMobility",
       "hQuasiFermi",
       "hTemperature",
-      "hVelocity"
+      "hVelocity",
+      "DistrThermalResist",
+      "HeatCapacity",
+      "HeatPreFactor",
+      "PostTemperature"
     ],
     "KEYWORD4": [
       "Insert"
