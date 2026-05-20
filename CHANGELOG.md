@@ -4,6 +4,14 @@
 
 ---
 
+## [2.0.4] - 2026-05-20
+
+### Bug 修复
+
+- **修复 SDEVICE 顶级 section 带括号参数时关键词不高亮**（#58）：如 `Physics (RegionInterface="R1/R2") {` 等带括号限定参数的顶级 section，原正则要求关键词后紧跟 `{`，导致 `keyword.control.sdevice` 着色失效。将可选括号参数拆分为捕获组，复用已有 `#section-constants`/`#strings`/`#numbers`/`#swb-params` 规则对括号内容着色
+
+---
+
 ## [2.0.3] - 2026-05-13
 
 ### Bug 修复
@@ -967,6 +975,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.0.4]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.2...v2.0.3
 [2.0.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.1...v2.0.2
 [2.0.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.0...v2.0.1
