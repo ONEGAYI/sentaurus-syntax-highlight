@@ -4,6 +4,7 @@
 .git/**
 .github/**
 CLAUDE.md
+AGENTS.md
 TODOLIST.md
 scripts/**
 package-lock.json
