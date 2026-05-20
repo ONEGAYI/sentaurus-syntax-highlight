@@ -134,8 +134,19 @@
       "name": "constant.character.format.placeholder"
     },
     "section-block": {
-      "begin": "(?i)\\b(BandstructurePlot|CurrentPlot|Device|Electrode|FarFieldPlot|File|GainPlot|HydrogenBoundary|Math|MonteCarlo|NoisePlot|NonlocalPlot|OpticalDevice|Physics|Plot|PlotGainPara|RayTraceBC|Solve|System|TensorPlot|Thermode|TrappedCarDistrPlot|VCSELNearFieldPlot|eSHEDistributionPlot|hSHEDistributionPlot)\\s*\\{",
-      "beginCaptures": { "1": { "name": "keyword.control.sdevice" } },
+      "begin": "(?i)\\b(BandstructurePlot|CurrentPlot|Device|Electrode|FarFieldPlot|File|GainPlot|HydrogenBoundary|Math|MonteCarlo|NoisePlot|NonlocalPlot|OpticalDevice|Physics|Plot|PlotGainPara|RayTraceBC|Solve|System|TensorPlot|Thermode|TrappedCarDistrPlot|VCSELNearFieldPlot|eSHEDistributionPlot|hSHEDistributionPlot)\\s*(?:(\\()([^)]*)(\\)))?\\s*\\{",
+      "beginCaptures": {
+        "1": { "name": "keyword.control.sdevice" },
+        "2": { "name": "punctuation.section.parens.begin.sdevice" },
+        "3": { "patterns": [
+          { "include": "#section-constants" },
+          { "include": "#strings" },
+          { "include": "#numbers" },
+          { "include": "#swb-params" },
+          { "match": "[A-Za-z_][A-Za-z0-9_\\-]*", "name": "variable.other" }
+        ]},
+        "4": { "name": "punctuation.section.parens.end.sdevice" }
+      },
       "end": "\\}",
       "patterns": [
         { "include": "#preprocessor" },
