@@ -36081,9 +36081,58 @@
   },
   "hSubband": {
     "section": "Physics",
-    "signature": "hSubband( Fermi | Doping | EffectiveMass | Scattering | BalMob )",
-    "description": "激活具有子带量子化效应的多谷空穴迁移率模型。选项包括费米统计、应力相关有效质量、MLDA散射率和弹道迁移率修正。. 另见 Subband（统一模型）和 eSubband（电子变体）。",
-    "parameters": [],
+    "signature": "hSubband ( [Fermi] [Doping] [EffectiveMass] [Scattering(MLDA)] [BalMob] [Nonparabolicity] [Transport(<vector>)] [-AutoOrientation] [-RelChDir110] [NoStressInDDmob] [EqRefMob] )",
+    "description": "用于应力仿真的多谷空穴子带迁移率模型。使用子带结构计算应力引起的空穴迁移率变化。选项控制分布函数、有效质量、散射模型以及应力对漂移-扩散和弹道迁移率的影响。另见 Subband（统一模型）和 eSubband（电子变体）。",
+    "parameters": [
+      {
+        "name": "Doping",
+        "desc": "具有掺杂依赖性的应变诱导子带模型"
+      },
+      {
+        "name": "Fermi",
+        "desc": "具有载流子浓度（费米统计）依赖性的应变诱导子带模型"
+      },
+      {
+        "name": "EffectiveMass",
+        "desc": "应力引起的空穴有效质量变化"
+      },
+      {
+        "name": "EffectiveMass(-Transport)",
+        "desc": "排除 2D 逆输运质量张量变换"
+      },
+      {
+        "name": "EffectiveMass(Transport-vector)",
+        "desc": "激活 1D 逆输运质量张量变换"
+      },
+      {
+        "name": "Scattering",
+        "desc": "具有体区间散射的应变诱导子带模型"
+      },
+      {
+        "name": "Scattering(MLDA)",
+        "desc": "具有界面散射 (MLDA) 的应变诱导子带模型"
+      },
+      {
+        "name": "BalMob",
+        "desc": "应力引起的空穴弹道迁移率变化"
+      },
+      {
+        "name": "NoStressInDDmob",
+        "desc": "仅考虑弹道迁移率，忽略漂移-扩散迁移率中的应力"
+      },
+      {
+        "name": "EqRefMob",
+        "desc": "为转移载流子模型激活平衡参考迁移率计算"
+      },
+      {
+        "name": "-RelChDir110",
+        "desc": "在参考迁移率中使用 <100> 沟道方向"
+      },
+      {
+        "name": "-AutoOrientation",
+        "desc": "使用全张量参考迁移率"
+      }
+    ],
     "keywords": [
       "mobility",
       "hole",
