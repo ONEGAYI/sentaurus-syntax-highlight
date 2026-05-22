@@ -32743,7 +32743,8 @@
     "parameters": [
       {
         "name": "ParameterSetName",
-        "description": "Named parameter set for diffusivity mobility (allows different parameterization from transport mobility)"
+        "type": "string",
+        "description": "Name of the HighFieldDependence parameter set to use for electron diffusivity."
       }
     ],
     "keywords": [
@@ -35809,7 +35810,13 @@
     "section": "Plot",
     "signature": "Plot { hDiffusivity }",
     "description": "Plot variable related to hole diffusivity. In the context of non-Einstein diffusivity model, this represents the hole diffusivity derived from mobility. See also Diffusivity for the unified model and eDiffusivity for the electron variant.",
-    "parameters": [],
+    "parameters": [
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "description": "Name of the HighFieldDependence parameter set to use for hole diffusivity."
+      }
+    ],
     "keywords": [
       "hDiffusivity",
       "Diffusivity",
@@ -36971,9 +36978,58 @@
   },
   "hSubband": {
     "section": "Physics",
-    "signature": "hSubband( Fermi | Doping | EffectiveMass | Scattering | BalMob )",
-    "description": "Activates the multivalley hole mobility model with subband quantization effects. Options include Fermi statistics, stress-dependent effective mass, MLDA scattering rate, and ballistic mobility correction. See also Subband for the unified model and eSubband for the electron variant.",
-    "parameters": [],
+    "signature": "hSubband ( [Fermi] [Doping] [EffectiveMass] [Scattering(MLDA)] [BalMob] [Nonparabolicity] [Transport(<vector>)] [-AutoOrientation] [-RelChDir110] [NoStressInDDmob] [EqRefMob] )",
+    "description": "Multivalley hole subband mobility model for stress simulations. Computes stress-induced hole mobility changes using subband structure calculations. Options control distribution function, effective mass, scattering models, and stress effects on drift-diffusion and ballistic mobility. See also Subband for the unified model and eSubband for the electron variant.",
+    "parameters": [
+      {
+        "name": "Doping",
+        "desc": "Strain-induced subband model with doping dependency"
+      },
+      {
+        "name": "Fermi",
+        "desc": "Strain-induced subband model with carrier concentration (Fermi statistics) dependency"
+      },
+      {
+        "name": "EffectiveMass",
+        "desc": "Stress-induced change of hole effective mass"
+      },
+      {
+        "name": "EffectiveMass(-Transport)",
+        "desc": "Exclude 2D inverse transport mass tensor transformation"
+      },
+      {
+        "name": "EffectiveMass(Transport-vector)",
+        "desc": "Activate 1D inverse transport mass tensor transformation"
+      },
+      {
+        "name": "Scattering",
+        "desc": "Strain-induced subband model with bulk intervalley scattering"
+      },
+      {
+        "name": "Scattering(MLDA)",
+        "desc": "Strain-induced subband model with interface scattering (MLDA)"
+      },
+      {
+        "name": "BalMob",
+        "desc": "Stress-induced change of hole ballistic mobility"
+      },
+      {
+        "name": "NoStressInDDmob",
+        "desc": "Account for only ballistic mobility, ignoring stress in drift-diffusion mobility"
+      },
+      {
+        "name": "EqRefMob",
+        "desc": "Activate equilibrium reference mobility computation for transferred carrier model"
+      },
+      {
+        "name": "-RelChDir110",
+        "desc": "Use <100> channel direction in reference mobility"
+      },
+      {
+        "name": "-AutoOrientation",
+        "desc": "Use full tensor reference mobility"
+      }
+    ],
     "keywords": [
       "mobility",
       "hole",
@@ -36991,7 +37047,9 @@
       "hSubband(Scattering)",
       "hSubband(Scattering(MLDA))"
     ],
-    "contexts": {}
+    "contexts": {
+      "Physics/Model/Mobility": "Activate hole strain-induced subband mobility model within stress-dependent framework"
+    }
   },
   "hTemperature": {
     "section": "Physics",

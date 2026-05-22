@@ -31941,7 +31941,8 @@
     "parameters": [
       {
         "name": "ParameterSetName",
-        "desc": ""
+        "type": "string",
+        "desc": "电子扩散率使用的高场依赖性参数集名称。"
       }
     ],
     "keywords": [
@@ -34969,7 +34970,13 @@
     "section": "Plot",
     "signature": "Plot { hDiffusivity }",
     "description": "与空穴扩散率相关的绘图变量。在非爱因斯坦扩散率模型的上下文中，表示由迁移率导出的空穴扩散率。. 另见 Diffusivity（统一模型）和 eDiffusivity（电子变体）。",
-    "parameters": [],
+    "parameters": [
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "空穴扩散率使用的高场依赖性参数集名称。"
+      }
+    ],
     "keywords": [
       "hDiffusivity",
       "Diffusivity",
