@@ -27804,9 +27804,14 @@
     "description": "激活异质结界面处的热电子发射电流模型，用于载流子传输。该模型基于能带不连续性上的热电子发射理论计算电流密度。. 载流子专用配置参见 eThermionic（电子）和 hThermionic（空穴）。",
     "parameters": [
       {
+        "name": "HCI",
+        "type": "flag",
+        "desc": "在界面处使用热载流子注入模型局部注入热载流子。"
+      },
+      {
         "name": "Organic_Gaussian",
         "type": "flag",
-        "desc": "对有机异质结界面使用高斯传输模型，而非标准热电子发射。"
+        "desc": "对有机异质界面使用类热电子高斯发射模型。"
       }
     ],
     "keywords": [
@@ -33570,14 +33575,14 @@
     "description": "激活界面和接触处电子的热电子发射模型。基于热电子发射理论实现跨越势垒的电流输运，适用于导电绝缘体、肖特基接触和有机异质界面。. 另见 Thermionic（统一模型）和 hThermionic（空穴变体）。",
     "parameters": [
       {
-        "name": "(HCI)",
+        "name": "HCI",
         "type": "flag",
-        "desc": "使用热载流子注入模型在界面处局部注入热电子。注入的电流作为电子连续性方程的源项。"
+        "desc": "在界面处使用热载流子注入模型局部注入热载流子。"
       },
       {
-        "name": "(Organic_Gaussian)",
+        "name": "Organic_Gaussian",
         "type": "flag",
-        "desc": "使用专为有机异质界面设计的热电子类高斯发射模型，用高斯输运模型取代标准热电子发射。"
+        "desc": "对有机异质界面使用类热电子高斯发射模型。"
       }
     ],
     "keywords": [
@@ -36232,7 +36237,18 @@
     "section": "Physics",
     "signature": "Physics(MaterialInterface=\"<mat1>/<mat2>\") { hThermionic }",
     "description": "激活异质界面处的空穴热电子发射模型。用于定义突变半导体-半导体界面处的空穴电流和能量通量，在这些界面处常规漂移-扩散输运方程无效。Thermionic关键词对两种载流子都激活此模型。另见 eThermionic（电子变体）。",
-    "parameters": [],
+    "parameters": [
+      {
+        "name": "HCI",
+        "type": "flag",
+        "desc": "在界面处使用热载流子注入模型局部注入热载流子。"
+      },
+      {
+        "name": "Organic_Gaussian",
+        "type": "flag",
+        "desc": "对有机异质界面使用类热电子高斯发射模型。"
+      }
+    ],
     "keywords": [
       "hThermionic(HCI)",
       "hThermionic(Organic_Gaussian)",

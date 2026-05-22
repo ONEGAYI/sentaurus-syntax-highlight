@@ -28559,9 +28559,14 @@
     "description": "Activates the thermionic emission current model at heterointerfaces for carrier transport. The model computes current density based on thermionic emission theory across band edge discontinuities. For carrier-specific configurations, see eThermionic (electrons) and hThermionic (holes).",
     "parameters": [
       {
+        "name": "HCI",
+        "type": "flag",
+        "desc": "Inject hot carriers locally at the interface using the hot-carrier injection model."
+      },
+      {
         "name": "Organic_Gaussian",
         "type": "flag",
-        "desc": "Use Gaussian transport model for organic heterointerfaces instead of standard thermionic emission."
+        "desc": "Use thermionic-like Gaussian emission model for organic heterointerfaces."
       }
     ],
     "keywords": [
@@ -34383,14 +34388,14 @@
     "description": "Activates thermionic emission model for electrons at interfaces and contacts. Enables current transport across barriers based on thermionic emission theory, applicable to conductive insulators, Schottky contacts, and organic heterointerfaces. See also Thermionic for the unified model and hThermionic for the hole variant.",
     "parameters": [
       {
-        "name": "(HCI)",
+        "name": "HCI",
         "type": "flag",
-        "desc": "Inject hot electrons locally at the interface using the hot-carrier injection model. The injected current acts as a source term for the electron continuity equation."
+        "desc": "Inject hot carriers locally at the interface using the hot-carrier injection model."
       },
       {
-        "name": "(Organic_Gaussian)",
+        "name": "Organic_Gaussian",
         "type": "flag",
-        "desc": "Use a thermionic-like Gaussian emission model specifically designed for organic heterointerfaces, replacing the standard thermionic emission with a Gaussian transport model."
+        "desc": "Use thermionic-like Gaussian emission model for organic heterointerfaces."
       }
     ],
     "keywords": [
@@ -37137,7 +37142,18 @@
     "section": "Physics",
     "signature": "Physics(MaterialInterface=\"<mat1>/<mat2>\") { hThermionic }",
     "description": "Activates the thermionic emission model for holes at a heterointerface. Used to define hole current and energy flux at abrupt semiconductor-semiconductor interfaces where conventional drift-diffusion transport equations are invalid. The Thermionic keyword activates this for both carriers. See also eThermionic for the electron variant.",
-    "parameters": [],
+    "parameters": [
+      {
+        "name": "HCI",
+        "type": "flag",
+        "desc": "Inject hot carriers locally at the interface using the hot-carrier injection model."
+      },
+      {
+        "name": "Organic_Gaussian",
+        "type": "flag",
+        "desc": "Use thermionic-like Gaussian emission model for organic heterointerfaces."
+      }
+    ],
     "keywords": [
       "hThermionic(HCI)",
       "hThermionic(Organic_Gaussian)",
