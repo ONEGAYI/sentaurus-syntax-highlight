@@ -32744,7 +32744,7 @@
       {
         "name": "ParameterSetName",
         "type": "string",
-        "description": "Name of the HighFieldDependence parameter set to use for electron diffusivity."
+        "desc": "Name of the HighFieldDependence parameter set to use for electron diffusivity."
       }
     ],
     "keywords": [
@@ -35814,7 +35814,7 @@
       {
         "name": "ParameterSetName",
         "type": "string",
-        "description": "Name of the HighFieldDependence parameter set to use for hole diffusivity."
+        "desc": "Name of the HighFieldDependence parameter set to use for hole diffusivity."
       }
     ],
     "keywords": [
