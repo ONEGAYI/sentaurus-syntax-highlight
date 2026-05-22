@@ -1220,7 +1220,7 @@
   "AugerRecombination": {
     "section": "Plot",
     "signature": "Plot { AugerRecombination }",
-    "description": "Scalar dataset representing the Auger recombination rate (RA) at each vertex. This is the total Auger recombination rate combining electron and hole contributions.",
+    "description": "Scalar dataset representing the Auger recombination rate (RA) at each vertex. This is the total Auger recombination rate combining electron and hole contributions. For carrier-specific configurations, see eAugerRecombination (electrons) and hAugerRecombination (holes).",
     "parameters": [],
     "keywords": [],
     "example": "Plot {\n  AugerRecombination\n}",
@@ -1462,7 +1462,7 @@
   "Avalanche": {
     "section": "Recombination",
     "signature": "Avalanche ( [<model>] )",
-    "description": "In the Physics Recombination section, enables impact ionization (avalanche generation). Multiple models are available: vanOverstraeten (default), Okuto, Lackner, UniBo, UniBo2, Hatakeyama, or a PMI model. Driving force options include GradQuasiFermi (default), ElectricField, Eparallel, and CarrierTempDrive.",
+    "description": "In the Physics Recombination section, enables impact ionization (avalanche generation). Multiple models are available: vanOverstraeten (default), Okuto, Lackner, UniBo, UniBo2, Hatakeyama, or a PMI model. Driving force options include GradQuasiFermi (default), ElectricField, Eparallel, and CarrierTempDrive. The corresponding output variables are eAvalanche and hAvalanche.",
     "parameters": [
       {
         "name": "BandgapDependence",
@@ -2047,7 +2047,7 @@
   "Band2BandGeneration": {
     "section": "Plot",
     "signature": "Plot { Band2BandGeneration }",
-    "description": "Scalar plot dataset at vertices. Band-to-band tunneling generation rate (Gbb) from the dynamic nonlocal path band-to-band tunneling model. Unit: cm^-3 s^-1.",
+    "description": "Scalar plot dataset at vertices. Band-to-band tunneling generation rate (Gbb) from the dynamic nonlocal path band-to-band tunneling model. Unit: cm^-3 s^-1. For carrier-specific configurations, see eBand2BandGeneration (electrons) and hBand2BandGeneration (holes).",
     "parameters": [],
     "keywords": [],
     "example": "Plot {\n  Band2BandGeneration\n}",
@@ -2312,7 +2312,7 @@
   "BarrierTunneling": {
     "section": "Physics",
     "signature": "BarrierTunneling [ <string> ] { mt = <float> ... }",
-    "description": "Specifies parameters for nonlocal tunneling at interfaces, contacts, and junctions. Defines tunneling effective mass (mt) and other fit parameters. Can be applied per material or to named nonlocal meshes.",
+    "description": "Specifies parameters for nonlocal tunneling at interfaces, contacts, and junctions. Defines tunneling effective mass (mt) and other fit parameters. Can be applied per material or to named nonlocal meshes. For carrier-specific configurations, see eBarrierTunneling (electrons) and hBarrierTunneling (holes).",
     "parameters": [],
     "keywords": [
       "tunneling",
@@ -2849,7 +2849,7 @@
   "BreakdownProbability": {
     "section": "Physics",
     "signature": "Physics { BreakdownProbability([InterpolatedDiscretization] [MinElectricField=<float>]) }",
-    "description": "Controls the computation of avalanche breakdown probability for quasistationary simulations. Computes the probability that carriers initiate impact ionization along their paths through the multiplication region. The multiplication region is defined by a threshold electric field (controlled by MinElectricField, default 1e5 V/cm). Requires AvalPostprocessing in Math section to exclude avalanche-generated carriers from device equations.",
+    "description": "Controls the computation of avalanche breakdown probability for quasistationary simulations. Computes the probability that carriers initiate impact ionization along their paths through the multiplication region. The multiplication region is defined by a threshold electric field (controlled by MinElectricField, default 1e5 V/cm). Requires AvalPostprocessing in Math section to exclude avalanche-generated carriers from device equations. The corresponding output variables are eBreakdownProbability and hBreakdownProbability.",
     "parameters": [
       {
         "name": "InterpolatedDiscretization",
@@ -5081,7 +5081,7 @@
   "Current": {
     "section": "Solve",
     "signature": "Current = <float>",
-    "description": "Specifies a target current value for a contact boundary condition in mixed-mode or quasistationary simulations. The contact voltage is adjusted to achieve the specified current.",
+    "description": "Specifies a target current value for a contact boundary condition in mixed-mode or quasistationary simulations. The contact voltage is adjusted to achieve the specified current. The corresponding output variables are eCurrent and hCurrent.",
     "parameters": [
       {
         "name": "contact",
@@ -5138,7 +5138,7 @@
   "CurrentDensity": {
     "section": "Solve",
     "signature": "CurrentDensity(DevName=<ident>, maxval=<float>)",
-    "description": "In BreakCriteria{}, defines a break criterion based on current density (A/cm^2). The simulation stops when the current density exceeds the specified maximum value. DevName identifies the device in mixed-mode simulations.",
+    "description": "In BreakCriteria{}, defines a break criterion based on current density (A/cm^2). The simulation stops when the current density exceeds the specified maximum value. DevName identifies the device in mixed-mode simulations. The corresponding output variables are eCurrentDensity and hCurrentDensity.",
     "parameters": [
       {
         "name": "DevName",
@@ -5735,7 +5735,7 @@
   "DeformationPotential": {
     "section": "Physics",
     "signature": "DeformationPotential( ekp | hkp | minimum | multivalley )",
-    "description": "Option in the LatticeParameters subsection of Physics to specify the deformation potential model. Controls how stress/strain-induced band structure changes are calculated. ekp/hkp use k.p models for electron/hole band deformation potential respectively; minimum uses the simplest model; multivalley propagates multi-valley band structure changes to other models (e.g., recombination models). Default recommendation: ekp and hkp options.",
+    "description": "Option in the LatticeParameters subsection of Physics to specify the deformation potential model. Controls how stress/strain-induced band structure changes are calculated. ekp/hkp use k.p models for electron/hole band deformation potential respectively; minimum uses the simplest model; multivalley propagates multi-valley band structure changes to other models (e.g., recombination models). Default recommendation: ekp and hkp options. The corresponding output variables are eDeformationPotential and hDeformationPotential.",
     "parameters": [
       {
         "name": "ekp",
@@ -5889,7 +5889,7 @@
   "Density": {
     "section": "Physics",
     "signature": "Density",
-    "description": "Interface method in the Physics Model Interface (PMI) for defining carrier density calculations. Used to obtain electron or hole density values; one of the core functions in both the standard and simplified PMI interfaces.",
+    "description": "Interface method in the Physics Model Interface (PMI) for defining carrier density calculations. Used to obtain electron or hole density values; one of the core functions in both the standard and simplified PMI interfaces. For carrier-specific configurations, see eDensity (electrons) and hDensity (holes).",
     "parameters": [],
     "keywords": [
       "PMI",
@@ -5903,7 +5903,7 @@
   "DensityCorrection": {
     "section": "Physics",
     "signature": "DensityCorrection=Local | None",
-    "description": "Controls local density correction in SRH or Band2Band recombination models. When set to Local, enables the local density correction of the Schenk/Hurkx tunneling model; when set to None (default), it is disabled. Used to improve accuracy of trap-assisted tunneling and band-to-band tunneling in high-field regions.",
+    "description": "Controls local density correction in SRH or Band2Band recombination models. When set to Local, enables the local density correction of the Schenk/Hurkx tunneling model; when set to None (default), it is disabled. Used to improve accuracy of trap-assisted tunneling and band-to-band tunneling in high-field regions. For carrier-specific configurations, see eDensityCorrection (electrons) and hDensityCorrection (holes).",
     "parameters": [
       {
         "name": "Local",
@@ -6420,7 +6420,7 @@
   "Diffusivity": {
     "section": "Physics",
     "signature": "Diffusivity=<string>",
-    "description": "PMI interface keyword specifying a custom hydrogen diffusivity model in HydrogenDiffusion of the Physics section. <string> is the PMI model name. Diffusivity takes the form D_i*exp(-E_di/(kT)). The model can depend on electric field magnitude, hydrogen species density, and lattice temperature.",
+    "description": "PMI interface keyword specifying a custom hydrogen diffusivity model in HydrogenDiffusion of the Physics section. <string> is the PMI model name. Diffusivity takes the form D_i*exp(-E_di/(kT)). The model can depend on electric field magnitude, hydrogen species density, and lattice temperature. The corresponding output variables are eDiffusivity and hDiffusivity.",
     "parameters": [
       {
         "name": "<string>",
@@ -9205,7 +9205,7 @@
   "Factor": {
     "section": "Math",
     "signature": "Factor=<float>",
-    "description": "Coefficient for averaged extrapolation factor estimation in Cyclic analysis. Used within Extrapolate in the Cyclic section of Solve. Controls the relaxation of the averaged factor used for cyclic extrapolation.",
+    "description": "Coefficient for averaged extrapolation factor estimation in Cyclic analysis. Used within Extrapolate in the Cyclic section of Solve. Controls the relaxation of the averaged factor used for cyclic extrapolation. The corresponding output variables are eFactor and hFactor.",
     "parameters": [
       {
         "name": "Factor",
@@ -11470,7 +11470,7 @@
   "HeatFlux": {
     "section": "Physics",
     "signature": "HeatFlux { hf_n = <float> hf_p = <float> ... }",
-    "description": "Parameter set in the hydrodynamic model that specifies the heat flux correction factors for electrons (hf_n) and holes (hf_p). Used in the energy-dependent Peltier coefficient model to modify the heat flux factor Q as a function of carrier energy. Coefficients can also be defined as rational polynomial functions of normalized carrier energy.",
+    "description": "Parameter set in the hydrodynamic model that specifies the heat flux correction factors for electrons (hf_n) and holes (hf_p). Used in the energy-dependent Peltier coefficient model to modify the heat flux factor Q as a function of carrier energy. Coefficients can also be defined as rational polynomial functions of normalized carrier energy. The corresponding output variables are eHeatFlux and hHeatFlux.",
     "parameters": [],
     "keywords": [
       "Hydrodynamic",
@@ -13296,7 +13296,7 @@
   "IonIntegral": {
     "section": "File",
     "signature": "File { IonIntegral=<string> }",
-    "description": "Specifies the TDR filename for avalanche breakdown path visualization output. Sentaurus Device writes the breakdown path and interpolated field variables along the path to the specified TDR file. Used for path visualization in Approximate Breakdown Analysis.",
+    "description": "Specifies the TDR filename for avalanche breakdown path visualization output. Sentaurus Device writes the breakdown path and interpolated field variables along the path to the specified TDR file. Used for path visualization in Approximate Breakdown Analysis. The corresponding output variables are eIonIntegral and hIonIntegral.",
     "parameters": [
       {
         "name": "IonIntegral",
@@ -16898,7 +16898,7 @@
   "MultiValley": {
     "section": "Physics",
     "signature": "MultiValley",
-    "description": "Activates multivalley band structure statistics for accurate modeling of carrier transport in materials with multiple conduction/valence band minima (e.g., Si delta-valleys). Default is off.",
+    "description": "Activates multivalley band structure statistics for accurate modeling of carrier transport in materials with multiple conduction/valence band minima (e.g., Si delta-valleys). Default is off. For carrier-specific configurations, see eMultiValley (electrons) and hMultiValley (holes).",
     "parameters": [],
     "keywords": [
       "eMultivalley",
@@ -23380,7 +23380,7 @@
   "RecGenHeat": {
     "section": "Physics",
     "signature": "RecGenHeat",
-    "description": "Activates generation-recombination heat sources in the energy conservation equations. By default, these terms are excluded; this keyword enables the H_n, H_p, and H_L contributions from optical generation, impact ionization, and recombination.",
+    "description": "Activates generation-recombination heat sources in the energy conservation equations. By default, these terms are excluded; this keyword enables the H_n, H_p, and H_L contributions from optical generation, impact ionization, and recombination. The corresponding output variables are eRecGenHeat and hRecGenHeat.",
     "parameters": [
       {
         "name": "OptGenOffset",
@@ -25302,7 +25302,7 @@
   "SRHRecombination": {
     "section": "Plot",
     "signature": "Plot { SRHRecombination }",
-    "description": "Plot keyword for visualizing the Shockley-Read-Hall recombination rate. Outputs the SRH recombination rate as a spatially distributed quantity in the plot file (.tdr).",
+    "description": "Plot keyword for visualizing the Shockley-Read-Hall recombination rate. Outputs the SRH recombination rate as a spatially distributed quantity in the plot file (.tdr). For carrier-specific configurations, see eSRHRecombination (electrons) and hSRHRecombination (holes).",
     "parameters": [],
     "keywords": [
       "SRH",
@@ -27622,7 +27622,7 @@
   "Subband": {
     "section": "Physics",
     "signature": "Subband { ... }",
-    "description": "Defines subband-related parameters for quantum well models, including simple quantum-well subband configurations used in LED and laser simulations to compute emission coefficients and gain spectra.",
+    "description": "Defines subband-related parameters for quantum well models, including simple quantum-well subband configurations used in LED and laser simulations to compute emission coefficients and gain spectra. For carrier-specific configurations, see eSubband (electrons) and hSubband (holes).",
     "parameters": [],
     "keywords": [],
     "example": "Physics {\n  LED {\n    Subband {\n      ...\n    }\n  }\n}"
@@ -28269,7 +28269,7 @@
   "Temperature": {
     "section": "Thermode",
     "signature": "Thermode { Temperature=<float> } | Goal { Temperature=<float> }",
-    "description": "Specifies a temperature value in Kelvin. In Thermode sections, sets the contact temperature for thermal boundary conditions. In Goal sections, sets the target temperature for a quasistationary ramp. Also used as a general parameter name in many physics models.",
+    "description": "Specifies a temperature value in Kelvin. In Thermode sections, sets the contact temperature for thermal boundary conditions. In Goal sections, sets the target temperature for a quasistationary ramp. Also used as a general parameter name in many physics models. The corresponding output variables are eTemperature and hTemperature.",
     "parameters": [
       {
         "name": "Temperature",
@@ -28314,7 +28314,7 @@
   "Tensor": {
     "section": "Physics",
     "signature": "Piezo ( Model ( Mobility ( Tensor ( <pmi_model> ) ) ) )",
-    "description": "Activates a PMI-based piezoresistive mobility model that applies a tensor (full matrix) stress factor to carrier mobility, as opposed to a simple scalar prefactor.",
+    "description": "Activates a PMI-based piezoresistive mobility model that applies a tensor (full matrix) stress factor to carrier mobility, as opposed to a simple scalar prefactor. The corresponding output variables are eTensor and hTensor.",
     "parameters": [
       {
         "name": "pmi_model",
@@ -28456,7 +28456,7 @@
   "Thermionic": {
     "section": "Physics",
     "signature": "Physics { [eThermionic] [hThermionic] Thermionic [(Organic_Gaussian)] }",
-    "description": "Activates the thermionic emission current model at heterointerfaces for carrier transport. The model computes current density based on thermionic emission theory across band edge discontinuities.",
+    "description": "Activates the thermionic emission current model at heterointerfaces for carrier transport. The model computes current density based on thermionic emission theory across band edge discontinuities. For carrier-specific configurations, see eThermionic (electrons) and hThermionic (holes).",
     "parameters": [
       {
         "name": "Organic_Gaussian",
@@ -32386,7 +32386,7 @@
   "eAugerRecombination": {
     "section": "Plot",
     "signature": "eAugerRecombination",
-    "description": "Scalar plot dataset for the electron Auger recombination rate. Represents the recombination rate due to the Auger process for electrons, following the equation R_A = C * (n*p*(n*p - ni^2)).",
+    "description": "Scalar plot dataset for the electron Auger recombination rate. Represents the recombination rate due to the Auger process for electrons, following the equation R_A = C * (n*p*(n*p - ni^2)). See also AugerRecombination for the unified model and hAugerRecombination for the hole variant.",
     "parameters": [],
     "keywords": [],
     "example": "Plot { eAugerRecombination }",
@@ -32395,7 +32395,7 @@
   "eAvalanche": {
     "section": "Physics",
     "signature": "eAvalanche",
-    "description": "Electron impact ionization (avalanche) model within Avalanche() or Recombination(). Models carrier generation due to high-field impact ionization. Uses van Overstraeten-de Man, Chynoweth, or Selberherr models with user-definable coefficients.",
+    "description": "Electron impact ionization (avalanche) model within Avalanche() or Recombination(). Models carrier generation due to high-field impact ionization. Uses van Overstraeten-de Man, Chynoweth, or Selberherr models with user-definable coefficients. See also hAvalanche for the hole variant.",
     "keywords": [
       "hAvalanche",
       "Recombination",
@@ -32416,7 +32416,7 @@
   "eBand2BandGeneration": {
     "section": "Plot",
     "signature": "Plot { eBand2BandGeneration }",
-    "description": "Scalar plot variable representing the electron band-to-band tunneling generation rate. This is the dynamic nonlocal path band-to-band tunneling generation rate for electrons, in units of cm^-3 s^-1. It can also be visualized through NonLocalPlot for data defined on nonlocal meshes.",
+    "description": "Scalar plot variable representing the electron band-to-band tunneling generation rate. This is the dynamic nonlocal path band-to-band tunneling generation rate for electrons, in units of cm^-3 s^-1. It can also be visualized through NonLocalPlot for data defined on nonlocal meshes. See also Band2BandGeneration for the unified model and hBand2BandGeneration for the hole variant.",
     "parameters": [],
     "keywords": [
       "eBand2BandGeneration",
@@ -32428,7 +32428,7 @@
   "eBandEdgeShift": {
     "section": "Physics",
     "signature": "eBandEdgeShift( <ident> [ <table> ] [ <int> ] )",
-    "description": "Computes band-edge shift for the conduction band using a PMI (Physical Model Interface) model with an optional constructor argument. Used for apparent band-edge shift calculations in multistate configurations.",
+    "description": "Computes band-edge shift for the conduction band using a PMI (Physical Model Interface) model with an optional constructor argument. Used for apparent band-edge shift calculations in multistate configurations. See also BandEdgeShift for the unified model and hBandEdgeShift for the hole variant.",
     "parameters": [],
     "keywords": [
       "hBandEdgeShift",
@@ -32475,7 +32475,7 @@
   "eBarrierTunneling": {
     "section": "Physics",
     "signature": "eBarrierTunneling( <options> )",
-    "description": "Activates nonlocal tunneling for electrons at interfaces and contacts. Options include Band2Band tunneling (Simple/Full/UpsideDown), TwoBand dispersion, Schroedinger-based tunneling probability, Peltier heat, and interface transmission coefficients.",
+    "description": "Activates nonlocal tunneling for electrons at interfaces and contacts. Options include Band2Band tunneling (Simple/Full/UpsideDown), TwoBand dispersion, Schroedinger-based tunneling probability, Peltier heat, and interface transmission coefficients. See also BarrierTunneling for the unified model and hBarrierTunneling for the hole variant.",
     "parameters": [],
     "keywords": [
       "tunneling",
@@ -32494,7 +32494,7 @@
   "eBreakdownProbability": {
     "section": "Plot",
     "signature": "Plot { eBreakdownProbability }",
-    "description": "Scalar plot variable for the electron avalanche breakdown probability. This represents the probability that a carrier generated at a given position will trigger an avalanche multiplication event. The breakdown probability computation is controlled by the BreakdownProbability statement in the Physics section. For meaningful results, impact ionization-generated carriers should be excluded using AvalPostProcessing in the Math section.",
+    "description": "Scalar plot variable for the electron avalanche breakdown probability. This represents the probability that a carrier generated at a given position will trigger an avalanche multiplication event. The breakdown probability computation is controlled by the BreakdownProbability statement in the Physics section. For meaningful results, impact ionization-generated carriers should be excluded using AvalPostProcessing in the Math section. See also hBreakdownProbability for the hole variant.",
     "parameters": [],
     "keywords": [
       "eBreakdownProbability",
@@ -32553,7 +32553,7 @@
   "eCurrent": {
     "section": "Physics",
     "signature": "eCurrent",
-    "description": "Electron current density at each vertex, available as a plot dataset. Represents the drift-diffusion current of electrons. Units: A/cm^2.",
+    "description": "Electron current density at each vertex, available as a plot dataset. Represents the drift-diffusion current of electrons. Units: A/cm^2. See also Current for the unified model and hCurrent for the hole variant.",
     "keywords": [
       "hCurrent",
       "TotalCurrent",
@@ -32567,7 +32567,7 @@
   "eCurrentDensity": {
     "section": "Physics",
     "signature": "eCurrentDensity",
-    "description": "Electron current density at each vertex, available as a plot dataset in Plot{} and CurrentPlot{} sections. Represents the electron component of the total drift-diffusion current. Units: A/cm^2.",
+    "description": "Electron current density at each vertex, available as a plot dataset in Plot{} and CurrentPlot{} sections. Represents the electron component of the total drift-diffusion current. Units: A/cm^2. See also CurrentDensity for the unified model and hCurrentDensity for the hole variant.",
     "keywords": [
       "hCurrentDensity",
       "TotalCurrent",
@@ -32581,7 +32581,7 @@
   "eDeformationPotential": {
     "section": "Plot",
     "signature": "Plot { eDeformationPotential }",
-    "description": "Scalar plot variable representing the change to the conduction band edge due to the deformation potential model. When strain is applied to the device, the deformation potential model computes shifts in the conduction and valence band edges. This variable shows the electron-specific band edge shift in units of eV. It is activated by specifying the DeformationPotential option in the Physics section.",
+    "description": "Scalar plot variable representing the change to the conduction band edge due to the deformation potential model. When strain is applied to the device, the deformation potential model computes shifts in the conduction and valence band edges. This variable shows the electron-specific band edge shift in units of eV. It is activated by specifying the DeformationPotential option in the Physics section. See also hDeformationPotential for the hole variant.",
     "parameters": [],
     "keywords": [
       "eDeformationPotential",
@@ -32594,7 +32594,7 @@
   "eDensity": {
     "section": "Physics",
     "signature": "eDensity",
-    "description": "Electron concentration (density) at each vertex, available as a plot dataset. Represents the free electron carrier density computed from the solution of the electron continuity equation. Units: cm^-3.",
+    "description": "Electron concentration (density) at each vertex, available as a plot dataset. Represents the free electron carrier density computed from the solution of the electron continuity equation. Units: cm^-3. See also Density for the unified model and hDensity for the hole variant.",
     "keywords": [
       "hDensity",
       "SpaceCharge",
@@ -32608,7 +32608,7 @@
   "eDensityCorrection": {
     "section": "Physics",
     "signature": "QWLocal { eDensityCorrection }",
-    "description": "Activates the electron quantization model in the quantum well for the localized QW model. When enabled, the electron density in the quantum well is corrected to account for quantization effects, replacing the classical density with a quantum-mechanically computed distribution. This is used in LED and laser simulations where quantum wells are present.",
+    "description": "Activates the electron quantization model in the quantum well for the localized QW model. When enabled, the electron density in the quantum well is corrected to account for quantization effects, replacing the classical density with a quantum-mechanically computed distribution. This is used in LED and laser simulations where quantum wells are present. See also DensityCorrection for the unified model and hDensityCorrection for the hole variant.",
     "parameters": [],
     "keywords": [
       "eDensityCorrection",
@@ -32634,7 +32634,7 @@
   "eDiffusivity": {
     "section": "Physics",
     "signature": "eMobility( Diffusivity( ... ) )",
-    "description": "Specifies the diffusivity mobility model for electrons, used in non-Einstein diffusivity calculations. When the Einstein relation does not hold (e.g., in short-channel devices with steep doping gradients), Sentaurus Device allows independent specification of diffusivities from mobilities. The diffusivity is expressed as D_n = kT * mu_n,diff, where mu_n,diff can use different parameters or models than the transport mobility. Options are the same as for HighFieldSaturation models.",
+    "description": "Specifies the diffusivity mobility model for electrons, used in non-Einstein diffusivity calculations. When the Einstein relation does not hold (e.g., in short-channel devices with steep doping gradients), Sentaurus Device allows independent specification of diffusivities from mobilities. The diffusivity is expressed as D_n = kT * mu_n,diff, where mu_n,diff can use different parameters or models than the transport mobility. Options are the same as for HighFieldSaturation models. See also Diffusivity for the unified model and hDiffusivity for the hole variant.",
     "parameters": [
       {
         "name": "ParameterSetName",
@@ -32735,7 +32735,7 @@
   "eEnormal": {
     "section": "Plot",
     "signature": "Plot { eEnormal }",
-    "description": "Scalar plot variable representing the electric field component perpendicular to the interface for electrons, F_perp or F_n_perp, in units of V/cm. This is the normal component of the electric field used in mobility degradation models (such as Lombardi surface mobility) that depend on the field perpendicular to the semiconductor-insulator interface.",
+    "description": "Scalar plot variable representing the electric field component perpendicular to the interface for electrons, F_perp or F_n_perp, in units of V/cm. This is the normal component of the electric field used in mobility degradation models (such as Lombardi surface mobility) that depend on the field perpendicular to the semiconductor-insulator interface. See also Enormal for the unified model and hEnormal for the hole variant.",
     "parameters": [],
     "keywords": [
       "eEnormal",
@@ -32748,7 +32748,7 @@
   "eEparallel": {
     "section": "Plot",
     "signature": "Plot { eEparallel }",
-    "description": "Scalar plot variable representing the electric field parallel to the interface for electrons, F_n, in units of V/cm. This is the component of the electric field parallel to the nearest semiconductor-insulator interface, used as a driving force in high-field saturation mobility and avalanche generation models. It is also available as a PMI variable in the Physical Model Interface.",
+    "description": "Scalar plot variable representing the electric field parallel to the interface for electrons, F_n, in units of V/cm. This is the component of the electric field parallel to the nearest semiconductor-insulator interface, used as a driving force in high-field saturation mobility and avalanche generation models. It is also available as a PMI variable in the Physical Model Interface. See also Eparallel for the unified model and hEparallel for the hole variant.",
     "parameters": [],
     "keywords": [
       "eEparallel",
@@ -32853,7 +32853,7 @@
   "eGradQuasiFermi": {
     "section": "Plot",
     "signature": "Plot { eGradQuasiFermi }",
-    "description": "Scalar and vector plot variable representing the magnitude of the gradient of the electron quasi-Fermi potential, |grad(Phi_n)|, in units of V/cm. As a scalar, it gives the magnitude; as a vector, it provides -grad(Phi_n). This is a key driving force used in high-field saturation mobility and avalanche generation models. It can also be used as a driving force option in the Avalanche section.",
+    "description": "Scalar and vector plot variable representing the magnitude of the gradient of the electron quasi-Fermi potential, |grad(Phi_n)|, in units of V/cm. As a scalar, it gives the magnitude; as a vector, it provides -grad(Phi_n). This is a key driving force used in high-field saturation mobility and avalanche generation models. It can also be used as a driving force option in the Avalanche section. See also GradQuasiFermi for the unified model and hGradQuasiFermi for the hole variant.",
     "parameters": [],
     "keywords": [
       "eGradQuasiFermi",
@@ -32944,7 +32944,7 @@
   "eHeatFlux": {
     "section": "Plot",
     "signature": "eHeatFlux",
-    "description": "Plot keyword for the electron heat flux vector, Sn, from the hydrodynamic energy balance equation. Units: W/cm^2. Available as both scalar (magnitude) and vector data.",
+    "description": "Plot keyword for the electron heat flux vector, Sn, from the hydrodynamic energy balance equation. Units: W/cm^2. Available as both scalar (magnitude) and vector data. See also HeatFlux for the unified model and hHeatFlux for the hole variant.",
     "parameters": [],
     "keywords": [
       "hHeatFlux",
@@ -33114,7 +33114,7 @@
   "eJouleHeat": {
     "section": "Plot",
     "signature": "eJouleHeat",
-    "description": "Plot keyword for electron Joule heat, computed as |Jn|^2 / (qn*mu_n). Units: W/cm^3. Represents the ohmic heating due to electron current flow. Part of the thermodynamic model heat generation terms.",
+    "description": "Plot keyword for electron Joule heat, computed as |Jn|^2 / (qn*mu_n). Units: W/cm^3. Represents the ohmic heating due to electron current flow. Part of the thermodynamic model heat generation terms. See also JouleHeat for the unified model and hJouleHeat for the hole variant.",
     "parameters": [],
     "keywords": [
       "hJouleHeat",
@@ -33176,7 +33176,7 @@
   "eMLDA": {
     "section": "Physics",
     "signature": "eMLDA ( [-LambdaTemp] )",
-    "description": "Activates the simple modified local-density approximation (MLDA) quantum correction model for electrons only. Uses a single thermal wavelength parameter (lambda) to compute effective quantum potential corrections. Can be specified regionwise or materialwise.",
+    "description": "Activates the simple modified local-density approximation (MLDA) quantum correction model for electrons only. Uses a single thermal wavelength parameter (lambda) to compute effective quantum potential corrections. Can be specified regionwise or materialwise. See also hMLDA for the hole variant.",
     "parameters": [
       {
         "name": "LambdaTemp",
@@ -33253,7 +33253,7 @@
   "eMobility": {
     "section": "Physics",
     "signature": "eMobility( <options> )",
-    "description": "Electron mobility model within Mobility(). Configures all mobility sub-models (doping dependence, high-field saturation, etc.) specifically for electrons. Overrides generic Mobility() settings for the electron carrier type.",
+    "description": "Electron mobility model within Mobility(). Configures all mobility sub-models (doping dependence, high-field saturation, etc.) specifically for electrons. Overrides generic Mobility() settings for the electron carrier type. See also hMobility for the hole variant.",
     "keywords": [
       "hMobility",
       "Mobility",
@@ -33410,7 +33410,7 @@
   "eMultiValley": {
     "section": "Physics",
     "signature": "eMultiValley ( [MLDA] [kpDOS] [Nonparabolicity] [ThinLayer] )",
-    "description": "Activates the multivalley electron transport model. Computes mobility using multiple conduction band valleys with valley-dependent populations and effective masses. The MLDA option combines with modified local-density approximation for quantum correction. Used for stress-dependent mobility simulations.",
+    "description": "Activates the multivalley electron transport model. Computes mobility using multiple conduction band valleys with valley-dependent populations and effective masses. The MLDA option combines with modified local-density approximation for quantum correction. Used for stress-dependent mobility simulations. See also MultiValley for the unified model and hMultiValley for the hole variant.",
     "parameters": [],
     "keywords": [
       "hMultiValley",
@@ -33618,7 +33618,7 @@
   "eQuasiFermiPotential": {
     "section": "Plot",
     "signature": "Plot { eQuasiFermiPotential }",
-    "description": "Scalar plot variable representing the electron quasi-Fermi potential (Phi_n) in volts. This is the electrochemical potential for electrons, which measures the driving force for electron transport. In equilibrium, it is constant throughout the device. Under bias, its gradient determines the electron current density. It is also available as a solution-dependent data field for nonlocal PMI models.",
+    "description": "Scalar plot variable representing the electron quasi-Fermi potential (Phi_n) in volts. This is the electrochemical potential for electrons, which measures the driving force for electron transport. In equilibrium, it is constant throughout the device. Under bias, its gradient determines the electron current density. It is also available as a solution-dependent data field for nonlocal PMI models. See also QuasiFermiPotential for the unified model and hQuasiFermiPotential for the hole variant.",
     "parameters": [],
     "keywords": [
       "eQuasiFermiPotential",
@@ -33654,7 +33654,7 @@
   "eRecGenHeat": {
     "section": "Plot",
     "signature": "Plot { eRecGenHeat }",
-    "description": "Scalar plot variable representing the electron generation-recombination heat source term (Hn) in W/cm^3. This quantity appears in the electron energy conservation equation (Equation 90) of the hydrodynamic model and represents the energy exchange between electrons and the lattice due to generation and recombination processes.",
+    "description": "Scalar plot variable representing the electron generation-recombination heat source term (Hn) in W/cm^3. This quantity appears in the electron energy conservation equation (Equation 90) of the hydrodynamic model and represents the energy exchange between electrons and the lattice due to generation and recombination processes. See also RecGenHeat for the unified model and hRecGenHeat for the hole variant.",
     "parameters": [],
     "keywords": [
       "eRecGenHeat",
@@ -33882,7 +33882,7 @@
   "eSRHRecombination": {
     "section": "Plot",
     "signature": "Plot { eSRHRecombination }",
-    "description": "Scalar plot variable representing the electron recombination rate from the Shockley-Read-Hall (SRH) mechanism, including the dynamic nonlocal path trap-assisted tunneling enhancement. This is the electron component of the SRH recombination rate in units of cm^-3 s^-1. It captures both the standard SRH process and the nonlocal tunneling-assisted SRH recombination.",
+    "description": "Scalar plot variable representing the electron recombination rate from the Shockley-Read-Hall (SRH) mechanism, including the dynamic nonlocal path trap-assisted tunneling enhancement. This is the electron component of the SRH recombination rate in units of cm^-3 s^-1. It captures both the standard SRH process and the nonlocal tunneling-assisted SRH recombination. See also SRHRecombination for the unified model and hSRHRecombination for the hole variant.",
     "parameters": [],
     "keywords": [
       "eSRHRecombination",
@@ -33899,7 +33899,7 @@
   "eSaturationFactor": {
     "section": "Physics",
     "signature": "Physics { Model(Mobility(eSaturationFactor = <float>)) }",
-    "description": "Specifies the saturation factor for electrons that controls the dependency of electron saturation velocity on mechanical stress. A value of 1.0 (default) means no modification. This factor scales how stress affects the saturation velocity in the piezoresistance mobility model, impacting current drive under strain conditions.",
+    "description": "Specifies the saturation factor for electrons that controls the dependency of electron saturation velocity on mechanical stress. A value of 1.0 (default) means no modification. This factor scales how stress affects the saturation velocity in the piezoresistance mobility model, impacting current drive under strain conditions. See also SaturationFactor for the unified model and hSaturationFactor for the hole variant.",
     "parameters": [
       {
         "name": "value",
@@ -33987,7 +33987,7 @@
   "eSubband": {
     "section": "Physics",
     "signature": "eSubband ( [Fermi] [Doping] [EffectiveMass] [Scattering(MLDA)] [BalMob] [Nonparabolicity] [Transport(<vector>)] [-AutoOrientation] [-RelChDir110] [NoStressInDDmob] [EqRefMob] )",
-    "description": "Multivalley electron subband mobility model for stress simulations. Computes stress-induced electron mobility changes using subband structure calculations. Options control distribution function, effective mass, scattering models, and stress effects on drift-diffusion and ballistic mobility.",
+    "description": "Multivalley electron subband mobility model for stress simulations. Computes stress-induced electron mobility changes using subband structure calculations. Options control distribution function, effective mass, scattering models, and stress effects on drift-diffusion and ballistic mobility. See also Subband for the unified model and hSubband for the hole variant.",
     "parameters": [
       {
         "name": "Doping",
@@ -34056,7 +34056,7 @@
   "eTemperature": {
     "section": "Physics",
     "signature": "eTemperature",
-    "description": "Electron temperature at each vertex, available as a plot dataset in hydrodynamic or thermodynamic transport simulations. Used as a convergence criterion parameter and in DiffusionNoise{} temperature options. Units: K.",
+    "description": "Electron temperature at each vertex, available as a plot dataset in hydrodynamic or thermodynamic transport simulations. Used as a convergence criterion parameter and in DiffusionNoise{} temperature options. Units: K. See also Temperature for the unified model and hTemperature for the hole variant.",
     "keywords": [
       "hTemperature",
       "LatticeTemperature",
@@ -34094,7 +34094,7 @@
   "eTensor": {
     "section": "Piezo",
     "signature": "eTensor[(Table 328)]",
-    "description": "Piezoresistive tensor for electrons, used to compute stress-dependent mobility enhancement within the Piezo section under Model(Mobility(...)). Specifies how the electron mobility tensor responds to mechanical stress through piezoresistive coefficients.",
+    "description": "Piezoresistive tensor for electrons, used to compute stress-dependent mobility enhancement within the Piezo section under Model(Mobility(...)). Specifies how the electron mobility tensor responds to mechanical stress through piezoresistive coefficients. See also Tensor for the unified model and hTensor for the hole variant.",
     "parameters": [
       {
         "name": "ident",
@@ -34218,7 +34218,7 @@
   "eThermionic": {
     "section": "Physics",
     "signature": "eThermionic [ (HCI) | (Organic_Gaussian) ]",
-    "description": "Activates thermionic emission model for electrons at interfaces and contacts. Enables current transport across barriers based on thermionic emission theory, applicable to conductive insulators, Schottky contacts, and organic heterointerfaces.",
+    "description": "Activates thermionic emission model for electrons at interfaces and contacts. Enables current transport across barriers based on thermionic emission theory, applicable to conductive insulators, Schottky contacts, and organic heterointerfaces. See also Thermionic for the unified model and hThermionic for the hole variant.",
     "parameters": [
       {
         "name": "(HCI)",
@@ -35368,7 +35368,7 @@
   "hAugerRecombination": {
     "section": "Plot",
     "signature": "Plot { hAugerRecombination }",
-    "description": "Scalar plot variable representing the hole Auger recombination rate (RAp, Equation 441). Units: cm^-3 s^-1.",
+    "description": "Scalar plot variable representing the hole Auger recombination rate (RAp, Equation 441). Units: cm^-3 s^-1. See also AugerRecombination for the unified model and eAugerRecombination for the electron variant.",
     "parameters": [],
     "keywords": [],
     "example": "Plot { hAugerRecombination }",
@@ -35387,7 +35387,7 @@
   "hBand2BandGeneration": {
     "section": "Plot",
     "signature": "Plot { hBand2BandGeneration }",
-    "description": "Scalar plot variable representing the hole contribution to band-to-band tunneling generation rate from the dynamic nonlocal path model. Units: cm^-3 s^-1.",
+    "description": "Scalar plot variable representing the hole contribution to band-to-band tunneling generation rate from the dynamic nonlocal path model. Units: cm^-3 s^-1. See also Band2BandGeneration for the unified model and eBand2BandGeneration for the electron variant.",
     "parameters": [],
     "keywords": [
       "hBand2BandGeneration"
@@ -35398,7 +35398,7 @@
   "hBandEdgeShift": {
     "section": "Physics",
     "signature": "hBandEdgeShift( <ident> [ <table> ] [ <int> ] )",
-    "description": "Computes band-edge shift for the valence band using a PMI (Physical Model Interface) model with an optional constructor argument. Used for apparent band-edge shift calculations.",
+    "description": "Computes band-edge shift for the valence band using a PMI (Physical Model Interface) model with an optional constructor argument. Used for apparent band-edge shift calculations. See also BandEdgeShift for the unified model and eBandEdgeShift for the electron variant.",
     "parameters": [
       {
         "name": "<ident>",
@@ -35457,7 +35457,7 @@
   "hBarrierTunneling": {
     "section": "Physics",
     "signature": "hBarrierTunneling(NonLocal=<string>) | hBarrierTunneling(TwoBand)",
-    "description": "In Traps(), activates hole barrier tunneling (trap-assisted tunneling from the valence band). NonLocal option enables tunneling from named nonlocal meshes. TwoBand option uses two-band dispersion for the WKB tunneling probability.",
+    "description": "In Traps(), activates hole barrier tunneling (trap-assisted tunneling from the valence band). NonLocal option enables tunneling from named nonlocal meshes. TwoBand option uses two-band dispersion for the WKB tunneling probability. See also BarrierTunneling for the unified model and eBarrierTunneling for the electron variant.",
     "parameters": [
       {
         "name": "NonLocal",
@@ -35523,7 +35523,7 @@
   "hBreakdownProbability": {
     "section": "Plot",
     "signature": "Plot { hBreakdownProbability }",
-    "description": "Plot variable related to the hole contribution to avalanche breakdown probability analysis.",
+    "description": "Plot variable related to the hole contribution to avalanche breakdown probability analysis. See also BreakdownProbability for the unified model and eBreakdownProbability for the electron variant.",
     "parameters": [],
     "keywords": [
       "hBreakdownProbability",
@@ -35568,7 +35568,7 @@
   "hCurrent": {
     "section": "Physics",
     "signature": "hCurrent",
-    "description": "Hole current density at each vertex, available as a plot dataset. Represents the drift-diffusion current of holes. Units: A/cm^2.",
+    "description": "Hole current density at each vertex, available as a plot dataset. Represents the drift-diffusion current of holes. Units: A/cm^2. See also Current for the unified model and eCurrent for the electron variant.",
     "keywords": [
       "eCurrent",
       "TotalCurrent",
@@ -35579,7 +35579,7 @@
   "hCurrentDensity": {
     "section": "Physics",
     "signature": "hCurrentDensity",
-    "description": "Hole current density at each vertex, available as a plot dataset in Plot{} and CurrentPlot{} sections. Represents the hole component of the total drift-diffusion current. Units: A/cm^2.",
+    "description": "Hole current density at each vertex, available as a plot dataset in Plot{} and CurrentPlot{} sections. Represents the hole component of the total drift-diffusion current. Units: A/cm^2. See also CurrentDensity for the unified model and eCurrentDensity for the electron variant.",
     "keywords": [
       "eCurrentDensity",
       "TotalCurrent",
@@ -35593,7 +35593,7 @@
   "hDeformationPotential": {
     "section": "Plot",
     "signature": "Plot { hDeformationPotential }",
-    "description": "Scalar plot variable representing the hole deformation potential from the deformation potential model for stress-dependent band structure. Units: eV.",
+    "description": "Scalar plot variable representing the hole deformation potential from the deformation potential model for stress-dependent band structure. Units: eV. See also DeformationPotential for the unified model and eDeformationPotential for the electron variant.",
     "parameters": [],
     "keywords": [
       "hDeformationPotential",
@@ -35605,7 +35605,7 @@
   "hDensity": {
     "section": "Physics",
     "signature": "hDensity",
-    "description": "Hole concentration (density) at each vertex, available as a plot dataset. Represents the free hole carrier density computed from the solution of the hole continuity equation. Units: cm^-3.",
+    "description": "Hole concentration (density) at each vertex, available as a plot dataset. Represents the free hole carrier density computed from the solution of the hole continuity equation. Units: cm^-3. See also Density for the unified model and eDensity for the electron variant.",
     "keywords": [
       "eDensity",
       "SpaceCharge",
@@ -35616,7 +35616,7 @@
   "hDensityCorrection": {
     "section": "Physics",
     "signature": "QWLocal { hDensityCorrection } or Band2Band { DensityCorrection=Local }",
-    "description": "Activates hole quantization effects in quantum well models or enables density correction in band-to-band tunneling models.",
+    "description": "Activates hole quantization effects in quantum well models or enables density correction in band-to-band tunneling models. See also DensityCorrection for the unified model and eDensityCorrection for the electron variant.",
     "parameters": [],
     "keywords": [
       "hDensityCorrection",
@@ -35641,7 +35641,7 @@
   "hDiffusivity": {
     "section": "Plot",
     "signature": "Plot { hDiffusivity }",
-    "description": "Plot variable related to hole diffusivity. In the context of non-Einstein diffusivity model, this represents the hole diffusivity derived from mobility.",
+    "description": "Plot variable related to hole diffusivity. In the context of non-Einstein diffusivity model, this represents the hole diffusivity derived from mobility. See also Diffusivity for the unified model and eDiffusivity for the electron variant.",
     "parameters": [],
     "keywords": [
       "hDiffusivity",
@@ -35717,7 +35717,7 @@
   "hEnormal": {
     "section": "Plot",
     "signature": "Plot { hEnormal }",
-    "description": "Scalar plot variable representing the electric field component perpendicular to the interface (F_p_perp, Equation 336 or Equation 337) or the normal field for holes. Units: V/cm.",
+    "description": "Scalar plot variable representing the electric field component perpendicular to the interface (F_p_perp, Equation 336 or Equation 337) or the normal field for holes. Units: V/cm. See also Enormal for the unified model and eEnormal for the electron variant.",
     "parameters": [],
     "keywords": [
       "hEnormal",
@@ -35729,7 +35729,7 @@
   "hEparallel": {
     "section": "Plot",
     "signature": "Plot { hEparallel }",
-    "description": "Scalar plot variable representing the electric field parallel to the hole current (F_p, Equation 363). Units: V/cm.",
+    "description": "Scalar plot variable representing the electric field parallel to the hole current (F_p, Equation 363). Units: V/cm. See also Eparallel for the unified model and eEparallel for the electron variant.",
     "parameters": [],
     "keywords": [
       "hEparallel",
@@ -35750,7 +35750,7 @@
   "hFactor": {
     "section": "Physics",
     "signature": "Piezo { Model { Mobility ( hFactor [FirstOrder|SecondOrder|EffectiveStressModel|<pmi_model>|SFactor=\"<dataset>\"] [ChannelDirection=<n>] [Kanda] [AutoOrientation|ParameterSetName=\"<name>\"] [ApplyToMobilityComponents] ) } }",
-    "description": "Isotropic factor model for computing hole mobility enhancement under mechanical stress. Uses a diagonal component of the piezoresistance mobility enhancement tensor as an isotropic factor gamma applied to hole mobility. Part of the Piezo mobility stress framework.",
+    "description": "Isotropic factor model for computing hole mobility enhancement under mechanical stress. Uses a diagonal component of the piezoresistance mobility enhancement tensor as an isotropic factor gamma applied to hole mobility. Part of the Piezo mobility stress framework. See also Factor for the unified model and eFactor for the electron variant.",
     "parameters": [
       {
         "name": "FirstOrder",
@@ -35879,7 +35879,7 @@
   "hGradQuasiFermi": {
     "section": "Plot",
     "signature": "Plot { hGradQuasiFermi }",
-    "description": "Plot dataset for the magnitude of the hole quasi-Fermi potential gradient, |nabla(Phi_p)| (Equation 365). Available at vertices, unit is V/cm. Can also be used as a direction field for ComputeIonizationIntegrals and as a driving force for avalanche models.",
+    "description": "Plot dataset for the magnitude of the hole quasi-Fermi potential gradient, |nabla(Phi_p)| (Equation 365). Available at vertices, unit is V/cm. Can also be used as a direction field for ComputeIonizationIntegrals and as a driving force for avalanche models. See also GradQuasiFermi for the unified model and eGradQuasiFermi for the electron variant.",
     "parameters": [],
     "keywords": [
       "hGradQuasiFermi",
@@ -35974,7 +35974,7 @@
   "hHeatFlux": {
     "section": "Plot",
     "signature": "Plot { hHeatFlux }",
-    "description": "Plot dataset for the hole heat flux vector Sp (Equation 80), representing the energy flux associated with hole transport in the hydrodynamic model. Available as both scalar (magnitude) and vector data at vertices, unit is W/cm2.",
+    "description": "Plot dataset for the hole heat flux vector Sp (Equation 80), representing the energy flux associated with hole transport in the hydrodynamic model. Available as both scalar (magnitude) and vector data at vertices, unit is W/cm2. See also HeatFlux for the unified model and eHeatFlux for the electron variant.",
     "parameters": [],
     "keywords": [
       "hHeatFlux",
@@ -36104,7 +36104,7 @@
   "hIonIntegral": {
     "section": "Plot",
     "signature": "Plot { hIonIntegral }",
-    "description": "Plot dataset for the hole ionization integral along the breakdown path. Used for approximate breakdown analysis visualization. The best path is saved as a volume dataset in the TDR file. Unit is dimensionless (integral value).",
+    "description": "Plot dataset for the hole ionization integral along the breakdown path. Used for approximate breakdown analysis visualization. The best path is saved as a volume dataset in the TDR file. Unit is dimensionless (integral value). See also IonIntegral for the unified model and eIonIntegral for the electron variant.",
     "parameters": [],
     "keywords": [
       "hIonIntegral",
@@ -36137,7 +36137,7 @@
   "hJouleHeat": {
     "section": "Plot",
     "signature": "Plot { hJouleHeat }",
-    "description": "Plot dataset for the hole Joule heat, computed as |Jp|^2 / (q * mu_p). Represents resistive heating due to hole current. Available at vertices, unit is W/cm3.",
+    "description": "Plot dataset for the hole Joule heat, computed as |Jp|^2 / (q * mu_p). Represents resistive heating due to hole current. Available at vertices, unit is W/cm3. See also JouleHeat for the unified model and eJouleHeat for the electron variant.",
     "parameters": [],
     "keywords": [
       "hJouleHeat",
@@ -36244,7 +36244,7 @@
   "hMLDA": {
     "section": "Physics",
     "signature": "Physics { hMLDA [-LambdaTemp] }",
-    "description": "Modified Local-Density Approximation (MLDA) quantum correction model for holes only. Provides a simple one-parameter quantum correction to hole carrier density with thermal wavelength lambda_300. Can be specified regionwise or materialwise.",
+    "description": "Modified Local-Density Approximation (MLDA) quantum correction model for holes only. Provides a simple one-parameter quantum correction to hole carrier density with thermal wavelength lambda_300. Can be specified regionwise or materialwise. See also eMLDA for the electron variant.",
     "parameters": [
       {
         "name": "-LambdaTemp",
@@ -36329,7 +36329,7 @@
   "hMobility": {
     "section": "Physics",
     "signature": "hMobility( <options> )",
-    "description": "Hole mobility model within Mobility(). Configures all mobility sub-models (doping dependence, high-field saturation, etc.) specifically for holes. Overrides generic Mobility() settings for the hole carrier type.",
+    "description": "Hole mobility model within Mobility(). Configures all mobility sub-models (doping dependence, high-field saturation, etc.) specifically for holes. Overrides generic Mobility() settings for the hole carrier type. See also eMobility for the electron variant.",
     "keywords": [
       "eMobility",
       "Mobility",
@@ -36503,7 +36503,7 @@
   "hMultiValley": {
     "section": "Physics",
     "signature": "hMultiValley ([DensityIntegral])",
-    "description": "Activates the multivalley band structure model for holes only. Accounts for multiple valence band valleys in band structure computations, affecting density of states, carrier concentrations, and strain-induced band edge shifts. The DensityIntegral option enables numeric Gauss-Laguerre integration for Fermi-Dirac integrals.",
+    "description": "Activates the multivalley band structure model for holes only. Accounts for multiple valence band valleys in band structure computations, affecting density of states, carrier concentrations, and strain-induced band edge shifts. The DensityIntegral option enables numeric Gauss-Laguerre integration for Fermi-Dirac integrals. See also MultiValley for the unified model and eMultiValley for the electron variant.",
     "parameters": [],
     "keywords": [
       "eMultiValley",
@@ -36591,7 +36591,7 @@
   "hQuasiFermiPotential": {
     "section": "Plot",
     "signature": "hQuasiFermiPotential",
-    "description": "Scalar plot data for the hole quasi-Fermi potential (Phi_p), the quantity solved by the hole continuity equation. It drives hole transport and is defined such that the hole concentration p = NV * exp(-(E_V - E_F,p) / kT) under Boltzmann statistics.",
+    "description": "Scalar plot data for the hole quasi-Fermi potential (Phi_p), the quantity solved by the hole continuity equation. It drives hole transport and is defined such that the hole concentration p = NV * exp(-(E_V - E_F,p) / kT) under Boltzmann statistics. See also QuasiFermiPotential for the unified model and eQuasiFermiPotential for the electron variant.",
     "parameters": [],
     "keywords": [
       "hQuasiFermiPotential",
@@ -36612,7 +36612,7 @@
   "hRecGenHeat": {
     "section": "Plot",
     "signature": "hRecGenHeat",
-    "description": "Scalar plot data for the hole generation-recombination heat source term (H_p). This term accounts for the energy exchange between the hole system and the lattice due to generation and recombination processes in the hydrodynamic model.",
+    "description": "Scalar plot data for the hole generation-recombination heat source term (H_p). This term accounts for the energy exchange between the hole system and the lattice due to generation and recombination processes in the hydrodynamic model. See also RecGenHeat for the unified model and eRecGenHeat for the electron variant.",
     "parameters": [],
     "keywords": [
       "hRecGenHeat",
@@ -36723,7 +36723,7 @@
   "hSRHRecombination": {
     "section": "Plot",
     "signature": "hSRHRecombination",
-    "description": "Scalar plot data for the hole recombination rate from the Shockley-Read-Hall (SRH) model. When trap-assisted tunneling (NonlocalPath) is active, this includes the nonlocal tunneling enhancement contribution to the hole SRH recombination rate.",
+    "description": "Scalar plot data for the hole recombination rate from the Shockley-Read-Hall (SRH) model. When trap-assisted tunneling (NonlocalPath) is active, this includes the nonlocal tunneling enhancement contribution to the hole SRH recombination rate. See also SRHRecombination for the unified model and eSRHRecombination for the electron variant.",
     "parameters": [],
     "keywords": [
       "hSRHRecombination",
@@ -36736,7 +36736,7 @@
   "hSaturationFactor": {
     "section": "Physics",
     "signature": "hSaturationFactor = <float>",
-    "description": "Calibration parameter that modifies the dependency of hole saturation velocity on mechanical stress. The saturation velocity formula becomes v_sat,i = v_sat,0 * (1 + alpha * t_i) / (1 + t_i), where alpha is this factor and t_i is the stress enhancement factor. A value of 0 applies the stress enhancement only to low-field mobility; a value of 1 applies it to total mobility.",
+    "description": "Calibration parameter that modifies the dependency of hole saturation velocity on mechanical stress. The saturation velocity formula becomes v_sat,i = v_sat,0 * (1 + alpha * t_i) / (1 + t_i), where alpha is this factor and t_i is the stress enhancement factor. A value of 0 applies the stress enhancement only to low-field mobility; a value of 1 applies it to total mobility. See also SaturationFactor for the unified model and eSaturationFactor for the electron variant.",
     "parameters": [
       {
         "name": "value",
@@ -36803,7 +36803,7 @@
   "hSubband": {
     "section": "Physics",
     "signature": "hSubband( Fermi | Doping | EffectiveMass | Scattering | BalMob )",
-    "description": "Activates the multivalley hole mobility model with subband quantization effects. Options include Fermi statistics, stress-dependent effective mass, MLDA scattering rate, and ballistic mobility correction.",
+    "description": "Activates the multivalley hole mobility model with subband quantization effects. Options include Fermi statistics, stress-dependent effective mass, MLDA scattering rate, and ballistic mobility correction. See also Subband for the unified model and eSubband for the electron variant.",
     "parameters": [],
     "keywords": [
       "mobility",
@@ -36827,7 +36827,7 @@
   "hTemperature": {
     "section": "Physics",
     "signature": "hTemperature",
-    "description": "Hole temperature at each vertex, available as a plot dataset in hydrodynamic or thermodynamic transport simulations. Used as a convergence criterion parameter and in DiffusionNoise{} temperature options. Units: K.",
+    "description": "Hole temperature at each vertex, available as a plot dataset in hydrodynamic or thermodynamic transport simulations. Used as a convergence criterion parameter and in DiffusionNoise{} temperature options. Units: K. See also Temperature for the unified model and eTemperature for the electron variant.",
     "keywords": [
       "eTemperature",
       "LatticeTemperature",
@@ -36848,7 +36848,7 @@
   "hTensor": {
     "section": "Physics",
     "signature": "Physics { Piezo(Model(Mobility(hTensor[(<named_param_set>)]))) }",
-    "description": "Selects the anisotropic piezoresistance tensor model for hole mobility only. Computes mobility enhancement based on a full tensor expansion in terms of stress. Alternatively, the Tensor keyword applies this model to both electrons and holes.",
+    "description": "Selects the anisotropic piezoresistance tensor model for hole mobility only. Computes mobility enhancement based on a full tensor expansion in terms of stress. Alternatively, the Tensor keyword applies this model to both electrons and holes. See also eTensor for the electron variant.",
     "parameters": [],
     "keywords": [
       "hTensor",
@@ -36921,7 +36921,7 @@
   "hThermionic": {
     "section": "Physics",
     "signature": "Physics(MaterialInterface=\"<mat1>/<mat2>\") { hThermionic }",
-    "description": "Activates the thermionic emission model for holes at a heterointerface. Used to define hole current and energy flux at abrupt semiconductor-semiconductor interfaces where conventional drift-diffusion transport equations are invalid. The Thermionic keyword activates this for both carriers.",
+    "description": "Activates the thermionic emission model for holes at a heterointerface. Used to define hole current and energy flux at abrupt semiconductor-semiconductor interfaces where conventional drift-diffusion transport equations are invalid. The Thermionic keyword activates this for both carriers. See also eThermionic for the electron variant.",
     "parameters": [],
     "keywords": [
       "hThermionic(HCI)",
