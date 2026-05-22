@@ -11339,16 +11339,109 @@
   "HighFieldSaturation": {
     "section": "Physics",
     "signature": "HighFieldSaturation ( <options> )",
-    "description": "Mobility()或eMobility()/hMobility()中的高场饱和迁移率模型。使用Caughey-Thomas或TransferredElectronEffect公式模拟高电场下的速度饱和效应。空穴变体为hHighFieldSaturation。",
+    "description": "Mobility() 或 eMobility()/hMobility() 中的统一高场饱和迁移率模型。使用 Caughey-Thomas、TransferredElectronEffect 或其他公式模拟高电场下的速度饱和效应。载流子专用配置参见 eHighFieldSaturation（电子）和 hHighFieldSaturation（空穴）。",
     "keywords": [
       "Mobility",
-      "DopingDependence",
-      "ConstantMobility",
+      "eMobility",
+      "hMobility",
       "eHighFieldSaturation",
       "hHighFieldSaturation",
-      "CaugheyThomas"
+      "CaugheyThomas",
+      "TransferredElectronEffect",
+      "GradQuasiFermi",
+      "ParameterSetName",
+      "AutoOrientation",
+      "DopingDependence",
+      "ConstantMobility"
     ],
-    "example": ""
+    "example": "",
+    "parameters": [
+      {
+        "name": "CaugheyThomas",
+        "type": "flag",
+        "desc": "使用 Canali-Hänsch 模型（默认）。"
+      },
+      {
+        "name": "TransferredElectronEffect",
+        "type": "flag",
+        "desc": "使用转移电子模型。"
+      },
+      {
+        "name": "GradQuasiFermi",
+        "type": "flag",
+        "desc": "使用准费米势梯度作为驱动力（默认）。"
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "要使用的高场依赖性（HighFieldDependence）参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近的界面方向自动选择参数集。"
+      },
+      {
+        "name": "Eparallel",
+        "type": "flag",
+        "desc": "使用电流方向的电场作为驱动力。"
+      },
+      {
+        "name": "EparallelToInterface",
+        "type": "flag",
+        "desc": "使用最近的半导体-绝缘体界面平行方向的电场作为驱动力。"
+      },
+      {
+        "name": "ElectricField",
+        "type": "flag",
+        "desc": "使用电场作为驱动力。"
+      },
+      {
+        "name": "CarrierTempDrive",
+        "type": "flag",
+        "desc": "载流子温度驱动力（流体动力学模拟的默认值）。"
+      },
+      {
+        "name": "CarrierTempDriveBasic",
+        "type": "flag",
+        "desc": "基础载流子温度驱动力模型。"
+      },
+      {
+        "name": "CarrierTempDriveME",
+        "type": "flag",
+        "desc": "Meinerzhagen-Engl 载流子温度驱动力模型。"
+      },
+      {
+        "name": "CarrierTempDrivePolynomial",
+        "type": "flag",
+        "desc": "使用无理多项式的能量依赖迁移率模型。"
+      },
+      {
+        "name": "CarrierTempDriveSpline",
+        "type": "flag",
+        "desc": "使用样条插值的能量依赖迁移率模型。"
+      },
+      {
+        "name": "TransferredElectronEffect2",
+        "type": "flag",
+        "desc": "替代转移电子模型。"
+      },
+      {
+        "name": "PFMob",
+        "type": "flag",
+        "desc": "使用 Poole-Frenkel 迁移率模型。"
+      },
+      {
+        "name": "VRHMob",
+        "type": "flag",
+        "desc": "使用变程跳跃迁移率模型。"
+      },
+      {
+        "name": "PMIModel",
+        "type": "sub",
+        "desc": "自定义双场 PMI 模型。接受 Name、Index 和 String 参数。"
+      }
+    ]
   },
   "Hole": {
     "section": "Physics",
@@ -32049,14 +32142,107 @@
   "eHighFieldSaturation": {
     "section": "Physics",
     "signature": "eHighFieldSaturation",
-    "description": "在 Mobility() 或 eMobility() 中的电子高场饱和速度模型。使用 Caughey-Thomas 或 TransferredElectronEffect 模型配置电子的饱和速度和高场依赖性。",
+    "description": "Mobility() 或 eMobility() 中的电子高场饱和速度模型。使用 Caughey-Thomas、TransferredElectronEffect 或其他模型配置电子的饱和速度和高场依赖性。另见 HighFieldSaturation（统一模型）和 hHighFieldSaturation（空穴变体）。",
     "keywords": [
-      "HighFieldSaturation",
-      "eMobility",
       "Mobility",
-      "hHighFieldSaturation"
+      "eMobility",
+      "HighFieldSaturation",
+      "hHighFieldSaturation",
+      "eHighFieldSaturation",
+      "CaugheyThomas",
+      "TransferredElectronEffect",
+      "GradQuasiFermi",
+      "ParameterSetName",
+      "AutoOrientation"
     ],
-    "example": ""
+    "example": "",
+    "parameters": [
+      {
+        "name": "CaugheyThomas",
+        "type": "flag",
+        "desc": "使用 Canali-Hänsch 模型（默认）。"
+      },
+      {
+        "name": "TransferredElectronEffect",
+        "type": "flag",
+        "desc": "使用转移电子模型。"
+      },
+      {
+        "name": "GradQuasiFermi",
+        "type": "flag",
+        "desc": "使用准费米势梯度作为驱动力（默认）。"
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "要使用的高场依赖性（HighFieldDependence）参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近的界面方向自动选择参数集。"
+      },
+      {
+        "name": "Eparallel",
+        "type": "flag",
+        "desc": "使用电流方向的电场作为驱动力。"
+      },
+      {
+        "name": "EparallelToInterface",
+        "type": "flag",
+        "desc": "使用最近的半导体-绝缘体界面平行方向的电场作为驱动力。"
+      },
+      {
+        "name": "ElectricField",
+        "type": "flag",
+        "desc": "使用电场作为驱动力。"
+      },
+      {
+        "name": "CarrierTempDrive",
+        "type": "flag",
+        "desc": "载流子温度驱动力（流体动力学模拟的默认值）。"
+      },
+      {
+        "name": "CarrierTempDriveBasic",
+        "type": "flag",
+        "desc": "基础载流子温度驱动力模型。"
+      },
+      {
+        "name": "CarrierTempDriveME",
+        "type": "flag",
+        "desc": "Meinerzhagen-Engl 载流子温度驱动力模型。"
+      },
+      {
+        "name": "CarrierTempDrivePolynomial",
+        "type": "flag",
+        "desc": "使用无理多项式的能量依赖迁移率模型。"
+      },
+      {
+        "name": "CarrierTempDriveSpline",
+        "type": "flag",
+        "desc": "使用样条插值的能量依赖迁移率模型。"
+      },
+      {
+        "name": "TransferredElectronEffect2",
+        "type": "flag",
+        "desc": "替代转移电子模型。"
+      },
+      {
+        "name": "PFMob",
+        "type": "flag",
+        "desc": "使用 Poole-Frenkel 迁移率模型。"
+      },
+      {
+        "name": "VRHMob",
+        "type": "flag",
+        "desc": "使用变程跳跃迁移率模型。"
+      },
+      {
+        "name": "PMIModel",
+        "type": "sub",
+        "desc": "自定义双场 PMI 模型。接受 Name、Index 和 String 参数。"
+      }
+    ]
   },
   "eInterfaceTrappedCharge": {
     "section": "Plot",
@@ -34920,17 +35106,35 @@
   "hHighFieldSaturation": {
     "section": "Physics",
     "signature": "hHighFieldSaturation",
-    "description": "Mobility() 或 hMobility() 中的空穴高场饱和速度模型。使用 Caughey-Thomas 或类似模型配置饱和速度及空穴迁移率的高场依赖性。",
+    "description": "Mobility() 或 hMobility() 中的空穴高场饱和速度模型。使用 Caughey-Thomas 或类似模型配置饱和速度及空穴迁移率的高场依赖性。另见 HighFieldSaturation（统一模型）和 eHighFieldSaturation（电子变体）。",
     "keywords": [
-      "HighFieldSaturation",
-      "hMobility",
       "Mobility",
+      "hMobility",
+      "HighFieldSaturation",
       "eHighFieldSaturation",
       "hHighFieldSaturation",
+      "CaugheyThomas",
+      "TransferredElectronEffect",
+      "GradQuasiFermi",
       "ParameterSetName",
       "AutoOrientation"
     ],
     "parameters": [
+      {
+        "name": "CaugheyThomas",
+        "type": "flag",
+        "desc": "使用 Canali-Hänsch 模型（默认）。"
+      },
+      {
+        "name": "TransferredElectronEffect",
+        "type": "flag",
+        "desc": "使用转移电子模型。"
+      },
+      {
+        "name": "GradQuasiFermi",
+        "type": "flag",
+        "desc": "使用准费米势梯度作为驱动力（默认）。"
+      },
       {
         "name": "ParameterSetName",
         "type": "string",
@@ -34940,6 +35144,66 @@
         "name": "AutoOrientation",
         "type": "flag",
         "desc": "根据最近的界面方向自动选择参数集。"
+      },
+      {
+        "name": "Eparallel",
+        "type": "flag",
+        "desc": "使用电流方向的电场作为驱动力。"
+      },
+      {
+        "name": "EparallelToInterface",
+        "type": "flag",
+        "desc": "使用最近的半导体-绝缘体界面平行方向的电场作为驱动力。"
+      },
+      {
+        "name": "ElectricField",
+        "type": "flag",
+        "desc": "使用电场作为驱动力。"
+      },
+      {
+        "name": "CarrierTempDrive",
+        "type": "flag",
+        "desc": "载流子温度驱动力（流体动力学模拟的默认值）。"
+      },
+      {
+        "name": "CarrierTempDriveBasic",
+        "type": "flag",
+        "desc": "基础载流子温度驱动力模型。"
+      },
+      {
+        "name": "CarrierTempDriveME",
+        "type": "flag",
+        "desc": "Meinerzhagen-Engl 载流子温度驱动力模型。"
+      },
+      {
+        "name": "CarrierTempDrivePolynomial",
+        "type": "flag",
+        "desc": "使用无理多项式的能量依赖迁移率模型。"
+      },
+      {
+        "name": "CarrierTempDriveSpline",
+        "type": "flag",
+        "desc": "使用样条插值的能量依赖迁移率模型。"
+      },
+      {
+        "name": "TransferredElectronEffect2",
+        "type": "flag",
+        "desc": "替代转移电子模型。"
+      },
+      {
+        "name": "PFMob",
+        "type": "flag",
+        "desc": "使用 Poole-Frenkel 迁移率模型。"
+      },
+      {
+        "name": "VRHMob",
+        "type": "flag",
+        "desc": "使用变程跳跃迁移率模型。"
+      },
+      {
+        "name": "PMIModel",
+        "type": "sub",
+        "desc": "自定义双场 PMI 模型。接受 Name、Index 和 String 参数。"
       }
     ],
     "example": ""

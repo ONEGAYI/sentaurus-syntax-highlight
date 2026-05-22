@@ -11668,16 +11668,109 @@
   "HighFieldSaturation": {
     "section": "Physics",
     "signature": "HighFieldSaturation ( <options> )",
-    "description": "High-field saturation mobility model within Mobility() or eMobility()/hMobility(). Models the velocity saturation effect at high electric fields using Caughey-Thomas or TransferredElectronEffect formulations. The hole variant is hHighFieldSaturation.",
+    "description": "Unified high-field saturation mobility model within Mobility() or eMobility()/hMobility(). Models the velocity saturation effect at high electric fields using Caughey-Thomas, TransferredElectronEffect, or other formulations. For carrier-specific configurations, see eHighFieldSaturation (electrons) and hHighFieldSaturation (holes).",
     "keywords": [
       "Mobility",
-      "DopingDependence",
-      "ConstantMobility",
+      "eMobility",
+      "hMobility",
       "eHighFieldSaturation",
       "hHighFieldSaturation",
-      "CaugheyThomas"
+      "CaugheyThomas",
+      "TransferredElectronEffect",
+      "GradQuasiFermi",
+      "ParameterSetName",
+      "AutoOrientation",
+      "DopingDependence",
+      "ConstantMobility"
     ],
-    "contexts": {}
+    "contexts": {},
+    "parameters": [
+      {
+        "name": "CaugheyThomas",
+        "type": "flag",
+        "desc": "Use Canali-Hänsch model (default)."
+      },
+      {
+        "name": "TransferredElectronEffect",
+        "type": "flag",
+        "desc": "Use transferred electron model."
+      },
+      {
+        "name": "GradQuasiFermi",
+        "type": "flag",
+        "desc": "Use gradient of quasi-Fermi potential as driving force (default)."
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "Name of HighFieldDependence parameter set to use."
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "Automatically select parameter set based on nearest interface orientation."
+      },
+      {
+        "name": "Eparallel",
+        "type": "flag",
+        "desc": "Use electric field parallel to current as driving force."
+      },
+      {
+        "name": "EparallelToInterface",
+        "type": "flag",
+        "desc": "Use electric field parallel to the closest semiconductor-insulator interface as driving force."
+      },
+      {
+        "name": "ElectricField",
+        "type": "flag",
+        "desc": "Use electric field as driving force."
+      },
+      {
+        "name": "CarrierTempDrive",
+        "type": "flag",
+        "desc": "Temperature driving force (default for hydrodynamic simulation)."
+      },
+      {
+        "name": "CarrierTempDriveBasic",
+        "type": "flag",
+        "desc": "Basic temperature driving force model."
+      },
+      {
+        "name": "CarrierTempDriveME",
+        "type": "flag",
+        "desc": "Meinerzhagen-Engl temperature driving force model."
+      },
+      {
+        "name": "CarrierTempDrivePolynomial",
+        "type": "flag",
+        "desc": "Energy-dependent mobility model using an irrational polynomial."
+      },
+      {
+        "name": "CarrierTempDriveSpline",
+        "type": "flag",
+        "desc": "Energy-dependent mobility model using spline interpolation."
+      },
+      {
+        "name": "TransferredElectronEffect2",
+        "type": "flag",
+        "desc": "Alternative transferred electron model."
+      },
+      {
+        "name": "PFMob",
+        "type": "flag",
+        "desc": "Use Poole-Frenkel mobility model."
+      },
+      {
+        "name": "VRHMob",
+        "type": "flag",
+        "desc": "Use variable range hopping mobility model."
+      },
+      {
+        "name": "PMIModel",
+        "type": "sub",
+        "desc": "Custom PMI model dependent on two driving fields. Accepts Name, Index, and String parameters."
+      }
+    ]
   },
   "Hole": {
     "section": "Physics",
@@ -32864,13 +32957,107 @@
   "eHighFieldSaturation": {
     "section": "Physics",
     "signature": "eHighFieldSaturation",
-    "description": "Electron high-field saturation velocity model within Mobility() or eMobility(). Configures the saturation velocity and high-field dependence of electron mobility using Caughey-Thomas or TransferredElectronEffect models.",
+    "description": "Electron high-field saturation velocity model within Mobility() or eMobility(). Configures the saturation velocity and high-field dependence of electron mobility using Caughey-Thomas, TransferredElectronEffect, or other formulations. See also HighFieldSaturation for the unified model and hHighFieldSaturation for the hole variant.",
     "keywords": [
-      "HighFieldSaturation",
-      "eMobility",
       "Mobility",
-      "hHighFieldSaturation"
-    ]
+      "eMobility",
+      "HighFieldSaturation",
+      "hHighFieldSaturation",
+      "eHighFieldSaturation",
+      "CaugheyThomas",
+      "TransferredElectronEffect",
+      "GradQuasiFermi",
+      "ParameterSetName",
+      "AutoOrientation"
+    ],
+    "parameters": [
+      {
+        "name": "CaugheyThomas",
+        "type": "flag",
+        "desc": "Use Canali-Hänsch model (default)."
+      },
+      {
+        "name": "TransferredElectronEffect",
+        "type": "flag",
+        "desc": "Use transferred electron model."
+      },
+      {
+        "name": "GradQuasiFermi",
+        "type": "flag",
+        "desc": "Use gradient of quasi-Fermi potential as driving force (default)."
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "Name of HighFieldDependence parameter set to use."
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "Automatically select parameter set based on nearest interface orientation."
+      },
+      {
+        "name": "Eparallel",
+        "type": "flag",
+        "desc": "Use electric field parallel to current as driving force."
+      },
+      {
+        "name": "EparallelToInterface",
+        "type": "flag",
+        "desc": "Use electric field parallel to the closest semiconductor-insulator interface as driving force."
+      },
+      {
+        "name": "ElectricField",
+        "type": "flag",
+        "desc": "Use electric field as driving force."
+      },
+      {
+        "name": "CarrierTempDrive",
+        "type": "flag",
+        "desc": "Temperature driving force (default for hydrodynamic simulation)."
+      },
+      {
+        "name": "CarrierTempDriveBasic",
+        "type": "flag",
+        "desc": "Basic temperature driving force model."
+      },
+      {
+        "name": "CarrierTempDriveME",
+        "type": "flag",
+        "desc": "Meinerzhagen-Engl temperature driving force model."
+      },
+      {
+        "name": "CarrierTempDrivePolynomial",
+        "type": "flag",
+        "desc": "Energy-dependent mobility model using an irrational polynomial."
+      },
+      {
+        "name": "CarrierTempDriveSpline",
+        "type": "flag",
+        "desc": "Energy-dependent mobility model using spline interpolation."
+      },
+      {
+        "name": "TransferredElectronEffect2",
+        "type": "flag",
+        "desc": "Alternative transferred electron model."
+      },
+      {
+        "name": "PFMob",
+        "type": "flag",
+        "desc": "Use Poole-Frenkel mobility model."
+      },
+      {
+        "name": "VRHMob",
+        "type": "flag",
+        "desc": "Use variable range hopping mobility model."
+      },
+      {
+        "name": "PMIModel",
+        "type": "sub",
+        "desc": "Custom PMI model dependent on two driving fields. Accepts Name, Index, and String parameters."
+      }
+    ],
+    "contexts": {}
   },
   "eInterfaceTrappedCharge": {
     "section": "Plot",
@@ -35772,27 +35959,105 @@
   "hHighFieldSaturation": {
     "section": "Physics",
     "signature": "hHighFieldSaturation",
-    "description": "Hole high-field saturation velocity model within Mobility() or hMobility(). Configures the saturation velocity and high-field dependence of hole mobility using Caughey-Thomas or similar models.",
+    "description": "Hole high-field saturation velocity model within Mobility() or hMobility(). Configures the saturation velocity and high-field dependence of hole mobility using Caughey-Thomas or similar formulations. See also HighFieldSaturation for the unified model and eHighFieldSaturation for the electron variant.",
     "keywords": [
-      "HighFieldSaturation",
-      "hMobility",
       "Mobility",
+      "hMobility",
+      "HighFieldSaturation",
       "eHighFieldSaturation",
       "hHighFieldSaturation",
+      "CaugheyThomas",
+      "TransferredElectronEffect",
+      "GradQuasiFermi",
       "ParameterSetName",
       "AutoOrientation"
     ],
     "contexts": {},
     "parameters": [
       {
+        "name": "CaugheyThomas",
+        "type": "flag",
+        "desc": "Use Canali-Hänsch model (default)."
+      },
+      {
+        "name": "TransferredElectronEffect",
+        "type": "flag",
+        "desc": "Use transferred electron model."
+      },
+      {
+        "name": "GradQuasiFermi",
+        "type": "flag",
+        "desc": "Use gradient of quasi-Fermi potential as driving force (default)."
+      },
+      {
         "name": "ParameterSetName",
         "type": "string",
-        "desc": "Name of the HighFieldDependence parameter set to use."
+        "desc": "Name of HighFieldDependence parameter set to use."
       },
       {
         "name": "AutoOrientation",
         "type": "flag",
         "desc": "Automatically select parameter set based on nearest interface orientation."
+      },
+      {
+        "name": "Eparallel",
+        "type": "flag",
+        "desc": "Use electric field parallel to current as driving force."
+      },
+      {
+        "name": "EparallelToInterface",
+        "type": "flag",
+        "desc": "Use electric field parallel to the closest semiconductor-insulator interface as driving force."
+      },
+      {
+        "name": "ElectricField",
+        "type": "flag",
+        "desc": "Use electric field as driving force."
+      },
+      {
+        "name": "CarrierTempDrive",
+        "type": "flag",
+        "desc": "Temperature driving force (default for hydrodynamic simulation)."
+      },
+      {
+        "name": "CarrierTempDriveBasic",
+        "type": "flag",
+        "desc": "Basic temperature driving force model."
+      },
+      {
+        "name": "CarrierTempDriveME",
+        "type": "flag",
+        "desc": "Meinerzhagen-Engl temperature driving force model."
+      },
+      {
+        "name": "CarrierTempDrivePolynomial",
+        "type": "flag",
+        "desc": "Energy-dependent mobility model using an irrational polynomial."
+      },
+      {
+        "name": "CarrierTempDriveSpline",
+        "type": "flag",
+        "desc": "Energy-dependent mobility model using spline interpolation."
+      },
+      {
+        "name": "TransferredElectronEffect2",
+        "type": "flag",
+        "desc": "Alternative transferred electron model."
+      },
+      {
+        "name": "PFMob",
+        "type": "flag",
+        "desc": "Use Poole-Frenkel mobility model."
+      },
+      {
+        "name": "VRHMob",
+        "type": "flag",
+        "desc": "Use variable range hopping mobility model."
+      },
+      {
+        "name": "PMIModel",
+        "type": "sub",
+        "desc": "Custom PMI model dependent on two driving fields. Accepts Name, Index, and String parameters."
       }
     ]
   },
