@@ -25336,7 +25336,7 @@
       {
         "name": "value",
         "type": "float",
-        "desc": "Scaling factor for saturation velocity stress dependence (default 1.0)"
+        "desc": "Scaling factor for stress-dependent saturation velocity. Default is 1.0 (no stress effect)."
       }
     ],
     "keywords": [
@@ -32389,7 +32389,8 @@
     "description": "Scalar plot dataset for the electron Auger recombination rate. Represents the recombination rate due to the Auger process for electrons, following the equation R_A = C * (n*p*(n*p - ni^2)).",
     "parameters": [],
     "keywords": [],
-    "example": "Plot { eAugerRecombination }"
+    "example": "Plot { eAugerRecombination }",
+    "contexts": {}
   },
   "eAvalanche": {
     "section": "Physics",
@@ -32952,7 +32953,8 @@
       "Thermodynamic",
       "HeatFlux"
     ],
-    "example": "Plot { eHeatFlux }\nPlot { eHeatFlux/Vector }"
+    "example": "Plot { eHeatFlux }\nPlot { eHeatFlux/Vector }",
+    "contexts": {}
   },
   "eHighFieldSaturation": {
     "section": "Physics",
@@ -33085,7 +33087,8 @@
       "ComputeIonizationIntegrals",
       "Breakdown"
     ],
-    "example": "Plot {\n  eIonIntegral\n  hIonIntegral\n  MeanIonIntegral\n}"
+    "example": "Plot {\n  eIonIntegral\n  hIonIntegral\n  MeanIonIntegral\n}",
+    "contexts": {}
   },
   "eJfactor": {
     "section": "Physics",
@@ -33121,7 +33124,8 @@
       "RecombinationHeat",
       "ThomsonHeat"
     ],
-    "example": "Plot { eJouleHeat }"
+    "example": "Plot { eJouleHeat }",
+    "contexts": {}
   },
   "eLifetime": {
     "section": "Plot",
@@ -33188,7 +33192,8 @@
       "QuantumCorrection",
       "LambdaTemp"
     ],
-    "example": "Physics { eMLDA(-LambdaTemp) }"
+    "example": "Physics { eMLDA(-LambdaTemp) }",
+    "contexts": {}
   },
   "eMLDAQuantumPotential": {
     "section": "Plot",
@@ -33256,7 +33261,8 @@
       "HighFieldSaturation",
       "ConstantMobility",
       "eHighFieldSaturation"
-    ]
+    ],
+    "contexts": {}
   },
   "eMobilityAniso": {
     "section": "Plot",
@@ -33896,9 +33902,9 @@
     "description": "Specifies the saturation factor for electrons that controls the dependency of electron saturation velocity on mechanical stress. A value of 1.0 (default) means no modification. This factor scales how stress affects the saturation velocity in the piezoresistance mobility model, impacting current drive under strain conditions.",
     "parameters": [
       {
-        "name": "float",
+        "name": "value",
         "type": "float",
-        "desc": "Saturation factor for electrons. Default is 1.0 (no stress effect on saturation velocity)."
+        "desc": "Scaling factor for electron saturation velocity stress dependence. Default is 1.0."
       }
     ],
     "keywords": [
@@ -36733,9 +36739,9 @@
     "description": "Calibration parameter that modifies the dependency of hole saturation velocity on mechanical stress. The saturation velocity formula becomes v_sat,i = v_sat,0 * (1 + alpha * t_i) / (1 + t_i), where alpha is this factor and t_i is the stress enhancement factor. A value of 0 applies the stress enhancement only to low-field mobility; a value of 1 applies it to total mobility.",
     "parameters": [
       {
-        "name": "(value)",
+        "name": "value",
         "type": "float",
-        "desc": "Scalar calibration factor alpha. Default is 1. Range 0 to 1 typical. 0 = stress affects only low-field mobility; 1 = stress affects total mobility."
+        "desc": "Scaling factor for hole saturation velocity stress dependence. Default is 1.0."
       }
     ],
     "keywords": [
