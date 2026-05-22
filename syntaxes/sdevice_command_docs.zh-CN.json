@@ -33332,51 +33332,63 @@
     "parameters": [
       {
         "name": "Doping",
-        "desc": "具有掺杂依赖性的应变诱导子带模型"
+        "desc": "具有掺杂依赖性的应变诱导子带模型",
+        "type": "flag"
       },
       {
         "name": "Fermi",
-        "desc": "具有载流子浓度（费米统计）依赖性的应变诱导子带模型"
+        "desc": "具有载流子浓度（费米统计）依赖性的应变诱导子带模型",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass",
-        "desc": "应力引起的电子有效质量变化"
+        "desc": "应力引起的电子有效质量变化",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass(-Transport)",
-        "desc": "排除 2D 逆输运质量张量变换"
+        "desc": "排除 2D 逆输运质量张量变换",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass(Transport-vector)",
-        "desc": "激活 1D 逆输运质量张量变换"
+        "desc": "激活 1D 逆输运质量张量变换",
+        "type": "flag"
       },
       {
         "name": "Scattering",
-        "desc": "具有体区间散射的应变诱导子带模型"
+        "desc": "具有体区间散射的应变诱导子带模型",
+        "type": "flag"
       },
       {
         "name": "Scattering(MLDA)",
-        "desc": "具有界面散射 (MLDA) 的应变诱导子带模型"
+        "desc": "具有界面散射 (MLDA) 的应变诱导子带模型",
+        "type": "flag"
       },
       {
         "name": "BalMob",
-        "desc": "应力引起的电子弹道迁移率变化"
+        "desc": "应力引起的电子弹道迁移率变化",
+        "type": "flag"
       },
       {
         "name": "NoStressInDDmob",
-        "desc": "仅考虑弹道迁移率，忽略漂移-扩散迁移率中的应力"
+        "desc": "仅考虑弹道迁移率，忽略漂移-扩散迁移率中的应力",
+        "type": "flag"
       },
       {
         "name": "EqRefMob",
-        "desc": "为转移载流子模型激活平衡参考迁移率计算"
+        "desc": "为转移载流子模型激活平衡参考迁移率计算",
+        "type": "flag"
       },
       {
         "name": "-RelChDir110",
-        "desc": "在参考迁移率中使用 <100> 沟道方向"
+        "desc": "在参考迁移率中使用 <100> 沟道方向",
+        "type": "flag"
       },
       {
         "name": "-AutoOrientation",
-        "desc": "使用全张量参考迁移率"
+        "desc": "使用全张量参考迁移率",
+        "type": "flag"
       }
     ],
     "keywords": [
@@ -36086,51 +36098,63 @@
     "parameters": [
       {
         "name": "Doping",
-        "desc": "具有掺杂依赖性的应变诱导子带模型"
+        "desc": "具有掺杂依赖性的应变诱导子带模型",
+        "type": "flag"
       },
       {
         "name": "Fermi",
-        "desc": "具有载流子浓度（费米统计）依赖性的应变诱导子带模型"
+        "desc": "具有载流子浓度（费米统计）依赖性的应变诱导子带模型",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass",
-        "desc": "应力引起的空穴有效质量变化"
+        "desc": "应力引起的空穴有效质量变化",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass(-Transport)",
-        "desc": "排除 2D 逆输运质量张量变换"
+        "desc": "排除 2D 逆输运质量张量变换",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass(Transport-vector)",
-        "desc": "激活 1D 逆输运质量张量变换"
+        "desc": "激活 1D 逆输运质量张量变换",
+        "type": "flag"
       },
       {
         "name": "Scattering",
-        "desc": "具有体区间散射的应变诱导子带模型"
+        "desc": "具有体区间散射的应变诱导子带模型",
+        "type": "flag"
       },
       {
         "name": "Scattering(MLDA)",
-        "desc": "具有界面散射 (MLDA) 的应变诱导子带模型"
+        "desc": "具有界面散射 (MLDA) 的应变诱导子带模型",
+        "type": "flag"
       },
       {
         "name": "BalMob",
-        "desc": "应力引起的空穴弹道迁移率变化"
+        "desc": "应力引起的空穴弹道迁移率变化",
+        "type": "flag"
       },
       {
         "name": "NoStressInDDmob",
-        "desc": "仅考虑弹道迁移率，忽略漂移-扩散迁移率中的应力"
+        "desc": "仅考虑弹道迁移率，忽略漂移-扩散迁移率中的应力",
+        "type": "flag"
       },
       {
         "name": "EqRefMob",
-        "desc": "为转移载流子模型激活平衡参考迁移率计算"
+        "desc": "为转移载流子模型激活平衡参考迁移率计算",
+        "type": "flag"
       },
       {
         "name": "-RelChDir110",
-        "desc": "在参考迁移率中使用 <100> 沟道方向"
+        "desc": "在参考迁移率中使用 <100> 沟道方向",
+        "type": "flag"
       },
       {
         "name": "-AutoOrientation",
-        "desc": "使用全张量参考迁移率"
+        "desc": "使用全张量参考迁移率",
+        "type": "flag"
       }
     ],
     "keywords": [

@@ -34147,51 +34147,63 @@
     "parameters": [
       {
         "name": "Doping",
-        "desc": "Strain-induced subband model with doping dependency"
+        "desc": "Strain-induced subband model with doping dependency",
+        "type": "flag"
       },
       {
         "name": "Fermi",
-        "desc": "Strain-induced subband model with carrier concentration (Fermi statistics) dependency"
+        "desc": "Strain-induced subband model with carrier concentration (Fermi statistics) dependency",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass",
-        "desc": "Stress-induced change of electron effective mass"
+        "desc": "Stress-induced change of electron effective mass",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass(-Transport)",
-        "desc": "Exclude 2D inverse transport mass tensor transformation"
+        "desc": "Exclude 2D inverse transport mass tensor transformation",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass(Transport-vector)",
-        "desc": "Activate 1D inverse transport mass tensor transformation"
+        "desc": "Activate 1D inverse transport mass tensor transformation",
+        "type": "flag"
       },
       {
         "name": "Scattering",
-        "desc": "Strain-induced subband model with bulk intervalley scattering"
+        "desc": "Strain-induced subband model with bulk intervalley scattering",
+        "type": "flag"
       },
       {
         "name": "Scattering(MLDA)",
-        "desc": "Strain-induced subband model with interface scattering (MLDA)"
+        "desc": "Strain-induced subband model with interface scattering (MLDA)",
+        "type": "flag"
       },
       {
         "name": "BalMob",
-        "desc": "Stress-induced change of electron ballistic mobility"
+        "desc": "Stress-induced change of electron ballistic mobility",
+        "type": "flag"
       },
       {
         "name": "NoStressInDDmob",
-        "desc": "Account for only ballistic mobility, ignoring stress in drift-diffusion mobility"
+        "desc": "Account for only ballistic mobility, ignoring stress in drift-diffusion mobility",
+        "type": "flag"
       },
       {
         "name": "EqRefMob",
-        "desc": "Activate equilibrium reference mobility computation for transferred carrier model"
+        "desc": "Activate equilibrium reference mobility computation for transferred carrier model",
+        "type": "flag"
       },
       {
         "name": "-RelChDir110",
-        "desc": "Use <100> channel direction in reference mobility"
+        "desc": "Use <100> channel direction in reference mobility",
+        "type": "flag"
       },
       {
         "name": "-AutoOrientation",
-        "desc": "Use full tensor reference mobility"
+        "desc": "Use full tensor reference mobility",
+        "type": "flag"
       }
     ],
     "keywords": [
@@ -36983,51 +36995,63 @@
     "parameters": [
       {
         "name": "Doping",
-        "desc": "Strain-induced subband model with doping dependency"
+        "desc": "Strain-induced subband model with doping dependency",
+        "type": "flag"
       },
       {
         "name": "Fermi",
-        "desc": "Strain-induced subband model with carrier concentration (Fermi statistics) dependency"
+        "desc": "Strain-induced subband model with carrier concentration (Fermi statistics) dependency",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass",
-        "desc": "Stress-induced change of hole effective mass"
+        "desc": "Stress-induced change of hole effective mass",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass(-Transport)",
-        "desc": "Exclude 2D inverse transport mass tensor transformation"
+        "desc": "Exclude 2D inverse transport mass tensor transformation",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass(Transport-vector)",
-        "desc": "Activate 1D inverse transport mass tensor transformation"
+        "desc": "Activate 1D inverse transport mass tensor transformation",
+        "type": "flag"
       },
       {
         "name": "Scattering",
-        "desc": "Strain-induced subband model with bulk intervalley scattering"
+        "desc": "Strain-induced subband model with bulk intervalley scattering",
+        "type": "flag"
       },
       {
         "name": "Scattering(MLDA)",
-        "desc": "Strain-induced subband model with interface scattering (MLDA)"
+        "desc": "Strain-induced subband model with interface scattering (MLDA)",
+        "type": "flag"
       },
       {
         "name": "BalMob",
-        "desc": "Stress-induced change of hole ballistic mobility"
+        "desc": "Stress-induced change of hole ballistic mobility",
+        "type": "flag"
       },
       {
         "name": "NoStressInDDmob",
-        "desc": "Account for only ballistic mobility, ignoring stress in drift-diffusion mobility"
+        "desc": "Account for only ballistic mobility, ignoring stress in drift-diffusion mobility",
+        "type": "flag"
       },
       {
         "name": "EqRefMob",
-        "desc": "Activate equilibrium reference mobility computation for transferred carrier model"
+        "desc": "Activate equilibrium reference mobility computation for transferred carrier model",
+        "type": "flag"
       },
       {
         "name": "-RelChDir110",
-        "desc": "Use <100> channel direction in reference mobility"
+        "desc": "Use <100> channel direction in reference mobility",
+        "type": "flag"
       },
       {
         "name": "-AutoOrientation",
-        "desc": "Use full tensor reference mobility"
+        "desc": "Use full tensor reference mobility",
+        "type": "flag"
       }
     ],
     "keywords": [
