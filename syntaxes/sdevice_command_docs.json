@@ -35383,7 +35383,9 @@
     "signature": "Plot { hBand2BandGeneration }",
     "description": "Scalar plot variable representing the hole contribution to band-to-band tunneling generation rate from the dynamic nonlocal path model. Units: cm^-3 s^-1.",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hBand2BandGeneration"
+    ],
     "example": "Plot { hBand2BandGeneration }",
     "contexts": {}
   },
@@ -35517,7 +35519,10 @@
     "signature": "Plot { hBreakdownProbability }",
     "description": "Plot variable related to the hole contribution to avalanche breakdown probability analysis.",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hBreakdownProbability",
+      "jBreakdownProbability"
+    ],
     "example": "Plot { hBreakdownProbability }",
     "contexts": {}
   },
@@ -35584,7 +35589,10 @@
     "signature": "Plot { hDeformationPotential }",
     "description": "Scalar plot variable representing the hole deformation potential from the deformation potential model for stress-dependent band structure. Units: eV.",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hDeformationPotential",
+      "DeformationPotential"
+    ],
     "example": "Plot { hDeformationPotential }",
     "contexts": {}
   },
@@ -35604,7 +35612,11 @@
     "signature": "QWLocal { hDensityCorrection } or Band2Band { DensityCorrection=Local }",
     "description": "Activates hole quantization effects in quantum well models or enables density correction in band-to-band tunneling models.",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hDensityCorrection",
+      "QWLocal",
+      "ElectricFieldDep"
+    ],
     "example": "Physics {\n  Active(Type=QuantumWell)\n  QWLocal { hDensityCorrection }\n}",
     "contexts": {
       "QWLocal": "Activate hole quantization model in the quantum well for computing density correction effects on carrier concentrations.",
@@ -35625,7 +35637,11 @@
     "signature": "Plot { hDiffusivity }",
     "description": "Plot variable related to hole diffusivity. In the context of non-Einstein diffusivity model, this represents the hole diffusivity derived from mobility.",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hDiffusivity",
+      "Diffusivity",
+      "hMobility"
+    ],
     "example": "Plot { hDiffusivity }",
     "contexts": {}
   },
@@ -35697,7 +35713,10 @@
     "signature": "Plot { hEnormal }",
     "description": "Scalar plot variable representing the electric field component perpendicular to the interface (F_p_perp, Equation 336 or Equation 337) or the normal field for holes. Units: V/cm.",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hEnormal",
+      "Enormal"
+    ],
     "example": "Plot { hEnormal }",
     "contexts": {}
   },
@@ -35706,7 +35725,10 @@
     "signature": "Plot { hEparallel }",
     "description": "Scalar plot variable representing the electric field parallel to the hole current (F_p, Equation 363). Units: V/cm.",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hEparallel",
+      "Eparallel"
+    ],
     "example": "Plot { hEparallel }",
     "contexts": {}
   },
@@ -36565,7 +36587,10 @@
     "signature": "hQuasiFermiPotential",
     "description": "Scalar plot data for the hole quasi-Fermi potential (Phi_p), the quantity solved by the hole continuity equation. It drives hole transport and is defined such that the hole concentration p = NV * exp(-(E_V - E_F,p) / kT) under Boltzmann statistics.",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hQuasiFermiPotential",
+      "hQuasiFermiEnergy"
+    ],
     "example": "Plot { hQuasiFermiPotential }",
     "contexts": {}
   },
@@ -36583,7 +36608,12 @@
     "signature": "hRecGenHeat",
     "description": "Scalar plot data for the hole generation-recombination heat source term (H_p). This term accounts for the energy exchange between the hole system and the lattice due to generation and recombination processes in the hydrodynamic model.",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hRecGenHeat",
+      "lRecGenHeat",
+      "RecGenHeat",
+      "Hydrodynamic"
+    ],
     "example": "Plot { hRecGenHeat }",
     "contexts": {}
   },
@@ -36689,7 +36719,11 @@
     "signature": "hSRHRecombination",
     "description": "Scalar plot data for the hole recombination rate from the Shockley-Read-Hall (SRH) model. When trap-assisted tunneling (NonlocalPath) is active, this includes the nonlocal tunneling enhancement contribution to the hole SRH recombination rate.",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hSRHRecombination",
+      "tSRHRecombination",
+      "SRH"
+    ],
     "example": "Plot { hSRHRecombination }",
     "contexts": {}
   },
@@ -36704,7 +36738,11 @@
         "desc": "Scalar calibration factor alpha. Default is 1. Range 0 to 1 typical. 0 = stress affects only low-field mobility; 1 = stress affects total mobility."
       }
     ],
-    "keywords": [],
+    "keywords": [
+      "hSaturationFactor",
+      "SaturationFactor",
+      "Mobility"
+    ],
     "example": "Physics {\n  Piezo(Model(Mobility(hSaturationFactor=0.5)))\n}",
     "contexts": {}
   },

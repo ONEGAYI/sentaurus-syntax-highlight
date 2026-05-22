@@ -34557,7 +34557,9 @@
     "signature": "Plot { hBand2BandGeneration }",
     "description": "标量绘图变量，表示来自动态非局域路径模型的空穴对带间隧穿产生率的贡献。单位：cm^-3 s^-1。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hBand2BandGeneration"
+    ],
     "example": "Plot { hBand2BandGeneration }"
   },
   "hBandEdgeShift": {
@@ -34689,7 +34691,10 @@
     "signature": "Plot { hBreakdownProbability }",
     "description": "绘制与空穴对雪崩击穿概率分析的贡献相关的变量。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hBreakdownProbability",
+      "jBreakdownProbability"
+    ],
     "example": "Plot { hBreakdownProbability }"
   },
   "hCDL1Lifetime": {
@@ -34752,7 +34757,10 @@
     "signature": "Plot { hDeformationPotential }",
     "description": "标量绘图变量，表示来自应力相关能带结构的形变势模型中的空穴形变势。单位：eV。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hDeformationPotential",
+      "DeformationPotential"
+    ],
     "example": "Plot { hDeformationPotential }"
   },
   "hDensity": {
@@ -34771,7 +34779,11 @@
     "signature": "QWLocal { hDensityCorrection } or Band2Band { DensityCorrection=Local }",
     "description": "在量子阱模型中激活空穴量子化效应，或在带间隧穿模型中启用密度校正。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hDensityCorrection",
+      "QWLocal",
+      "ElectricFieldDep"
+    ],
     "contexts": {
       "QWLocal": "在量子阱中激活空穴量子化模型，用于计算载流子浓度的密度校正效应。",
       "Band2Band": "使用Schenk密度校正计算空穴带间隧穿速率。"
@@ -34791,7 +34803,11 @@
     "signature": "Plot { hDiffusivity }",
     "description": "与空穴扩散率相关的绘图变量。在非爱因斯坦扩散率模型的上下文中，表示由迁移率导出的空穴扩散率。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hDiffusivity",
+      "Diffusivity",
+      "hMobility"
+    ],
     "example": "Plot { hDiffusivity }"
   },
   "hDiffusivityMobility": {
@@ -34856,7 +34872,10 @@
     "signature": "Plot { hEnormal }",
     "description": "表示垂直于界面的电场分量（F_p_perp，公式336或公式337）或空穴的法向场的标量绘图变量。单位：V/cm。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hEnormal",
+      "Enormal"
+    ],
     "example": "Plot { hEnormal }"
   },
   "hEparallel": {
@@ -34864,7 +34883,10 @@
     "signature": "Plot { hEparallel }",
     "description": "表示平行于空穴电流的电场（F_p，公式363）的标量绘图变量。单位：V/cm。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hEparallel",
+      "Eparallel"
+    ],
     "example": "Plot { hEparallel }"
   },
   "hEquilibriumDensity": {
@@ -35689,7 +35711,10 @@
     "signature": "hQuasiFermiPotential",
     "description": "输出孔准费米势 (Phi_p) 的标量绘图数据，该量由孔连续性方程求解。它驱动孔输运，在玻尔兹曼统计下定义为孔浓度 p = NV * exp(-(E_V - E_F,p) / kT)。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hQuasiFermiPotential",
+      "hQuasiFermiEnergy"
+    ],
     "example": "Plot { hQuasiFermiPotential }"
   },
   "hQuenching": {
@@ -35705,7 +35730,12 @@
     "signature": "hRecGenHeat",
     "description": "输出孔产生-复合热源项 (H_p) 的标量绘图数据。该项考虑了在流体动力学模型中，孔系统与晶格之间由于产生和复合过程而产生的能量交换。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hRecGenHeat",
+      "lRecGenHeat",
+      "RecGenHeat",
+      "Hydrodynamic"
+    ],
     "example": "Plot { hRecGenHeat }"
   },
   "hRecVelocity": {
@@ -35805,7 +35835,11 @@
     "signature": "hSRHRecombination",
     "description": "输出肖克利-里德-霍尔 (SRH) 模型孔复合率的标量绘图数据。当激活陷阱辅助隧穿 (NonlocalPath) 时，该值包括孔SRH复合率的非局域隧穿增强贡献。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hSRHRecombination",
+      "tSRHRecombination",
+      "SRH"
+    ],
     "example": "Plot { hSRHRecombination }"
   },
   "hSaturationFactor": {
@@ -35819,7 +35853,11 @@
         "desc": "标量校准因子alpha。默认值为1。典型范围0到1。0=应力仅影响低场迁移率；1=应力影响总迁移率。类型: float"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      "hSaturationFactor",
+      "SaturationFactor",
+      "Mobility"
+    ],
     "example": "Physics {\n  Piezo(Model(Mobility(hSaturationFactor=0.5)))\n}"
   },
   "hSaturationVelocity": {
