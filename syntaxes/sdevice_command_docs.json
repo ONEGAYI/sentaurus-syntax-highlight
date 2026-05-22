@@ -9208,16 +9208,66 @@
     "description": "Coefficient for averaged extrapolation factor estimation in Cyclic analysis. Used within Extrapolate in the Cyclic section of Solve. Controls the relaxation of the averaged factor used for cyclic extrapolation. The corresponding output variables are eFactor and hFactor.",
     "parameters": [
       {
-        "name": "Factor",
-        "type": "float",
-        "desc": "Coefficient f for averaged factor estimation. Default: 1."
+        "name": "FirstOrder",
+        "type": "flag",
+        "desc": "Use the first-order piezoresistance model (default)."
+      },
+      {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "Use the second-order piezoresistance model for higher accuracy under large stress."
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "Include temperature and doping dependency in piezoresistance coefficients."
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "Name of a predefined piezoresistance parameter set from the parameter file."
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "Use parameter set based on orientation of nearest interface instead of fixed orientation."
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "Name of PMI model to compute a mobility enhancement stress factor (isotropic factor model only)."
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "Dataset or PMI model name for the spatial distribution of the mobility enhancement factor."
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "Use the effective stress factor model."
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "Apply the Factor model enhancement to individual mobility components."
+      },
+      {
+        "name": "ChannelDirection",
+        "type": "int",
+        "desc": "Channel direction (1-3), determines which tensor component to use. Default is 1."
       }
     ],
     "keywords": [
-      "Cyclic",
-      "Extrapolate",
-      "Average",
-      "extrapolation factor"
+      "FirstOrder",
+      "SecondOrder",
+      "Kanda",
+      "ParameterSetName",
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "ChannelDirection"
     ],
     "example": "Solve {\n  Quasistationary (\n    Goal { Name=\"gate\" Voltage=1.0 }\n    Cyclic (\n      Extrapolate ( Average Factor=0.8 )\n    )\n  ) { Coupled { Poisson Electron Hole } }\n}",
     "contexts": {
@@ -28317,16 +28367,66 @@
     "description": "Activates a PMI-based piezoresistive mobility model that applies a tensor (full matrix) stress factor to carrier mobility, as opposed to a simple scalar prefactor. The corresponding output variables are eTensor and hTensor.",
     "parameters": [
       {
-        "name": "pmi_model",
+        "name": "FirstOrder",
+        "type": "flag",
+        "desc": "Use the first-order piezoresistance model (default)."
+      },
+      {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "Use the second-order piezoresistance model for higher accuracy under large stress."
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "Include temperature and doping dependency in piezoresistance coefficients."
+      },
+      {
+        "name": "ParameterSetName",
         "type": "string",
-        "desc": "Name of the PMI model implementing the piezoresistive tensor. Must be a valid PMI_PiezoresistanceFactor model."
+        "desc": "Name of a predefined piezoresistance parameter set from the parameter file."
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "Use parameter set based on orientation of nearest interface instead of fixed orientation."
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "Name of PMI model to compute piezoresistive prefactors (first-order model only)."
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "Dataset or PMI model name for the spatial distribution of the mobility enhancement factor."
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "Use the effective stress factor model."
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "Apply the Factor model enhancement to individual mobility components."
+      },
+      {
+        "name": "Enormal",
+        "type": "flag",
+        "desc": "Use piezoresistive prefactors with dependency on electric field normal to interface and mole fraction."
       }
     ],
     "keywords": [
-      "Piezo",
-      "Model",
-      "Mobility",
-      "Tensor"
+      "FirstOrder",
+      "SecondOrder",
+      "Kanda",
+      "ParameterSetName",
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "Enormal"
     ],
     "example": "Physics {\n  Piezo ( Model ( Mobility ( Tensor ( \"piezo_tensor_model\" ) ) ) )\n}"
   },
@@ -32776,16 +32876,66 @@
     "description": "Specifies the piezoresistance mobility factor model for electrons. The eFactor (and hFactor for holes) is used in piezoresistance mobility models to compute mobility degradation or enhancement due to mechanical stress. It supports named parameter sets and the auto-orientation framework, where parameter sets are automatically selected based on the surface orientation of the nearest interface.",
     "parameters": [
       {
+        "name": "FirstOrder",
+        "type": "flag",
+        "desc": "Use the first-order piezoresistance model (default)."
+      },
+      {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "Use the second-order piezoresistance model for higher accuracy under large stress."
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "Include temperature and doping dependency in piezoresistance coefficients."
+      },
+      {
         "name": "ParameterSetName",
-        "description": "Named parameter set for piezoresistance factor model"
+        "type": "string",
+        "desc": "Name of a predefined piezoresistance parameter set from the parameter file."
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "Use parameter set based on orientation of nearest interface instead of fixed orientation."
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "Name of PMI model to compute a mobility enhancement stress factor (isotropic factor model only)."
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "Dataset or PMI model name for the spatial distribution of the mobility enhancement factor."
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "Use the effective stress factor model."
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "Apply the Factor model enhancement to individual mobility components."
+      },
+      {
+        "name": "ChannelDirection",
+        "type": "int",
+        "desc": "Channel direction (1-3), determines which tensor component to use. Default is 1."
       }
     ],
     "keywords": [
-      "eFactor",
-      "hFactor",
-      "Piezo",
-      "Mobility",
-      "AutoOrientation"
+      "FirstOrder",
+      "SecondOrder",
+      "Kanda",
+      "ParameterSetName",
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "ChannelDirection"
     ],
     "example": "Physics {\n  Piezo(Mobility(Factor(eFactor(ParameterSetName=\"myPiezoSet\"))))\n}",
     "contexts": {}
@@ -34097,24 +34247,14 @@
     "description": "Piezoresistive tensor for electrons, used to compute stress-dependent mobility enhancement within the Piezo section under Model(Mobility(...)). Specifies how the electron mobility tensor responds to mechanical stress through piezoresistive coefficients. See also Tensor for the unified model and hTensor for the hole variant.",
     "parameters": [
       {
-        "name": "ident",
-        "type": "string",
-        "desc": "Name of PMI model to compute piezoresistive prefactors. If specified, the first-order piezoresistance tensor model is used."
-      },
-      {
-        "name": "AutoOrientation",
-        "type": "flag",
-        "desc": "Use parameter set based on orientation of nearest interface instead of fixed orientation."
-      },
-      {
-        "name": "Enormal",
-        "type": "flag",
-        "desc": "Use piezoresistive prefactors with dependency on electric field normal to interface and mole fraction."
-      },
-      {
         "name": "FirstOrder",
         "type": "flag",
         "desc": "Use the first-order piezoresistance model (default)."
+      },
+      {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "Use the second-order piezoresistance model for higher accuracy under large stress."
       },
       {
         "name": "Kanda",
@@ -34127,24 +34267,46 @@
         "desc": "Name of a predefined piezoresistance parameter set from the parameter file."
       },
       {
-        "name": "SecondOrder",
+        "name": "AutoOrientation",
         "type": "flag",
-        "desc": "Use the second-order piezoresistance model for higher accuracy under large stress."
+        "desc": "Use parameter set based on orientation of nearest interface instead of fixed orientation."
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "Name of PMI model to compute piezoresistive prefactors (first-order model only)."
       },
       {
         "name": "SFactor",
-        "type": "string|ident",
+        "type": "string",
         "desc": "Dataset or PMI model name for the spatial distribution of the mobility enhancement factor."
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "Use the effective stress factor model."
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "Apply the Factor model enhancement to individual mobility components."
+      },
+      {
+        "name": "Enormal",
+        "type": "flag",
+        "desc": "Use piezoresistive prefactors with dependency on electric field normal to interface and mole fraction."
       }
     ],
     "keywords": [
-      "AutoOrientation",
-      "Enormal",
       "FirstOrder",
+      "SecondOrder",
       "Kanda",
       "ParameterSetName",
-      "SecondOrder",
-      "SFactor"
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "Enormal"
     ],
     "example": "Physics {\n  Piezo(\n    Model(Mobility(eTensor(ParameterSetName=\"Silicon_eTensor\")))\n  )\n}"
   },
@@ -35755,61 +35917,63 @@
       {
         "name": "FirstOrder",
         "type": "flag",
-        "desc": "Use first-order piezoresistance model (default)."
+        "desc": "Use the first-order piezoresistance model (default)."
       },
       {
         "name": "SecondOrder",
         "type": "flag",
-        "desc": "Use second-order piezoresistance model."
+        "desc": "Use the second-order piezoresistance model for higher accuracy under large stress."
       },
       {
-        "name": "EffectiveStressModel",
+        "name": "Kanda",
         "type": "flag",
-        "desc": "Use effective stress factor model."
+        "desc": "Include temperature and doping dependency in piezoresistance coefficients."
       },
       {
-        "name": "<pmi_model>",
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "Name of a predefined piezoresistance parameter set from the parameter file."
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "Use parameter set based on orientation of nearest interface instead of fixed orientation."
+      },
+      {
+        "name": "<ident>",
         "type": "ident",
-        "desc": "Name of PMI model to compute mobility enhancement stress factor."
+        "desc": "Name of PMI model to compute a mobility enhancement stress factor (isotropic factor model only)."
       },
       {
         "name": "SFactor",
         "type": "string",
-        "desc": "Dataset name or PMI model for spatial distribution of mobility enhancement factor."
+        "desc": "Dataset or PMI model name for the spatial distribution of the mobility enhancement factor."
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "Use the effective stress factor model."
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "Apply the Factor model enhancement to individual mobility components."
       },
       {
         "name": "ChannelDirection",
         "type": "int",
         "desc": "Channel direction (1-3), determines which tensor component to use. Default is 1."
-      },
-      {
-        "name": "Kanda",
-        "type": "flag",
-        "desc": "Include temperature and doping dependency."
-      },
-      {
-        "name": "AutoOrientation",
-        "type": "flag",
-        "desc": "Automatically select parameter set based on nearest interface orientation."
-      },
-      {
-        "name": "ParameterSetName",
-        "type": "string",
-        "desc": "Name of parameter set to use."
-      },
-      {
-        "name": "ApplyToMobilityComponents",
-        "type": "flag",
-        "desc": "Apply the factor enhancement to individual mobility components."
       }
     ],
     "keywords": [
-      "hFactor",
-      "Piezo",
-      "Mobility",
-      "Factor",
-      "AutoOrientation",
+      "FirstOrder",
+      "SecondOrder",
       "Kanda",
+      "ParameterSetName",
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
       "ChannelDirection"
     ],
     "example": "Physics {\n  Piezo (\n    Model (\n      Mobility (hFactor AutoOrientation)\n    )\n  )\n}",
@@ -36849,17 +37013,68 @@
     "section": "Physics",
     "signature": "Physics { Piezo(Model(Mobility(hTensor[(<named_param_set>)]))) }",
     "description": "Selects the anisotropic piezoresistance tensor model for hole mobility only. Computes mobility enhancement based on a full tensor expansion in terms of stress. Alternatively, the Tensor keyword applies this model to both electrons and holes. See also eTensor for the electron variant.",
-    "parameters": [],
+    "parameters": [
+      {
+        "name": "FirstOrder",
+        "type": "flag",
+        "desc": "Use the first-order piezoresistance model (default)."
+      },
+      {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "Use the second-order piezoresistance model for higher accuracy under large stress."
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "Include temperature and doping dependency in piezoresistance coefficients."
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "Name of a predefined piezoresistance parameter set from the parameter file."
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "Use parameter set based on orientation of nearest interface instead of fixed orientation."
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "Name of PMI model to compute piezoresistive prefactors (first-order model only)."
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "Dataset or PMI model name for the spatial distribution of the mobility enhancement factor."
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "Use the effective stress factor model."
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "Apply the Factor model enhancement to individual mobility components."
+      },
+      {
+        "name": "Enormal",
+        "type": "flag",
+        "desc": "Use piezoresistive prefactors with dependency on electric field normal to interface and mole fraction."
+      }
+    ],
     "keywords": [
-      "hTensor",
-      "Tensor",
-      "eTensor",
       "FirstOrder",
       "SecondOrder",
-      "Enormal",
       "Kanda",
       "ParameterSetName",
-      "AutoOrientation"
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "Enormal"
     ],
     "example": "Physics {\n  Piezo (\n    Model (\n      Mobility (hTensor)\n    )\n  )\n}",
     "contexts": {}

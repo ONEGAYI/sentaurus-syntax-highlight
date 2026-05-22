@@ -8950,16 +8950,66 @@
     "description": "在 Cycle 分析中，用于平均外推因子估计的系数。在 Solve 的 Cyclic 部分中，在 Extrapolate 内使用。控制用于循环外推的平均因子的松弛。. 对应的输出变量为 eFactor 和 hFactor。",
     "parameters": [
       {
-        "name": "Factor",
-        "type": "float",
-        "desc": "用于平均因子估计的系数 f。默认值：1。"
+        "name": "FirstOrder",
+        "type": "flag",
+        "desc": "使用一阶压阻模型（默认）。"
+      },
+      {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "使用二阶压阻模型，在大应力下精度更高。"
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "在压阻系数中包含温度和掺杂依赖。"
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "参数文件中预定义的压阻参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近界面方向自动选择参数集。"
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "计算迁移率增强应力因子的 PMI 模型名称（仅各向同性因子模型）。"
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "迁移率增强因子空间分布的数据集或 PMI 模型名称。"
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "使用有效应力因子模型。"
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "将 Factor 模型增强应用到单独的迁移率分量。"
+      },
+      {
+        "name": "ChannelDirection",
+        "type": "int",
+        "desc": "通道方向（1-3），决定使用哪个张量分量。默认为 1。"
       }
     ],
     "keywords": [
-      "Cyclic",
-      "Extrapolate",
-      "Average",
-      "extrapolation factor"
+      "FirstOrder",
+      "SecondOrder",
+      "Kanda",
+      "ParameterSetName",
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "ChannelDirection"
     ],
     "contexts": {
       "Cyclic": "在 Cyclic 分析的 Extrapolate 子选项内"
@@ -27560,16 +27610,66 @@
     "description": "激活基于PMI的压阻迁移率模型，该模型对载流子迁移率应用张量（全矩阵）应力因子，而不是简单的标量前置因子。. 对应的输出变量为 eTensor 和 hTensor。",
     "parameters": [
       {
-        "name": "pmi_model",
+        "name": "FirstOrder",
+        "type": "flag",
+        "desc": "使用一阶压阻模型（默认）。"
+      },
+      {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "使用二阶压阻模型，在大应力下精度更高。"
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "在压阻系数中包含温度和掺杂依赖。"
+      },
+      {
+        "name": "ParameterSetName",
         "type": "string",
-        "desc": "实现压阻张量的PMI模型名称。必须是有效的PMI_PiezoresistanceFactor模型。"
+        "desc": "参数文件中预定义的压阻参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近界面方向自动选择参数集。"
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "计算压阻系数的 PMI 模型名称（仅一阶模型）。"
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "迁移率增强因子空间分布的数据集或 PMI 模型名称。"
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "使用有效应力因子模型。"
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "将 Factor 模型增强应用到单独的迁移率分量。"
+      },
+      {
+        "name": "Enormal",
+        "type": "flag",
+        "desc": "使用依赖于界面法向电场和摩尔分数的压阻系数。"
       }
     ],
     "keywords": [
-      "Piezo",
-      "Model",
-      "Mobility",
-      "Tensor"
+      "FirstOrder",
+      "SecondOrder",
+      "Kanda",
+      "ParameterSetName",
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "Enormal"
     ],
     "example": "Physics {\n  Piezo ( Model ( Mobility ( Tensor ( \"piezo_tensor_model\" ) ) ) )\n}"
   },
@@ -31964,16 +32064,66 @@
     "description": "指定电子的压阻迁移率因子模型。eFactor（以及空穴的 hFactor）用于压阻迁移率模型，计算机械应力导致的迁移率退化或增强。支持命名参数集和自动取向框架，其中根据最近界面的表面取向自动选择参数集。",
     "parameters": [
       {
+        "name": "FirstOrder",
+        "type": "flag",
+        "desc": "使用一阶压阻模型（默认）。"
+      },
+      {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "使用二阶压阻模型，在大应力下精度更高。"
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "在压阻系数中包含温度和掺杂依赖。"
+      },
+      {
         "name": "ParameterSetName",
-        "desc": "参数集名称，引用预先定义的压阻参数集。"
+        "type": "string",
+        "desc": "参数文件中预定义的压阻参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近界面方向自动选择参数集。"
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "计算迁移率增强应力因子的 PMI 模型名称（仅各向同性因子模型）。"
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "迁移率增强因子空间分布的数据集或 PMI 模型名称。"
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "使用有效应力因子模型。"
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "将 Factor 模型增强应用到单独的迁移率分量。"
+      },
+      {
+        "name": "ChannelDirection",
+        "type": "int",
+        "desc": "通道方向（1-3），决定使用哪个张量分量。默认为 1。"
       }
     ],
     "keywords": [
-      "eFactor",
-      "hFactor",
-      "Piezo",
-      "Mobility",
-      "AutoOrientation"
+      "FirstOrder",
+      "SecondOrder",
+      "Kanda",
+      "ParameterSetName",
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "ChannelDirection"
     ],
     "example": "Physics {\n  Piezo(Mobility(Factor(eFactor(ParameterSetName=\"myPiezoSet\"))))\n}"
   },
@@ -33284,54 +33434,66 @@
     "description": "电子的压阻张量，用于在 Piezo 部分的 Model(Mobility(...)) 下计算应力依赖的迁移率增强。指定电子迁移率张量如何通过压阻系数响应机械应力。. 另见 Tensor（统一模型）和 hTensor（空穴变体）。",
     "parameters": [
       {
-        "name": "ident",
-        "type": "string",
-        "desc": "计算压阻预因子的 PMI 模型名称。如果指定，则使用一阶压阻张量模型。"
-      },
-      {
-        "name": "AutoOrientation",
-        "type": "flag",
-        "desc": "使用基于最近界面方向的参数集，而非固定方向。"
-      },
-      {
-        "name": "Enormal",
-        "type": "flag",
-        "desc": "使用具有界面法向电场和摩尔分数依赖性的压阻预因子。"
-      },
-      {
         "name": "FirstOrder",
         "type": "flag",
         "desc": "使用一阶压阻模型（默认）。"
       },
       {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "使用二阶压阻模型，在大应力下精度更高。"
+      },
+      {
         "name": "Kanda",
         "type": "flag",
-        "desc": "在压阻系数中包括温度和掺杂依赖性。"
+        "desc": "在压阻系数中包含温度和掺杂依赖。"
       },
       {
         "name": "ParameterSetName",
         "type": "string",
-        "desc": "来自参数文件的预定义压阻参数集的名称。"
+        "desc": "参数文件中预定义的压阻参数集名称。"
       },
       {
-        "name": "SecondOrder",
+        "name": "AutoOrientation",
         "type": "flag",
-        "desc": "使用二阶压阻模型，在大应力下获得更高精度。"
+        "desc": "根据最近界面方向自动选择参数集。"
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "计算压阻系数的 PMI 模型名称（仅一阶模型）。"
       },
       {
         "name": "SFactor",
-        "type": "string|ident",
+        "type": "string",
         "desc": "迁移率增强因子空间分布的数据集或 PMI 模型名称。"
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "使用有效应力因子模型。"
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "将 Factor 模型增强应用到单独的迁移率分量。"
+      },
+      {
+        "name": "Enormal",
+        "type": "flag",
+        "desc": "使用依赖于界面法向电场和摩尔分数的压阻系数。"
       }
     ],
     "keywords": [
-      "AutoOrientation",
-      "Enormal",
       "FirstOrder",
+      "SecondOrder",
       "Kanda",
       "ParameterSetName",
-      "SecondOrder",
-      "SFactor"
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "Enormal"
     ],
     "example": "Physics {\n  Piezo(\n    Model(Mobility(eTensor(ParameterSetName=\"Silicon_eTensor\")))\n  )\n}"
   },
@@ -34910,7 +35072,32 @@
       {
         "name": "SecondOrder",
         "type": "flag",
-        "desc": "使用二阶压阻模型。"
+        "desc": "使用二阶压阻模型，在大应力下精度更高。"
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "在压阻系数中包含温度和掺杂依赖。"
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "参数文件中预定义的压阻参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近界面方向自动选择参数集。"
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "计算迁移率增强应力因子的 PMI 模型名称（仅各向同性因子模型）。"
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "迁移率增强因子空间分布的数据集或 PMI 模型名称。"
       },
       {
         "name": "EffectiveStressModel",
@@ -34918,48 +35105,25 @@
         "desc": "使用有效应力因子模型。"
       },
       {
-        "name": "<pmi_model>",
-        "type": "ident",
-        "desc": "用于计算迁移率增强应力因子的PMI模型名称。"
-      },
-      {
-        "name": "SFactor",
-        "type": "string",
-        "desc": "迁移率增强因子空间分布的数据集名称或PMI模型。"
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "将 Factor 模型增强应用到单独的迁移率分量。"
       },
       {
         "name": "ChannelDirection",
         "type": "int",
-        "desc": "沟道方向（1-3），决定使用哪个张量分量。默认为1。"
-      },
-      {
-        "name": "Kanda",
-        "type": "flag",
-        "desc": "包含温度和掺杂依赖性。"
-      },
-      {
-        "name": "AutoOrientation",
-        "type": "flag",
-        "desc": "基于最近的界面方向自动选择参数集。"
-      },
-      {
-        "name": "ParameterSetName",
-        "type": "string",
-        "desc": "要使用的参数集名称。"
-      },
-      {
-        "name": "ApplyToMobilityComponents",
-        "type": "flag",
-        "desc": "将因子增强应用于各个迁移率分量。"
+        "desc": "通道方向（1-3），决定使用哪个张量分量。默认为 1。"
       }
     ],
     "keywords": [
-      "hFactor",
-      "Piezo",
-      "Mobility",
-      "Factor",
-      "AutoOrientation",
+      "FirstOrder",
+      "SecondOrder",
       "Kanda",
+      "ParameterSetName",
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
       "ChannelDirection"
     ],
     "example": "Physics {\n  Piezo (\n    Model (\n      Mobility (hFactor AutoOrientation)\n    )\n  )\n}"
@@ -35951,17 +36115,68 @@
     "section": "Physics",
     "signature": "Physics { Piezo(Model(Mobility(hTensor[(<named_param_set>)]))) }",
     "description": "仅选择空穴迁移率的各向异性压阻张量模型。基于应力全张量展开计算迁移率增强。另外，Tensor关键字将该模型应用于电子和空穴两者。另见 eTensor（电子变体）。",
-    "parameters": [],
+    "parameters": [
+      {
+        "name": "FirstOrder",
+        "type": "flag",
+        "desc": "使用一阶压阻模型（默认）。"
+      },
+      {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "使用二阶压阻模型，在大应力下精度更高。"
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "在压阻系数中包含温度和掺杂依赖。"
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "参数文件中预定义的压阻参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近界面方向自动选择参数集。"
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "计算压阻系数的 PMI 模型名称（仅一阶模型）。"
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "迁移率增强因子空间分布的数据集或 PMI 模型名称。"
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "使用有效应力因子模型。"
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "将 Factor 模型增强应用到单独的迁移率分量。"
+      },
+      {
+        "name": "Enormal",
+        "type": "flag",
+        "desc": "使用依赖于界面法向电场和摩尔分数的压阻系数。"
+      }
+    ],
     "keywords": [
-      "hTensor",
-      "Tensor",
-      "eTensor",
       "FirstOrder",
       "SecondOrder",
-      "Enormal",
       "Kanda",
       "ParameterSetName",
-      "AutoOrientation"
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "Enormal"
     ],
     "example": "Physics {\n  Piezo (\n    Model (\n      Mobility (hTensor)\n    )\n  )\n}"
   },
