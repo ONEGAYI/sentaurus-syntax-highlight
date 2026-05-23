@@ -8297,6 +8297,48 @@
     ],
     "example": ""
   },
+  "ErrEff": {
+    "section": "Math",
+    "signature": "ErrEff ( <quantity> ) = <float>",
+    "description": "ErrRef 的变体，建议使用更规范的 ErrRef。\n\n牛顿迭代中收敛控制的参考误差值。设置特定量（如 ErrEff(Electron)、ErrEff(Hole)）的相对误差计算的缩放因子。当误差低于此参考值时求解器收敛。",
+    "parameters": [],
+    "keywords": [
+      "ErrRef",
+      "Error",
+      "Digits",
+      "Newton",
+      "Convergence"
+    ],
+    "example": ""
+  },
+  "ErRef": {
+    "section": "Math",
+    "signature": "ErRef ( <quantity> ) = <float>",
+    "description": "ErrRef 的变体，建议使用更规范的 ErrRef。\n\n牛顿迭代中收敛控制的参考误差值。设置特定量（如 ErRef(Electron)、ErRef(Hole)）的相对误差计算的缩放因子。当误差低于此参考值时求解器收敛。",
+    "parameters": [],
+    "keywords": [
+      "ErrRef",
+      "Error",
+      "Digits",
+      "Newton",
+      "Convergence"
+    ],
+    "example": ""
+  },
+  "ErReff": {
+    "section": "Math",
+    "signature": "ErReff ( <quantity> ) = <float>",
+    "description": "ErrRef 的变体，建议使用更规范的 ErrRef。\n\n牛顿迭代中收敛控制的参考误差值。设置特定量（如 ErReff(Electron)、ErReff(Hole)）的相对误差计算的缩放因子。当误差低于此参考值时求解器收敛。",
+    "parameters": [],
+    "keywords": [
+      "ErrRef",
+      "Error",
+      "Digits",
+      "Newton",
+      "Convergence"
+    ],
+    "example": ""
+  },
   "Error": {
     "section": "Math",
     "signature": "Error [ ( <carrier> ) ] = <float>",
