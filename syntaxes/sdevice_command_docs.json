@@ -8540,6 +8540,48 @@
     ],
     "contexts": {}
   },
+  "ErrEff": {
+    "section": "Math",
+    "signature": "ErrEff ( <quantity> ) = <float>",
+    "description": "Variant of ErrRef. Using ErrRef is recommended.\n\nReference error value for convergence control in Newton iterations. Sets the scaling factor for relative error computation of a specific quantity (e.g., ErrEff(Electron), ErrEff(Hole)). The solver converges when the error drops below this reference.",
+    "parameters": [],
+    "keywords": [
+      "ErrRef",
+      "Error",
+      "Digits",
+      "Newton",
+      "Convergence"
+    ],
+    "contexts": {}
+  },
+  "ErRef": {
+    "section": "Math",
+    "signature": "ErRef ( <quantity> ) = <float>",
+    "description": "Variant of ErrRef. Using ErrRef is recommended.\n\nReference error value for convergence control in Newton iterations. Sets the scaling factor for relative error computation of a specific quantity (e.g., ErRef(Electron), ErRef(Hole)). The solver converges when the error drops below this reference.",
+    "parameters": [],
+    "keywords": [
+      "ErrRef",
+      "Error",
+      "Digits",
+      "Newton",
+      "Convergence"
+    ],
+    "contexts": {}
+  },
+  "ErReff": {
+    "section": "Math",
+    "signature": "ErReff ( <quantity> ) = <float>",
+    "description": "Variant of ErrRef. Using ErrRef is recommended.\n\nReference error value for convergence control in Newton iterations. Sets the scaling factor for relative error computation of a specific quantity (e.g., ErReff(Electron), ErReff(Hole)). The solver converges when the error drops below this reference.",
+    "parameters": [],
+    "keywords": [
+      "ErrRef",
+      "Error",
+      "Digits",
+      "Newton",
+      "Convergence"
+    ],
+    "contexts": {}
+  },
   "Error": {
     "section": "Math",
     "signature": "Error [ ( <carrier> ) ] = <float>",
