@@ -1215,7 +1215,7 @@
   "AugerRecombination": {
     "section": "Plot",
     "signature": "Plot { AugerRecombination }",
-    "description": "表示每个顶点处俄歇复合率 (RA) 的标量数据集。这是结合电子和空穴贡献的总俄歇复合率。",
+    "description": "表示每个顶点处俄歇复合率 (RA) 的标量数据集。这是结合电子和空穴贡献的总俄歇复合率。. 载流子专用配置参见 eAugerRecombination（电子）和 hAugerRecombination（空穴）。",
     "parameters": [],
     "keywords": [],
     "example": "Plot {\n  AugerRecombination\n}"
@@ -1440,7 +1440,7 @@
   "Avalanche": {
     "section": "Recombination",
     "signature": "Avalanche ( [<model>] )",
-    "description": "在 Physics Recombination section 中，启用碰撞电离（雪崩产生）。提供多种模型：vanOverstraeten（默认）、Okuto、Lackner、UniBo、UniBo2、Hatakeyama 或 PMI 模型。驱动力选项包括 GradQuasiFermi（默认）、ElectricField、Eparallel 和 CarrierTempDrive。",
+    "description": "在 Physics Recombination section 中，启用碰撞电离（雪崩产生）。提供多种模型：vanOverstraeten（默认）、Okuto、Lackner、UniBo、UniBo2、Hatakeyama 或 PMI 模型。驱动力选项包括 GradQuasiFermi（默认）、ElectricField、Eparallel 和 CarrierTempDrive。. 对应的输出变量为 eAvalanche 和 hAvalanche。",
     "parameters": [
       {
         "name": "BandgapDependence",
@@ -2003,7 +2003,7 @@
   "Band2BandGeneration": {
     "section": "Plot",
     "signature": "Plot { Band2BandGeneration }",
-    "description": "顶点上的标量绘图数据集。来自动态非局部路径带间隧穿模型的带间隧穿产生率（Gbb）。单位：cm^-3 s^-1。",
+    "description": "顶点上的标量绘图数据集。来自动态非局部路径带间隧穿模型的带间隧穿产生率（Gbb）。单位：cm^-3 s^-1。. 载流子专用配置参见 eBand2BandGeneration（电子）和 hBand2BandGeneration（空穴）。",
     "parameters": [],
     "keywords": [],
     "example": "Plot {\n  Band2BandGeneration\n}"
@@ -2263,7 +2263,7 @@
   "BarrierTunneling": {
     "section": "Physics",
     "signature": "BarrierTunneling [ <string> ] { mt = <float> ... }",
-    "description": "指定界面、接触和结处非局域隧穿的参数。定义隧穿有效质量 (mt) 和其他拟合参数。可应用于每种材料或已命名的非局域网格。",
+    "description": "指定界面、接触和结处非局域隧穿的参数。定义隧穿有效质量 (mt) 和其他拟合参数。可应用于每种材料或已命名的非局域网格。. 载流子专用配置参见 eBarrierTunneling（电子）和 hBarrierTunneling（空穴）。",
     "parameters": [],
     "keywords": [
       "tunneling",
@@ -2790,7 +2790,7 @@
   "BreakdownProbability": {
     "section": "Physics",
     "signature": "Physics { BreakdownProbability([InterpolatedDiscretization] [MinElectricField=<float>]) }",
-    "description": "控制准静态模拟的雪崩击穿概率计算。计算载流子在其通过倍增区域的路径中引发碰撞电离的概率。倍增区域由阈值电场定义（由MinElectricField控制，默认1e5 V/cm）。需要在Math部分设置AvalPostprocessing以将雪崩产生的载流子从器件方程中排除。",
+    "description": "控制准静态模拟的雪崩击穿概率计算。计算载流子在其通过倍增区域的路径中引发碰撞电离的概率。倍增区域由阈值电场定义（由MinElectricField控制，默认1e5 V/cm）。需要在Math部分设置AvalPostprocessing以将雪崩产生的载流子从器件方程中排除。. 对应的输出变量为 eBreakdownProbability 和 hBreakdownProbability。",
     "parameters": [
       {
         "name": "InterpolatedDiscretization",
@@ -4930,7 +4930,7 @@
   "Current": {
     "section": "Solve",
     "signature": "Current = <float>",
-    "description": "在混合模式或准静态仿真中指定接触边界条件的目标电流值。调整接触电压以达到指定电流。",
+    "description": "在混合模式或准静态仿真中指定接触边界条件的目标电流值。调整接触电压以达到指定电流。. 对应的输出变量为 eCurrent 和 hCurrent。",
     "parameters": [
       {
         "name": "contact",
@@ -4988,7 +4988,7 @@
   "CurrentDensity": {
     "section": "Solve",
     "signature": "CurrentDensity(DevName=<ident>, maxval=<float>)",
-    "description": "在BreakCriteria{}中，定义基于电流密度（A/cm^2）的中断判据。当电流密度超过指定的最大值时仿真停止。DevName标识混合模式仿真中的器件。",
+    "description": "在BreakCriteria{}中，定义基于电流密度（A/cm^2）的中断判据。当电流密度超过指定的最大值时仿真停止。DevName标识混合模式仿真中的器件。. 对应的输出变量为 eCurrentDensity 和 hCurrentDensity。",
     "parameters": [
       {
         "name": "DevName",
@@ -5578,7 +5578,7 @@
   "DeformationPotential": {
     "section": "Physics",
     "signature": "DeformationPotential( ekp | hkp | minimum | multivalley )",
-    "description": "Physics 的 LatticeParameters 子区段中的选项，用于指定形变势模型。控制如何计算应力/应变诱导的能带结构变化。ekp/hkp 分别使用 k.p 模型处理电子/空穴带形变势；minimum 使用最简单的模型；multivalley 将多谷能带结构变化传播到其他模型（如复合模型）。默认推荐：ekp 和 hkp 选项。",
+    "description": "Physics 的 LatticeParameters 子区段中的选项，用于指定形变势模型。控制如何计算应力/应变诱导的能带结构变化。ekp/hkp 分别使用 k.p 模型处理电子/空穴带形变势；minimum 使用最简单的模型；multivalley 将多谷能带结构变化传播到其他模型（如复合模型）。默认推荐：ekp 和 hkp 选项。. 对应的输出变量为 eDeformationPotential 和 hDeformationPotential。",
     "parameters": [
       {
         "name": "ekp",
@@ -5727,7 +5727,7 @@
   "Density": {
     "section": "Physics",
     "signature": "Density",
-    "description": "物理模型接口（PMI）中用于定义载流子密度计算的接口方法。用于获取电子或空穴密度值；是标准 PMI 接口和简化 PMI 接口中的核心函数之一。",
+    "description": "物理模型接口（PMI）中用于定义载流子密度计算的接口方法。用于获取电子或空穴密度值；是标准 PMI 接口和简化 PMI 接口中的核心函数之一。. 载流子专用配置参见 eDensity（电子）和 hDensity（空穴）。",
     "parameters": [],
     "keywords": [
       "PMI",
@@ -5740,7 +5740,7 @@
   "DensityCorrection": {
     "section": "Physics",
     "signature": "DensityCorrection=Local | None",
-    "description": "控制 SRH 或 Band2Band 复合模型中的局部密度修正。设置为 Local 时，启用 Schenk/Hurkx 隧道模型的局部密度修正；设置为 None（默认）时，禁用该修正。用于提高高场区域中陷阱辅助隧穿和带间隧穿的精度。",
+    "description": "控制 SRH 或 Band2Band 复合模型中的局部密度修正。设置为 Local 时，启用 Schenk/Hurkx 隧道模型的局部密度修正；设置为 None（默认）时，禁用该修正。用于提高高场区域中陷阱辅助隧穿和带间隧穿的精度。. 载流子专用配置参见 eDensityCorrection（电子）和 hDensityCorrection（空穴）。",
     "parameters": [
       {
         "name": "Local",
@@ -6240,7 +6240,7 @@
   "Diffusivity": {
     "section": "Physics",
     "signature": "Diffusivity=<string>",
-    "description": "PMI接口关键字，指定Physics部分HydrogenDiffusion中的自定义氢扩散率模型。<string>是PMI模型名称。扩散率形式为D_i*exp(-E_di/(kT))。该模型可依赖于电场强度、氢物种密度和晶格温度。",
+    "description": "PMI接口关键字，指定Physics部分HydrogenDiffusion中的自定义氢扩散率模型。<string>是PMI模型名称。扩散率形式为D_i*exp(-E_di/(kT))。该模型可依赖于电场强度、氢物种密度和晶格温度。. 对应的输出变量为 eDiffusivity 和 hDiffusivity。",
     "parameters": [
       {
         "name": "<string>",
@@ -8947,19 +8947,69 @@
   "Factor": {
     "section": "Math",
     "signature": "Factor=<float>",
-    "description": "在 Cycle 分析中，用于平均外推因子估计的系数。在 Solve 的 Cyclic 部分中，在 Extrapolate 内使用。控制用于循环外推的平均因子的松弛。",
+    "description": "在 Cycle 分析中，用于平均外推因子估计的系数。在 Solve 的 Cyclic 部分中，在 Extrapolate 内使用。控制用于循环外推的平均因子的松弛。. 对应的输出变量为 eFactor 和 hFactor。",
     "parameters": [
       {
-        "name": "Factor",
-        "type": "float",
-        "desc": "用于平均因子估计的系数 f。默认值：1。"
+        "name": "FirstOrder",
+        "type": "flag",
+        "desc": "使用一阶压阻模型（默认）。"
+      },
+      {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "使用二阶压阻模型，在大应力下精度更高。"
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "在压阻系数中包含温度和掺杂依赖。"
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "参数文件中预定义的压阻参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近界面方向自动选择参数集。"
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "计算迁移率增强应力因子的 PMI 模型名称（仅各向同性因子模型）。"
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "迁移率增强因子空间分布的数据集或 PMI 模型名称。"
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "使用有效应力因子模型。"
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "将 Factor 模型增强应用到单独的迁移率分量。"
+      },
+      {
+        "name": "ChannelDirection",
+        "type": "int",
+        "desc": "通道方向（1-3），决定使用哪个张量分量。默认为 1。"
       }
     ],
     "keywords": [
-      "Cyclic",
-      "Extrapolate",
-      "Average",
-      "extrapolation factor"
+      "FirstOrder",
+      "SecondOrder",
+      "Kanda",
+      "ParameterSetName",
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "ChannelDirection"
     ],
     "contexts": {
       "Cyclic": "在 Cyclic 分析的 Extrapolate 子选项内"
@@ -11147,7 +11197,7 @@
   "HeatFlux": {
     "section": "Physics",
     "signature": "HeatFlux { hf_n = <float> hf_p = <float> ... }",
-    "description": "流体动力学模型中的参数集，指定电子 (hf_n) 和空穴 (hf_p) 的热通量修正因子。用于能量依赖的 Peltier 系数模型，根据载流子能量修改热通量因子 Q。系数也可以定义为归一化载流子能量的有理多项式函数。",
+    "description": "流体动力学模型中的参数集，指定电子 (hf_n) 和空穴 (hf_p) 的热通量修正因子。用于能量依赖的 Peltier 系数模型，根据载流子能量修改热通量因子 Q。系数也可以定义为归一化载流子能量的有理多项式函数。. 对应的输出变量为 eHeatFlux 和 hHeatFlux。",
     "parameters": [],
     "keywords": [
       "Hydrodynamic",
@@ -11339,16 +11389,109 @@
   "HighFieldSaturation": {
     "section": "Physics",
     "signature": "HighFieldSaturation ( <options> )",
-    "description": "Mobility()或eMobility()/hMobility()中的高场饱和迁移率模型。使用Caughey-Thomas或TransferredElectronEffect公式模拟高电场下的速度饱和效应。空穴变体为hHighFieldSaturation。",
+    "description": "Mobility() 或 eMobility()/hMobility() 中的统一高场饱和迁移率模型。使用 Caughey-Thomas、TransferredElectronEffect 或其他公式模拟高电场下的速度饱和效应。载流子专用配置参见 eHighFieldSaturation（电子）和 hHighFieldSaturation（空穴）。",
     "keywords": [
       "Mobility",
-      "DopingDependence",
-      "ConstantMobility",
+      "eMobility",
+      "hMobility",
       "eHighFieldSaturation",
       "hHighFieldSaturation",
-      "CaugheyThomas"
+      "CaugheyThomas",
+      "TransferredElectronEffect",
+      "GradQuasiFermi",
+      "ParameterSetName",
+      "AutoOrientation",
+      "DopingDependence",
+      "ConstantMobility"
     ],
-    "example": ""
+    "example": "",
+    "parameters": [
+      {
+        "name": "CaugheyThomas",
+        "type": "flag",
+        "desc": "使用 Canali-Hänsch 模型（默认）。"
+      },
+      {
+        "name": "TransferredElectronEffect",
+        "type": "flag",
+        "desc": "使用转移电子模型。"
+      },
+      {
+        "name": "GradQuasiFermi",
+        "type": "flag",
+        "desc": "使用准费米势梯度作为驱动力（默认）。"
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "要使用的高场依赖性（HighFieldDependence）参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近的界面方向自动选择参数集。"
+      },
+      {
+        "name": "Eparallel",
+        "type": "flag",
+        "desc": "使用电流方向的电场作为驱动力。"
+      },
+      {
+        "name": "EparallelToInterface",
+        "type": "flag",
+        "desc": "使用最近的半导体-绝缘体界面平行方向的电场作为驱动力。"
+      },
+      {
+        "name": "ElectricField",
+        "type": "flag",
+        "desc": "使用电场作为驱动力。"
+      },
+      {
+        "name": "CarrierTempDrive",
+        "type": "flag",
+        "desc": "载流子温度驱动力（流体动力学模拟的默认值）。"
+      },
+      {
+        "name": "CarrierTempDriveBasic",
+        "type": "flag",
+        "desc": "基础载流子温度驱动力模型。"
+      },
+      {
+        "name": "CarrierTempDriveME",
+        "type": "flag",
+        "desc": "Meinerzhagen-Engl 载流子温度驱动力模型。"
+      },
+      {
+        "name": "CarrierTempDrivePolynomial",
+        "type": "flag",
+        "desc": "使用无理多项式的能量依赖迁移率模型。"
+      },
+      {
+        "name": "CarrierTempDriveSpline",
+        "type": "flag",
+        "desc": "使用样条插值的能量依赖迁移率模型。"
+      },
+      {
+        "name": "TransferredElectronEffect2",
+        "type": "flag",
+        "desc": "替代转移电子模型。"
+      },
+      {
+        "name": "PFMob",
+        "type": "flag",
+        "desc": "使用 Poole-Frenkel 迁移率模型。"
+      },
+      {
+        "name": "VRHMob",
+        "type": "flag",
+        "desc": "使用变程跳跃迁移率模型。"
+      },
+      {
+        "name": "PMIModel",
+        "type": "sub",
+        "desc": "自定义双场 PMI 模型。接受 Name、Index 和 String 参数。"
+      }
+    ]
   },
   "Hole": {
     "section": "Physics",
@@ -12804,7 +12947,7 @@
   "IonIntegral": {
     "section": "File",
     "signature": "File { IonIntegral=<string> }",
-    "description": "指定雪崩击穿路径可视化输出的TDR文件名。Sentaurus Device将击穿路径以及沿路径的插值场变量写入指定的TDR文件。用于近似击穿分析中的路径可视化。",
+    "description": "指定雪崩击穿路径可视化输出的TDR文件名。Sentaurus Device将击穿路径以及沿路径的插值场变量写入指定的TDR文件。用于近似击穿分析中的路径可视化。. 对应的输出变量为 eIonIntegral 和 hIonIntegral。",
     "parameters": [
       {
         "name": "IonIntegral",
@@ -16294,7 +16437,7 @@
   "MultiValley": {
     "section": "Physics",
     "signature": "MultiValley",
-    "description": "激活多谷能带结构统计，用于精确模拟具有多个导带/价带极小值（例如Si的delta谷）的材料的载流子输运。默认关闭。",
+    "description": "激活多谷能带结构统计，用于精确模拟具有多个导带/价带极小值（例如Si的delta谷）的材料的载流子输运。默认关闭。. 载流子专用配置参见 eMultiValley（电子）和 hMultiValley（空穴）。",
     "parameters": [],
     "keywords": [
       "eMultivalley",
@@ -22594,7 +22737,7 @@
   "RecGenHeat": {
     "section": "Physics",
     "signature": "RecGenHeat",
-    "description": "在能量守恒方程中激活产生-复合热源。默认情况下这些项被排除；该关键词启用来自光学产生、碰撞电离和复合的 H_n、H_p 和 H_L 贡献。",
+    "description": "在能量守恒方程中激活产生-复合热源。默认情况下这些项被排除；该关键词启用来自光学产生、碰撞电离和复合的 H_n、H_p 和 H_L 贡献。. 对应的输出变量为 eRecGenHeat 和 hRecGenHeat。",
     "parameters": [
       {
         "name": "OptGenOffset",
@@ -24453,7 +24596,7 @@
   "SRHRecombination": {
     "section": "Plot",
     "signature": "Plot { SRHRecombination }",
-    "description": "用于可视化 Shockley-Read-Hall 复合速率的绘图关键字。将 SRH 复合速率作为空间分布量输出到绘图文件（.tdr）中。",
+    "description": "用于可视化 Shockley-Read-Hall 复合速率的绘图关键字。将 SRH 复合速率作为空间分布量输出到绘图文件（.tdr）中。. 载流子专用配置参见 eSRHRecombination（电子）和 hSRHRecombination（空穴）。",
     "parameters": [],
     "keywords": [
       "SRH",
@@ -24485,7 +24628,7 @@
       {
         "name": "value",
         "type": "float",
-        "desc": "饱和速度应力依赖性的缩放因子（默认1.0）"
+        "desc": "应力依赖饱和速度的缩放因子。默认 1.0（无应力效应）。"
       }
     ],
     "keywords": [
@@ -26762,7 +26905,7 @@
   "Subband": {
     "section": "Physics",
     "signature": "Subband { ... }",
-    "description": "定义量子阱模型的子带相关参数，包括用于LED和激光仿真以计算发射系数和增益谱的简单量子阱子带配置。",
+    "description": "定义量子阱模型的子带相关参数，包括用于LED和激光仿真以计算发射系数和增益谱的简单量子阱子带配置。. 载流子专用配置参见 eSubband（电子）和 hSubband（空穴）。",
     "parameters": [],
     "keywords": [],
     "example": "Physics {\n  LED {\n    Subband {\n      ...\n    }\n  }\n}"
@@ -27419,7 +27562,7 @@
   "Temperature": {
     "section": "Thermode",
     "signature": "Thermode { Temperature=<float> } | Goal { Temperature=<float> }",
-    "description": "指定开尔文温度值。在Thermode部分，设置热边界条件的接触温度。在Goal部分，设置准静态斜坡的目标温度。也用作许多物理模型中的通用参数名。",
+    "description": "指定开尔文温度值。在Thermode部分，设置热边界条件的接触温度。在Goal部分，设置准静态斜坡的目标温度。也用作许多物理模型中的通用参数名。. 对应的输出变量为 eTemperature 和 hTemperature。",
     "parameters": [
       {
         "name": "Temperature",
@@ -27464,19 +27607,69 @@
   "Tensor": {
     "section": "Physics",
     "signature": "Piezo ( Model ( Mobility ( Tensor ( <pmi_model> ) ) ) )",
-    "description": "激活基于PMI的压阻迁移率模型，该模型对载流子迁移率应用张量（全矩阵）应力因子，而不是简单的标量前置因子。",
+    "description": "激活基于PMI的压阻迁移率模型，该模型对载流子迁移率应用张量（全矩阵）应力因子，而不是简单的标量前置因子。. 对应的输出变量为 eTensor 和 hTensor。",
     "parameters": [
       {
-        "name": "pmi_model",
+        "name": "FirstOrder",
+        "type": "flag",
+        "desc": "使用一阶压阻模型（默认）。"
+      },
+      {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "使用二阶压阻模型，在大应力下精度更高。"
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "在压阻系数中包含温度和掺杂依赖。"
+      },
+      {
+        "name": "ParameterSetName",
         "type": "string",
-        "desc": "实现压阻张量的PMI模型名称。必须是有效的PMI_PiezoresistanceFactor模型。"
+        "desc": "参数文件中预定义的压阻参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近界面方向自动选择参数集。"
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "计算压阻系数的 PMI 模型名称（仅一阶模型）。"
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "迁移率增强因子空间分布的数据集或 PMI 模型名称。"
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "使用有效应力因子模型。"
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "将 Factor 模型增强应用到单独的迁移率分量。"
+      },
+      {
+        "name": "Enormal",
+        "type": "flag",
+        "desc": "使用依赖于界面法向电场和摩尔分数的压阻系数。"
       }
     ],
     "keywords": [
-      "Piezo",
-      "Model",
-      "Mobility",
-      "Tensor"
+      "FirstOrder",
+      "SecondOrder",
+      "Kanda",
+      "ParameterSetName",
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "Enormal"
     ],
     "example": "Physics {\n  Piezo ( Model ( Mobility ( Tensor ( \"piezo_tensor_model\" ) ) ) )\n}"
   },
@@ -27608,12 +27801,17 @@
   "Thermionic": {
     "section": "Physics",
     "signature": "Physics { [eThermionic] [hThermionic] Thermionic [(Organic_Gaussian)] }",
-    "description": "激活异质结界面处的热电子发射电流模型，用于载流子传输。该模型基于能带不连续性上的热电子发射理论计算电流密度。",
+    "description": "激活异质结界面处的热电子发射电流模型，用于载流子传输。该模型基于能带不连续性上的热电子发射理论计算电流密度。. 载流子专用配置参见 eThermionic（电子）和 hThermionic（空穴）。",
     "parameters": [
+      {
+        "name": "HCI",
+        "type": "flag",
+        "desc": "在界面处使用热载流子注入模型局部注入热载流子。"
+      },
       {
         "name": "Organic_Gaussian",
         "type": "flag",
-        "desc": "对有机异质结界面使用高斯传输模型，而非标准热电子发射。"
+        "desc": "对有机异质界面使用类热电子高斯发射模型。"
       }
     ],
     "keywords": [
@@ -31496,7 +31694,7 @@
   "eAugerRecombination": {
     "section": "Plot",
     "signature": "eAugerRecombination",
-    "description": "电子俄歇复合速率的标量绘图数据集。表示由于电子的俄歇过程产生的复合速率，公式为 R_A = C * (n*p*(n*p - ni^2))。",
+    "description": "电子俄歇复合速率的标量绘图数据集。表示由于电子的俄歇过程产生的复合速率，公式为 R_A = C * (n*p*(n*p - ni^2))。. 另见 AugerRecombination（统一模型）和 hAugerRecombination（空穴变体）。",
     "parameters": [],
     "keywords": [],
     "example": "Plot { eAugerRecombination }"
@@ -31504,7 +31702,7 @@
   "eAvalanche": {
     "section": "Physics",
     "signature": "eAvalanche",
-    "description": "Avalanche()或Recombination()中的电子碰撞电离（雪崩）模型。对高场碰撞电离引起的载流子产生进行建模。使用van Overstraeten-de Man、Chynoweth或Selberherr模型，具有用户可定义的系数。",
+    "description": "Avalanche()或Recombination()中的电子碰撞电离（雪崩）模型。对高场碰撞电离引起的载流子产生进行建模。使用van Overstraeten-de Man、Chynoweth或Selberherr模型，具有用户可定义的系数。另见 hAvalanche（空穴变体）。",
     "keywords": [
       "hAvalanche",
       "Recombination",
@@ -31525,7 +31723,7 @@
   "eBand2BandGeneration": {
     "section": "Plot",
     "signature": "Plot { eBand2BandGeneration }",
-    "description": "表示电子带间隧穿生成率的标量绘图变量。这是电子的动态非局域路径带间隧穿生成率，单位为cm^-3 s^-1。也可以通过NonLocalPlot对非局域网格上定义的数据进行可视化。",
+    "description": "表示电子带间隧穿生成率的标量绘图变量。这是电子的动态非局域路径带间隧穿生成率，单位为cm^-3 s^-1。也可以通过NonLocalPlot对非局域网格上定义的数据进行可视化。. 另见 Band2BandGeneration（统一模型）和 hBand2BandGeneration（空穴变体）。",
     "parameters": [],
     "keywords": [
       "eBand2BandGeneration",
@@ -31536,7 +31734,7 @@
   "eBandEdgeShift": {
     "section": "Physics",
     "signature": "eBandEdgeShift( <ident> [ <table> ] [ <int> ] )",
-    "description": "使用PMI（物理模型接口）模型并带有可选构造函数参数计算导带的带边偏移。用于多状态配置中的表观带边偏移计算。",
+    "description": "使用PMI（物理模型接口）模型并带有可选构造函数参数计算导带的带边偏移。用于多状态配置中的表观带边偏移计算。. 另见 BandEdgeShift（统一模型）和 hBandEdgeShift（空穴变体）。",
     "parameters": [],
     "keywords": [
       "hBandEdgeShift",
@@ -31583,7 +31781,7 @@
   "eBarrierTunneling": {
     "section": "Physics",
     "signature": "eBarrierTunneling( <options> )",
-    "description": "在界面和接触处激活电子的非局域隧穿。选项包括Band2Band隧穿（Simple/Full/UpsideDown）、TwoBand色散、基于薛定谔方程的隧穿概率、Peltier热和界面传输系数。",
+    "description": "在界面和接触处激活电子的非局域隧穿。选项包括Band2Band隧穿（Simple/Full/UpsideDown）、TwoBand色散、基于薛定谔方程的隧穿概率、Peltier热和界面传输系数。. 另见 BarrierTunneling（统一模型）和 hBarrierTunneling（空穴变体）。",
     "parameters": [],
     "keywords": [
       "tunneling",
@@ -31603,7 +31801,7 @@
   "eBreakdownProbability": {
     "section": "Plot",
     "signature": "Plot { eBreakdownProbability }",
-    "description": "电子雪崩击穿概率的标量绘图变量。表示在给定位置产生的载流子触发雪崩倍增事件的概率。击穿概率计算由Physics部分中的BreakdownProbability语句控制。为获得有意义的结果，应使用Math部分中的AvalPostProcessing排除碰撞电离产生的载流子。",
+    "description": "电子雪崩击穿概率的标量绘图变量。表示在给定位置产生的载流子触发雪崩倍增事件的概率。击穿概率计算由Physics部分中的BreakdownProbability语句控制。为获得有意义的结果，应使用Math部分中的AvalPostProcessing排除碰撞电离产生的载流子。另见 hBreakdownProbability（空穴变体）。",
     "parameters": [],
     "keywords": [
       "eBreakdownProbability",
@@ -31658,7 +31856,7 @@
   "eCurrent": {
     "section": "Physics",
     "signature": "eCurrent",
-    "description": "每个顶点处的电子电流密度，作为绘图数据集可用。表示电子的漂移-扩散电流。单位：A/cm^2。",
+    "description": "每个顶点处的电子电流密度，作为绘图数据集可用。表示电子的漂移-扩散电流。单位：A/cm^2。. 另见 Current（统一模型）和 hCurrent（空穴变体）。",
     "keywords": [
       "hCurrent",
       "TotalCurrent",
@@ -31673,7 +31871,7 @@
   "eCurrentDensity": {
     "section": "Physics",
     "signature": "eCurrentDensity",
-    "description": "每个顶点处的电子电流密度，可在 Plot{} 和 CurrentPlot{} 部分中作为绘图数据集使用。表示总漂移-扩散电流的电子分量。单位：A/cm^2。",
+    "description": "每个顶点处的电子电流密度，可在 Plot{} 和 CurrentPlot{} 部分中作为绘图数据集使用。表示总漂移-扩散电流的电子分量。单位：A/cm^2。. 另见 CurrentDensity（统一模型）和 hCurrentDensity（空穴变体）。",
     "keywords": [
       "hCurrentDensity",
       "TotalCurrent",
@@ -31688,7 +31886,7 @@
   "eDeformationPotential": {
     "section": "Plot",
     "signature": "Plot { eDeformationPotential }",
-    "description": "标量绘图变量，表示由于形变势模型导致的导带边变化。当器件受到应变时，形变势模型计算导带和价带边的偏移。此变量显示电子特定的带边偏移，单位为 eV。通过在 Physics 部分指定 DeformationPotential 选项来激活。",
+    "description": "标量绘图变量，表示由于形变势模型导致的导带边变化。当器件受到应变时，形变势模型计算导带和价带边的偏移。此变量显示电子特定的带边偏移，单位为 eV。通过在 Physics 部分指定 DeformationPotential 选项来激活。另见 hDeformationPotential（空穴变体）。",
     "parameters": [],
     "keywords": [
       "eDeformationPotential",
@@ -31700,7 +31898,7 @@
   "eDensity": {
     "section": "Physics",
     "signature": "eDensity",
-    "description": "每个顶点处的电子浓度（密度），可作为绘图数据集使用。表示由电子连续性方程求解得到的自由电子载流子密度。单位：cm^-3。",
+    "description": "每个顶点处的电子浓度（密度），可作为绘图数据集使用。表示由电子连续性方程求解得到的自由电子载流子密度。单位：cm^-3。. 另见 Density（统一模型）和 hDensity（空穴变体）。",
     "keywords": [
       "hDensity",
       "SpaceCharge",
@@ -31715,7 +31913,7 @@
   "eDensityCorrection": {
     "section": "Physics",
     "signature": "QWLocal { eDensityCorrection }",
-    "description": "在局域量子阱模型中激活量子阱中的电子量子化模型。启用后，量子阱中的电子密度会被校正以考虑量子化效应，用量子力学计算的分布替代经典密度。用于存在量子阱的 LED 和激光器仿真。",
+    "description": "在局域量子阱模型中激活量子阱中的电子量子化模型。启用后，量子阱中的电子密度会被校正以考虑量子化效应，用量子力学计算的分布替代经典密度。用于存在量子阱的 LED 和激光器仿真。. 另见 DensityCorrection（统一模型）和 hDensityCorrection（空穴变体）。",
     "parameters": [],
     "keywords": [
       "eDensityCorrection",
@@ -31739,11 +31937,12 @@
   "eDiffusivity": {
     "section": "Physics",
     "signature": "eMobility( Diffusivity( ... ) )",
-    "description": "指定电子的扩散率迁移率模型，用于非爱因斯坦扩散率计算。当爱因斯坦关系不成立时（例如，具有陡峭掺杂梯度的短沟道器件中），Sentaurus Device 允许独立于迁移率指定扩散率。扩散率表示为 D_n = kT * mu_n,diff，其中 mu_n,diff 可以使用与传输迁移率不同的参数或模型。选项与 HighFieldSaturation 模型相同。",
+    "description": "指定电子的扩散率迁移率模型，用于非爱因斯坦扩散率计算。当爱因斯坦关系不成立时（例如，具有陡峭掺杂梯度的短沟道器件中），Sentaurus Device 允许独立于迁移率指定扩散率。扩散率表示为 D_n = kT * mu_n,diff，其中 mu_n,diff 可以使用与传输迁移率不同的参数或模型。选项与 HighFieldSaturation 模型相同。. 另见 Diffusivity（统一模型）和 hDiffusivity（空穴变体）。",
     "parameters": [
       {
         "name": "ParameterSetName",
-        "desc": ""
+        "type": "string",
+        "desc": "电子扩散率使用的高场依赖性参数集名称。"
       }
     ],
     "keywords": [
@@ -31833,7 +32032,7 @@
   "eEnormal": {
     "section": "Plot",
     "signature": "Plot { eEnormal }",
-    "description": "标量绘图变量，表示电子的垂直于界面的电场分量 F_perp 或 F_n_perp，单位为 V/cm。这是用于迁移率退化模型（如 Lombardi 表面迁移率）的电场法向分量，该模型依赖于垂直于半导体-绝缘体界面的电场。",
+    "description": "标量绘图变量，表示电子的垂直于界面的电场分量 F_perp 或 F_n_perp，单位为 V/cm。这是用于迁移率退化模型（如 Lombardi 表面迁移率）的电场法向分量，该模型依赖于垂直于半导体-绝缘体界面的电场。. 另见 Enormal（统一模型）和 hEnormal（空穴变体）。",
     "parameters": [],
     "keywords": [
       "eEnormal",
@@ -31845,7 +32044,7 @@
   "eEparallel": {
     "section": "Plot",
     "signature": "Plot { eEparallel }",
-    "description": "标量绘图变量，表示电子的平行于界面的电场分量 F_n，单位为 V/cm。这是最近半导体-绝缘体界面处电场平行分量，用作高场饱和迁移率和雪崩产生模型中的驱动力。也可以作为物理模型接口（PMI）变量使用。",
+    "description": "标量绘图变量，表示电子的平行于界面的电场分量 F_n，单位为 V/cm。这是最近半导体-绝缘体界面处电场平行分量，用作高场饱和迁移率和雪崩产生模型中的驱动力。也可以作为物理模型接口（PMI）变量使用。. 另见 Eparallel（统一模型）和 hEparallel（空穴变体）。",
     "parameters": [],
     "keywords": [
       "eEparallel",
@@ -31871,16 +32070,66 @@
     "description": "指定电子的压阻迁移率因子模型。eFactor（以及空穴的 hFactor）用于压阻迁移率模型，计算机械应力导致的迁移率退化或增强。支持命名参数集和自动取向框架，其中根据最近界面的表面取向自动选择参数集。",
     "parameters": [
       {
+        "name": "FirstOrder",
+        "type": "flag",
+        "desc": "使用一阶压阻模型（默认）。"
+      },
+      {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "使用二阶压阻模型，在大应力下精度更高。"
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "在压阻系数中包含温度和掺杂依赖。"
+      },
+      {
         "name": "ParameterSetName",
-        "desc": "参数集名称，引用预先定义的压阻参数集。"
+        "type": "string",
+        "desc": "参数文件中预定义的压阻参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近界面方向自动选择参数集。"
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "计算迁移率增强应力因子的 PMI 模型名称（仅各向同性因子模型）。"
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "迁移率增强因子空间分布的数据集或 PMI 模型名称。"
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "使用有效应力因子模型。"
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "将 Factor 模型增强应用到单独的迁移率分量。"
+      },
+      {
+        "name": "ChannelDirection",
+        "type": "int",
+        "desc": "通道方向（1-3），决定使用哪个张量分量。默认为 1。"
       }
     ],
     "keywords": [
-      "eFactor",
-      "hFactor",
-      "Piezo",
-      "Mobility",
-      "AutoOrientation"
+      "FirstOrder",
+      "SecondOrder",
+      "Kanda",
+      "ParameterSetName",
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "ChannelDirection"
     ],
     "example": "Physics {\n  Piezo(Mobility(Factor(eFactor(ParameterSetName=\"myPiezoSet\"))))\n}"
   },
@@ -31944,7 +32193,7 @@
   "eGradQuasiFermi": {
     "section": "Plot",
     "signature": "Plot { eGradQuasiFermi }",
-    "description": "标量和矢量绘图变量，表示电子准费米势梯度的幅度 |grad(Phi_n)|，单位为 V/cm。作为标量给出幅度；作为矢量提供 -grad(Phi_n)。这是高场饱和迁移率和雪崩产生模型中使用的关键驱动力。也可用作 Avalanche 部分中的驱动力选项。",
+    "description": "标量和矢量绘图变量，表示电子准费米势梯度的幅度 |grad(Phi_n)|，单位为 V/cm。作为标量给出幅度；作为矢量提供 -grad(Phi_n)。这是高场饱和迁移率和雪崩产生模型中使用的关键驱动力。也可用作 Avalanche 部分中的驱动力选项。. 另见 GradQuasiFermi（统一模型）和 hGradQuasiFermi（空穴变体）。",
     "parameters": [],
     "keywords": [
       "eGradQuasiFermi",
@@ -32035,7 +32284,7 @@
   "eHeatFlux": {
     "section": "Plot",
     "signature": "eHeatFlux",
-    "description": "来自流体动力学能量平衡方程的电子热流矢量 Sn 的绘图关键字。单位：W/cm^2。可作为标量（幅度）和矢量数据使用。",
+    "description": "来自流体动力学能量平衡方程的电子热流矢量 Sn 的绘图关键字。单位：W/cm^2。可作为标量（幅度）和矢量数据使用。. 另见 HeatFlux（统一模型）和 hHeatFlux（空穴变体）。",
     "parameters": [],
     "keywords": [
       "hHeatFlux",
@@ -32049,14 +32298,107 @@
   "eHighFieldSaturation": {
     "section": "Physics",
     "signature": "eHighFieldSaturation",
-    "description": "在 Mobility() 或 eMobility() 中的电子高场饱和速度模型。使用 Caughey-Thomas 或 TransferredElectronEffect 模型配置电子的饱和速度和高场依赖性。",
+    "description": "Mobility() 或 eMobility() 中的电子高场饱和速度模型。使用 Caughey-Thomas、TransferredElectronEffect 或其他模型配置电子的饱和速度和高场依赖性。另见 HighFieldSaturation（统一模型）和 hHighFieldSaturation（空穴变体）。",
     "keywords": [
-      "HighFieldSaturation",
-      "eMobility",
       "Mobility",
-      "hHighFieldSaturation"
+      "eMobility",
+      "HighFieldSaturation",
+      "hHighFieldSaturation",
+      "eHighFieldSaturation",
+      "CaugheyThomas",
+      "TransferredElectronEffect",
+      "GradQuasiFermi",
+      "ParameterSetName",
+      "AutoOrientation"
     ],
-    "example": ""
+    "example": "",
+    "parameters": [
+      {
+        "name": "CaugheyThomas",
+        "type": "flag",
+        "desc": "使用 Canali-Hänsch 模型（默认）。"
+      },
+      {
+        "name": "TransferredElectronEffect",
+        "type": "flag",
+        "desc": "使用转移电子模型。"
+      },
+      {
+        "name": "GradQuasiFermi",
+        "type": "flag",
+        "desc": "使用准费米势梯度作为驱动力（默认）。"
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "要使用的高场依赖性（HighFieldDependence）参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近的界面方向自动选择参数集。"
+      },
+      {
+        "name": "Eparallel",
+        "type": "flag",
+        "desc": "使用电流方向的电场作为驱动力。"
+      },
+      {
+        "name": "EparallelToInterface",
+        "type": "flag",
+        "desc": "使用最近的半导体-绝缘体界面平行方向的电场作为驱动力。"
+      },
+      {
+        "name": "ElectricField",
+        "type": "flag",
+        "desc": "使用电场作为驱动力。"
+      },
+      {
+        "name": "CarrierTempDrive",
+        "type": "flag",
+        "desc": "载流子温度驱动力（流体动力学模拟的默认值）。"
+      },
+      {
+        "name": "CarrierTempDriveBasic",
+        "type": "flag",
+        "desc": "基础载流子温度驱动力模型。"
+      },
+      {
+        "name": "CarrierTempDriveME",
+        "type": "flag",
+        "desc": "Meinerzhagen-Engl 载流子温度驱动力模型。"
+      },
+      {
+        "name": "CarrierTempDrivePolynomial",
+        "type": "flag",
+        "desc": "使用无理多项式的能量依赖迁移率模型。"
+      },
+      {
+        "name": "CarrierTempDriveSpline",
+        "type": "flag",
+        "desc": "使用样条插值的能量依赖迁移率模型。"
+      },
+      {
+        "name": "TransferredElectronEffect2",
+        "type": "flag",
+        "desc": "替代转移电子模型。"
+      },
+      {
+        "name": "PFMob",
+        "type": "flag",
+        "desc": "使用 Poole-Frenkel 迁移率模型。"
+      },
+      {
+        "name": "VRHMob",
+        "type": "flag",
+        "desc": "使用变程跳跃迁移率模型。"
+      },
+      {
+        "name": "PMIModel",
+        "type": "sub",
+        "desc": "自定义双场 PMI 模型。接受 Name、Index 和 String 参数。"
+      }
+    ]
   },
   "eInterfaceTrappedCharge": {
     "section": "Plot",
@@ -32110,7 +32452,7 @@
   "eJouleHeat": {
     "section": "Plot",
     "signature": "eJouleHeat",
-    "description": "电子焦耳热的绘图关键字，计算公式为 |Jn|^2 / (qn*mu_n)。单位：W/cm^3。表示电子电流导致的欧姆发热。属于热力学模型发热项的一部分。",
+    "description": "电子焦耳热的绘图关键字，计算公式为 |Jn|^2 / (qn*mu_n)。单位：W/cm^3。表示电子电流导致的欧姆发热。属于热力学模型发热项的一部分。. 另见 JouleHeat（统一模型）和 hJouleHeat（空穴变体）。",
     "parameters": [],
     "keywords": [
       "hJouleHeat",
@@ -32171,7 +32513,7 @@
   "eMLDA": {
     "section": "Physics",
     "signature": "eMLDA ( [-LambdaTemp] )",
-    "description": "仅对电子激活简单的修正局域密度近似 (MLDA) 量子修正模型。使用单个热波长参数 (lambda) 计算有效量子势修正。可按区域或按材料指定。",
+    "description": "仅对电子激活简单的修正局域密度近似 (MLDA) 量子修正模型。使用单个热波长参数 (lambda) 计算有效量子势修正。可按区域或按材料指定。另见 hMLDA（空穴变体）。",
     "parameters": [
       {
         "name": "LambdaTemp",
@@ -32247,7 +32589,7 @@
   "eMobility": {
     "section": "Physics",
     "signature": "eMobility( <options> )",
-    "description": "Mobility() 中的电子迁移率模型。配置所有专门针对电子的迁移率子模型（掺杂依赖性、高场饱和等）。覆盖针对电子载流子类型的通用 Mobility() 设置。",
+    "description": "Mobility() 中的电子迁移率模型。配置所有专门针对电子的迁移率子模型（掺杂依赖性、高场饱和等）。覆盖针对电子载流子类型的通用 Mobility() 设置。另见 hMobility（空穴变体）。",
     "keywords": [
       "hMobility",
       "Mobility",
@@ -32404,7 +32746,7 @@
   "eMultiValley": {
     "section": "Physics",
     "signature": "eMultiValley ( [MLDA] [kpDOS] [Nonparabolicity] [ThinLayer] )",
-    "description": "激活多能谷电子输运模型。使用多个导带谷及依赖于谷的载流子布居和有效质量计算迁移率。MLDA 选项结合修正的局域密度近似进行量子修正。用于应力依赖的迁移率模拟。",
+    "description": "激活多能谷电子输运模型。使用多个导带谷及依赖于谷的载流子布居和有效质量计算迁移率。MLDA 选项结合修正的局域密度近似进行量子修正。用于应力依赖的迁移率模拟。. 另见 MultiValley（统一模型）和 hMultiValley（空穴变体）。",
     "parameters": [],
     "keywords": [
       "hMultiValley",
@@ -32616,7 +32958,7 @@
   "eQuasiFermiPotential": {
     "section": "Plot",
     "signature": "Plot { eQuasiFermiPotential }",
-    "description": "标量绘图变量，表示电子准费米势 (Phi_n)，单位为伏特。这是电子的电化学势，衡量电子输运的驱动力。平衡时，它在整个器件中为常数。偏置下，其梯度决定电子电流密度。也可作为非局域 PMI 模型的解依赖数据场使用。",
+    "description": "标量绘图变量，表示电子准费米势 (Phi_n)，单位为伏特。这是电子的电化学势，衡量电子输运的驱动力。平衡时，它在整个器件中为常数。偏置下，其梯度决定电子电流密度。也可作为非局域 PMI 模型的解依赖数据场使用。. 另见 QuasiFermiPotential（统一模型）和 hQuasiFermiPotential（空穴变体）。",
     "parameters": [],
     "keywords": [
       "eQuasiFermiPotential",
@@ -32652,7 +32994,7 @@
   "eRecGenHeat": {
     "section": "Plot",
     "signature": "Plot { eRecGenHeat }",
-    "description": "标量绘图变量，表示电子产生-复合热源项 (Hn)，单位为 W/cm^3。该量出现在流体力学模型的电子能量守恒方程（方程90）中，表示电子与晶格之间由于产生和复合过程导致的能量交换。",
+    "description": "标量绘图变量，表示电子产生-复合热源项 (Hn)，单位为 W/cm^3。该量出现在流体力学模型的电子能量守恒方程（方程90）中，表示电子与晶格之间由于产生和复合过程导致的能量交换。. 另见 RecGenHeat（统一模型）和 hRecGenHeat（空穴变体）。",
     "parameters": [],
     "keywords": [
       "eRecGenHeat",
@@ -32881,7 +33223,7 @@
   "eSRHRecombination": {
     "section": "Plot",
     "signature": "Plot { eSRHRecombination }",
-    "description": "标量绘图变量，表示基于 Shockley-Read-Hall（SRH）机制的电子复合率，包括动态非局域路径陷阱辅助隧穿增强。这是电子对 SRH 复合率的贡献，单位为 cm^-3 s^-1。它同时捕捉标准 SRH 过程和非局域隧穿辅助 SRH 复合。",
+    "description": "标量绘图变量，表示基于 Shockley-Read-Hall（SRH）机制的电子复合率，包括动态非局域路径陷阱辅助隧穿增强。这是电子对 SRH 复合率的贡献，单位为 cm^-3 s^-1。它同时捕捉标准 SRH 过程和非局域隧穿辅助 SRH 复合。. 另见 SRHRecombination（统一模型）和 hSRHRecombination（空穴变体）。",
     "parameters": [],
     "keywords": [
       "eSRHRecombination",
@@ -32898,12 +33240,12 @@
   "eSaturationFactor": {
     "section": "Physics",
     "signature": "Physics { Model(Mobility(eSaturationFactor = <float>)) }",
-    "description": "指定电子的饱和因子，控制电子饱和速度对机械应力的依赖关系。值为 1.0（默认）表示无修改。该因子缩放应力如何影响压阻迁移率模型中的饱和速度，从而影响应变条件下的电流驱动。",
+    "description": "指定电子的饱和因子，控制电子饱和速度对机械应力的依赖关系。值为 1.0（默认）表示无修改。该因子缩放应力如何影响压阻迁移率模型中的饱和速度，从而影响应变条件下的电流驱动。. 另见 SaturationFactor（统一模型）和 hSaturationFactor（空穴变体）。",
     "parameters": [
       {
-        "name": "float",
+        "name": "value",
         "type": "float",
-        "desc": "float — 电子的饱和因子。默认值为 1.0（无应力对饱和速度的影响）。"
+        "desc": "电子饱和速度应力依赖的缩放因子。默认 1.0。"
       }
     ],
     "keywords": [
@@ -32986,55 +33328,67 @@
   "eSubband": {
     "section": "Physics",
     "signature": "eSubband ( [Fermi] [Doping] [EffectiveMass] [Scattering(MLDA)] [BalMob] [Nonparabolicity] [Transport(<vector>)] [-AutoOrientation] [-RelChDir110] [NoStressInDDmob] [EqRefMob] )",
-    "description": "用于应力仿真的多谷电子子带迁移率模型。使用子带结构计算应力引起的电子迁移率变化。选项控制分布函数、有效质量、散射模型以及应力对漂移-扩散和弹道迁移率的影响。",
+    "description": "用于应力仿真的多谷电子子带迁移率模型。使用子带结构计算应力引起的电子迁移率变化。选项控制分布函数、有效质量、散射模型以及应力对漂移-扩散和弹道迁移率的影响。. 另见 Subband（统一模型）和 hSubband（空穴变体）。",
     "parameters": [
       {
         "name": "Doping",
-        "desc": "具有掺杂依赖性的应变诱导子带模型"
+        "desc": "具有掺杂依赖性的应变诱导子带模型",
+        "type": "flag"
       },
       {
         "name": "Fermi",
-        "desc": "具有载流子浓度（费米统计）依赖性的应变诱导子带模型"
+        "desc": "具有载流子浓度（费米统计）依赖性的应变诱导子带模型",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass",
-        "desc": "应力引起的电子有效质量变化"
+        "desc": "应力引起的电子有效质量变化",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass(-Transport)",
-        "desc": "排除 2D 逆输运质量张量变换"
+        "desc": "排除 2D 逆输运质量张量变换",
+        "type": "flag"
       },
       {
         "name": "EffectiveMass(Transport-vector)",
-        "desc": "激活 1D 逆输运质量张量变换"
+        "desc": "激活 1D 逆输运质量张量变换",
+        "type": "flag"
       },
       {
         "name": "Scattering",
-        "desc": "具有体区间散射的应变诱导子带模型"
+        "desc": "具有体区间散射的应变诱导子带模型",
+        "type": "flag"
       },
       {
         "name": "Scattering(MLDA)",
-        "desc": "具有界面散射 (MLDA) 的应变诱导子带模型"
+        "desc": "具有界面散射 (MLDA) 的应变诱导子带模型",
+        "type": "flag"
       },
       {
         "name": "BalMob",
-        "desc": "应力引起的电子弹道迁移率变化"
+        "desc": "应力引起的电子弹道迁移率变化",
+        "type": "flag"
       },
       {
         "name": "NoStressInDDmob",
-        "desc": "仅考虑弹道迁移率，忽略漂移-扩散迁移率中的应力"
+        "desc": "仅考虑弹道迁移率，忽略漂移-扩散迁移率中的应力",
+        "type": "flag"
       },
       {
         "name": "EqRefMob",
-        "desc": "为转移载流子模型激活平衡参考迁移率计算"
+        "desc": "为转移载流子模型激活平衡参考迁移率计算",
+        "type": "flag"
       },
       {
         "name": "-RelChDir110",
-        "desc": "在参考迁移率中使用 <100> 沟道方向"
+        "desc": "在参考迁移率中使用 <100> 沟道方向",
+        "type": "flag"
       },
       {
         "name": "-AutoOrientation",
-        "desc": "使用全张量参考迁移率"
+        "desc": "使用全张量参考迁移率",
+        "type": "flag"
       }
     ],
     "keywords": [
@@ -33056,7 +33410,7 @@
   "eTemperature": {
     "section": "Physics",
     "signature": "eTemperature",
-    "description": "每个顶点处的电子温度，可在流体动力学或热力学输运仿真中作为绘图数据集使用。用作收敛准则参数，以及 DiffusionNoise{} 温度选项中的参数。单位：K。",
+    "description": "每个顶点处的电子温度，可在流体动力学或热力学输运仿真中作为绘图数据集使用。用作收敛准则参数，以及 DiffusionNoise{} 温度选项中的参数。单位：K。. 另见 Temperature（统一模型）和 hTemperature（空穴变体）。",
     "keywords": [
       "hTemperature",
       "LatticeTemperature",
@@ -33095,57 +33449,69 @@
   "eTensor": {
     "section": "Piezo",
     "signature": "eTensor[(Table 328)]",
-    "description": "电子的压阻张量，用于在 Piezo 部分的 Model(Mobility(...)) 下计算应力依赖的迁移率增强。指定电子迁移率张量如何通过压阻系数响应机械应力。",
+    "description": "电子的压阻张量，用于在 Piezo 部分的 Model(Mobility(...)) 下计算应力依赖的迁移率增强。指定电子迁移率张量如何通过压阻系数响应机械应力。. 另见 Tensor（统一模型）和 hTensor（空穴变体）。",
     "parameters": [
-      {
-        "name": "ident",
-        "type": "string",
-        "desc": "计算压阻预因子的 PMI 模型名称。如果指定，则使用一阶压阻张量模型。"
-      },
-      {
-        "name": "AutoOrientation",
-        "type": "flag",
-        "desc": "使用基于最近界面方向的参数集，而非固定方向。"
-      },
-      {
-        "name": "Enormal",
-        "type": "flag",
-        "desc": "使用具有界面法向电场和摩尔分数依赖性的压阻预因子。"
-      },
       {
         "name": "FirstOrder",
         "type": "flag",
         "desc": "使用一阶压阻模型（默认）。"
       },
       {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "使用二阶压阻模型，在大应力下精度更高。"
+      },
+      {
         "name": "Kanda",
         "type": "flag",
-        "desc": "在压阻系数中包括温度和掺杂依赖性。"
+        "desc": "在压阻系数中包含温度和掺杂依赖。"
       },
       {
         "name": "ParameterSetName",
         "type": "string",
-        "desc": "来自参数文件的预定义压阻参数集的名称。"
+        "desc": "参数文件中预定义的压阻参数集名称。"
       },
       {
-        "name": "SecondOrder",
+        "name": "AutoOrientation",
         "type": "flag",
-        "desc": "使用二阶压阻模型，在大应力下获得更高精度。"
+        "desc": "根据最近界面方向自动选择参数集。"
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "计算压阻系数的 PMI 模型名称（仅一阶模型）。"
       },
       {
         "name": "SFactor",
-        "type": "string|ident",
+        "type": "string",
         "desc": "迁移率增强因子空间分布的数据集或 PMI 模型名称。"
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "使用有效应力因子模型。"
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "将 Factor 模型增强应用到单独的迁移率分量。"
+      },
+      {
+        "name": "Enormal",
+        "type": "flag",
+        "desc": "使用依赖于界面法向电场和摩尔分数的压阻系数。"
       }
     ],
     "keywords": [
-      "AutoOrientation",
-      "Enormal",
       "FirstOrder",
+      "SecondOrder",
       "Kanda",
       "ParameterSetName",
-      "SecondOrder",
-      "SFactor"
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "Enormal"
     ],
     "example": "Physics {\n  Piezo(\n    Model(Mobility(eTensor(ParameterSetName=\"Silicon_eTensor\")))\n  )\n}"
   },
@@ -33219,17 +33585,17 @@
   "eThermionic": {
     "section": "Physics",
     "signature": "eThermionic [ (HCI) | (Organic_Gaussian) ]",
-    "description": "激活界面和接触处电子的热电子发射模型。基于热电子发射理论实现跨越势垒的电流输运，适用于导电绝缘体、肖特基接触和有机异质界面。",
+    "description": "激活界面和接触处电子的热电子发射模型。基于热电子发射理论实现跨越势垒的电流输运，适用于导电绝缘体、肖特基接触和有机异质界面。. 另见 Thermionic（统一模型）和 hThermionic（空穴变体）。",
     "parameters": [
       {
-        "name": "(HCI)",
+        "name": "HCI",
         "type": "flag",
-        "desc": "使用热载流子注入模型在界面处局部注入热电子。注入的电流作为电子连续性方程的源项。"
+        "desc": "在界面处使用热载流子注入模型局部注入热载流子。"
       },
       {
-        "name": "(Organic_Gaussian)",
+        "name": "Organic_Gaussian",
         "type": "flag",
-        "desc": "使用专为有机异质界面设计的热电子类高斯发射模型，用高斯输运模型取代标准热电子发射。"
+        "desc": "对有机异质界面使用类热电子高斯发射模型。"
       }
     ],
     "keywords": [
@@ -34350,7 +34716,7 @@
   "hAugerRecombination": {
     "section": "Plot",
     "signature": "Plot { hAugerRecombination }",
-    "description": "标量绘图变量，表示空穴俄歇复合率（RAp，方程441）。单位：cm^-3 s^-1。",
+    "description": "标量绘图变量，表示空穴俄歇复合率（RAp，方程441）。单位：cm^-3 s^-1。. 另见 AugerRecombination（统一模型）和 eAugerRecombination（电子变体）。",
     "parameters": [],
     "keywords": [],
     "example": "Plot { hAugerRecombination }"
@@ -34369,15 +34735,17 @@
   "hBand2BandGeneration": {
     "section": "Plot",
     "signature": "Plot { hBand2BandGeneration }",
-    "description": "标量绘图变量，表示来自动态非局域路径模型的空穴对带间隧穿产生率的贡献。单位：cm^-3 s^-1。",
+    "description": "标量绘图变量，表示来自动态非局域路径模型的空穴对带间隧穿产生率的贡献。单位：cm^-3 s^-1。. 另见 Band2BandGeneration（统一模型）和 eBand2BandGeneration（电子变体）。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hBand2BandGeneration"
+    ],
     "example": "Plot { hBand2BandGeneration }"
   },
   "hBandEdgeShift": {
     "section": "Physics",
     "signature": "hBandEdgeShift( <ident> [ <table> ] [ <int> ] )",
-    "description": "使用带有可选构造参数的PMI（物理模型接口）模型计算价带的带边偏移。用于表观带边偏移计算。",
+    "description": "使用带有可选构造参数的PMI（物理模型接口）模型计算价带的带边偏移。用于表观带边偏移计算。. 另见 BandEdgeShift（统一模型）和 eBandEdgeShift（电子变体）。",
     "parameters": [
       {
         "name": "<ident>",
@@ -34435,7 +34803,7 @@
   "hBarrierTunneling": {
     "section": "Physics",
     "signature": "hBarrierTunneling(NonLocal=<string>) | hBarrierTunneling(TwoBand)",
-    "description": "在 Traps() 中，激活空穴势垒隧穿（来自价带的陷阱辅助隧穿）。NonLocal 选项启用来自命名非局域网格的隧穿。TwoBand 选项使用双能带色散计算 WKB 隧穿概率。",
+    "description": "在 Traps() 中，激活空穴势垒隧穿（来自价带的陷阱辅助隧穿）。NonLocal 选项启用来自命名非局域网格的隧穿。TwoBand 选项使用双能带色散计算 WKB 隧穿概率。. 另见 BarrierTunneling（统一模型）和 eBarrierTunneling（电子变体）。",
     "parameters": [
       {
         "name": "NonLocal",
@@ -34501,9 +34869,12 @@
   "hBreakdownProbability": {
     "section": "Plot",
     "signature": "Plot { hBreakdownProbability }",
-    "description": "绘制与空穴对雪崩击穿概率分析的贡献相关的变量。",
+    "description": "绘制与空穴对雪崩击穿概率分析的贡献相关的变量。. 另见 BreakdownProbability（统一模型）和 eBreakdownProbability（电子变体）。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hBreakdownProbability",
+      "jBreakdownProbability"
+    ],
     "example": "Plot { hBreakdownProbability }"
   },
   "hCDL1Lifetime": {
@@ -34539,7 +34910,7 @@
   "hCurrent": {
     "section": "Physics",
     "signature": "hCurrent",
-    "description": "每个顶点的空穴电流密度，可作为绘图数据集使用。表示空穴的漂移扩散电流。单位：A/cm^2。",
+    "description": "每个顶点的空穴电流密度，可作为绘图数据集使用。表示空穴的漂移扩散电流。单位：A/cm^2。. 另见 Current（统一模型）和 eCurrent（电子变体）。",
     "keywords": [
       "eCurrent",
       "TotalCurrent",
@@ -34550,7 +34921,7 @@
   "hCurrentDensity": {
     "section": "Physics",
     "signature": "hCurrentDensity",
-    "description": "每个顶点的空穴电流密度，可在Plot{}和CurrentPlot{}部分中作为绘图数据集使用。表示总漂移扩散电流的空穴分量。单位：A/cm^2。",
+    "description": "每个顶点的空穴电流密度，可在Plot{}和CurrentPlot{}部分中作为绘图数据集使用。表示总漂移扩散电流的空穴分量。单位：A/cm^2。. 另见 CurrentDensity（统一模型）和 eCurrentDensity（电子变体）。",
     "keywords": [
       "eCurrentDensity",
       "TotalCurrent",
@@ -34564,15 +34935,18 @@
   "hDeformationPotential": {
     "section": "Plot",
     "signature": "Plot { hDeformationPotential }",
-    "description": "标量绘图变量，表示来自应力相关能带结构的形变势模型中的空穴形变势。单位：eV。",
+    "description": "标量绘图变量，表示来自应力相关能带结构的形变势模型中的空穴形变势。单位：eV。. 另见 DeformationPotential（统一模型）和 eDeformationPotential（电子变体）。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hDeformationPotential",
+      "DeformationPotential"
+    ],
     "example": "Plot { hDeformationPotential }"
   },
   "hDensity": {
     "section": "Physics",
     "signature": "hDensity",
-    "description": "每个顶点的空穴浓度（密度），可作为绘图数据集使用。表示从空穴连续性方程的解计算得到的自由空穴载流子密度。单位：cm^-3。",
+    "description": "每个顶点的空穴浓度（密度），可作为绘图数据集使用。表示从空穴连续性方程的解计算得到的自由空穴载流子密度。单位：cm^-3。. 另见 Density（统一模型）和 eDensity（电子变体）。",
     "keywords": [
       "eDensity",
       "SpaceCharge",
@@ -34583,9 +34957,13 @@
   "hDensityCorrection": {
     "section": "Physics",
     "signature": "QWLocal { hDensityCorrection } or Band2Band { DensityCorrection=Local }",
-    "description": "在量子阱模型中激活空穴量子化效应，或在带间隧穿模型中启用密度校正。",
+    "description": "在量子阱模型中激活空穴量子化效应，或在带间隧穿模型中启用密度校正。. 另见 DensityCorrection（统一模型）和 eDensityCorrection（电子变体）。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hDensityCorrection",
+      "QWLocal",
+      "ElectricFieldDep"
+    ],
     "contexts": {
       "QWLocal": "在量子阱中激活空穴量子化模型，用于计算载流子浓度的密度校正效应。",
       "Band2Band": "使用Schenk密度校正计算空穴带间隧穿速率。"
@@ -34603,9 +34981,19 @@
   "hDiffusivity": {
     "section": "Plot",
     "signature": "Plot { hDiffusivity }",
-    "description": "与空穴扩散率相关的绘图变量。在非爱因斯坦扩散率模型的上下文中，表示由迁移率导出的空穴扩散率。",
-    "parameters": [],
-    "keywords": [],
+    "description": "与空穴扩散率相关的绘图变量。在非爱因斯坦扩散率模型的上下文中，表示由迁移率导出的空穴扩散率。. 另见 Diffusivity（统一模型）和 eDiffusivity（电子变体）。",
+    "parameters": [
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "空穴扩散率使用的高场依赖性参数集名称。"
+      }
+    ],
+    "keywords": [
+      "hDiffusivity",
+      "Diffusivity",
+      "hMobility"
+    ],
     "example": "Plot { hDiffusivity }"
   },
   "hDiffusivityMobility": {
@@ -34668,17 +35056,23 @@
   "hEnormal": {
     "section": "Plot",
     "signature": "Plot { hEnormal }",
-    "description": "表示垂直于界面的电场分量（F_p_perp，公式336或公式337）或空穴的法向场的标量绘图变量。单位：V/cm。",
+    "description": "表示垂直于界面的电场分量（F_p_perp，公式336或公式337）或空穴的法向场的标量绘图变量。单位：V/cm。. 另见 Enormal（统一模型）和 eEnormal（电子变体）。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hEnormal",
+      "Enormal"
+    ],
     "example": "Plot { hEnormal }"
   },
   "hEparallel": {
     "section": "Plot",
     "signature": "Plot { hEparallel }",
-    "description": "表示平行于空穴电流的电场（F_p，公式363）的标量绘图变量。单位：V/cm。",
+    "description": "表示平行于空穴电流的电场（F_p，公式363）的标量绘图变量。单位：V/cm。. 另见 Eparallel（统一模型）和 eEparallel（电子变体）。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hEparallel",
+      "Eparallel"
+    ],
     "example": "Plot { hEparallel }"
   },
   "hEquilibriumDensity": {
@@ -34692,7 +35086,7 @@
   "hFactor": {
     "section": "Physics",
     "signature": "Piezo { Model { Mobility ( hFactor [FirstOrder|SecondOrder|EffectiveStressModel|<pmi_model>|SFactor=\"<dataset>\"] [ChannelDirection=<n>] [Kanda] [AutoOrientation|ParameterSetName=\"<name>\"] [ApplyToMobilityComponents] ) } }",
-    "description": "各向同性因子模型，用于计算机械应力下的空穴迁移率增强。使用压阻迁移率增强张量的对角分量作为应用于空穴迁移率的各向同性因子gamma。属于Piezo迁移率应力框架的一部分。",
+    "description": "各向同性因子模型，用于计算机械应力下的空穴迁移率增强。使用压阻迁移率增强张量的对角分量作为应用于空穴迁移率的各向同性因子gamma。属于Piezo迁移率应力框架的一部分。. 另见 Factor（统一模型）和 eFactor（电子变体）。",
     "parameters": [
       {
         "name": "FirstOrder",
@@ -34702,7 +35096,32 @@
       {
         "name": "SecondOrder",
         "type": "flag",
-        "desc": "使用二阶压阻模型。"
+        "desc": "使用二阶压阻模型，在大应力下精度更高。"
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "在压阻系数中包含温度和掺杂依赖。"
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "参数文件中预定义的压阻参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近界面方向自动选择参数集。"
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "计算迁移率增强应力因子的 PMI 模型名称（仅各向同性因子模型）。"
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "迁移率增强因子空间分布的数据集或 PMI 模型名称。"
       },
       {
         "name": "EffectiveStressModel",
@@ -34710,48 +35129,25 @@
         "desc": "使用有效应力因子模型。"
       },
       {
-        "name": "<pmi_model>",
-        "type": "ident",
-        "desc": "用于计算迁移率增强应力因子的PMI模型名称。"
-      },
-      {
-        "name": "SFactor",
-        "type": "string",
-        "desc": "迁移率增强因子空间分布的数据集名称或PMI模型。"
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "将 Factor 模型增强应用到单独的迁移率分量。"
       },
       {
         "name": "ChannelDirection",
         "type": "int",
-        "desc": "沟道方向（1-3），决定使用哪个张量分量。默认为1。"
-      },
-      {
-        "name": "Kanda",
-        "type": "flag",
-        "desc": "包含温度和掺杂依赖性。"
-      },
-      {
-        "name": "AutoOrientation",
-        "type": "flag",
-        "desc": "基于最近的界面方向自动选择参数集。"
-      },
-      {
-        "name": "ParameterSetName",
-        "type": "string",
-        "desc": "要使用的参数集名称。"
-      },
-      {
-        "name": "ApplyToMobilityComponents",
-        "type": "flag",
-        "desc": "将因子增强应用于各个迁移率分量。"
+        "desc": "通道方向（1-3），决定使用哪个张量分量。默认为 1。"
       }
     ],
     "keywords": [
-      "hFactor",
-      "Piezo",
-      "Mobility",
-      "Factor",
-      "AutoOrientation",
+      "FirstOrder",
+      "SecondOrder",
       "Kanda",
+      "ParameterSetName",
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
       "ChannelDirection"
     ],
     "example": "Physics {\n  Piezo (\n    Model (\n      Mobility (hFactor AutoOrientation)\n    )\n  )\n}"
@@ -34817,7 +35213,7 @@
   "hGradQuasiFermi": {
     "section": "Plot",
     "signature": "Plot { hGradQuasiFermi }",
-    "description": "空穴准费米势梯度幅度|nabla(Phi_p)|（公式365）的绘图数据集。可在顶点处获取，单位为V/cm。也可用作ComputeIonizationIntegrals的方向场以及雪崩模型的驱动力。",
+    "description": "空穴准费米势梯度幅度|nabla(Phi_p)|（公式365）的绘图数据集。可在顶点处获取，单位为V/cm。也可用作ComputeIonizationIntegrals的方向场以及雪崩模型的驱动力。. 另见 GradQuasiFermi（统一模型）和 eGradQuasiFermi（电子变体）。",
     "parameters": [],
     "keywords": [
       "hGradQuasiFermi",
@@ -34908,7 +35304,7 @@
   "hHeatFlux": {
     "section": "Plot",
     "signature": "Plot { hHeatFlux }",
-    "description": "绘制空穴热通量矢量 Sp 的数据集（公式 80），表示流体动力学模型中与空穴输运相关的能量通量。在顶点处同时提供标量（幅值）和矢量数据，单位为 W/cm²。",
+    "description": "绘制空穴热通量矢量 Sp 的数据集（公式 80），表示流体动力学模型中与空穴输运相关的能量通量。在顶点处同时提供标量（幅值）和矢量数据，单位为 W/cm²。. 另见 HeatFlux（统一模型）和 eHeatFlux（电子变体）。",
     "parameters": [],
     "keywords": [
       "hHeatFlux",
@@ -34920,17 +35316,35 @@
   "hHighFieldSaturation": {
     "section": "Physics",
     "signature": "hHighFieldSaturation",
-    "description": "Mobility() 或 hMobility() 中的空穴高场饱和速度模型。使用 Caughey-Thomas 或类似模型配置饱和速度及空穴迁移率的高场依赖性。",
+    "description": "Mobility() 或 hMobility() 中的空穴高场饱和速度模型。使用 Caughey-Thomas 或类似模型配置饱和速度及空穴迁移率的高场依赖性。另见 HighFieldSaturation（统一模型）和 eHighFieldSaturation（电子变体）。",
     "keywords": [
-      "HighFieldSaturation",
-      "hMobility",
       "Mobility",
+      "hMobility",
+      "HighFieldSaturation",
       "eHighFieldSaturation",
       "hHighFieldSaturation",
+      "CaugheyThomas",
+      "TransferredElectronEffect",
+      "GradQuasiFermi",
       "ParameterSetName",
       "AutoOrientation"
     ],
     "parameters": [
+      {
+        "name": "CaugheyThomas",
+        "type": "flag",
+        "desc": "使用 Canali-Hänsch 模型（默认）。"
+      },
+      {
+        "name": "TransferredElectronEffect",
+        "type": "flag",
+        "desc": "使用转移电子模型。"
+      },
+      {
+        "name": "GradQuasiFermi",
+        "type": "flag",
+        "desc": "使用准费米势梯度作为驱动力（默认）。"
+      },
       {
         "name": "ParameterSetName",
         "type": "string",
@@ -34940,6 +35354,66 @@
         "name": "AutoOrientation",
         "type": "flag",
         "desc": "根据最近的界面方向自动选择参数集。"
+      },
+      {
+        "name": "Eparallel",
+        "type": "flag",
+        "desc": "使用电流方向的电场作为驱动力。"
+      },
+      {
+        "name": "EparallelToInterface",
+        "type": "flag",
+        "desc": "使用最近的半导体-绝缘体界面平行方向的电场作为驱动力。"
+      },
+      {
+        "name": "ElectricField",
+        "type": "flag",
+        "desc": "使用电场作为驱动力。"
+      },
+      {
+        "name": "CarrierTempDrive",
+        "type": "flag",
+        "desc": "载流子温度驱动力（流体动力学模拟的默认值）。"
+      },
+      {
+        "name": "CarrierTempDriveBasic",
+        "type": "flag",
+        "desc": "基础载流子温度驱动力模型。"
+      },
+      {
+        "name": "CarrierTempDriveME",
+        "type": "flag",
+        "desc": "Meinerzhagen-Engl 载流子温度驱动力模型。"
+      },
+      {
+        "name": "CarrierTempDrivePolynomial",
+        "type": "flag",
+        "desc": "使用无理多项式的能量依赖迁移率模型。"
+      },
+      {
+        "name": "CarrierTempDriveSpline",
+        "type": "flag",
+        "desc": "使用样条插值的能量依赖迁移率模型。"
+      },
+      {
+        "name": "TransferredElectronEffect2",
+        "type": "flag",
+        "desc": "替代转移电子模型。"
+      },
+      {
+        "name": "PFMob",
+        "type": "flag",
+        "desc": "使用 Poole-Frenkel 迁移率模型。"
+      },
+      {
+        "name": "VRHMob",
+        "type": "flag",
+        "desc": "使用变程跳跃迁移率模型。"
+      },
+      {
+        "name": "PMIModel",
+        "type": "sub",
+        "desc": "自定义双场 PMI 模型。接受 Name、Index 和 String 参数。"
       }
     ],
     "example": ""
@@ -34958,7 +35432,7 @@
   "hIonIntegral": {
     "section": "Plot",
     "signature": "Plot { hIonIntegral }",
-    "description": "绘制沿击穿路径的空穴电离积分的数据集。用于近似击穿分析可视化。最佳路径以体数据集形式保存在 TDR 文件中。单位为无量纲（积分值）。",
+    "description": "绘制沿击穿路径的空穴电离积分的数据集。用于近似击穿分析可视化。最佳路径以体数据集形式保存在 TDR 文件中。单位为无量纲（积分值）。. 另见 IonIntegral（统一模型）和 eIonIntegral（电子变体）。",
     "parameters": [],
     "keywords": [
       "hIonIntegral",
@@ -34989,7 +35463,7 @@
   "hJouleHeat": {
     "section": "Plot",
     "signature": "Plot { hJouleHeat }",
-    "description": "绘制空穴焦耳热的数据集，计算公式为 |Jp|² / (q · μ_p)。表示空穴电流导致的电阻加热。在顶点处可用，单位为 W/cm³。",
+    "description": "绘制空穴焦耳热的数据集，计算公式为 |Jp|² / (q · μ_p)。表示空穴电流导致的电阻加热。在顶点处可用，单位为 W/cm³。. 另见 JouleHeat（统一模型）和 eJouleHeat（电子变体）。",
     "parameters": [],
     "keywords": [
       "hJouleHeat",
@@ -35092,7 +35566,7 @@
   "hMLDA": {
     "section": "Physics",
     "signature": "Physics { hMLDA [-LambdaTemp] }",
-    "description": "仅适用于空穴的修正局域密度近似（MLDA）量子修正模型。通过热波长 λ_300 提供对空穴载流子密度的简单单参数量子修正。可按区域或材料指定。",
+    "description": "仅适用于空穴的修正局域密度近似（MLDA）量子修正模型。通过热波长 λ_300 提供对空穴载流子密度的简单单参数量子修正。可按区域或材料指定。另见 eMLDA（电子变体）。",
     "parameters": [
       {
         "name": "-LambdaTemp",
@@ -35173,7 +35647,7 @@
   "hMobility": {
     "section": "Physics",
     "signature": "hMobility( <options> )",
-    "description": "Mobility() 中的空穴迁移率模型。专门针对空穴配置所有迁移率子模型（掺杂依赖性、高场饱和等）。覆盖针对空穴载流子类型的通用 Mobility() 设置。",
+    "description": "Mobility() 中的空穴迁移率模型。专门针对空穴配置所有迁移率子模型（掺杂依赖性、高场饱和等）。覆盖针对空穴载流子类型的通用 Mobility() 设置。另见 eMobility（电子变体）。",
     "keywords": [
       "eMobility",
       "Mobility",
@@ -35337,7 +35811,7 @@
   "hMultiValley": {
     "section": "Physics",
     "signature": "hMultiValley ([DensityIntegral])",
-    "description": "仅对空穴激活多谷带结构模型。在能带结构计算中考虑多个价带谷，影响态密度、载流子浓度和应变引起的带边偏移。DensityIntegral 选项启用 Fermi-Dirac 积分的数值高斯-拉盖尔积分。",
+    "description": "仅对空穴激活多谷带结构模型。在能带结构计算中考虑多个价带谷，影响态密度、载流子浓度和应变引起的带边偏移。DensityIntegral 选项启用 Fermi-Dirac 积分的数值高斯-拉盖尔积分。. 另见 MultiValley（统一模型）和 eMultiValley（电子变体）。",
     "parameters": [],
     "keywords": [
       "eMultiValley",
@@ -35423,9 +35897,12 @@
   "hQuasiFermiPotential": {
     "section": "Plot",
     "signature": "hQuasiFermiPotential",
-    "description": "输出孔准费米势 (Phi_p) 的标量绘图数据，该量由孔连续性方程求解。它驱动孔输运，在玻尔兹曼统计下定义为孔浓度 p = NV * exp(-(E_V - E_F,p) / kT)。",
+    "description": "输出孔准费米势 (Phi_p) 的标量绘图数据，该量由孔连续性方程求解。它驱动孔输运，在玻尔兹曼统计下定义为孔浓度 p = NV * exp(-(E_V - E_F,p) / kT)。. 另见 QuasiFermiPotential（统一模型）和 eQuasiFermiPotential（电子变体）。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hQuasiFermiPotential",
+      "hQuasiFermiEnergy"
+    ],
     "example": "Plot { hQuasiFermiPotential }"
   },
   "hQuenching": {
@@ -35439,9 +35916,14 @@
   "hRecGenHeat": {
     "section": "Plot",
     "signature": "hRecGenHeat",
-    "description": "输出孔产生-复合热源项 (H_p) 的标量绘图数据。该项考虑了在流体动力学模型中，孔系统与晶格之间由于产生和复合过程而产生的能量交换。",
+    "description": "输出孔产生-复合热源项 (H_p) 的标量绘图数据。该项考虑了在流体动力学模型中，孔系统与晶格之间由于产生和复合过程而产生的能量交换。. 另见 RecGenHeat（统一模型）和 eRecGenHeat（电子变体）。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hRecGenHeat",
+      "lRecGenHeat",
+      "RecGenHeat",
+      "Hydrodynamic"
+    ],
     "example": "Plot { hRecGenHeat }"
   },
   "hRecVelocity": {
@@ -35539,23 +36021,31 @@
   "hSRHRecombination": {
     "section": "Plot",
     "signature": "hSRHRecombination",
-    "description": "输出肖克利-里德-霍尔 (SRH) 模型孔复合率的标量绘图数据。当激活陷阱辅助隧穿 (NonlocalPath) 时，该值包括孔SRH复合率的非局域隧穿增强贡献。",
+    "description": "输出肖克利-里德-霍尔 (SRH) 模型孔复合率的标量绘图数据。当激活陷阱辅助隧穿 (NonlocalPath) 时，该值包括孔SRH复合率的非局域隧穿增强贡献。. 另见 SRHRecombination（统一模型）和 eSRHRecombination（电子变体）。",
     "parameters": [],
-    "keywords": [],
+    "keywords": [
+      "hSRHRecombination",
+      "tSRHRecombination",
+      "SRH"
+    ],
     "example": "Plot { hSRHRecombination }"
   },
   "hSaturationFactor": {
     "section": "Physics",
     "signature": "hSaturationFactor = <float>",
-    "description": "校准参数，修改空穴饱和速度对应力机械应力的依赖性。饱和速度公式变为 v_sat,i = v_sat,0 * (1 + alpha * t_i) / (1 + t_i)，其中 alpha 是该因子，t_i 是应力增强因子。值为0时仅将应力增强应用于低场迁移率；值为1时将其应用于总迁移率。",
+    "description": "校准参数，修改空穴饱和速度对应力机械应力的依赖性。饱和速度公式变为 v_sat,i = v_sat,0 * (1 + alpha * t_i) / (1 + t_i)，其中 alpha 是该因子，t_i 是应力增强因子。值为0时仅将应力增强应用于低场迁移率；值为1时将其应用于总迁移率。. 另见 SaturationFactor（统一模型）和 eSaturationFactor（电子变体）。",
     "parameters": [
       {
-        "name": "(value)",
+        "name": "value",
         "type": "float",
-        "desc": "标量校准因子alpha。默认值为1。典型范围0到1。0=应力仅影响低场迁移率；1=应力影响总迁移率。类型: float"
+        "desc": "空穴饱和速度应力依赖的缩放因子。默认 1.0。"
       }
     ],
-    "keywords": [],
+    "keywords": [
+      "hSaturationFactor",
+      "SaturationFactor",
+      "Mobility"
+    ],
     "example": "Physics {\n  Piezo(Model(Mobility(hSaturationFactor=0.5)))\n}"
   },
   "hSaturationVelocity": {
@@ -35603,9 +36093,70 @@
   },
   "hSubband": {
     "section": "Physics",
-    "signature": "hSubband( Fermi | Doping | EffectiveMass | Scattering | BalMob )",
-    "description": "激活具有子带量子化效应的多谷空穴迁移率模型。选项包括费米统计、应力相关有效质量、MLDA散射率和弹道迁移率修正。",
-    "parameters": [],
+    "signature": "hSubband ( [Fermi] [Doping] [EffectiveMass] [Scattering(MLDA)] [BalMob] [Nonparabolicity] [Transport(<vector>)] [-AutoOrientation] [-RelChDir110] [NoStressInDDmob] [EqRefMob] )",
+    "description": "用于应力仿真的多谷空穴子带迁移率模型。使用子带结构计算应力引起的空穴迁移率变化。选项控制分布函数、有效质量、散射模型以及应力对漂移-扩散和弹道迁移率的影响。另见 Subband（统一模型）和 eSubband（电子变体）。",
+    "parameters": [
+      {
+        "name": "Doping",
+        "desc": "具有掺杂依赖性的应变诱导子带模型",
+        "type": "flag"
+      },
+      {
+        "name": "Fermi",
+        "desc": "具有载流子浓度（费米统计）依赖性的应变诱导子带模型",
+        "type": "flag"
+      },
+      {
+        "name": "EffectiveMass",
+        "desc": "应力引起的空穴有效质量变化",
+        "type": "flag"
+      },
+      {
+        "name": "EffectiveMass(-Transport)",
+        "desc": "排除 2D 逆输运质量张量变换",
+        "type": "flag"
+      },
+      {
+        "name": "EffectiveMass(Transport-vector)",
+        "desc": "激活 1D 逆输运质量张量变换",
+        "type": "flag"
+      },
+      {
+        "name": "Scattering",
+        "desc": "具有体区间散射的应变诱导子带模型",
+        "type": "flag"
+      },
+      {
+        "name": "Scattering(MLDA)",
+        "desc": "具有界面散射 (MLDA) 的应变诱导子带模型",
+        "type": "flag"
+      },
+      {
+        "name": "BalMob",
+        "desc": "应力引起的空穴弹道迁移率变化",
+        "type": "flag"
+      },
+      {
+        "name": "NoStressInDDmob",
+        "desc": "仅考虑弹道迁移率，忽略漂移-扩散迁移率中的应力",
+        "type": "flag"
+      },
+      {
+        "name": "EqRefMob",
+        "desc": "为转移载流子模型激活平衡参考迁移率计算",
+        "type": "flag"
+      },
+      {
+        "name": "-RelChDir110",
+        "desc": "在参考迁移率中使用 <100> 沟道方向",
+        "type": "flag"
+      },
+      {
+        "name": "-AutoOrientation",
+        "desc": "使用全张量参考迁移率",
+        "type": "flag"
+      }
+    ],
     "keywords": [
       "mobility",
       "hole",
@@ -35628,7 +36179,7 @@
   "hTemperature": {
     "section": "Physics",
     "signature": "hTemperature",
-    "description": "每个顶点的空穴温度，可作为流体动力学或热力学输运模拟中的绘图数据集。用作收敛准则参数和DiffusionNoise{}温度选项。单位：K。",
+    "description": "每个顶点的空穴温度，可作为流体动力学或热力学输运模拟中的绘图数据集。用作收敛准则参数和DiffusionNoise{}温度选项。单位：K。. 另见 Temperature（统一模型）和 eTemperature（电子变体）。",
     "keywords": [
       "eTemperature",
       "LatticeTemperature",
@@ -35648,18 +36199,69 @@
   "hTensor": {
     "section": "Physics",
     "signature": "Physics { Piezo(Model(Mobility(hTensor[(<named_param_set>)]))) }",
-    "description": "仅选择空穴迁移率的各向异性压阻张量模型。基于应力全张量展开计算迁移率增强。另外，Tensor关键字将该模型应用于电子和空穴两者。",
-    "parameters": [],
+    "description": "仅选择空穴迁移率的各向异性压阻张量模型。基于应力全张量展开计算迁移率增强。另外，Tensor关键字将该模型应用于电子和空穴两者。另见 eTensor（电子变体）。",
+    "parameters": [
+      {
+        "name": "FirstOrder",
+        "type": "flag",
+        "desc": "使用一阶压阻模型（默认）。"
+      },
+      {
+        "name": "SecondOrder",
+        "type": "flag",
+        "desc": "使用二阶压阻模型，在大应力下精度更高。"
+      },
+      {
+        "name": "Kanda",
+        "type": "flag",
+        "desc": "在压阻系数中包含温度和掺杂依赖。"
+      },
+      {
+        "name": "ParameterSetName",
+        "type": "string",
+        "desc": "参数文件中预定义的压阻参数集名称。"
+      },
+      {
+        "name": "AutoOrientation",
+        "type": "flag",
+        "desc": "根据最近界面方向自动选择参数集。"
+      },
+      {
+        "name": "<ident>",
+        "type": "ident",
+        "desc": "计算压阻系数的 PMI 模型名称（仅一阶模型）。"
+      },
+      {
+        "name": "SFactor",
+        "type": "string",
+        "desc": "迁移率增强因子空间分布的数据集或 PMI 模型名称。"
+      },
+      {
+        "name": "EffectiveStressModel",
+        "type": "flag",
+        "desc": "使用有效应力因子模型。"
+      },
+      {
+        "name": "ApplyToMobilityComponents",
+        "type": "flag",
+        "desc": "将 Factor 模型增强应用到单独的迁移率分量。"
+      },
+      {
+        "name": "Enormal",
+        "type": "flag",
+        "desc": "使用依赖于界面法向电场和摩尔分数的压阻系数。"
+      }
+    ],
     "keywords": [
-      "hTensor",
-      "Tensor",
-      "eTensor",
       "FirstOrder",
       "SecondOrder",
-      "Enormal",
       "Kanda",
       "ParameterSetName",
-      "AutoOrientation"
+      "AutoOrientation",
+      "SFactor",
+      "EffectiveStressModel",
+      "ApplyToMobilityComponents",
+      "Enormal"
     ],
     "example": "Physics {\n  Piezo (\n    Model (\n      Mobility (hTensor)\n    )\n  )\n}"
   },
@@ -35714,8 +36316,19 @@
   "hThermionic": {
     "section": "Physics",
     "signature": "Physics(MaterialInterface=\"<mat1>/<mat2>\") { hThermionic }",
-    "description": "激活异质界面处的空穴热电子发射模型。用于定义突变半导体-半导体界面处的空穴电流和能量通量，在这些界面处常规漂移-扩散输运方程无效。Thermionic关键词对两种载流子都激活此模型。",
-    "parameters": [],
+    "description": "激活异质界面处的空穴热电子发射模型。用于定义突变半导体-半导体界面处的空穴电流和能量通量，在这些界面处常规漂移-扩散输运方程无效。Thermionic关键词对两种载流子都激活此模型。另见 eThermionic（电子变体）。",
+    "parameters": [
+      {
+        "name": "HCI",
+        "type": "flag",
+        "desc": "在界面处使用热载流子注入模型局部注入热载流子。"
+      },
+      {
+        "name": "Organic_Gaussian",
+        "type": "flag",
+        "desc": "对有机异质界面使用类热电子高斯发射模型。"
+      }
+    ],
     "keywords": [
       "hThermionic(HCI)",
       "hThermionic(Organic_Gaussian)",
