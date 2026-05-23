@@ -4,6 +4,18 @@
 
 ---
 
+## [2.0.7] - 2026-05-23
+
+### 新功能
+
+- **SDEVICE ErrRef 拼写变体高亮与文档**（#62）：添加 ErrEff、ErRef、ErReff 三个 SDEVICE 解析器接受的 ErrRef 拼写变体，提供语法高亮、自动补全和中英文 Hover 文档（注明建议使用规范拼写 ErrRef）
+
+### 其他改进
+
+- **优化 SDEVICE 击穿效应相关函数文档**（#63）：深度扩充 AvaHomotopy（同伦延拓）、BandgapDependence（带隙依赖）、Hatakeyama（4H-SiC 雪崩）、Lackner/UniBo2 模型等 15+ 条 SDEVICE 击穿/雪崩文档；修复 68 处中文翻译残留（"。."）、15 处"孔"→"空穴"误译；补充 eAvalanche/hAvalanche 核心条目参数和示例
+
+---
+
 ## [2.0.6] - 2026-05-23
 
 ### 其他改进
@@ -999,6 +1011,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.0.7]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.6...v2.0.7
 [2.0.6]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.5...v2.0.6
 [2.0.5]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.4...v2.0.5
 [2.0.4]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.3...v2.0.4
