@@ -1362,14 +1362,15 @@
   "AvaHomotopy": {
     "section": "Math",
     "signature": "AvaHomotopy",
-    "description": "In the Math section, activates the avalanche homotopy continuation method for improving Newton convergence in breakdown simulations. Gradually introduces avalanche generation terms to help the solver converge at high bias near breakdown conditions.",
+    "description": "In the Math section, activates the avalanche homotopy continuation method to improve Newton convergence during breakdown simulations. When performing a voltage ramp near the breakdown condition, the avalanche generation term grows rapidly and can cause Newton iterations to diverge. The homotopy method addresses this by gradually introducing the avalanche generation source term into the carrier continuity equations. Instead of applying the full avalanche generation at once, the solver starts with a reduced contribution and progressively increases it to the full value. This approach is particularly useful when convergence fails during high-bias sweeps near breakdown, especially in 3D simulations or devices with complex field profiles. Often combined with AvalPostProcessing (for approximate breakdown analysis) or AvalDensGradQF (for improved avalanche discretization).",
     "parameters": [],
     "keywords": [
       "Avalanche",
       "Breakdown",
       "Newton",
       "Homotopy"
-    ]
+    ],
+    "example": "Math {\n  Extrapolate\n  AvaHomotopy\n  AvalDensGradQF\n}\n\n# Combined with post-processing for breakdown analysis:\nMath {\n  Extrapolate\n  AvaHomotopy\n  AvalPostProcessing\n}"
   },
   "AvalDensGradQF": {
     "section": "Math",
@@ -1448,7 +1449,7 @@
   "AvalPostProcessing": {
     "section": "Math",
     "signature": "AvalPostProcessing",
-    "description": "In the Math section, prevents impact ionization-generated carriers from being included self-consistently in the device equations. Ionization integrals can still be calculated when solving for carriers, but retains the benefits of approximate breakdown analysis (faster simulations, fewer convergence issues).",
+    "description": "In the Math section, disables the feedback of avalanche-generated carriers into the Poisson and continuity equations. The impact ionization generation rate is still computed (allowing ionization integral calculation), but the generated carriers do not affect the solution. This yields approximate breakdown analysis with faster convergence and fewer convergence issues. Typically used with BreakdownProbability or ComputeIonizationIntegrals.",
     "parameters": [],
     "keywords": [
       "Avalanche",
@@ -2188,7 +2189,7 @@
   "BandgapDependence": {
     "section": "Physics",
     "signature": "Avalanche ( BandgapDependence )",
-    "description": "In Avalanche(), includes a dependency on the energy bandgap in the avalanche generation models. The ionization coefficients become dependent on the local bandgap value, which affects breakdown voltage predictions.",
+    "description": "In Avalanche(), includes a dependency on the energy bandgap in the avalanche generation models. When specified, the coefficient b in the ionization coefficient formula is replaced with b -> beta * Eg / (q * lambda), where Eg is the local energy bandgap, lambda is the optical-phonon mean free path for the carrier, and beta is a proportionality constant. This substitution makes the ionization coefficient sensitive to the local bandgap value, which is especially important for heterostructure devices where the bandgap varies spatially. For narrow-bandgap materials (e.g., InGaAs), the reduced b coefficient increases the ionization rate and lowers the breakdown voltage; for wide-bandgap materials (e.g., SiC, GaN), the increased b coefficient suppresses impact ionization and raises the breakdown voltage. BandgapDependence can be specified as an argument to Avalanche(), eAvalanche(), or hAvalanche(), and works with all avalanche models (vanOverstraeten-deMan, Okuto-Crowell, Lackner).",
     "parameters": [],
     "keywords": [
       "Avalanche",
@@ -10962,7 +10963,7 @@
       "RefDens",
       "ComputeGradQuasiFermiAtContacts"
     ],
-    "example": "Physics {\n  Recombination (Avalanche GradQuasiFermi))\n}",
+    "example": "Physics {\n  Recombination (Avalanche (GradQuasiFermi))\n}",
     "contexts": {
       "Physics": "driving force option in Avalanche() and mobility models",
       "Math": "interpolation parameters (RefDens_*) for GradQuasiFermi driving force",
@@ -11503,6 +11504,60 @@
       "Math": "HB SolveSpectrum harmonic definitions",
       "Plot": "harmonic-dependent plot datasets"
     }
+  },
+  "Hatakeyama": {
+    "section": "Physics",
+    "signature": "Avalanche ( Hatakeyama )",
+    "description": "Hatakeyama anisotropic avalanche generation model for 4H-SiC power devices. The impact ionization coefficient alpha follows the Chynoweth law: alpha = gamma * a * exp(-gamma * b / F), where gamma accounts for lattice temperature dependence via the optical phonon energy. Unlike other avalanche models (vanOverstraeten, Okuto, Lackner, UniBo, UniBo2) that use only the magnitude of the driving force, Hatakeyama requires a vectorial driving force to compute anisotropic coefficients a and b. The driving force is decomposed into components parallel (F_0001) and orthogonal (F_1120) to the hexagonal crystal c-axis. A special interpolation formula blends these directional coefficients. Supports ElectricField, Eparallel, GradQuasiFermi, and CarrierTempDrive driving force models. The model is implicitly anisotropic and does not require an Aniso(Avalanche) specification. Parameters include a_0001, a_1120 (pre-exponential, cm^-1), b_0001, b_1120 (exponential, V/cm), hbarOmega (optical phonon energy, eV), and theta (interpolation control, default 1). Reference: T. Hatakeyama et al., SISPAD 2005, pp. 171-174.",
+    "parameters": [
+      {
+        "name": "a_0001",
+        "type": "float",
+        "desc": "Pre-exponential ionization coefficient along c-axis (0001 direction). Default: 1.76e8 (electrons), 3.41e8 (holes). Unit: cm^-1."
+      },
+      {
+        "name": "a_1120",
+        "type": "float",
+        "desc": "Pre-exponential ionization coefficient perpendicular to c-axis (1120 direction). Default: 2.10e7 (electrons), 2.96e7 (holes). Unit: cm^-1."
+      },
+      {
+        "name": "b_0001",
+        "type": "float",
+        "desc": "Exponential coefficient along c-axis (0001 direction). Default: 3.30e7 (electrons), 2.50e7 (holes). Unit: V/cm."
+      },
+      {
+        "name": "b_1120",
+        "type": "float",
+        "desc": "Exponential coefficient perpendicular to c-axis (1120 direction). Default: 1.70e7 (electrons), 1.60e7 (holes). Unit: V/cm."
+      },
+      {
+        "name": "hbarOmega",
+        "type": "float",
+        "desc": "Optical phonon energy for temperature-dependent gamma factor. Default: 0.19 eV for both carriers. Unit: eV."
+      },
+      {
+        "name": "theta",
+        "type": "float",
+        "desc": "Interpolation control parameter. Default: 1. Set to 0 to make coefficient b independent of driving force magnitude (b = B)."
+      }
+    ],
+    "keywords": [
+      "Avalanche",
+      "eAvalanche",
+      "hAvalanche",
+      "Recombination",
+      "ImpactIonization",
+      "UniBo",
+      "UniBo2",
+      "vanOverstraeten",
+      "Okuto",
+      "Lackner",
+      "Aniso",
+      "4H-SiC",
+      "anisotropic"
+    ],
+    "example": "Physics {\n  Recombination(Avalanche(Hatakeyama))\n}",
+    "contexts": {}
   },
   "Heat": {
     "section": "Physics",
@@ -13890,8 +13945,34 @@
   "Lackner": {
     "section": "Physics",
     "signature": "Lackner",
-    "description": "Selects the Lackner avalanche generation model for impact ionization. One of several available avalanche models (vanOverstraeten, Okuto, Lackner, UniBo, UniBo2, Hatakeyama). Can be combined with BandgapDependence option. Used within Avalanche(), eAvalanche(), or hAvalanche() in the Recombination section of Physics.",
-    "parameters": [],
+    "description": "Selects the Lackner avalanche generation model for impact ionization. This model, derived by Lackner (1991), presents a pseudo-local ionization rate as a modification to the Chynoweth law under stationary conditions. Unlike the vanOverstraeten model which uses a simple exponential form, the Lackner model introduces a normalization factor Z that accounts for both electron and hole ionization contributions simultaneously, and a temperature-dependent factor gamma based on the optical phonon energy. The model applies to silicon for electric fields in the range 1e5 to 1e6 V/cm. Parameters are accessible in the Lackner parameter set (a, b, hbarOmegae, lambda, beta for both electrons and holes). Can be combined with BandgapDependence to include energy bandgap dependency in the exponential coefficient. Used within Avalanche(), eAvalanche(), or hAvalanche() in the Recombination section of Physics.",
+    "parameters": [
+      {
+        "name": "a",
+        "type": "float",
+        "desc": "Pre-exponential coefficient (cm^-1). Electrons: 1.316e6, Holes: 1.818e6."
+      },
+      {
+        "name": "b",
+        "type": "float",
+        "desc": "Exponential coefficient (V/cm). Electrons: 1.474e6, Holes: 2.036e6."
+      },
+      {
+        "name": "hbarOmegae",
+        "type": "float",
+        "desc": "Optical phonon energy (eV). Default: 0.063 for both carriers."
+      },
+      {
+        "name": "lambda",
+        "type": "float",
+        "desc": "Optical-phonon mean free path (cm). Electrons: 62e-8, Holes: 45e-8."
+      },
+      {
+        "name": "beta",
+        "type": "float",
+        "desc": "Proportionality constant for BandgapDependence. Electrons: 0.812945, Holes: 0.815009."
+      }
+    ],
     "keywords": [
       "Avalanche",
       "eAvalanche",
@@ -13902,9 +13983,10 @@
       "CarrierTempDrive",
       "ElectricField",
       "Recombination",
-      "ImpactIonization"
+      "ImpactIonization",
+      "Chynoweth"
     ],
-    "example": "Physics {\n  Recombination(Avalanche(Lackner BandgapDependence))\n}",
+    "example": "Physics {\n  Recombination(Avalanche(Lackner))\n}\n\n# With bandgap dependence:\nPhysics {\n  Recombination(Avalanche(Lackner BandgapDependence))\n}",
     "contexts": {}
   },
   "Lambda": {
@@ -18479,22 +18561,22 @@
       {
         "name": "a",
         "type": "float",
-        "desc": "Pre-exponential coefficient."
+        "desc": "Pre-exponential coefficient. Default: 0.426 V^-1 (electrons), 0.243 V^-1 (holes). Controls the overall magnitude of the ionization coefficient in the Okuto-Crowell model."
       },
       {
         "name": "b",
         "type": "float",
-        "desc": "Exponential coefficient (V/cm)."
+        "desc": "Exponential coefficient. Default: 4.81e5 V/cm (electrons), 6.53e5 V/cm (holes). Governs the exponential decay rate of the ionization coefficient with decreasing electric field."
       },
       {
         "name": "c",
         "type": "float",
-        "desc": "Temperature coefficient for the pre-exponential term."
+        "desc": "Temperature coefficient for the pre-exponential term a*(1+c*(T-T0)). Default: 3.05e-4 K^-1 (electrons), 5.35e-4 K^-1 (holes). Modulates the ionization rate sensitivity to temperature."
       },
       {
         "name": "d",
         "type": "float",
-        "desc": "Temperature coefficient for the exponential term."
+        "desc": "Temperature coefficient for the exponential term b*(1+d*(T-T0)). Default: 6.86e-4 K^-1 (electrons), 5.67e-4 K^-1 (holes). Controls the temperature dependence of the critical electric field."
       }
     ],
     "keywords": [
@@ -29570,10 +29652,53 @@
   "UniBo2": {
     "section": "Physics",
     "signature": "Avalanche(UniBo2)",
-    "description": "New University of Bologna impact ionization model for avalanche generation. An updated version of the UniBo model with refined parameterization.",
-    "parameters": [],
-    "keywords": [],
-    "example": "Physics(Region=\"Silicon\") {\n    Recombination(Avalanche(UniBo2))\n}",
+    "description": "Selects the new University of Bologna (UniBo2) impact ionization model for avalanche generation. An improved version of the original UniBo model, developed for an extended temperature range of 25 C to 500 C (773 K), compared to the original UniBo model which covers 25 C to 400 C. The key difference is that all temperature-dependent coefficients (a, b, c, d) are now expressed as higher-order polynomials of temperature: coefficients a, c, d use 3rd-order polynomials, while coefficient b uses a 10th-order polynomial for electrons, providing a significantly more refined fit. The model is based on impact ionization data from the Boltzmann solver HARM and is calibrated against measurements. Parameters are accessible in the UniBo2 parameter set. Note: The model name is case-sensitive; the exact capitalization UniBo2 must be used in both the command file and the parameter file.",
+    "parameters": [
+      {
+        "name": "a0..a3",
+        "type": "float",
+        "desc": "Polynomial coefficients for a(T). Electrons: a0=4.65403, Holes: a0=2.26018."
+      },
+      {
+        "name": "b0..b10",
+        "type": "float",
+        "desc": "Polynomial coefficients for b(T). Up to 10th order for electrons, 3rd order for holes."
+      },
+      {
+        "name": "c0..c3",
+        "type": "float",
+        "desc": "Polynomial coefficients for c(T). 3rd-order polynomial of T."
+      },
+      {
+        "name": "d0..d3",
+        "type": "float",
+        "desc": "Polynomial coefficients for d(T). 3rd-order polynomial of T."
+      },
+      {
+        "name": "lambda",
+        "type": "float",
+        "desc": "Optical-phonon mean free path (cm). Electrons: 62e-8, Holes: 45e-8."
+      },
+      {
+        "name": "beta",
+        "type": "float",
+        "desc": "Proportionality constant for BandgapDependence. Electrons: 0.391847, Holes: 0.831470."
+      }
+    ],
+    "keywords": [
+      "Avalanche",
+      "eAvalanche",
+      "hAvalanche",
+      "BandgapDependence",
+      "GradQuasiFermi",
+      "Eparallel",
+      "CarrierTempDrive",
+      "ElectricField",
+      "UniBo",
+      "Recombination",
+      "ImpactIonization"
+    ],
+    "example": "Physics {\n  Recombination(Avalanche(UniBo2))\n}\n\n# Per-region with bandgap dependence:\nPhysics(Region=\"Silicon\") {\n  Recombination(Avalanche(UniBo2 BandgapDependence))\n}",
     "contexts": {}
   },
   "Uniform": {
@@ -32541,13 +32666,78 @@
   },
   "eAvalanche": {
     "section": "Physics",
-    "signature": "eAvalanche",
-    "description": "Electron impact ionization (avalanche) model within Avalanche() or Recombination(). Models carrier generation due to high-field impact ionization. Uses van Overstraeten-de Man, Chynoweth, or Selberherr models with user-definable coefficients. See also hAvalanche for the hole variant.",
+    "signature": "eAvalanche ( [<model>] [<driving_force>] [BandgapDependence] )",
+    "description": "Specifies the electron impact ionization (avalanche generation) model independently from the hole model. Used inside Recombination() in the Physics section. When Avalanche() is used instead, both electron and hole ionization share the same model and driving force. eAvalanche allows selecting a different model (vanOverstraeten, Okuto, Lackner, UniBo, UniBo2, Hatakeyama, or a PMI model) and driving force (GradQuasiFermi, Eparallel, CarrierTempDrive, or ElectricField) specifically for the electron ionization coefficient. The default model is vanOverstraeten and the default driving force is GradQuasiFermi. Adding BandgapDependence replaces coefficient b with a bandgap-dependent expression. Parameters for each model are accessible in their respective parameter sets (e.g., vanOverstraetendeMan, Okuto, Lackner, UniBo, UniBo2, Hatakeyama). To plot the electron avalanche generation rate, specify eAvalanche in the Plot section. See also Avalanche for the combined electron-hole model and hAvalanche for the hole-specific variant.",
+    "parameters": [
+      {
+        "name": "BandgapDependence",
+        "type": "boolean",
+        "desc": "Include a dependency on the energy bandgap in the avalanche generation coefficient b."
+      },
+      {
+        "name": "CarrierTempDrive",
+        "type": "ident",
+        "desc": "Use carrier temperature as driving force (default for hydrodynamic simulation)."
+      },
+      {
+        "name": "ElectricField",
+        "type": "ident",
+        "desc": "Use plain electric field driving force."
+      },
+      {
+        "name": "Eparallel",
+        "type": "ident",
+        "desc": "Use current-parallel electric field driving force."
+      },
+      {
+        "name": "GradQuasiFermi",
+        "type": "ident",
+        "desc": "Use gradient of quasi-Fermi potential as driving force (default)."
+      },
+      {
+        "name": "Hatakeyama",
+        "type": "ident",
+        "desc": "Use Hatakeyama avalanche model."
+      },
+      {
+        "name": "Lackner",
+        "type": "ident",
+        "desc": "Use Lackner avalanche model."
+      },
+      {
+        "name": "Okuto",
+        "type": "ident",
+        "desc": "Use Okuto-Crowell avalanche model."
+      },
+      {
+        "name": "UniBo",
+        "type": "ident",
+        "desc": "Use University of Bologna impact ionization model."
+      },
+      {
+        "name": "UniBo2",
+        "type": "ident",
+        "desc": "Use new University of Bologna impact ionization model."
+      },
+      {
+        "name": "vanOverstraeten",
+        "type": "ident",
+        "desc": "Use van Overstraeten-de Man model (default)."
+      },
+      {
+        "name": "<ident>",
+        "type": "string",
+        "desc": "Use PMI model <ident> for avalanche generation."
+      }
+    ],
     "keywords": [
       "hAvalanche",
       "Recombination",
-      "Avalanche"
-    ]
+      "Avalanche",
+      "Aniso"
+    ],
+    "example": "Physics {\n  Recombination (\n    eAvalanche (CarrierTempDrive)\n    hAvalanche (Okuto)\n  )\n}",
+    "contexts": {}
   },
   "eB2BGenWithinSelectedRegions": {
     "section": "Math",
@@ -35581,7 +35771,7 @@
   "hAlphaAvalanche": {
     "section": "Plot",
     "signature": "Plot { hAlphaAvalanche }",
-    "description": "Scalar plot variable representing the hole (p) impact ionization coefficient (alpha_p) from the avalanche generation model. Units: cm^-1.",
+    "description": "Scalar plot dataset for the hole impact ionization coefficient (alpha_p), representing the number of electron-hole pairs generated per unit distance by holes. Used for visualizing avalanche breakdown behavior and analyzing the hole contribution to impact ionization.",
     "parameters": [],
     "keywords": [],
     "example": "Plot { hAlphaAvalanche }",
@@ -35598,13 +35788,78 @@
   },
   "hAvalanche": {
     "section": "Physics",
-    "signature": "hAvalanche",
-    "description": "Hole impact ionization (avalanche) model within Avalanche() or Recombination(). Models hole-initiated carrier generation due to high-field impact ionization. Parallel to eAvalanche with separate coefficients.",
+    "signature": "hAvalanche ( [<model>] [<driving_force>] [BandgapDependence] )",
+    "description": "Specifies the hole impact ionization (avalanche generation) model independently from the electron model. Used inside Recombination() in the Physics section. When Avalanche() is used instead, both electron and hole ionization share the same model and driving force. hAvalanche allows selecting a different model (vanOverstraeten, Okuto, Lackner, UniBo, UniBo2, Hatakeyama, or a PMI model) and driving force (GradQuasiFermi, Eparallel, CarrierTempDrive, or ElectricField) specifically for the hole ionization coefficient. The default model is vanOverstraeten and the default driving force is GradQuasiFermi. Adding BandgapDependence replaces coefficient b with a bandgap-dependent expression. Parameters for each model are accessible in their respective parameter sets (e.g., vanOverstraetendeMan, Okuto, Lackner, UniBo, UniBo2, Hatakeyama). To plot the hole avalanche generation rate, specify hAvalanche in the Plot section. For anisotropic avalanche, use Aniso(hAvalanche) in the Physics section. See also Avalanche for the combined electron-hole model and eAvalanche for the electron-specific variant.",
+    "parameters": [
+      {
+        "name": "BandgapDependence",
+        "type": "boolean",
+        "desc": "Include a dependency on the energy bandgap in the avalanche generation coefficient b."
+      },
+      {
+        "name": "CarrierTempDrive",
+        "type": "ident",
+        "desc": "Use carrier temperature as driving force (default for hydrodynamic simulation)."
+      },
+      {
+        "name": "ElectricField",
+        "type": "ident",
+        "desc": "Use plain electric field driving force."
+      },
+      {
+        "name": "Eparallel",
+        "type": "ident",
+        "desc": "Use current-parallel electric field driving force."
+      },
+      {
+        "name": "GradQuasiFermi",
+        "type": "ident",
+        "desc": "Use gradient of quasi-Fermi potential as driving force (default)."
+      },
+      {
+        "name": "Hatakeyama",
+        "type": "ident",
+        "desc": "Use Hatakeyama avalanche model."
+      },
+      {
+        "name": "Lackner",
+        "type": "ident",
+        "desc": "Use Lackner avalanche model."
+      },
+      {
+        "name": "Okuto",
+        "type": "ident",
+        "desc": "Use Okuto-Crowell avalanche model."
+      },
+      {
+        "name": "UniBo",
+        "type": "ident",
+        "desc": "Use University of Bologna impact ionization model."
+      },
+      {
+        "name": "UniBo2",
+        "type": "ident",
+        "desc": "Use new University of Bologna impact ionization model."
+      },
+      {
+        "name": "vanOverstraeten",
+        "type": "ident",
+        "desc": "Use van Overstraeten-de Man model (default)."
+      },
+      {
+        "name": "<ident>",
+        "type": "string",
+        "desc": "Use PMI model <ident> for avalanche generation."
+      }
+    ],
     "keywords": [
       "eAvalanche",
       "Recombination",
-      "Avalanche"
-    ]
+      "Avalanche",
+      "Aniso"
+    ],
+    "example": "Physics {\n  Recombination (\n    eAvalanche (CarrierTempDrive)\n    hAvalanche (Okuto)\n  )\n}\n\n# Anisotropic avalanche for holes:\nPhysics {\n  Aniso (hAvalanche)\n}",
+    "contexts": {}
   },
   "hBand2BandGeneration": {
     "section": "Plot",
@@ -35745,13 +36000,13 @@
   "hBreakdownProbability": {
     "section": "Plot",
     "signature": "Plot { hBreakdownProbability }",
-    "description": "Plot variable related to the hole contribution to avalanche breakdown probability analysis. See also BreakdownProbability for the unified model and eBreakdownProbability for the electron variant.",
+    "description": "Scalar plot variable for the hole avalanche breakdown probability. This represents the probability that a hole generated at a given position will trigger an avalanche multiplication event. The breakdown probability computation is controlled by the BreakdownProbability statement in the Physics section. For meaningful results, impact ionization-generated carriers should be excluded using AvalPostProcessing in the Math section. See also eBreakdownProbability for the electron variant.",
     "parameters": [],
     "keywords": [
       "hBreakdownProbability",
       "jBreakdownProbability"
     ],
-    "example": "Plot { hBreakdownProbability }",
+    "example": "Physics {\n  BreakdownProbability(MinElectricField=1.0e4 InterpolatedDiscretization)\n}\nMath { AvalPostProcessing }\nPlot { eBreakdownProbability hBreakdownProbability }",
     "contexts": {}
   },
   "hCDL1Lifetime": {
@@ -36883,7 +37138,7 @@
   "hSHEAvalancheGeneration": {
     "section": "Plot",
     "signature": "hSHEAvalancheGeneration",
-    "description": "Scalar plot data for the hole avalanche generation rate computed by the spherical harmonics expansion (SHE) method. Represents the impact ionization generation rate for holes (G_p,i) when the SHE transport model is active.",
+    "description": "Scalar plot variable representing the hole avalanche generation rate computed by the spherical harmonics expansion (SHE) method. This is the impact ionization rate Gp,SHE for holes obtained from the SHE energy distribution function, in units of cm^-3 s^-1.",
     "parameters": [],
     "keywords": [],
     "example": "Plot { hSHEAvalancheGeneration }",
