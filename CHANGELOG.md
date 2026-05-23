@@ -4,6 +4,14 @@
 
 ---
 
+## [2.0.6] - 2026-05-23
+
+### 其他改进
+
+- **统一 SDEVICE e/h 前缀变体文档风格**（#61）：补全 11 组 h 变体的空壳 keywords 数组和 6 组 e 变体的 contexts 字段；统一 SaturationFactor/Tensor/Factor/Subband/Thermionic/Diffusivity 等 31 组 e/h 变体的参数名格式和跨引用关联说明；修复 Diffusivity 组损坏的参数数据
+
+---
+
 ## [2.0.5] - 2026-05-20
 
 ### 新功能
@@ -991,6 +999,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.0.6]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.5...v2.0.6
 [2.0.5]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.4...v2.0.5
 [2.0.4]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.3...v2.0.4
 [2.0.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.2...v2.0.3
