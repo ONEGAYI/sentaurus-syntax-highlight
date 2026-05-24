@@ -6429,6 +6429,7 @@
       "MaxVal",
       "NumberOfHarmonics",
       "Resist",
+      "Resistor",
       "Operation",
       "Regions",
       "dz",

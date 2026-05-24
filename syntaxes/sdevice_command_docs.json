@@ -6851,6 +6851,7 @@
     ],
     "keywords": [
       "Resist",
+      "Resistor",
       "Schottky",
       "SRDoping",
       "EqOhmic",
@@ -7824,6 +7825,7 @@
       "AreaFactor",
       "Schottky",
       "Resist",
+      "Resistor",
       "DistResist",
       "Workfunction",
       "Poisson",
@@ -24997,6 +24999,15 @@
     "example": "Electrode {\n  Name=\"anode\"\n  Voltage=-3\n  Resist=1\n}",
     "contexts": {}
   },
+  "Resistor": {
+    "section": "Electrode",
+    "signature": "Electrode { ... Resistor=<float> }",
+    "description": "Specifies the lumped series resistance for an electrode in ohms. Functionally equivalent to Resist, this parameter adds a series resistance to a device contact in mixed-mode simulations. The contact voltage is interpreted as the external voltage applied through this resistance.",
+    "parameters": [],
+    "keywords": [],
+    "example": "Electrode {\n  { Name=\"Gate\" Voltage=0.0 }\n  { Name=\"Emitter\" Voltage=0.0 }\n  { Name=\"Collector\" Voltage=0.0 Resistor=1e11 }\n}",
+    "contexts": {}
+  },
   "Resistivity": {
     "section": "Physics",
     "signature": "Physics { MetalResistivity(pmi_model) }",
@@ -32010,6 +32021,7 @@
       "Contact",
       "Schottky",
       "Resist",
+      "Resistor",
       "DistResist",
       "Workfunction"
     ],
@@ -34853,6 +34865,11 @@
         "desc": "Contact resistance in Ohm*um^(3-d)."
       },
       {
+        "name": "Resistor",
+        "type": "float",
+        "desc": "Lumped series resistance for electrode in Ohm. Functionally equivalent to Resist."
+      },
+      {
         "name": "DistResist",
         "type": "float",
         "desc": "Distributed resistance in Ohm*cm^2."
@@ -34901,6 +34918,7 @@
       "Workfunction",
       "Schottky",
       "Resist",
+      "Resistor",
       "DistResist",
       "Material",
       "Poisson",
@@ -40115,12 +40133,18 @@
         "name": "Resist",
         "type": "float",
         "desc": "Contact resistance in Ohm*um^(3-d) (in Electrode section)."
+      },
+      {
+        "name": "Resistor",
+        "type": "float",
+        "desc": "Lumped series resistance in Ohm (in Electrode section). Functionally equivalent to Resist."
       }
     ],
     "keywords": [
       "DistResist",
       "SchottkyResist",
       "Resist",
+      "Resistor",
       "DistrThermalResist",
       "DistResist"
     ],
