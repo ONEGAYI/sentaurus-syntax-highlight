@@ -6657,6 +6657,7 @@
     ],
     "keywords": [
       "Resist",
+      "Resistor",
       "Schottky",
       "SRDoping",
       "EqOhmic",
@@ -7603,6 +7604,7 @@
       "AreaFactor",
       "Schottky",
       "Resist",
+      "Resistor",
       "DistResist",
       "Workfunction",
       "Poisson",
@@ -24270,6 +24272,14 @@
     "keywords": [],
     "example": "Electrode {\n  Name=\"anode\"\n  Voltage=-3\n  Resist=1\n}"
   },
+  "Resistor": {
+    "section": "Electrode",
+    "signature": "Electrode { ... Resistor=<float> }",
+    "description": "为电极指定集总串联电阻，单位为欧姆。功能上等同于Resist，用于在混合模式仿真中给器件接触添加串联电阻。当指定时，接触电压被解释为通过该电阻施加的外部电压。",
+    "parameters": [],
+    "keywords": [],
+    "example": "Electrode {\n  { Name=\"Gate\" Voltage=0.0 }\n  { Name=\"Emitter\" Voltage=0.0 }\n  { Name=\"Collector\" Voltage=0.0 Resistor=1e11 }\n}"
+  },
   "Resistivity": {
     "section": "Physics",
     "signature": "Physics { MetalResistivity(pmi_model) }",
@@ -31214,6 +31224,7 @@
       "Contact",
       "Schottky",
       "Resist",
+      "Resistor",
       "DistResist",
       "Workfunction"
     ],
@@ -34036,6 +34047,11 @@
         "name": "Resist",
         "type": "float",
         "desc": "浮点数：接触电阻，单位Ohm*um^(3-d)。"
+      },
+      {
+        "name": "Resistor",
+        "type": "float",
+        "desc": "浮点数：电极集总串联电阻，单位Ohm。功能上等同于Resist。"
       },
       {
         "name": "DistResist",
@@ -39103,12 +39119,18 @@
         "name": "Resist",
         "type": "float",
         "desc": "接触电阻，单位为Ohm*um^(3-d)（在Electrode部分中）。"
+      },
+      {
+        "name": "Resistor",
+        "type": "float",
+        "desc": "电极集总串联电阻，单位为Ohm（在Electrode部分中）。功能上等同于Resist。"
       }
     ],
     "keywords": [
       "DistResist",
       "SchottkyResist",
       "Resist",
+      "Resistor",
       "DistrThermalResist",
       "DistResist"
     ],
