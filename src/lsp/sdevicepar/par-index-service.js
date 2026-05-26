@@ -31,6 +31,10 @@ function createParIndexService(deps) {
     // key 为 URI string，value 为已标记 source 的 symbol 数组
     const workspaceIndex = new Map();
 
+    // workspace 扫描状态
+    let _workspaceScanning = false;
+    let _workspaceCompletionMissed = false;
+
     /**
      * 获取缓存键。
      */
@@ -256,6 +260,9 @@ function createParIndexService(deps) {
      * @returns {Array<{label: string, kind: string, detail: string, sortText: string, insertText: string, source: string, parentPath: string}>}
      */
     function getCompletionsAt(document, position, lineText) {
+        // 记录补全请求时 workspace 是否仍在扫描
+        if (_workspaceScanning) _workspaceCompletionMissed = true;
+
         const uri = document.uri.toString();
         const version = document.version;
         const key = cacheKey(uri, version);
@@ -316,6 +323,22 @@ function createParIndexService(deps) {
         currentFileCache.clear();
         includeRawCache.clear();
         workspaceIndex.clear();
+        _workspaceScanning = false;
+        _workspaceCompletionMissed = false;
+    }
+
+    function setWorkspaceScanning(scanning) {
+        _workspaceScanning = scanning;
+    }
+
+    function consumeWorkspaceCompletionMissed() {
+        const missed = _workspaceCompletionMissed;
+        _workspaceCompletionMissed = false;
+        return missed;
+    }
+
+    function getWorkspaceFileCount() {
+        return workspaceIndex.size;
     }
 
     return {
@@ -327,6 +350,9 @@ function createParIndexService(deps) {
         removeWorkspaceFile,
         getWorkspaceSymbols,
         clearIncludeCacheForFile,
+        setWorkspaceScanning,
+        consumeWorkspaceCompletionMissed,
+        getWorkspaceFileCount,
         dispose,
     };
 }

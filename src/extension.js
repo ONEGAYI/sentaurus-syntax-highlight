@@ -198,6 +198,11 @@ function activate(context) {
 
     async function scanWorkspaceParFiles() {
         if (!vscode.workspace.workspaceFolders || !parIndexService) return;
+        parIndexService.setWorkspaceScanning(true);
+        if (parStatusBar) {
+            parStatusBar.text = '$(sync~spin) PAR index: scanning workspace...';
+            parStatusBar.show();
+        }
         try {
             const parFiles = await vscode.workspace.findFiles('**/*.par');
             for (const fileUri of parFiles) {
@@ -209,10 +214,30 @@ function activate(context) {
                 }
             }
         } catch (_) { /* findFiles failed */ }
+        parIndexService.setWorkspaceScanning(false);
+        if (parStatusBar) {
+            const fileCount = parIndexService.getWorkspaceFileCount();
+            const missed = parIndexService.consumeWorkspaceCompletionMissed();
+            if (missed) {
+                parStatusBar.text = `$(info) PAR index ready — trigger completion again for workspace symbols`;
+                parStatusBar.backgroundColor = undefined;
+                setTimeout(() => { if (parStatusBar) parStatusBar.hide(); }, 6000);
+            } else {
+                parStatusBar.text = `$(check) PAR index ready: ${fileCount} files`;
+                setTimeout(() => { if (parStatusBar) parStatusBar.hide(); }, 4000);
+            }
+        }
     }
 
+    // PAR workspace 状态栏
+    const parStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 50);
+    context.subscriptions.push(parStatusBar);
+
     // Fire-and-forget: 不阻塞 activate；.catch 防止 unhandled rejection
-    scanWorkspaceParFiles().catch(() => {});
+    scanWorkspaceParFiles().catch(() => {
+        parIndexService.setWorkspaceScanning(false);
+        if (parStatusBar) parStatusBar.hide();
+    });
 
     // FileSystemWatcher: workspace .par 文件增量更新
     // 使用 500ms debounce 防止批量文件操作（如 git checkout）导致 O(N×M) preheat
