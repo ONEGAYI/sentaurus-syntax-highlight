@@ -35,8 +35,21 @@ function createParIndexService(deps) {
     }
 
     /**
+     * 检查 resolved 是否在 baseDir 目录内（防止路径遍历）。
+     * @param {string} resolved - 已规范化的绝对路径
+     * @param {string} baseDir - 允许的基目录
+     * @returns {boolean}
+     */
+    function isWithinBase(resolved, baseDir) {
+        const normResolved = path.normalize(resolved) + path.sep;
+        const normBase = path.normalize(baseDir) + path.sep;
+        return normResolved.startsWith(normBase);
+    }
+
+    /**
      * 解析 include 文件路径。
      * 查找顺序：deps.resolveFilePath（测试注入）→ 当前文件目录 → workspace 根目录 → 插件 bundled MaterialDB
+     * 所有路径均经过 isWithinBase 校验，防止 `../` 路径遍历。
      * @param {string} refPath - include 引用路径
      * @param {string} baseUri - 当前文件 URI
      * @returns {string|null} 解析后的绝对路径，未找到返回 null
@@ -50,7 +63,7 @@ function createParIndexService(deps) {
             const basePath = baseUri.startsWith('file://') ? fileURLToPath(baseUri) : baseUri;
             const baseDir = path.dirname(basePath);
             const candidate = path.resolve(baseDir, refPath);
-            if (fs.existsSync(candidate)) return candidate;
+            if (isWithinBase(candidate, baseDir) && fs.existsSync(candidate)) return candidate;
         } catch (_) {}
 
         // 2. workspace 根目录
@@ -58,14 +71,15 @@ function createParIndexService(deps) {
             try {
                 const wsPath = folder.uri.fsPath || fileURLToPath(folder.uri.toString());
                 const candidate = path.resolve(wsPath, refPath);
-                if (fs.existsSync(candidate)) return candidate;
+                if (isWithinBase(candidate, wsPath) && fs.existsSync(candidate)) return candidate;
             } catch (_) {}
         }
 
         // 3. 插件内置 references/MaterialDB/
         try {
-            const bundled = path.join(extensionPath, 'references', 'MaterialDB', refPath);
-            if (fs.existsSync(bundled)) return bundled;
+            const materialDbDir = path.join(extensionPath, 'references', 'MaterialDB');
+            const bundled = path.resolve(materialDbDir, refPath);
+            if (isWithinBase(bundled, materialDbDir) && fs.existsSync(bundled)) return bundled;
         } catch (_) {}
 
         return null;
