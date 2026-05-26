@@ -2,6 +2,7 @@
 'use strict';
 
 const { SCOPE_TYPES_ARRAY } = require('./par-constants');
+const { stackToPath } = require('./par-context');
 
 const SCOPE_TYPES_PATTERN = SCOPE_TYPES_ARRAY.join('|');
 
@@ -32,16 +33,6 @@ function countBraceDelta(line) {
         if (c === '}') closes++;
     }
     return { opens, closes };
-}
-
-/**
- * 栈转路径字符串。
- * scope 帧 → "scopeType/name"，block 帧 → "name"
- */
-function stackToPath(stack) {
-    return stack.map(s =>
-        s.kind === 'scope' ? s.scopeType + '/' + s.name : s.name
-    ).join('/');
 }
 
 /**
