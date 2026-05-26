@@ -87,6 +87,39 @@ test('parameter aggregates across scopeName under same block', () => {
     assert.ok(!labels.includes('n_l_f'), 'Should NOT include parameter from different block (AvalancheFactors)');
 });
 
+test('exact parentPath wins over scopeType aggregation for same-named parameter', () => {
+    // 当前文件有两个 Material scope：TestPriority 和 TestIncludeChange
+    // TestPriority/Bandgap 有 Eg0 = 1.16964（current）
+    // TestIncludeChange/Bandgap 的 Eg0 来自 include（1.0）
+    // 在 TestIncludeChange/Bandgap 内补全时，Eg0 应显示 1.0（精确匹配的 include），
+    // 而不是 1.16964（来自另一个 scope 实例的 current）
+    const ctx = { completableKind: 'parameter', parentPath: 'Material/TestIncludeChange/Bandgap', scopeType: 'Material', pendingBlockName: null };
+    const symbols = [
+        { kind: 'parameter', name: 'Eg0', value: '1.16964', parentPath: 'Material/TestPriority/Bandgap', source: 'current' },
+        { kind: 'parameter', name: 'Eg0', value: '1.0', parentPath: 'Material/TestIncludeChange/Bandgap', source: 'include' },
+    ];
+    const items = buildParCompletions(ctx, symbols);
+    const eg0Items = items.filter(i => i.label === 'Eg0');
+    assert.strictEqual(eg0Items.length, 1, 'Should deduplicate to 1');
+    assert.strictEqual(eg0Items[0].detail, '[par] = 1.0', 'Exact parentPath include should win over aggregated current');
+});
+
+test('scopeType aggregation supplements names not found in exact match', () => {
+    // 当前 scope 没有定义 Chi0，但另一个 scope 的同 block 有
+    const ctx = { completableKind: 'parameter', parentPath: 'Material/TestIncludeChange/Bandgap', scopeType: 'Material', pendingBlockName: null };
+    const symbols = [
+        { kind: 'parameter', name: 'Eg0', value: '1.16964', parentPath: 'Material/TestPriority/Bandgap', source: 'current' },
+        { kind: 'parameter', name: 'Eg0', value: '1.0', parentPath: 'Material/TestIncludeChange/Bandgap', source: 'include' },
+        { kind: 'parameter', name: 'Chi0', value: '4.05', parentPath: 'Material/TestPriority/Bandgap', source: 'current' },
+    ];
+    const items = buildParCompletions(ctx, symbols);
+    const labels = items.map(i => i.label);
+    assert.ok(labels.includes('Eg0'), 'Should include Eg0 from exact match');
+    assert.ok(labels.includes('Chi0'), 'Should include Chi0 from scopeType aggregation');
+    const eg0 = items.find(i => i.label === 'Eg0');
+    assert.strictEqual(eg0.detail, '[par] = 1.0', 'Exact Eg0 should use include value');
+});
+
 // ── source 优先级 ───────────────────────────
 
 test('source priority ordering in sortText', () => {
