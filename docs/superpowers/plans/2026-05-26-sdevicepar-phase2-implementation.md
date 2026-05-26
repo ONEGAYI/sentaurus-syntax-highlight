@@ -1222,7 +1222,7 @@ const path = require('path');
 const fs = require('fs');
 const { URL, fileURLToPath } = require('url');
 const { parseParText } = require('./par-parser');
-const { stackToPath, getContextAtPosition } = require('./par-context');
+const { stackToPath, getContextAtPosition, detectScopeNameContext } = require('./par-context');
 const { SCOPE_TYPES_ARRAY, SOURCE_PRIORITY, MAX_CACHE_SIZE, MAX_INCLUDE_DEPTH } = require('./par-constants');
 
 /**
@@ -1390,9 +1390,6 @@ function createParIndexService(deps) {
         onFileChanged,
         onFileClosed,
         dispose,
-        // 测试用内部接口
-        _currentFileCache: currentFileCache,
-        _includeRawCache: includeRawCache,
     };
 }
 
@@ -1599,59 +1596,62 @@ test('same include file at different parentPath produces separate grafts', () =>
     service.dispose();
 });
 
-test('source priority: current overrides include in dedup', () => {
-    const readFile = createMockReadFile({ 'Silicon.par': 'Eg0 = 1.12\n' });
-    const service = createParIndexService({
-        extensionPath: '/ext',
-        readFile,
-        resolveFilePath: (refPath) => refPath,
-    });
-    // Current file also defines Eg0 at same parentPath
-    const doc = mockDoc([
-        '#include "Silicon.par"',
-        'Eg0 = 1.16964',
-    ].join('\n') + '\n', 1);
-    const result = service.parseCurrentFile(doc);
-
-    const eg0current = result.symbols.find(s => s.name === 'Eg0' && s.source === 'current');
-    const eg0include = result.symbols.find(s => s.name === 'Eg0' && s.source === 'include');
-    assert.ok(eg0current, 'Should have current Eg0');
-    assert.ok(eg0include, 'Should have include Eg0');
-    // When buildParCompletions deduplicates, current (priority 0) wins over include (priority 1)
-    service.dispose();
+test('source priority: current overrides include in dedup via buildParCompletions', () => {
+    const { buildParCompletions } = require('../src/lsp/sdevicepar/par-completion');
+    const ctx = { completableKind: 'parameter', parentPath: '', scopeType: null, pendingBlockName: null };
+    // Both current and include define Eg0 at same parentPath
+    const symbols = [
+        { kind: 'parameter', name: 'Eg0', value: '1.12', parentPath: '', source: 'include' },
+        { kind: 'parameter', name: 'Eg0', value: '1.16964', parentPath: '', source: 'current' },
+    ];
+    const items = buildParCompletions(ctx, symbols);
+    const eg0Items = items.filter(i => i.label === 'Eg0');
+    assert.strictEqual(eg0Items.length, 1, 'Should deduplicate to 1 item');
+    assert.strictEqual(eg0Items[0].source, 'current', 'current source should win over include');
+    assert.strictEqual(eg0Items[0].detail, '[par] = 1.16964', 'Should use current value');
 });
 
-test('completion provider does not pollute global items', () => {
+test('completion provider merge does not pollute original items array', () => {
+    // 模拟 Provider 层的 merge 逻辑
     const service = createParIndexService({ extensionPath: '/ext' });
     const doc = mockDoc('Material = "Silicon" {\n  Bandgap {\n    Eg0 = 1.12\n  }\n}\n', 1);
     service.parseCurrentFile(doc);
 
-    // Get completions twice — should be independent arrays
-    const items1 = service.getCompletionsAt(doc, { line: 1, character: 2 });
-    const items2 = service.getCompletionsAt(doc, { line: 2, character: 4 });
-    // Modifying items1 should not affect items2
-    const len1Before = items1.length;
-    items1.push({ label: 'polluted', kind: 'test' });
-    assert.strictEqual(items2.length, items2.length, 'items2 should not be affected by items1 mutation');
-    assert.strictEqual(items1.length, len1Before + 1, 'items1 should have the pushed item');
+    // 模拟闭包级 items（all_keywords fallback）
+    const originalItems = [
+        { label: 'Bandgap' },
+        { label: 'SomeKeyword' },
+    ];
+    const originalLen = originalItems.length;
+
+    // 获取 par 补全
+    const parItems = service.getCompletionsAt(doc, { line: 1, character: 2 });
+    // 模拟 Provider merge（不修改 originalItems）
+    const parLabels = new Set(parItems.map(i => i.label));
+    const keywordFallback = originalItems.filter(i => !parLabels.has(i.label));
+    const merged = [...parItems, ...keywordFallback];
+
+    // originalItems 不应被修改
+    assert.strictEqual(originalItems.length, originalLen, 'originalItems should not be mutated');
+    assert.deepStrictEqual(originalItems[0], { label: 'Bandgap' }, 'originalItems content unchanged');
+    // merged 应包含 par 补全 + 不冲突的 keyword
+    assert.ok(merged.length >= parItems.length, 'merged should include par items');
     service.dispose();
 });
 
 test('already-open document pre-heats on activation', () => {
-    let parseCallCount = 0;
     const service = createParIndexService({ extensionPath: '/ext' });
     const doc = mockDoc('Material = "Silicon" {\n}\n', 1);
 
-    // Simulate activation pre-heat
+    // Simulate activation pre-heat (extension.js scans textDocuments)
     service.parseCurrentFile(doc);
-    parseCallCount++;
 
-    // Second call (e.g. from completion) should hit cache
+    // Verify pre-heat worked: getCompletionsAt should return results without re-parsing
     const result = service.getCompletionsAt(doc, { line: 0, character: 0 });
     assert.ok(result.length > 0, 'Pre-heated cache should serve completions');
-    // Verify cache was used (no second parse)
-    const cached = service._currentFileCache.get(`${doc.uri.toString()}:v${doc.version}`);
-    assert.ok(cached, 'Cache should exist after pre-heat');
+    // Verify scope type completions are present
+    const labels = result.map(i => i.label);
+    assert.ok(labels.includes('Material'), 'Should suggest Material scope type');
     service.dispose();
 });
 ```
@@ -1668,10 +1668,7 @@ Expected: 前面的基础测试 PASS，新增的 include 测试 FAIL
 
 修改 `src/lsp/sdevicepar/par-index-service.js`，在 `parseCurrentFile` 函数中添加 include 解析：
 
-1. 在文件顶部添加：
-```js
-const MAX_INCLUDE_DEPTH = 8;
-```
+1. ~~`MAX_INCLUDE_DEPTH` 和 `fileURLToPath` 已在 Task 3 的文件顶部从 `par-constants` / `url` 导入，无需重复声明。~~
 
 2. 在 `parseCurrentFile` 中，`parseParText` 调用之后、缓存之前，添加 include 解析：
 ```js
@@ -1753,10 +1750,8 @@ function resolveIncludes(includes, baseUri, outerPrefix, includeChain, depth) {
 }
 ```
 
-4. 添加 `resolveFilePath` 辅助函数（在 `createParIndexService` 内部，修订点 #4）：
+4. 添加 `resolveFilePath` 辅助函数（在 `createParIndexService` 内部，修订点 #4）。注意 `fileURLToPath` 已在文件顶部导入，此处不再重复 require：
 ```js
-const { URL, fileURLToPath } = require('url');
-
 function resolveFilePath(refPath, baseUri) {
     // 优先使用 deps 中注入的函数（测试用）
     if (deps.resolveFilePath) return deps.resolveFilePath(refPath, baseUri);
@@ -1914,6 +1909,19 @@ test('source priority ordering in sortText', () => {
     assert.ok(chi0.sortText < eg0.sortText, 'current source should sort before include');
 });
 
+test('dedupe keeps highest priority source for same (label, parentPath)', () => {
+    const ctx = { completableKind: 'parameter', parentPath: 'Material/Silicon/Bandgap', scopeType: 'Material', pendingBlockName: null };
+    const symbols = [
+        { kind: 'parameter', name: 'Eg0', value: '1.12', parentPath: 'Material/Silicon/Bandgap', source: 'include' },
+        { kind: 'parameter', name: 'Eg0', value: '1.16964', parentPath: 'Material/Silicon/Bandgap', source: 'current' },
+    ];
+    const items = buildParCompletions(ctx, symbols);
+    const eg0Items = items.filter(i => i.label === 'Eg0');
+    assert.strictEqual(eg0Items.length, 1, 'Should deduplicate to 1 item');
+    assert.strictEqual(eg0Items[0].source, 'current', 'current (priority 0) should win over include (priority 1)');
+    assert.strictEqual(eg0Items[0].detail, '[par] = 1.16964', 'Should use current value');
+});
+
 // ── insertText 格式 ─────────────────────────
 
 test('scopeType insertText includes full template', () => {
@@ -1974,6 +1982,38 @@ Expected: FAIL
 const { SCOPE_TYPES_ARRAY, SOURCE_PRIORITY } = require('./par-constants');
 
 /**
+ * 按 (label, parentPath) 聚合 symbols，每组保留 SOURCE_PRIORITY 最高（数字最小）的 symbol。
+ * 先聚合去重，再排序输出。
+ * @param {object[]} symbols - 待过滤的 symbols
+ * @param {string} kind - 过滤 kind
+ * @param {string} parentPath - 过滤 parentPath
+ * @returns {object[]} 去重后的 candidates（已按 source 优先级 + 名称排序）
+ */
+function dedupeByPriority(symbols, kind, parentPath) {
+    // 1. 收集匹配 symbols
+    const matched = symbols.filter(s => s.kind === kind && s.parentPath === parentPath);
+    // 2. 按 (name, parentPath) 聚合，保留每组最高优先级
+    const best = new Map(); // key: name → symbol with lowest priority number
+    for (const sym of matched) {
+        const key = sym.name;
+        const existing = best.get(key);
+        const newPri = SOURCE_PRIORITY[sym.source] ?? 9;
+        if (!existing || newPri < (SOURCE_PRIORITY[existing.source] ?? 9)) {
+            best.set(key, sym);
+        }
+    }
+    // 3. 排序：source 优先级升序，名称字母序
+    const candidates = Array.from(best.values());
+    candidates.sort((a, b) => {
+        const pa = SOURCE_PRIORITY[a.source] ?? 9;
+        const pb = SOURCE_PRIORITY[b.source] ?? 9;
+        if (pa !== pb) return pa - pb;
+        return a.name.localeCompare(b.name);
+    });
+    return candidates;
+}
+
+/**
  * 根据上下文和 symbols 构建补全列表。
  * 纯函数，无 VS Code 依赖，可在 Node.js 中测试。
  *
@@ -2002,21 +2042,7 @@ function buildParCompletions(ctx, symbols) {
             idx++;
         }
     } else if (ctx.completableKind === 'block') {
-        const seen = new Set();
-        const candidates = [];
-        for (const sym of symbols) {
-            if (sym.kind === 'block' && sym.parentPath === ctx.parentPath && !seen.has(sym.name)) {
-                seen.add(sym.name);
-                candidates.push(sym);
-            }
-        }
-        // Sort by source priority, then name
-        candidates.sort((a, b) => {
-            const pa = SOURCE_PRIORITY[a.source] ?? 9;
-            const pb = SOURCE_PRIORITY[b.source] ?? 9;
-            if (pa !== pb) return pa - pb;
-            return a.name.localeCompare(b.name);
-        });
+        const candidates = dedupeByPriority(symbols, 'block', ctx.parentPath);
         candidates.forEach((sym, idx) => {
             items.push({
                 label: sym.name,
@@ -2029,20 +2055,7 @@ function buildParCompletions(ctx, symbols) {
             });
         });
     } else if (ctx.completableKind === 'parameter') {
-        const seen = new Set();
-        const candidates = [];
-        for (const sym of symbols) {
-            if (sym.kind === 'parameter' && sym.parentPath === ctx.parentPath && !seen.has(sym.name)) {
-                seen.add(sym.name);
-                candidates.push(sym);
-            }
-        }
-        candidates.sort((a, b) => {
-            const pa = SOURCE_PRIORITY[a.source] ?? 9;
-            const pb = SOURCE_PRIORITY[b.source] ?? 9;
-            if (pa !== pb) return pa - pb;
-            return a.name.localeCompare(b.name);
-        });
+        const candidates = dedupeByPriority(symbols, 'parameter', ctx.parentPath);
         candidates.forEach((sym, idx) => {
             items.push({
                 label: sym.name,
@@ -2055,29 +2068,27 @@ function buildParCompletions(ctx, symbols) {
             });
         });
     } else if (ctx.completableKind === 'scopeName') {
-        // 修订点 #5: 最小 scope 名补全
-        // 从 symbols 中抽取同 scopeType 的已有名称
-        const seen = new Set();
-        for (const sym of symbols) {
-            if (sym.kind === 'scope' && sym.scopeType === ctx.scopeType && !seen.has(sym.name)) {
-                seen.add(sym.name);
-                items.push({
-                    label: sym.name,
-                    kind: 'scopeName',
-                    detail: `[par] ${ctx.scopeType} name`,
-                    sortText: `0_${sym.name}`,
-                    insertText: sym.name,
-                    source: sym.source || 'current',
-                    parentPath: '',
-                });
-            }
-        }
+        // scope 名补全：从 symbols 中抽取同 scopeType 的已有名称
+        const candidates = dedupeByPriority(symbols, 'scope', '');
+        // 再按 scopeType 过滤
+        const filtered = candidates.filter(sym => sym.scopeType === ctx.scopeType);
+        filtered.forEach((sym, idx) => {
+            items.push({
+                label: sym.name,
+                kind: 'scopeName',
+                detail: `[par] ${ctx.scopeType} name`,
+                sortText: `${SOURCE_PRIORITY[sym.source] ?? 9}_${idx}_${sym.name}`,
+                insertText: sym.name,
+                source: sym.source || 'current',
+                parentPath: '',
+            });
+        });
     }
 
     return items;
 }
 
-module.exports = { buildParCompletions, SOURCE_PRIORITY };
+module.exports = { buildParCompletions, SOURCE_PRIORITY, dedupeByPriority };
 ```
 
 - [ ] **Step 5.4: 重构 ParIndexService 的 getCompletionsAt 使用 buildParCompletions**
@@ -2105,6 +2116,37 @@ function getCompletionsAt(document, position) {
     return buildParCompletions(ctx, cached.symbols);
 }
 ```
+
+**scopeName 检测收进 getCompletionsAt**（修订点 v2.1 #4）：`getCompletionsAt` 新增可选第三参数 `lineText`。Provider 层传入 `lineText` 时，service 内部调用 `detectScopeNameContext` 做检测。这样 Provider 不需要访问任何 `_` 前缀属性。更新 `getCompletionsAt` 完整实现：
+
+```js
+function getCompletionsAt(document, position, lineText) {
+    const uri = document.uri.toString();
+    const version = document.version;
+    const key = cacheKey(uri, version);
+
+    const cached = currentFileCache.get(key);
+    if (!cached) return [];
+
+    // 如果传入 lineText，先检测 scope 名引号内补全
+    if (lineText !== undefined) {
+        const scopeNameCtx = detectScopeNameContext(lineText, position.character);
+        if (scopeNameCtx) {
+            return buildParCompletions(
+                { completableKind: 'scopeName', parentPath: '', scopeType: scopeNameCtx.scopeType, pendingBlockName: null },
+                cached.symbols,
+            );
+        }
+    }
+
+    const ctx = getContextAtPosition(cached.lineContexts, position.line, position.character);
+    if (!ctx) return [];
+
+    return buildParCompletions(ctx, cached.symbols);
+}
+```
+
+**Provider 层调用**（修订 #2 中已更新）：`parIndexService.getCompletionsAt(document, position, lineText)` — scopeName 检测完全在 service 层完成，Provider 不访问任何 `_` 前缀属性。
 
 - [ ] **Step 5.5: 运行全部测试验证通过**
 
@@ -2172,19 +2214,22 @@ parIndexService = createParIndexService({
 if (parIndexService) parIndexService.onFileClosed(uri);
 ```
 
-5. 在 `onDidCloseTextDocument` 订阅之后（约第 63 行），添加 debounced `onDidChangeTextDocument`：
+5. 在 `onDidCloseTextDocument` 订阅之后（约第 63 行），添加 debounced `onDidChangeTextDocument` 和已打开文档预热：
+
 ```js
-// Debounced pre-heat for sdevicepar ParIndexService
-let parDebounceTimer = null;
+// Per-uri debounced pre-heat for sdevicepar ParIndexService
+const parDebounceTimers = new Map(); // uri → timer
 context.subscriptions.push(
     vscode.workspace.onDidChangeTextDocument(e => {
         if (e.document.languageId !== 'sdevicepar' || !parIndexService) return;
-        if (parDebounceTimer) clearTimeout(parDebounceTimer);
-        parDebounceTimer = setTimeout(() => {
-            parDebounceTimer = null;
+        const uri = e.document.uri.toString();
+        const old = parDebounceTimers.get(uri);
+        if (old) clearTimeout(old);
+        parDebounceTimers.set(uri, setTimeout(() => {
+            parDebounceTimers.delete(uri);
             try { parIndexService.parseCurrentFile(e.document); }
             catch (_) { /* ignore parse errors during debounce */ }
-        }, 200);
+        }, 200));
     })
 );
 
@@ -2196,6 +2241,14 @@ context.subscriptions.push(
         catch (_) { /* ignore */ }
     })
 );
+
+// Pre-heat already-open sdevicepar documents at activation
+for (const doc of vscode.workspace.textDocuments) {
+    if (doc.languageId === 'sdevicepar' && parIndexService) {
+        try { parIndexService.parseCurrentFile(doc); }
+        catch (_) { /* ignore */ }
+    }
+}
 ```
 
 6. 在 `registerCompletionProviders` 调用中传递 `parIndexService`：
@@ -2234,60 +2287,48 @@ function registerCompletionProviders(context, deps) {
     } = deps;
 ```
 
-2. 在 `provideCompletionItems` 函数体内，`if (langId !== 'sde')` 块之前（约第 186 行），添加 sdevicepar 分支（修订点 #3 + #6）：
+2. 在 `provideCompletionItems` 函数体内，在 `if (langId !== 'sde')` 块之前（约第 186 行），添加 sdevicepar 前置分支。注意：此分支在闭包级 `items` / `envVarItems` 赋值之前执行，因此**不能引用**这两个变量。改为只构建局部 `parConverted`，与后续流程中已有的 `items` / `envVarItems` 合并。
+
+**设计思路**：sdevicepar 前置分支设置 `let parConverted = null;`。在函数末尾统一 merge 时，若 `parConverted` 非 null，则用 par 结果替换 `items` 中重名项，再追加 `envVarItems`。这样 sdevicepar 分支不依赖 `items` / `envVarItems` 的赋值时机。
+
 ```js
-// sdevicepar 上下文补全
+// ── sdevicepar 前置分支 ──
+let parConverted = null; // 延迟到函数末尾统一 merge
 if (langId === 'sdevicepar' && parIndexService) {
-    // 修订点 #6: lexical gate — 拒绝注释/字符串/赋值右侧内的补全
     const lineText = document.lineAt(position.line).text;
     const col = position.character;
-    const linePrefix = lineText.substring(0, col);
 
-    // 跳过注释行（#include 行除外，但 #include 不需要 par 补全）
+    // Lexical gate: 注释行 → 跳过 par 补全
     const trimmedLine = lineText.trimStart();
-    if (trimmedLine.startsWith('#') || trimmedLine.startsWith('*')) {
-        // 走现有 all_keywords fallback
-    } else {
-        // 检测赋值右侧：如果行内光标前有 = 且不在引号内，说明在赋值右侧
+    const isComment = trimmedLine.startsWith('#') || trimmedLine.startsWith('*');
+
+    if (!isComment) {
+        // 检测赋值右侧和字符串内
         let inRhs = false;
         let inQuote = false;
         for (let ci = 0; ci < col; ci++) {
             if (lineText[ci] === '"') inQuote = !inQuote;
             if (!inQuote && lineText[ci] === '=' && ci < col - 1) {
-                // = 后面还有内容（排除 scope 声明 Type = "Name" 的 = ）
-                // scope 声明由 Type = " 开头，不是 parameter 赋值
                 if (!/^\s*(Material|Region|Interface|MaterialInterface|RegionInterface|Electrode)\s*=\s*"/.test(lineText)) {
                     inRhs = true;
                 }
             }
         }
 
-        // 修订点 #5: scope 名引号内补全检测（如 Material = "|"）
-        const { detectScopeNameContext } = require('./lsp/sdevicepar/par-context');
-        const scopeNameCtx = detectScopeNameContext(lineText, col);
-
-        if (scopeNameCtx) {
-            // 在 scope 名引号内 → 提供 scopeName 补全（从 symbols 抽取同名 scopeType 的已有名称）
-            const cacheKey = `${document.uri.toString()}:v${document.version}`;
-            const cached = parIndexService._currentFileCache.get(cacheKey);
-            if (cached) {
-                const { buildParCompletions } = require('./lsp/sdevicepar/par-completion');
-                const scopeNameItems = buildParCompletions(
-                    { completableKind: 'scopeName', parentPath: '', scopeType: scopeNameCtx.scopeType, pendingBlockName: null },
-                    cached.symbols,
-                );
-                const converted = scopeNameItems.map(pi => {
-                    const item = new vscode.CompletionItem(pi.label, vscode.CompletionItemKind.Value);
-                    item.detail = pi.detail;
-                    item.sortText = pi.sortText;
-                    item.insertText = pi.insertText;
-                    return item;
-                });
-                return converted;
-            }
-        } else if (inQuote || inRhs) {
-            // 在字符串内或赋值右侧 → 走现有 fallback（不提供 par 上下文补全）
-        } else {
+        // scope 名引号内补全：传 lineText 给 service 层检测
+        // getCompletionsAt(document, position, lineText) 内部调用 detectScopeNameContext
+        // 命中 scopeName 时直接返回 scopeName 补全；否则返回 null / 空数组
+        const scopeNameItems = parIndexService.getCompletionsAt(document, position, lineText);
+        if (scopeNameItems.length > 0 && scopeNameItems[0].kind === 'scopeName') {
+            const kindMapScope = { scopeName: vscode.CompletionItemKind.Value };
+            parConverted = scopeNameItems.map(pi => {
+                const item = new vscode.CompletionItem(pi.label, kindMapScope[pi.kind] || vscode.CompletionItemKind.Text);
+                item.detail = pi.detail;
+                item.sortText = pi.sortText;
+                item.insertText = pi.insertText;
+                return item;
+            });
+        } else if (!inQuote && !inRhs) {
             const parItems = parIndexService.getCompletionsAt(document, position);
             if (parItems.length > 0) {
                 const kindMap = {
@@ -2296,7 +2337,7 @@ if (langId === 'sdevicepar' && parIndexService) {
                     block: vscode.CompletionItemKind.Class,
                     parameter: vscode.CompletionItemKind.Property,
                 };
-                const converted = parItems.map(pi => {
+                parConverted = parItems.map(pi => {
                     const item = new vscode.CompletionItem(pi.label, kindMap[pi.kind] || vscode.CompletionItemKind.Text);
                     item.detail = pi.detail;
                     item.sortText = pi.sortText;
@@ -2306,16 +2347,23 @@ if (langId === 'sdevicepar' && parIndexService) {
                     }
                     return item;
                 });
-                // 修订点 #3: 不修改闭包级 items，创建局部合并数组
-                // par 补全优先，all_keywords 兜底
-                const parLabels = new Set(converted.map(i => i.label));
-                const keywordFallback = items.filter(i => !parLabels.has(i.label));
-                return [...converted, ...keywordFallback, ...envVarItems];
             }
         }
     }
-    // 缓存未就绪 → 走现有 all_keywords fallback（不 return，继续后续逻辑）
+    // parConverted === null → 缓存未就绪或 lexical gate 拦截，走后续 all_keywords fallback
 }
+```
+
+3. 在 `provideCompletionItems` 函数的 return 语句处（约 line 550），修改统一 merge 逻辑：
+```js
+// 原始 return: return [...items, ...envVarItems];
+// 修改为:
+if (parConverted) {
+    const parLabels = new Set(parConverted.map(i => i.label));
+    const keywordFallback = items.filter(i => !parLabels.has(i.label));
+    return [...parConverted, ...keywordFallback, ...envVarItems];
+}
+return [...items, ...envVarItems];
 ```
 
 - [ ] **Step 6.3: 验证扩展启动**
@@ -2335,16 +2383,18 @@ if (langId === 'sdevicepar' && parIndexService) {
 git add src/extension.js src/register-completion-providers.js
 git commit -m "feat(sdevicepar): integrate par-index-service with extension
 
-- extension.js: 初始化 ParIndexService + debounced onDidChangeTextDocument (200ms)
+- extension.js: 初始化 ParIndexService + per-uri debounced onDidChangeTextDocument (200ms)
 - extension.js: onDidOpenTextDocument 预热 + onDidCloseTextDocument 清理缓存
-- register-completion-providers.js: 添加 sdevicepar 分支
-  - lexical gate: 拒绝注释/字符串/赋值右侧补全（修订点 #6）
-  - scope 名引号内补全检测 (detectScopeNameContext)（修订点 #5）
+- extension.js: activation 扫描 textDocuments 预热已打开的 sdevicepar 文档
+- register-completion-providers.js: 添加 sdevicepar 前置分支
+  - parConverted 延迟 merge，不引用未声明的 items/envVarItems
+  - lexical gate: 拒绝注释/字符串/赋值右侧补全
+  - scopeName 检测通过 getCompletionsAt(document, position, lineText) 完成
   - 缓存命中 → ParCompletionItem 转 vscode.CompletionItem
   - 缓存未就绪 → 继续走 all_keywords fallback
-  - 局部合并 + 去重，不修改闭包级 items（修订点 #3）
   - 0 文件 IO 保证：getCompletionsAt 只查内存缓存
-- 补全结果与现有 all_keywords 合并，不破坏现有行为"
+  - Provider 不访问 _ 前缀属性
+- 补全结果与现有 all_keywords 统一 merge，不破坏现有行为"
 ```
 
 ---
@@ -2362,8 +2412,11 @@ git commit -m "feat(sdevicepar): integrate par-index-service with extension
 | 7 | 空行补全得到正确上下文 | lineContexts beforeStack 正确反映嵌套层级 |
 | 8 | 所有测试通过 | `node tests/test-par-*.js` 全部 PASS |
 | 9 | getCompletionsAt 0 文件 IO | 缓存未就绪时返回空数组，fallback 到 all_keywords |
-| 10 | onDidChangeTextDocument 已 debounce | 快速连续输入不触发多次 include 解析 |
+| 10 | onDidChangeTextDocument per-uri debounce | 不同文件交替编辑不会互相取消 debounce |
 | 11 | scope 名引号内补全（最小实现） | `Material = "|"` 引号内触发补全 → 显示同 type 的已有 scope 名 |
+| 12 | activation 预热已打开文档 | 扩展启动后立刻触发补全能工作（无需先编辑） |
+| 13 | Provider 不访问 _ 前缀属性 | getCompletionsAt 接受 lineText 参数做 scopeName 检测 |
+| 14 | 去重保留最高优先级 source | buildParCompletions 对同 (label,parentPath) 保留 current 覆盖 include |
 
 ## 非验收标准（Phase 2.1 不包含）
 
@@ -2417,15 +2470,28 @@ git commit -m "feat(sdevicepar): integrate par-index-service with extension
 - `cacheKey(uri, version)` 格式 `"uri:v{version}"` 在 parseCurrentFile 和 getCompletionsAt 中一致
 - `StackFrame.scopeType` 统一用于 scope 帧（修订点 #1），不使用 `type` 字段
 - `SCOPE_TYPES`/`SCOPE_TYPES_ARRAY` 从 `par-constants.js` 统一导出（修订点 #2），不从 `par-index-service.js` 导出
+- `MAX_INCLUDE_DEPTH` 和 `fileURLToPath` 不在 Task 4 中重复声明，统一使用 Task 3 的顶部 import（修订点 v2.1 #1）
+- `getCompletionsAt(document, position, lineText?)` 可选第三参数用于 scopeName 检测，Provider 层不访问 `_` 前缀属性（修订点 v2.1 #4）
 
-### 4. 修订点验收
+### 4. 修订点验收（v2.1 增补）
+
+| 修订点 | 涉及文件 | 验证方式 |
+|--------|----------|----------|
+| v2.1 #1 删除重复声明 | par-index-service.js (Task 4) | Task 3 顶部已导入，Step 4.3 不再重复 |
+| v2.1 #2 Provider 不引用未声明变量 | register-completion-providers.js | parConverted 延迟 merge，不引用 envVarItems/items |
+| v2.1 #3 去重按 SOURCE_PRIORITY | par-completion.js (dedupeByPriority) | test-par-completion: dedupe keeps highest priority |
+| v2.1 #4 不访问 _ 前缀属性 | par-index-service.js | getCompletionsAt 接受 lineText 参数；测试不访问 _currentFileCache |
+| v2.1 #5 per-uri debounce + 预热 | extension.js | 验收标准 #10, #12 |
+| v2.1 #6 测试修正 | test-par-completion.js, test-par-index.js | source priority 用 buildParCompletions；pollution 测 Provider merge |
+
+### 5. 历史修订点验收（v2.0）
 
 | 修订点 | 涉及文件 | 验证方式 |
 |--------|----------|----------|
 | #1 StackFrame 统一 scopeType | par-parser.js, par-context.js, par-completion.js | test-par-parser: scopeType 字段一致性测试 |
 | #2 par-constants.js 打破循环依赖 | par-constants.js, par-parser.js, par-index-service.js, par-completion.js | test-par-completion: import 路径验证 |
-| #3 不修改闭包级 items | register-completion-providers.js | test-par-index: completion provider 不污染全局 items |
+| #3 不修改闭包级 items | register-completion-providers.js | test-par-index: completion provider merge 不污染 original |
 | #4 include resolver 递归链检测 | par-index-service.js | test-par-index: same include different parentPath graft |
 | #5 scope 名补全（最小实现） | par-context.js (detectScopeNameContext), par-completion.js (scopeName handler) | 验收标准 #11 |
 | #6 lexical gate | register-completion-providers.js | 注释行/字符串内/赋值右侧不触发 par 补全 |
-| #7 新增 5 个测试 | test-par-parser.js, test-par-index.js | `node tests/test-par-*.js` 全部 PASS |
+| #7 新增测试 | test-par-parser.js, test-par-index.js | `node tests/test-par-*.js` 全部 PASS |
