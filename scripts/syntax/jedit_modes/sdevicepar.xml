@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+  <!DOCTYPE MODE SYSTEM "xmode.dtd">
+<!-- Mode: Sentaurus Device Parameter
+  Release: O-2018.06
+  $Revision: #6 $
+  $Date: 2018/10/04 $ 
+  colors:
+  KEYWORD1: main sections, Material = "" {...}
+  KEYWORD3: a parameter section Bandgap {}
+  KEYWORD3: {} inside a parameter section
+  LITERAL2: an identifier that is followed by a = e.g. Eg0 =
+  LITERAL3: special commands like insert =
+  COMMENT1: commented out, #
+  COMMENT2: a remark, note, comment with *
+  LITERAL4: a preprocessor @-variable
+  LABEL: a define expression starting with _
+  MARKUP: preprocessing #-command
+  -->
+<MODE>
+  <PROPS>
+    <PROPERTY NAME="indentOpenBrackets" VALUE="{("/>
+    <PROPERTY NAME="indentCloseBrackets" VALUE="})"/>
+    <PROPERTY NAME="lineUpClosingBracket" VALUE="TRUE"/>
+  </PROPS>
+<!-- MAIN -->
+  <RULES DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <IMPORT DELEGATE="SDEVICEPAR"/>
+  </RULES>
+  
+<!-- sdevice par -->	
+  <RULES SET="SDEVICEPAR" DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <IMPORT DELEGATE="REGION"/>
+    <IMPORT DELEGATE="COMMON"/>
+    <KEYWORDS>
+      <KEYWORD1>Electrode</KEYWORD1>
+      <KEYWORD1>Region</KEYWORD1>
+      <KEYWORD1>Material</KEYWORD1>
+      <KEYWORD1>RegionInterface</KEYWORD1>
+      <KEYWORD1>MaterialInterface</KEYWORD1>
+    </KEYWORDS>
+  </RULES>
+  
+<!-- COMMON -->
+  <RULES SET="COMMON" DEFAULT="NULL">
+    <IMPORT DELEGATE="spp::MAIN"/>
+  <!--  comments -->
+    <IMPORT DELEGATE="spp::APPENDED_HASH_COMMENT"/>
+    <IMPORT DELEGATE="spp::ASTERIX_COMMENT"/>
+    <IMPORT DELEGATE="spp::APPENDED_ASTERIX_COMMENT"/>
+  <!-- quotes -->
+    <SPAN TYPE="LABEL" NO_LINE_BREAK="FALSE" AT_WORD_START="FALSE" DELEGATE="COMMON">
+      <BEGIN>"</BEGIN>
+      <END>"</END>
+    </SPAN>
+  <!-- capture brackets -->  
+    <SPAN TYPE="NULL" DELEGATE="COMMON"> <BEGIN>(</BEGIN> <END>)</END> </SPAN>
+    <KEYWORDS>
+    <LITERAL3>Insert</LITERAL3>
+    </KEYWORDS>
+  </RULES>
+  
+<!-- REGION -->
+  <RULES SET="REGION" DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <SPAN_REGEXP NO_LINE_BREAK="FALSE" AT_LINE_START="TRUE" TYPE="KEYWORD1" DELEGATE="PARAMETERSET">
+      <BEGIN>(Electrode|(Region|Material)(Interface)?)\s*\=\s*\".*\"\s*\{</BEGIN>
+      <END>}</END>
+    </SPAN_REGEXP>
+    <IMPORT DELEGATE="PARAMETERSET"/>
+    <IMPORT DELEGATE="COMMON"/>
+  </RULES>
+
+  <!-- PARAMETERSET -->
+  <RULES SET="PARAMETERSET" DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <SEQ_REGEXP TYPE="KEYWORD3">\w+\s*:?</SEQ_REGEXP>
+    <SPAN TYPE="KEYWORD3" DELEGATE="SECTION"><BEGIN>{</BEGIN><END>}</END></SPAN>
+    <IMPORT DELEGATE="COMMON"/>
+  </RULES>
+
+<!-- SECTION -->
+  <RULES SET="SECTION" DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <SPAN_REGEXP NO_LINE_BREAK="FALSE" TYPE="KEYWORD2" DELEGATE="COMMON"><BEGIN>\w+\s*\(</BEGIN><END>)</END></SPAN_REGEXP>
+    <SPAN TYPE="KEYWORD3" DELEGATE="SECTION"><BEGIN>{</BEGIN><END>}</END></SPAN>
+    <SEQ_REGEXP TYPE="LITERAL2" AT_WHITESPACE_END="TRUE">\S+\s*(?==)</SEQ_REGEXP>
+    <IMPORT DELEGATE="COMMON"/>
+  </RULES>
+</MODE>

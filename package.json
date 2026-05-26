@@ -13,6 +13,7 @@
   "activationEvents": [
     "onLanguage:sde",
     "onLanguage:sdevice",
+    "onLanguage:sdevicepar",
     "onLanguage:sprocess",
     "onLanguage:emw",
     "onLanguage:inspect",
@@ -52,6 +53,19 @@
         "filenamePatterns": [
           "*_des.cmd"
         ],
+        "configuration": "./language-configurations/tcl.json"
+      },
+      {
+        "id": "sdevicepar",
+        "aliases": [
+          "Sentaurus Device Parameter",
+          "SDEVICE PAR"
+        ],
+        "extensions": [
+          ".par"
+        ],
+        "filenames": [],
+        "filenamePatterns": [],
         "configuration": "./language-configurations/tcl.json"
       },
       {
@@ -155,6 +169,11 @@
         "language": "sdevice",
         "scopeName": "source.sentaurus.sdevice",
         "path": "./syntaxes/sdevice.tmLanguage.json"
+      },
+      {
+        "language": "sdevicepar",
+        "scopeName": "source.sentaurus.sdevicepar",
+        "path": "./syntaxes/sdevicepar.tmLanguage.json"
       },
       {
         "language": "sprocess",

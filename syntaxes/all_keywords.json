@@ -6727,14 +6727,47 @@
   },
   "sdevicepar": {
     "KEYWORD1": [
-      "Region",
-      "RegionInterface",
-      "Material",
       "Electrode",
-      "MaterialInterface"
+      "Material",
+      "MaterialInterface",
+      "Region",
+      "RegionInterface"
     ],
     "LITERAL3": [
       "Insert"
+    ],
+    "MARKUP": [
+      "#define",
+      "#elif",
+      "#else",
+      "#endheader",
+      "#endif",
+      "#endpostheader",
+      "#exit",
+      "#header",
+      "#if",
+      "#include",
+      "#includeext",
+      "#noexec",
+      "#postheader",
+      "#rem",
+      "#remdep",
+      "#set",
+      "#setdep",
+      "#split",
+      "#verbatim"
+    ],
+    "LITERAL4": [
+      "@file_type@",
+      "@log@",
+      "@node@",
+      "@parameter@",
+      "@plot@",
+      "@previous@",
+      "@pwd@",
+      "@tdr@",
+      "@tdrdat@",
+      "@tool_label@"
     ]
   },
   "sinterconnect-exp": {
