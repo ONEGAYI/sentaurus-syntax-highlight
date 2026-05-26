@@ -1,6 +1,6 @@
 # Sentaurus TCAD Syntax Highlighting
 
-A VSCode extension providing syntax highlighting, auto-completion, and semantic features for the Synopsys Sentaurus TCAD tool chain. Supports command files for SDE, SDEVICE, SPROCESS, EMW, INSPECT, and SVISUAL.
+A VSCode extension providing syntax highlighting, auto-completion, and semantic features for the Synopsys Sentaurus TCAD tool chain. Supports command files for SDE, SDEVICE, SDEVICE PAR, SPROCESS, EMW, INSPECT, and SVISUAL.
 
 [中文文档](README.md)
 
@@ -30,7 +30,7 @@ A VSCode extension providing syntax highlighting, auto-completion, and semantic 
 |---------|-------------|
 | Expression Converter | **Bidirectional Scheme prefix ↔ infix conversion**, invoked from the Command Palette, supports selected text replacement or input box conversion |
 | Code Snippets | **QuickPick visual menu** (`Ctrl+Shift+P` → `Sentaurus: Insert Snippet`) for browsing and inserting code templates by tool category; **traditional prefix+Tab snippets** isolated by language |
-| Comment Recognition | `#` universal comment; SDE additionally supports `;` (Scheme comment); SDevice/EMW/SProcess/Inspect additionally support `*` |
+| Comment Recognition | `#` universal comment; SDE additionally supports `;` (Scheme comment); SDevice/EMW/SProcess/Inspect/SDevicePAR additionally support `*` |
 | SWB Variables | Highlights `@Var@`, `@param:+2@`, and other Sentaurus Workbench parameter substitution syntax |
 | Bracket Matching | Auto-pairing for `{}` `[]` `()` |
 
@@ -44,6 +44,7 @@ A VSCode extension providing syntax highlighting, auto-completion, and semantic 
 | Sentaurus EMW | `*_eml.cmd`, `*_emw.cmd` |
 | Sentaurus Inspect | `*_ins.cmd` |
 | Sentaurus Visual (SVISUAL) | `*_vis.tcl` |
+| SDEVICE Material DB (PAR) | `*.par` |
 
 ### Screenshots
 
@@ -120,12 +121,13 @@ Browse and insert code templates via the Command Palette:
 
 Each level supports `← Back` to return, press `Esc` to exit.
 
-Currently covers 5 tools with 85 templates:
+Currently covers 6 tools with 106 templates:
 
 | Tool | Categories | Templates |
 |------|-----------|-----------|
 | SDE (StructEditor) | Contact, Doping, Meshing | 11 |
 | SDEVICE | CurrentPlot, Electrode, File, Math, Physics, Plot, Solve, System | 43 |
+| SDEVICE PAR | Material, Region, Electrode, Interface, Section, Misc | 21 |
 | SPROCESS | Deposit, Diffuse, Etch, Implant, ICWB, Init, Mask, Photo, MeshGoals, RefineBox, Struct | 25 |
 | INSPECT | Curve, Extract | 8 |
 | Mesh (EMW) | EMW | 2 |
@@ -137,7 +139,7 @@ Currently covers 5 tools with 85 templates:
 The extension registers snippet files for each language. Users can customize them:
 
 1. `Ctrl+Shift+P` → `Preferences: Configure User Snippets`
-2. Select the corresponding language (e.g., `sde`, `sdevice`, `sprocess`, `emw`, `inspect`)
+2. Select the corresponding language (e.g., `sde`, `sdevice`, `sdevicepar`, `sprocess`, `emw`, `inspect`)
 3. Add custom snippets in the opened JSON file
 
 > Multiple languages share the `.cmd` extension, but VSCode associates files to different language IDs via `filenamePatterns`. Snippets are automatically isolated by language ID and do not conflict.
