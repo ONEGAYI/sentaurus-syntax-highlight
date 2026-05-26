@@ -27,6 +27,14 @@ function createParIndexService(deps) {
     // Phase 2.1: resolved by resolveIncludes (Task 4)
     const includeRawCache = new Map();
 
+    // workspaceIndex: Map<uri, ParSymbol[]> — workspace .par 文件符号（标记 source: "workspace"）
+    // key 为 URI string，value 为已标记 source 的 symbol 数组
+    const workspaceIndex = new Map();
+
+    // workspace 扫描状态
+    let _workspaceScanning = false;
+    let _workspaceCompletionMissed = false;
+
     /**
      * 获取缓存键。
      */
@@ -83,6 +91,41 @@ function createParIndexService(deps) {
         } catch (_) {}
 
         return null;
+    }
+
+    /**
+     * 添加 workspace 文件到索引。
+     */
+    function addWorkspaceFile(uri, text) {
+        const rawResult = parseParText(text, uri);
+        const symbols = rawResult.symbols.map(s => ({
+            ...s,
+            source: 'workspace',
+            filePath: uri,
+        }));
+        workspaceIndex.set(uri, symbols);
+        // FIFO 淘汰（与 includeRawCache 一致）
+        if (workspaceIndex.size > MAX_CACHE_SIZE) {
+            workspaceIndex.delete(workspaceIndex.keys().next().value);
+        }
+    }
+
+    /**
+     * 从索引中移除 workspace 文件。
+     */
+    function removeWorkspaceFile(uri) {
+        workspaceIndex.delete(uri);
+    }
+
+    /**
+     * 获取所有 workspace 文件的符号（扁平化数组）。
+     */
+    function getWorkspaceSymbols() {
+        const all = [];
+        for (const symbols of workspaceIndex.values()) {
+            all.push(...symbols);
+        }
+        return all;
     }
 
     /**
@@ -217,6 +260,9 @@ function createParIndexService(deps) {
      * @returns {Array<{label: string, kind: string, detail: string, sortText: string, insertText: string, source: string, parentPath: string}>}
      */
     function getCompletionsAt(document, position, lineText) {
+        // 记录补全请求时 workspace 是否仍在扫描
+        if (_workspaceScanning) _workspaceCompletionMissed = true;
+
         const uri = document.uri.toString();
         const version = document.version;
         const key = cacheKey(uri, version);
@@ -230,7 +276,7 @@ function createParIndexService(deps) {
             if (scopeNameCtx) {
                 return buildParCompletions(
                     { completableKind: 'scopeName', parentPath: '', scopeType: scopeNameCtx.scopeType, pendingBlockName: null },
-                    cached.symbols,
+                    cached.symbols.concat(getWorkspaceSymbols()),
                 );
             }
         }
@@ -238,11 +284,23 @@ function createParIndexService(deps) {
         const ctx = getContextAtPosition(cached.lineContexts, position.line, position.character);
         if (!ctx) return [];
 
-        return buildParCompletions(ctx, cached.symbols);
+        return buildParCompletions(ctx, cached.symbols.concat(getWorkspaceSymbols()));
     }
 
-    function onFileChanged(uri) {
-        // 清除 include 缓存中该文件的 raw result（Task 4 完善）
+    function onFileChanged(uriOrPath) {
+        // 1. 清除 includeRawCache（key 为 filesystem path）
+        try {
+            const fp = uriOrPath.startsWith('file://') ? fileURLToPath(uriOrPath) : uriOrPath;
+            includeRawCache.delete(fp);
+        } catch (_) {
+            includeRawCache.delete(uriOrPath);
+        }
+        // 2. 粗粒度清空 currentFileCache
+        currentFileCache.clear();
+    }
+
+    function clearIncludeCacheForFile(filePath) {
+        includeRawCache.delete(filePath);
     }
 
     function onFileClosed(uri) {
@@ -264,6 +322,23 @@ function createParIndexService(deps) {
     function dispose() {
         currentFileCache.clear();
         includeRawCache.clear();
+        workspaceIndex.clear();
+        _workspaceScanning = false;
+        _workspaceCompletionMissed = false;
+    }
+
+    function setWorkspaceScanning(scanning) {
+        _workspaceScanning = scanning;
+    }
+
+    function consumeWorkspaceCompletionMissed() {
+        const missed = _workspaceCompletionMissed;
+        _workspaceCompletionMissed = false;
+        return missed;
+    }
+
+    function getWorkspaceFileCount() {
+        return workspaceIndex.size;
     }
 
     return {
@@ -271,6 +346,13 @@ function createParIndexService(deps) {
         getCompletionsAt,
         onFileChanged,
         onFileClosed,
+        addWorkspaceFile,
+        removeWorkspaceFile,
+        getWorkspaceSymbols,
+        clearIncludeCacheForFile,
+        setWorkspaceScanning,
+        consumeWorkspaceCompletionMissed,
+        getWorkspaceFileCount,
         dispose,
     };
 }

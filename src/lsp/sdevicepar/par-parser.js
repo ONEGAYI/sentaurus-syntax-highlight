@@ -36,6 +36,133 @@ function countBraceDelta(line) {
 }
 
 /**
+ * 找到 str[openPos] 处 '{' 的匹配 '}' 位置。
+ * 与 countBraceDelta 使用相同的字符串感知逻辑。
+ * @param {string} str
+ * @param {number} openPos - '{' 的位置
+ * @returns {number} 匹配 '}' 的位置，未找到返回 -1
+ */
+function findMatchingBrace(str, openPos) {
+    let depth = 0;
+    let inStr = false;
+    for (let i = openPos; i < str.length; i++) {
+        const c = str[i];
+        if (inStr) {
+            if (c === '\\') { i++; continue; }
+            if (c === '"') inStr = false;
+            continue;
+        }
+        if (c === '"') { inStr = true; continue; }
+        if (c === '{') depth++;
+        if (c === '}') {
+            depth--;
+            if (depth === 0) return i;
+        }
+    }
+    return -1;
+}
+
+/**
+ * 解析 { } 之间的内联内容，直接向 symbols 数组添加符号。
+ * 不触碰主解析栈——内联 block 在同一行内自包含。
+ * @param {string} content - { 和 } 之间的文本
+ * @param {string} parentPath - 父级路径
+ * @param {string} filePath
+ * @param {number} lineIdx
+ * @param {object[]} symbols
+ */
+function parseInlineContent(content, parentPath, filePath, lineIdx, symbols) {
+    let pos = 0;
+    const len = content.length;
+
+    function skipWs() {
+        while (pos < len && /\s/.test(content[pos])) pos++;
+    }
+
+    function readQuotedString() {
+        const start = pos;
+        pos++;
+        while (pos < len) {
+            if (content[pos] === '\\') { pos += 2; continue; }
+            if (content[pos] === '"') { pos++; return content.substring(start, pos); }
+            pos++;
+        }
+        return content.substring(start);
+    }
+
+    function readValue() {
+        skipWs();
+        if (pos >= len) return null;
+        if (content[pos] === '"') return readQuotedString();
+        const start = pos;
+        while (pos < len && !/[\s{}]/.test(content[pos])) pos++;
+        return pos > start ? content.substring(start, pos) : null;
+    }
+
+    function readIdentifier() {
+        skipWs();
+        if (pos >= len || !/[A-Za-z]/.test(content[pos])) return null;
+        const start = pos;
+        pos++;
+        while (pos < len && /[\w-]/.test(content[pos])) pos++;
+        if (pos < len && content[pos] === '(') {
+            const parenStart = pos;
+            pos++;
+            while (pos < len && /\d/.test(content[pos])) pos++;
+            if (pos < len && content[pos] === ')') pos++;
+            else pos = parenStart;
+        }
+        return content.substring(start, pos);
+    }
+
+    while (pos < len) {
+        skipWs();
+        if (pos >= len) break;
+        if (content[pos] === '#') break;
+
+        const ident = readIdentifier();
+        if (!ident) { pos++; continue; }
+
+        skipWs();
+        if (pos >= len) break;
+
+        if (content[pos] === '=') {
+            pos++;
+            const value = readValue();
+            if (value !== null) {
+                symbols.push({
+                    kind: 'parameter', name: ident, scopeType: null,
+                    parentPath,
+                    fullPath: parentPath ? parentPath + '/' + ident : ident,
+                    filePath,
+                    range: { startLine: lineIdx, startCol: 0, endLine: lineIdx, endCol: 0 },
+                    value: value.trim(), source: 'current', includeChain: [],
+                });
+            }
+            continue;
+        }
+
+        if (content[pos] === '{') {
+            const closePos = findMatchingBrace(content, pos);
+            if (closePos !== -1) {
+                const blockPath = parentPath ? parentPath + '/' + ident : ident;
+                symbols.push({
+                    kind: 'block', name: ident, scopeType: null,
+                    parentPath, fullPath: blockPath, filePath,
+                    range: { startLine: lineIdx, startCol: 0, endLine: lineIdx, endCol: 0 },
+                    value: null, source: 'current', includeChain: [],
+                });
+                parseInlineContent(content.substring(pos + 1, closePos), blockPath, filePath, lineIdx, symbols);
+                pos = closePos + 1;
+                continue;
+            }
+            pos++;
+            continue;
+        }
+    }
+}
+
+/**
  * 解析 .par 文件文本，返回结构化结果。
  * @param {string} text
  * @param {string} filePath
@@ -143,6 +270,14 @@ function parseParText(text, filePath) {
                 source: 'current',
                 includeChain: [],
             });
+            // Parse inline content if scope opens and closes on same line
+            if (m[3] === '{') {
+                const openBracePos = m[0].length - 1;
+                const closeBracePos = findMatchingBrace(line, openBracePos);
+                if (closeBracePos !== -1) {
+                    parseInlineContent(line.substring(openBracePos + 1, closeBracePos), stackToPath(stack), filePath, lineIdx, symbols);
+                }
+            }
             // 处理同行 } 导致的立即 pop
             const brace = countBraceDelta(line);
             if (m[3] === '{') {
@@ -183,6 +318,12 @@ function parseParText(text, filePath) {
                 includeChain: [],
             });
             pendingBlockName = null;
+            // Parse inline content between { and its matching }
+            const openBracePos7 = line.indexOf('{');
+            const closeBracePos7 = findMatchingBrace(line, openBracePos7);
+            if (closeBracePos7 !== -1) {
+                parseInlineContent(line.substring(openBracePos7 + 1, closeBracePos7), stackToPath(stack), filePath, lineIdx, symbols);
+            }
             const brace = countBraceDelta(line);
             const netCloses = brace.closes - Math.max(0, brace.opens - 1);
             if (netCloses > 0) popStack(netCloses);
@@ -208,6 +349,12 @@ function parseParText(text, filePath) {
                 source: 'current',
                 includeChain: [],
             });
+            // Parse inline content between { and matching }
+            const openBracePos8 = m[0].length - 1;
+            const closeBracePos8 = findMatchingBrace(line, openBracePos8);
+            if (closeBracePos8 !== -1) {
+                parseInlineContent(line.substring(openBracePos8 + 1, closeBracePos8), stackToPath(stack), filePath, lineIdx, symbols);
+            }
             const brace = countBraceDelta(line);
             // block 的 { 已在正则中匹配，opens 至少 1
             const netCloses = brace.closes - Math.max(0, brace.opens - 1);

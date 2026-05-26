@@ -207,6 +207,9 @@ function registerCompletionProviders(context, deps) {
                                         item.detail = pi.detail;
                                         item.sortText = pi.sortText;
                                         item.insertText = pi.insertText;
+                                        if (pi.filePath) {
+                                            item.documentation = new vscode.MarkdownString(`Source: ${pi.source} (\`${path.basename(pi.filePath)}\`)`);
+                                        }
                                         return item;
                                     });
                                 } else if (!inQuote && !inRhs) {
@@ -223,8 +226,15 @@ function registerCompletionProviders(context, deps) {
                                             item.detail = pi.detail;
                                             item.sortText = pi.sortText;
                                             item.insertText = new vscode.SnippetString(pi.insertText);
-                                            if (pi.parentPath) {
-                                                item.documentation = new vscode.MarkdownString(`Path: \`${pi.parentPath}\`\n\nSource: ${pi.source}`);
+                                            if (pi.parentPath || pi.filePath) {
+                                                const parts = [];
+                                                if (pi.parentPath) parts.push(`Path: \`${pi.parentPath}\``);
+                                                if (pi.filePath) {
+                                                    parts.push(`Source: ${pi.source} (\`${path.basename(pi.filePath)}\`)`);
+                                                } else {
+                                                    parts.push(`Source: ${pi.source}`);
+                                                }
+                                                item.documentation = new vscode.MarkdownString(parts.join('\n\n'));
                                             }
                                             return item;
                                         });

@@ -53,7 +53,7 @@ function dedupeByPriority(symbols, kind, parentPath) {
  *
  * @param {{ completableKind: string, parentPath: string, scopeType: string|null, pendingBlockName: string|null }} ctx
  * @param {object[]} symbols - 所有可用 symbols（当前文件 + include）
- * @returns {Array<{label: string, kind: string, detail: string, sortText: string, insertText: string, source: string, parentPath: string}>}
+ * @returns {Array<{label: string, kind: string, detail: string, sortText: string, insertText: string, source: string, parentPath: string, filePath?: string}>}
  */
 function buildParCompletions(ctx, symbols) {
     if (!ctx || !ctx.completableKind) return [];
@@ -76,16 +76,24 @@ function buildParCompletions(ctx, symbols) {
             idx++;
         }
     } else if (ctx.completableKind === 'block') {
-        // 按 scopeType 聚合，忽略具体 scopeName：Material/Silicon 的 block 也适用于 Material/Oxide
+        // 两阶段收集：先精确 parentPath，再 scopeType 聚合补充
         const scopeType = ctx.scopeType;
-        const blocks = scopeType
+
+        const exactBlocks = symbols.filter(s => s.kind === 'block' && s.parentPath === ctx.parentPath);
+        const exactCandidates = dedupeAndSort(exactBlocks);
+        const exactNames = new Set(exactCandidates.map(s => s.name));
+
+        const aggregatedBlocks = scopeType
             ? symbols.filter(s => {
                 if (s.kind !== 'block') return false;
+                if (exactNames.has(s.name)) return false;
                 const parts = s.parentPath.split('/');
                 return parts.length === 2 && parts[0] === scopeType;
             })
-            : symbols.filter(s => s.kind === 'block' && s.parentPath === ctx.parentPath);
-        const candidates = dedupeAndSort(blocks);
+            : [];
+        const aggregatedCandidates = dedupeAndSort(aggregatedBlocks);
+
+        const candidates = [...exactCandidates, ...aggregatedCandidates];
         candidates.forEach((sym, idx) => {
             items.push({
                 label: sym.name,
@@ -95,21 +103,32 @@ function buildParCompletions(ctx, symbols) {
                 insertText: sym.name + ' {\n\t${0}\n}',
                 source: sym.source || 'current',
                 parentPath: ctx.parentPath,
+                filePath: sym.filePath,
             });
         });
     } else if (ctx.completableKind === 'parameter') {
-        // 按 scopeType + blockName 聚合，忽略 scopeName：Material/Si/Bandgap 的参数也适用于 Material/Oxide/Bandgap
+        // 两阶段收集：先精确 parentPath 匹配，再 scopeType 聚合补充未覆盖的名称
         const scopeType = ctx.scopeType;
         const pathParts = ctx.parentPath.split('/');
         const blockName = pathParts.length >= 3 ? pathParts[pathParts.length - 1] : null;
-        const params = (scopeType && blockName)
+
+        // 阶段 1：精确匹配（当前 scope 实例下的参数，始终优先）
+        const exactParams = symbols.filter(s => s.kind === 'parameter' && s.parentPath === ctx.parentPath);
+        const exactCandidates = dedupeAndSort(exactParams);
+        const exactNames = new Set(exactCandidates.map(s => s.name));
+
+        // 阶段 2：scopeType + blockName 聚合（跨 scopeName 发现更多参数名）
+        const aggregatedParams = (scopeType && blockName)
             ? symbols.filter(s => {
                 if (s.kind !== 'parameter') return false;
+                if (exactNames.has(s.name)) return false;
                 const parts = s.parentPath.split('/');
                 return parts.length === 3 && parts[0] === scopeType && parts[2] === blockName;
             })
-            : symbols.filter(s => s.kind === 'parameter' && s.parentPath === ctx.parentPath);
-        const candidates = dedupeAndSort(params);
+            : [];
+        const aggregatedCandidates = dedupeAndSort(aggregatedParams);
+
+        const candidates = [...exactCandidates, ...aggregatedCandidates];
         candidates.forEach((sym, idx) => {
             items.push({
                 label: sym.name,
@@ -119,6 +138,7 @@ function buildParCompletions(ctx, symbols) {
                 insertText: `${sym.name} = `,
                 source: sym.source || 'current',
                 parentPath: ctx.parentPath,
+                filePath: sym.filePath,
             });
         });
     } else if (ctx.completableKind === 'scopeName') {
@@ -134,6 +154,7 @@ function buildParCompletions(ctx, symbols) {
                 insertText: sym.name,
                 source: sym.source || 'current',
                 parentPath: '',
+                filePath: sym.filePath,
             });
         });
     }

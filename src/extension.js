@@ -17,6 +17,7 @@ const { DOC_LABELS } = require('./docs-loader');
 const { registerSnippetCommand } = require('./commands/snippet-picker');
 const envVarManager = require('./commands/env-var-manager');
 const { createParIndexService } = require('./lsp/sdevicepar/par-index-service');
+const { fileURLToPath } = require('url');
 
 /** @type {SchemeParseCache} */
 let schemeCache;
@@ -175,6 +176,111 @@ function activate(context) {
         }
     }
 
+    // ── Phase 2.2: Workspace .par 文件扫描 ──────────────────
+
+    function uriToFsPath(uri) {
+        try {
+            return uri.fsPath;
+        } catch (_) {
+            try { return fileURLToPath(uri.toString()); }
+            catch (_) { return uri.toString(); }
+        }
+    }
+
+    function preheatOpenParDocuments() {
+        for (const doc of vscode.workspace.textDocuments) {
+            if (doc.languageId === 'sdevicepar' && parIndexService) {
+                try { parIndexService.parseCurrentFile(doc); }
+                catch (_) { /* 静默：不阻塞 watcher 处理 */ }
+            }
+        }
+    }
+
+    async function scanWorkspaceParFiles() {
+        if (!vscode.workspace.workspaceFolders || !parIndexService) return;
+        parIndexService.setWorkspaceScanning(true);
+        if (parStatusBar) {
+            parStatusBar.text = '$(sync~spin) PAR index: scanning workspace...';
+            parStatusBar.show();
+        }
+        try {
+            const parFiles = await vscode.workspace.findFiles('**/*.par');
+            for (const fileUri of parFiles) {
+                try {
+                    const text = fs.readFileSync(uriToFsPath(fileUri), 'utf8');
+                    parIndexService.addWorkspaceFile(fileUri.toString(), text);
+                } catch (e) {
+                    // skip unreadable files
+                }
+            }
+        } catch (_) { /* findFiles failed */ }
+        parIndexService.setWorkspaceScanning(false);
+        if (parStatusBar) {
+            const fileCount = parIndexService.getWorkspaceFileCount();
+            const missed = parIndexService.consumeWorkspaceCompletionMissed();
+            if (missed) {
+                parStatusBar.text = `$(info) PAR index ready — trigger completion again for workspace symbols`;
+                parStatusBar.backgroundColor = undefined;
+                setTimeout(() => { if (parStatusBar) parStatusBar.hide(); }, 6000);
+            } else {
+                parStatusBar.text = `$(check) PAR index ready: ${fileCount} files`;
+                setTimeout(() => { if (parStatusBar) parStatusBar.hide(); }, 4000);
+            }
+        }
+    }
+
+    // PAR workspace 状态栏
+    const parStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 50);
+    context.subscriptions.push(parStatusBar);
+
+    // Fire-and-forget: 不阻塞 activate；.catch 防止 unhandled rejection
+    scanWorkspaceParFiles().catch(() => {
+        parIndexService.setWorkspaceScanning(false);
+        if (parStatusBar) parStatusBar.hide();
+    });
+
+    // FileSystemWatcher: workspace .par 文件增量更新
+    // 使用 500ms debounce 防止批量文件操作（如 git checkout）导致 O(N×M) preheat
+    let watcherDebounceTimer = null;
+    function debouncedPreheat() {
+        if (watcherDebounceTimer) clearTimeout(watcherDebounceTimer);
+        watcherDebounceTimer = setTimeout(() => {
+            if (parIndexService) preheatOpenParDocuments();
+        }, 500);
+    }
+
+    const parWatcher = vscode.workspace.createFileSystemWatcher('**/*.par');
+    parWatcher.onDidCreate(uri => {
+        if (!parIndexService) return;
+        try {
+            const text = fs.readFileSync(uriToFsPath(uri), 'utf8');
+            parIndexService.addWorkspaceFile(uri.toString(), text);
+            // 新建文件也可能使已有 #include 从 unresolved 变为 resolved，
+            // 因此需要清 currentFileCache 并刷新打开文档。
+            parIndexService.onFileChanged(uri.toString());
+            debouncedPreheat();
+        } catch (_) { /* readFileSync 失败 → 不执行 onFileChanged/preheat */ }
+    });
+    parWatcher.onDidChange(uri => {
+        if (!parIndexService) return;
+        try {
+            const text = fs.readFileSync(uriToFsPath(uri), 'utf8');
+            parIndexService.addWorkspaceFile(uri.toString(), text);
+            // onFileChanged 同时清 includeRawCache + currentFileCache
+            parIndexService.onFileChanged(uri.toString());
+            // 刷新已打开的 .par 文档缓存
+            debouncedPreheat();
+        } catch (_) { /* readFileSync 失败 → 不执行 onFileChanged/preheat */ }
+    });
+    parWatcher.onDidDelete(uri => {
+        if (!parIndexService) return;
+        parIndexService.removeWorkspaceFile(uri.toString());
+        // onFileChanged 处理 include 链失效
+        parIndexService.onFileChanged(uri.toString());
+        debouncedPreheat();
+    });
+    context.subscriptions.push(parWatcher);
+
     // ── Completion/Hover/Definition Providers ──────────────────
     // Must come before registerSdeProviders — builds modeDispatchTable/symbolParamsTable
     // and calls schemeCache.setSymbolConfig internally.
@@ -204,7 +310,7 @@ function activate(context) {
     variableReferenceProvider.activate(context, schemeCache, tclCache, vscode);
 
     // === Snippet QuickPick Command ===
-    context.subscriptions.push({ dispose: () => { if (parIndexService) parIndexService.dispose(); } });
+    context.subscriptions.push({ dispose: () => { if (parIndexService) { parIndexService.dispose(); parIndexService = null; } } });
     context.subscriptions.push({ dispose: () => {
         for (const t of parDebounceTimers.values()) clearTimeout(t);
         parDebounceTimers.clear();
