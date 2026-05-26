@@ -497,4 +497,105 @@ test('clearIncludeCacheForFile clears only the selected include raw entry', () =
     service.dispose();
 });
 
+// ── Phase 2.2: 集成测试 ──────────────────────
+
+test('multiple workspace files aggregate blocks', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+
+    service.addWorkspaceFile('file:///ws/Silicon.par', [
+        'Material = "Silicon" {',
+        '  Bandgap {',
+        '    Eg0 = 1.12',
+        '  }',
+        '}',
+    ].join('\n') + '\n');
+
+    service.addWorkspaceFile('file:///ws/Oxide.par', [
+        'Material = "Oxide" {',
+        '  Epsilon {',
+        '    eps = 3.9',
+        '  }',
+        '}',
+    ].join('\n') + '\n');
+
+    // 当前文件：空 Material scope
+    const doc = mockDoc('Material = "MyMat" {\n  \n}\n', 1);
+    service.parseCurrentFile(doc);
+
+    // scope 内空行 → block 补全
+    const items = service.getCompletionsAt(doc, { line: 1, character: 2 });
+    const labels = items.map(i => i.label);
+    assert.ok(labels.includes('Bandgap'), 'Should include Bandgap from Silicon.par');
+    assert.ok(labels.includes('Epsilon'), 'Should include Epsilon from Oxide.par');
+    service.dispose();
+});
+
+test('workspace parameter completion across files', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+
+    // 当前文件有 Bandgap block（但无参数）
+    const doc = mockDoc('Material = "MyMat" {\n  Bandgap {\n  }\n}\n', 1);
+    service.parseCurrentFile(doc);
+
+    // workspace 文件有 Bandgap 的参数
+    service.addWorkspaceFile('file:///ws/Silicon.par', [
+        'Material = "Silicon" {',
+        '  Bandgap {',
+        '    Eg0 = 1.12',
+        '    Chi0 = 4.05',
+        '  }',
+        '}',
+    ].join('\n') + '\n');
+
+    // line 2 是 Bandgap block 内部空行 → parameter 补全
+    const items = service.getCompletionsAt(doc, { line: 2, character: 4 });
+    const labels = items.map(i => i.label);
+    assert.ok(labels.includes('Eg0'), 'Should suggest Eg0 from workspace');
+    assert.ok(labels.includes('Chi0'), 'Should suggest Chi0 from workspace');
+    service.dispose();
+});
+
+test('current > include > workspace dedup priority', () => {
+    const { buildParCompletions } = require('../src/lsp/sdevicepar/par-completion');
+    const ctx = { completableKind: 'parameter', parentPath: 'Material/Si/Bandgap', scopeType: 'Material', pendingBlockName: null };
+
+    // 三层来源都有 Eg0，值不同
+    const symbols = [
+        { kind: 'parameter', name: 'Eg0', value: '1.10', parentPath: 'Material/Si/Bandgap', source: 'workspace' },
+        { kind: 'parameter', name: 'Eg0', value: '1.12', parentPath: 'Material/Si/Bandgap', source: 'include' },
+        { kind: 'parameter', name: 'Eg0', value: '1.16964', parentPath: 'Material/Si/Bandgap', source: 'current' },
+    ];
+    const items = buildParCompletions(ctx, symbols);
+    const eg0 = items.find(i => i.label === 'Eg0');
+    assert.ok(eg0);
+    assert.strictEqual(eg0.source, 'current', 'current (priority 0) should win over include (1) and workspace (2)');
+    assert.strictEqual(eg0.detail, '[par] = 1.16964', 'Should use current value');
+});
+
+test('workspace Material blocks do not pollute Region scope', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+
+    // 当前文件：Region scope（内部空行）
+    const doc = mockDoc('Region = "active" {\n  \n}\n', 1);
+    service.parseCurrentFile(doc);
+
+    // workspace 文件：Material scope 下有 Bandgap block
+    service.addWorkspaceFile('file:///ws/Silicon.par', [
+        'Material = "Silicon" {',
+        '  Bandgap {',
+        '    Eg0 = 1.12',
+        '  }',
+        '}',
+    ].join('\n') + '\n');
+
+    // line 1 是 Region scope 内部空行 → block 补全
+    // par-completion.js block 聚合按 scopeType 过滤：
+    // workspace 的 Bandgap parentPath = "Material/Silicon"（parts[0] = "Material"），
+    // 不匹配当前 scopeType = "Region"，因此不应出现
+    const items = service.getCompletionsAt(doc, { line: 1, character: 2 });
+    const labels = items.map(i => i.label);
+    assert.ok(!labels.includes('Bandgap'), 'Material block should not appear in Region scope');
+    service.dispose();
+});
+
 summary();
