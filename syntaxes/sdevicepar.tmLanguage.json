@@ -1,0 +1,302 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Sentaurus SDEVICE Parameter",
+  "scopeName": "source.sentaurus.sdevicepar",
+  "patterns": [
+    {
+      "include": "#preprocessor"
+    },
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#defines"
+    },
+    {
+      "include": "#swb-params"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#region-block"
+    },
+    {
+      "include": "#top-level-keywords"
+    },
+    {
+      "include": "#insert-keyword"
+    },
+    {
+      "include": "#numbers"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        { "match": "#.*$", "name": "comment.line.hash.sdevicepar" },
+        { "match": "^\\s*\\*.*$", "name": "comment.line.asterisk.sdevicepar" },
+        { "match": "(?<=\\s)\\*.*$", "name": "comment.line.asterisk.sdevicepar" }
+      ]
+    },
+    "preprocessor": {
+      "patterns": [
+        {
+          "name": "meta.preprocessor.define.sdevicepar",
+          "match": "(?i)^\\s*(#define)\\b\\s+(\\w+)(\\s+.*)?$",
+          "captures": {
+            "1": {
+              "name": "keyword.control.preprocessor.sdevicepar"
+            },
+            "2": {
+              "name": "entity.name.type.sdevicepar"
+            },
+            "3": {
+              "patterns": [
+                {
+                  "match": "\"[^\"]*\"",
+                  "name": "string.quoted.double"
+                },
+                {
+                  "match": "\\b(defined|TRUE|FALSE)\\b",
+                  "name": "keyword.control.preprocessor.sdevicepar"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "meta.preprocessor.ifdef.sdevicepar",
+          "match": "(?i)^\\s*(#(?:ifdef|ifndef))\\b\\s+(\\w+)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.preprocessor.sdevicepar"
+            },
+            "2": {
+              "name": "entity.name.type.sdevicepar"
+            }
+          }
+        },
+        {
+          "name": "meta.preprocessor.other.sdevicepar",
+          "match": "(?i)^\\s*(#(?:if|elif|else|endif|set|setdep|include|includeext|exit|rem|noexec|header|endheader|postheader|endpostheader|split|remdep|verbatim))\\b(.*$)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.preprocessor.sdevicepar"
+            },
+            "2": {
+              "patterns": [
+                {
+                  "match": "\\b(defined|TRUE|FALSE)\\b",
+                  "name": "keyword.control.preprocessor.sdevicepar"
+                },
+                {
+                  "match": "\"[^\"]*\"",
+                  "name": "string.quoted.double"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "swb-params": {
+      "patterns": [
+        {
+          "match": "@[a-zA-Z_<][^@]*?@",
+          "name": "constant.character.format.placeholder"
+        }
+      ]
+    },
+    "defines": {
+      "match": "(?i)\\b_[A-Za-z0-9_]+\\b",
+      "name": "entity.name.type.sdevicepar"
+    },
+    "strings": {
+      "name": "string.quoted.double",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        {
+          "name": "constant.character.escape",
+          "match": "\\\\."
+        },
+        {
+          "match": "@[a-zA-Z_<][^@]*?@",
+          "name": "constant.character.format.placeholder"
+        }
+      ]
+    },
+    "numbers": {
+      "match": "\\b(\\d+\\.?\\d*|\\.\\d+)([eE][+-]?\\d+)?\\b",
+      "name": "constant.numeric"
+    },
+    "top-level-keywords": {
+      "patterns": [
+        {
+          "match": "(?i)\\b(Electrode|Region|Material|RegionInterface|MaterialInterface)(?![A-Za-z0-9_:-])",
+          "name": "keyword.control.sdevicepar"
+        }
+      ]
+    },
+    "insert-keyword": {
+      "patterns": [
+        {
+          "match": "(?i)\\b(Insert)(?![A-Za-z0-9_:-])",
+          "name": "support.class.sdevicepar"
+        }
+      ]
+    },
+    "region-block": {
+      "begin": "(?i)\\b(Electrode|(Region|Material)(Interface)?)\\s*=\\s*(\"[^\"]*\")\\s*\\{",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.control.sdevicepar"
+        },
+        "4": {
+          "name": "string.quoted.double"
+        }
+      },
+      "end": "\\}",
+      "patterns": [
+        {
+          "include": "#preprocessor"
+        },
+        {
+          "include": "#comments"
+        },
+        {
+          "include": "#defines"
+        },
+        {
+          "include": "#strings"
+        },
+        {
+          "include": "#swb-params"
+        },
+        {
+          "include": "#numbers"
+        },
+        {
+          "include": "#section-block"
+        },
+        {
+          "include": "#section-name"
+        },
+        {
+          "include": "#parameter-name"
+        },
+        {
+          "include": "#function-expr"
+        },
+        {
+          "include": "#assignment"
+        },
+        {
+          "include": "#insert-keyword"
+        }
+      ]
+    },
+    "parameter-name": {
+      "patterns": [
+        {
+          "match": "(?i)\\b(\\w+)\\s*:",
+          "captures": {
+            "1": {
+              "name": "entity.name.tag.sdevicepar"
+            }
+          }
+        }
+      ]
+    },
+    "section-block": {
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": {
+          "name": "entity.name.tag.sdevicepar"
+        }
+      },
+      "end": "\\}",
+      "patterns": [
+        {
+          "include": "#preprocessor"
+        },
+        {
+          "include": "#comments"
+        },
+        {
+          "include": "#defines"
+        },
+        {
+          "include": "#strings"
+        },
+        {
+          "include": "#swb-params"
+        },
+        {
+          "include": "#numbers"
+        },
+        {
+          "include": "#section-name"
+        },
+        {
+          "include": "#parameter-name"
+        },
+        {
+          "include": "#function-expr"
+        },
+        {
+          "include": "#assignment"
+        },
+        {
+          "include": "#insert-keyword"
+        },
+        {
+          "include": "#section-block"
+        }
+      ]
+    },
+    "function-expr": {
+      "begin": "(?i)\\b(\\w+)\\s*\\(",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.name.function.sdevicepar"
+        }
+      },
+      "end": "\\)",
+      "patterns": [
+        {
+          "include": "#comments"
+        },
+        {
+          "include": "#strings"
+        },
+        {
+          "include": "#swb-params"
+        },
+        {
+          "include": "#numbers"
+        },
+        {
+          "include": "#assignment"
+        }
+      ]
+    },
+    "assignment": {
+      "match": "(?:^|\\s)(\\S+)(?=\\s*=)",
+      "captures": {
+        "1": {
+          "name": "variable.parameter.sdevicepar"
+        }
+      }
+    },
+    "section-name": {
+      "match": "^\\s*([A-Za-z][\\w-]+):?\\s*$",
+      "captures": {
+        "1": {
+          "name": "entity.name.type.sdevicepar"
+        }
+      }
+    }
+  }
+}

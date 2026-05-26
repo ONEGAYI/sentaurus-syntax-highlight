@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+  <!DOCTYPE MODE SYSTEM "xmode.dtd">
+<!-- Mode: Sentaurus Pre Processor
+  Release: O-2018.06
+  $Date: 2018/07/09 $ 
+  $Revision: #15 $
+Colors:
+  COMMENT1: commented out, #
+  COMMENT2: a remark, note, comment with *
+  LITERAL4: a preprocessor @-variable and expression @<>@
+  LABEL: a define expression _
+  MARKUP: #- preprocessing command #if #set...
+  -->
+<MODE>
+  <PROPS>
+    <PROPERTY NAME="indentOpenBrackets" VALUE="({["/>
+    <PROPERTY NAME="indentCloseBrackets" VALUE=")}]"/>
+    <PROPERTY NAME="lineUpClosingBracket" VALUE="FALSE"/>
+  </PROPS>
+  
+<!-- MAIN -->
+  <RULES DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <IMPORT DELEGATE="TCL_PP" />
+    <IMPORT DELEGATE="AT_DEFINES" />
+    <IMPORT DELEGATE="HASH_CMD" />
+  </RULES>
+
+<!-- AT + DEFINES -->
+  <RULES SET="AT_DEFINES" DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <IMPORT DELEGATE="AT" />
+    <IMPORT DELEGATE="DEFINES" />
+  </RULES>
+  
+<!-- IF -->
+  <RULES SET="IF" DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+     <IMPORT DELEGATE="AT_DEFINES" />
+     <SPAN TYPE="NULL" DELEGATE="spptcl::MAIN"><BEGIN>[</BEGIN><END>]</END></SPAN>
+  </RULES>
+
+<!-- HASH COMMANDS -->
+  <RULES SET="HASH_CMD">
+    <!-- SPP Keywords -->
+    <EOL_SPAN_REGEXP TYPE="MARKUP" AT_WHITESPACE_END="TRUE" HASH_CHAR="#" DELEGATE="IF" >#(if|elif)</EOL_SPAN_REGEXP>
+    <EOL_SPAN_REGEXP TYPE="MARKUP" AT_WHITESPACE_END="TRUE" HASH_CHAR="#" DELEGATE="AT_DEFINES" >#(endif|setdep|set|define|else|includeext|include|exit|verbatim|rem|noexec|header|endheader|postheader|endpostheader|split)</EOL_SPAN_REGEXP>
+    <!-- by default spp allows only # comments at line start-->		  
+    <EOL_SPAN_REGEXP TYPE="COMMENT1" AT_WHITESPACE_END="TRUE">#(?!(if|elif|endif|setdep|set|define|else|includeext|include|exit|verbatim|rem|noexec|header|endheader|postheader|endpostheader|split))</EOL_SPAN_REGEXP>
+    <KEYWORDS>
+      <MARKUP>#define</MARKUP>
+      <MARKUP>#elif</MARKUP>
+      <MARKUP>#else</MARKUP>
+      <MARKUP>#endheader</MARKUP>
+      <MARKUP>#endif</MARKUP>
+      <MARKUP>#endpostheader</MARKUP>
+      <MARKUP>#exit</MARKUP>
+      <MARKUP>#header</MARKUP>
+      <MARKUP>#if</MARKUP>
+      <MARKUP>#include</MARKUP>
+      <MARKUP>#includeext</MARKUP>
+      <MARKUP>#noexec</MARKUP>
+      <MARKUP>#postheader</MARKUP>
+      <MARKUP>#rem</MARKUP>
+      <MARKUP>#remdep</MARKUP>
+      <MARKUP>#set</MARKUP>
+      <MARKUP>#setdep</MARKUP>
+      <MARKUP>#split</MARKUP>
+      <MARKUP>#verbatim</MARKUP>
+    </KEYWORDS>
+  </RULES>
+  
+<!-- AT EXPRESSIONS -->
+  <RULES SET="AT" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <!-- SWB Variables-->
+    <SPAN TYPE="LITERAL4" MATCH_TYPE="RULE" NO_LINE_BREAK="TRUE" AT_WORD_START="FALSE">
+      <BEGIN>@</BEGIN>
+      <END>@</END>
+    </SPAN>
+    <KEYWORDS>
+      <LITERAL4>@file_type@</LITERAL4>
+      <LITERAL4>@node@</LITERAL4>
+      <LITERAL4>@previous@</LITERAL4>
+      <LITERAL4>@pwd@</LITERAL4>
+      <LITERAL4>@tool_label@</LITERAL4>
+      <LITERAL4>@tdr@</LITERAL4>
+      <LITERAL4>@tdrdat@</LITERAL4>
+      <LITERAL4>@plot@</LITERAL4>
+      <LITERAL4>@log@</LITERAL4>
+      <LITERAL4>@parameter@</LITERAL4>
+    </KEYWORDS>
+    </RULES>
+    
+<!-- TCL PREPROCESSING -->
+  <RULES SET="TCL_PP" DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <!-- Tcl Block for SPP delegate to inspect to get preprocessing commands recognized as such -->
+    <SPAN TYPE="MARKUP" NO_LINE_BREAK="FALSE" NO_WORD_BREAK="FALSE" AT_WORD_START="FALSE" DELEGATE="spptcl::MAIN" >
+      <BEGIN>!(</BEGIN>
+      <END>)!</END>
+    </SPAN>
+  </RULES>
+
+<!-- DEFINES -->
+  <RULES SET="DEFINES" DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <SEQ_REGEXP TYPE="LABEL" AT_WORD_START="TRUE" HASH_CHAR="">_+\w+</SEQ_REGEXP>
+  </RULES>
+
+<!-- APPENDED HASH COMMENT -->
+  <RULES SET="APPENDED_HASH_COMMENT" DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <EOL_SPAN_REGEXP TYPE="COMMENT1" AT_WORD_START="TRUE" HASH_CHAR="#">#</EOL_SPAN_REGEXP>
+  </RULES>
+
+<!-- ASTERIX COMMENT -->
+  <RULES SET="ASTERIX_COMMENT" DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <EOL_SPAN TYPE="COMMENT2" AT_WHITESPACE_END="FALSE">*</EOL_SPAN>
+  </RULES>
+
+<!-- APPENDED ASTERIX COMMENT -->
+  <RULES SET="APPENDED_ASTERIX_COMMENT" DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <EOL_SPAN_REGEXP TYPE="COMMENT2" AT_WORD_START="TRUE" HASH_CHAR="*">\*</EOL_SPAN_REGEXP>
+  </RULES>
+
+<!-- SLASH COMMENT -->
+  <RULES SET="SLASH_COMMENT" DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <EOL_SPAN TYPE="COMMENT2" AT_WHITESPACE_END="FALSE">//</EOL_SPAN>
+  </RULES>
+
+<!-- SLASH ASTERIX COMMENT -->
+  <RULES SET="APPENDED_SLASH_COMMENT" DEFAULT="NULL" IGNORE_CASE="TRUE" HIGHLIGHT_DIGITS="FALSE">
+    <EOL_SPAN_REGEXP TYPE="COMMENT2" AT_WORD_START="TRUE" HASH_CHAR="*">//</EOL_SPAN_REGEXP>
+  </RULES>
+
+</MODE>
