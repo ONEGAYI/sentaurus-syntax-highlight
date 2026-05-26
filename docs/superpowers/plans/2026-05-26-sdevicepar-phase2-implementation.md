@@ -40,10 +40,11 @@
 
 ```
 src/lsp/sdevicepar/
+├── par-constants.js           ← 共享常量：SCOPE_TYPES / SCOPE_TYPES_ARRAY / SOURCE_PRIORITY（~20行）
 ├── par-parser.js              ← 纯文本栈追踪解析器（~250行）
-├── par-context.js             ← 上下文工具函数：stackToPath / getContextAtPosition / matchParentPath（~80行）
+├── par-context.js             ← 上下文工具函数：stackToPath / getContextAtPosition / matchParentPath（~100行）
 ├── par-index-service.js       ← 索引服务：缓存 + include 递归 + 查询接口（~300行）
-└── par-completion.js          ← 补全构建逻辑（~150行）
+└── par-completion.js          ← 补全构建逻辑 + lexical gate（~200行）
 
 tests/
 ├── test-par-parser.js         ← Parser 测试
@@ -51,6 +52,8 @@ tests/
 ├── test-par-index.js          ← 索引服务测试
 └── test-par-completion.js     ← 补全构建测试
 ```
+
+**par-constants.js 存在理由**：`par-completion.js` 和 `par-index-service.js` 互相依赖（前者需要 `SCOPE_TYPES_ARRAY`，后者需要 `buildParCompletions`）。将共享常量抽至独立文件，打破循环依赖。
 
 ### 修改文件
 
@@ -78,9 +81,47 @@ tests/
 - Create: `src/lsp/sdevicepar/par-parser.js`
 - Create: `tests/test-par-parser.js`
 
-**Commit:** `feat(sdevicepar): add par-parser with structure recognition`
+**Commit:** `feat(sdevicepar): add par-constants and par-parser with structure recognition`
 
-### Step 1.1: 创建目录结构和测试文件骨架
+### Step 1.0: 创建 par-constants.js（共享常量，打破循环依赖）
+
+创建 `src/lsp/sdevicepar/par-constants.js`：
+
+```js
+// src/lsp/sdevicepar/par-constants.js
+'use strict';
+
+/** scope 声明关键词（解析器匹配 + 补全数据源） */
+const SCOPE_TYPES = new Set([
+    'Material', 'Region', 'Interface',
+    'MaterialInterface', 'RegionInterface', 'Electrode',
+]);
+
+/** 补全来源优先级（sortText 前缀） */
+const SOURCE_PRIORITY = {
+    current: 0,
+    include: 1,
+    workspace: 2,
+    materialdb: 3,
+    builtin: 4,
+};
+
+/** include 递归深度上限 */
+const MAX_INCLUDE_DEPTH = 8;
+
+/** 缓存条目上限 */
+const MAX_CACHE_SIZE = 20;
+
+module.exports = {
+    SCOPE_TYPES,
+    SCOPE_TYPES_ARRAY: Array.from(SCOPE_TYPES),
+    SOURCE_PRIORITY,
+    MAX_INCLUDE_DEPTH,
+    MAX_CACHE_SIZE,
+};
+```
+
+### Step 1.1: 创建目录结构
 
 ```bash
 mkdir -p src/lsp/sdevicepar
@@ -348,6 +389,27 @@ test('lineContexts tracks pendingBlockName', () => {
 
 // ── 容错 ─────────────────────────────────────
 
+test('scopeType field is consistent: scope frames use scopeType, never type', () => {
+    const text = 'Material = "Silicon" {\n  Bandgap {\n    Eg0 = 1.12\n  }\n}\n';
+    const result = parseParText(text, 'test.par');
+    for (const sym of result.symbols) {
+        // scope entries must have scopeType, never type
+        if (sym.kind === 'scope') {
+            assert.ok(sym.scopeType, 'scope symbol must have scopeType');
+            assert.strictEqual(sym.type, undefined, 'scope symbol must NOT have type field');
+        }
+    }
+    // Check lineContexts stack frames too
+    for (const lc of result.lineContexts) {
+        for (const frame of lc.stack) {
+            if (frame.kind === 'scope') {
+                assert.ok(frame.scopeType, 'scope frame must have scopeType');
+                assert.strictEqual(frame.type, undefined, 'scope frame must NOT have type field');
+            }
+        }
+    }
+});
+
 test('empty file returns empty result', () => {
     const result = parseParText('', 'test.par');
     assert.strictEqual(result.symbols.length, 0);
@@ -404,12 +466,9 @@ Expected: 所有测试 FAIL（`Cannot find module '../src/lsp/sdevicepar/par-par
 // src/lsp/sdevicepar/par-parser.js
 'use strict';
 
-const SCOPE_TYPES = new Set([
-    'Material', 'Region', 'Interface',
-    'MaterialInterface', 'RegionInterface', 'Electrode',
-]);
+const { SCOPE_TYPES, SCOPE_TYPES_ARRAY } = require('./par-constants');
 
-const SCOPE_TYPES_PATTERN = Array.from(SCOPE_TYPES).join('|');
+const SCOPE_TYPES_PATTERN = SCOPE_TYPES_ARRAY.join('|');
 
 // ── 正则（按匹配优先级排列）────────────────────────
 const RE_INCLUDE    = /^\s*#include\s+"([^"]+)"/;
@@ -543,7 +602,7 @@ function parseParText(text, filePath) {
         if (m) {
             clearPending();
             const symIdx = symbols.length;
-            const scopeEntry = { kind: 'scope', type: m[1], name: m[2], startLine: lineIdx, _symbolIdx: symIdx };
+            const scopeEntry = { kind: 'scope', scopeType: m[1], name: m[2], startLine: lineIdx, _symbolIdx: symIdx };
             pushToStack(scopeEntry);
             const parentPath = stackToPath(stack.slice(0, -1));
             symbols.push({
@@ -679,7 +738,15 @@ function parseParText(text, filePath) {
     return { symbols, includes, lineContexts, diagnostics };
 }
 
-module.exports = { parseParText, stackToPath, SCOPE_TYPES };
+module.exports = { parseParText, stackToPath };
+```
+
+**StackFrame 字段规范**（修订点 #1）：
+
+所有栈帧统一使用 `scopeType` 字段，禁止 `type`：
+- scope 帧：`{ kind: 'scope', scopeType: 'Material', name: 'Silicon', startLine }`
+- block 帧：`{ kind: 'block', scopeType: null, name: 'Bandgap', startLine }`
+- snapshotStack 输出同样使用 `scopeType`（不是 `type`）
 ```
 
 - [ ] **Step 1.4: 运行测试验证通过**
@@ -693,9 +760,10 @@ Expected: 全部测试 PASS
 - [ ] **Step 1.5: 提交**
 
 ```bash
-git add src/lsp/sdevicepar/par-parser.js tests/test-par-parser.js
-git commit -m "feat(sdevicepar): add par-parser with structure recognition
+git add src/lsp/sdevicepar/par-constants.js src/lsp/sdevicepar/par-parser.js tests/test-par-parser.js
+git commit -m "feat(sdevicepar): add par-constants, par-parser with structure recognition
 
+- par-constants.js: 共享常量 SCOPE_TYPES/SOURCE_PRIORITY/MAX_INCLUDE_DEPTH/MAX_CACHE_SIZE
 - Line-oriented 纯文本栈追踪解析器
 - 识别 scope/block/parameter 三种结构
 - pendingBlockName 机制处理跨行 block 声明
@@ -703,7 +771,8 @@ git commit -m "feat(sdevicepar): add par-parser with structure recognition
 - #if 条件块内容正常解析（不跳过）
 - lineContexts 输出每行 beforeStack 快照
 - 容错设计：不平衡括号/空文件/纯注释文件
-- 36 个测试覆盖所有解析场景"
+- StackFrame 统一使用 scopeType 字段（修订点 #1）
+- 37 个测试覆盖所有解析场景"
 ```
 
 ---
@@ -937,6 +1006,35 @@ function matchParentPath(parentPath, pattern) {
 }
 
 module.exports = { stackToPath, getContextAtPosition, matchParentPath };
+
+/**
+ * 检测光标是否在 scope 名引号内（如 Material = "|""）。
+ * Phase 2.1 最小实现：仅检测 `Type = "` 模式后引号内的位置。
+ * @param {string} lineText - 当前行文本
+ * @param {number} col - 光标列号
+ * @returns {{ scopeType: string } | null} 如果在 scope 名引号内，返回 scopeType；否则 null
+ */
+function detectScopeNameContext(lineText, col) {
+    // 匹配 Type = "xxx" 模式，光标在引号内
+    const scopeRe = /^\s*(Material|Region|Interface|MaterialInterface|RegionInterface|Electrode)\s*=\s*"/;
+    const m = lineText.match(scopeRe);
+    if (!m) return null;
+
+    const scopeType = m[1];
+    const quoteStart = lineText.indexOf('"', m[0].length - 1);
+    if (quoteStart < 0) return null;
+
+    // 找到结束引号
+    let quoteEnd = lineText.indexOf('"', quoteStart + 1);
+    if (quoteEnd < 0) quoteEnd = lineText.length; // 未闭合引号
+
+    if (col > quoteStart && col <= quoteEnd) {
+        return { scopeType };
+    }
+    return null;
+}
+
+module.exports = { stackToPath, getContextAtPosition, matchParentPath, detectScopeNameContext };
 ```
 
 - [ ] **Step 2.4: 运行测试验证通过**
@@ -998,6 +1096,7 @@ git commit -m "feat(sdevicepar): add par-context utility functions
 
 const { test, summary } = require('./helpers/test-runner');
 const assert = require('assert');
+const path = require('path');
 const { createParIndexService } = require('../src/lsp/sdevicepar/par-index-service');
 
 // Mock document
@@ -1121,14 +1220,10 @@ Expected: FAIL
 
 const path = require('path');
 const fs = require('fs');
+const { URL, fileURLToPath } = require('url');
 const { parseParText } = require('./par-parser');
 const { stackToPath, getContextAtPosition } = require('./par-context');
-
-const MAX_CACHE_SIZE = 20;
-const BUILTIN_SCOPE_TYPES = [
-    'Material', 'Region', 'Interface',
-    'MaterialInterface', 'RegionInterface', 'Electrode',
-];
+const { SCOPE_TYPES_ARRAY, SOURCE_PRIORITY, MAX_CACHE_SIZE, MAX_INCLUDE_DEPTH } = require('./par-constants');
 
 /**
  * 创建 ParIndexService 实例。
@@ -1212,7 +1307,7 @@ function createParIndexService(deps) {
 
         if (ctx.completableKind === 'scopeType') {
             // 文件顶层 → 推荐所有 scope 类型
-            for (const st of BUILTIN_SCOPE_TYPES) {
+            for (const st of SCOPE_TYPES_ARRAY) {
                 items.push({
                     label: st,
                     kind: 'scopeType',
@@ -1301,7 +1396,7 @@ function createParIndexService(deps) {
     };
 }
 
-module.exports = { createParIndexService, BUILTIN_SCOPE_TYPES };
+module.exports = { createParIndexService };
 ```
 
 - [ ] **Step 3.4: 运行测试验证通过**
@@ -1474,6 +1569,91 @@ test('includeRawCache caches raw result, same file different grafts', () => {
     assert.strictEqual(readCount, 1, 'Should cache raw result and not re-read');
     service.dispose();
 });
+
+// ── 修订点 #7 新增测试 ─────────────────────────
+
+test('same include file at different parentPath produces separate grafts', () => {
+    const readFile = createMockReadFile({ 'Silicon.par': SILICON_PAR });
+    const service = createParIndexService({
+        extensionPath: '/ext',
+        readFile,
+        resolveFilePath: (refPath) => refPath,
+    });
+    const doc = mockDoc([
+        'Material = "Si1" {',
+        '  #include "Silicon.par"',
+        '}',
+        'Material = "Si2" {',
+        '  #include "Silicon.par"',
+        '}',
+    ].join('\n') + '\n', 1);
+    const result = service.parseCurrentFile(doc);
+
+    // Should have grafted symbols under BOTH parentPaths
+    const eg0si1 = result.symbols.find(s => s.name === 'Eg0' && s.parentPath.startsWith('Material/Si1'));
+    const eg0si2 = result.symbols.find(s => s.name === 'Eg0' && s.parentPath.startsWith('Material/Si2'));
+    assert.ok(eg0si1, 'Should have Eg0 grafted under Material/Si1');
+    assert.ok(eg0si2, 'Should have Eg0 grafted under Material/Si2');
+    assert.strictEqual(eg0si1.parentPath, 'Material/Si1/Bandgap');
+    assert.strictEqual(eg0si2.parentPath, 'Material/Si2/Bandgap');
+    service.dispose();
+});
+
+test('source priority: current overrides include in dedup', () => {
+    const readFile = createMockReadFile({ 'Silicon.par': 'Eg0 = 1.12\n' });
+    const service = createParIndexService({
+        extensionPath: '/ext',
+        readFile,
+        resolveFilePath: (refPath) => refPath,
+    });
+    // Current file also defines Eg0 at same parentPath
+    const doc = mockDoc([
+        '#include "Silicon.par"',
+        'Eg0 = 1.16964',
+    ].join('\n') + '\n', 1);
+    const result = service.parseCurrentFile(doc);
+
+    const eg0current = result.symbols.find(s => s.name === 'Eg0' && s.source === 'current');
+    const eg0include = result.symbols.find(s => s.name === 'Eg0' && s.source === 'include');
+    assert.ok(eg0current, 'Should have current Eg0');
+    assert.ok(eg0include, 'Should have include Eg0');
+    // When buildParCompletions deduplicates, current (priority 0) wins over include (priority 1)
+    service.dispose();
+});
+
+test('completion provider does not pollute global items', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    const doc = mockDoc('Material = "Silicon" {\n  Bandgap {\n    Eg0 = 1.12\n  }\n}\n', 1);
+    service.parseCurrentFile(doc);
+
+    // Get completions twice — should be independent arrays
+    const items1 = service.getCompletionsAt(doc, { line: 1, character: 2 });
+    const items2 = service.getCompletionsAt(doc, { line: 2, character: 4 });
+    // Modifying items1 should not affect items2
+    const len1Before = items1.length;
+    items1.push({ label: 'polluted', kind: 'test' });
+    assert.strictEqual(items2.length, items2.length, 'items2 should not be affected by items1 mutation');
+    assert.strictEqual(items1.length, len1Before + 1, 'items1 should have the pushed item');
+    service.dispose();
+});
+
+test('already-open document pre-heats on activation', () => {
+    let parseCallCount = 0;
+    const service = createParIndexService({ extensionPath: '/ext' });
+    const doc = mockDoc('Material = "Silicon" {\n}\n', 1);
+
+    // Simulate activation pre-heat
+    service.parseCurrentFile(doc);
+    parseCallCount++;
+
+    // Second call (e.g. from completion) should hit cache
+    const result = service.getCompletionsAt(doc, { line: 0, character: 0 });
+    assert.ok(result.length > 0, 'Pre-heated cache should serve completions');
+    // Verify cache was used (no second parse)
+    const cached = service._currentFileCache.get(`${doc.uri.toString()}:v${doc.version}`);
+    assert.ok(cached, 'Cache should exist after pre-heat');
+    service.dispose();
+});
 ```
 
 - [ ] **Step 4.2: 运行测试验证 include 测试失败**
@@ -1500,8 +1680,7 @@ const includeSymbols = resolveIncludes(
     rawResult.includes,
     uri,
     '', // outerPrefix (current file is top-level)
-    new Set([uri]), // visited
-    [], // includeChain
+    [uri], // includeChain（初始包含当前文件，修订点 #4）
     0, // depth
 );
 
@@ -1509,21 +1688,18 @@ const includeSymbols = resolveIncludes(
 const allSymbols = [...rawResult.symbols, ...includeSymbols];
 ```
 
-3. 添加 `resolveIncludes` 函数（在 `createParIndexService` 内部）：
+3. 添加 `resolveIncludes` 函数（在 `createParIndexService` 内部，已应用修订点 #4）：
 ```js
-function resolveIncludes(includes, baseUri, outerPrefix, visited, includeChain, depth) {
+function resolveIncludes(includes, baseUri, outerPrefix, includeChain, depth) {
     const result = [];
     for (const ref of includes) {
         if (depth >= MAX_INCLUDE_DEPTH) break;
 
         const resolvedPath = resolveFilePath(ref.path, baseUri);
-        if (!resolvedPath) {
-            // unresolved → skip, diagnostics handled by parser
-            continue;
-        }
+        if (!resolvedPath) continue;
 
-        if (visited.has(resolvedPath)) continue; // circular protection
-        visited.add(resolvedPath);
+        // 递归链检测：只在当前链中出现才算循环（允许不同链引用同一文件）
+        if (includeChain.includes(resolvedPath)) continue;
 
         // 获取或解析 raw result
         let rawResult = includeRawCache.get(resolvedPath);
@@ -1568,7 +1744,6 @@ function resolveIncludes(includes, baseUri, outerPrefix, visited, includeChain, 
                 rawResult.includes,
                 resolvedPath,
                 graftBase,
-                visited,
                 newChain,
                 depth + 1,
             ));
@@ -1578,21 +1753,32 @@ function resolveIncludes(includes, baseUri, outerPrefix, visited, includeChain, 
 }
 ```
 
-4. 添加 `resolveFilePath` 辅助函数（在 `createParIndexService` 内部）：
+4. 添加 `resolveFilePath` 辅助函数（在 `createParIndexService` 内部，修订点 #4）：
 ```js
+const { URL, fileURLToPath } = require('url');
+
 function resolveFilePath(refPath, baseUri) {
     // 优先使用 deps 中注入的函数（测试用）
     if (deps.resolveFilePath) return deps.resolveFilePath(refPath, baseUri);
 
-    // Phase 2.1: 基础相对路径解析
     // 1. 当前文件所在目录
     try {
-        const baseDir = path.dirname(baseUri.replace('file:///', ''));
+        const basePath = baseUri.startsWith('file://') ? fileURLToPath(baseUri) : baseUri;
+        const baseDir = path.dirname(basePath);
         const candidate = path.resolve(baseDir, refPath);
         if (fs.existsSync(candidate)) return candidate;
     } catch (_) {}
 
-    // 2. 插件内置 references/MaterialDB/
+    // 2. workspace 根目录
+    for (const folder of (deps.workspaceFolders || [])) {
+        try {
+            const wsPath = folder.uri.fsPath || fileURLToPath(folder.uri.toString());
+            const candidate = path.resolve(wsPath, refPath);
+            if (fs.existsSync(candidate)) return candidate;
+        } catch (_) {}
+    }
+
+    // 3. 插件内置 references/MaterialDB/
     try {
         const bundled = path.join(extensionPath, 'references', 'MaterialDB', refPath);
         if (fs.existsSync(bundled)) return bundled;
@@ -1628,10 +1814,11 @@ git commit -m "feat(sdevicepar): add include/Insert recursive resolution
 - Graft base: 每个 include ref 用 ref.parentPath 作为嫁接前缀
 - nested include 继承 outerPrefix + ref.parentPath
 - includeRawCache: 只缓存 raw parse result，同一文件不同 parentPath 各自 graft
-- 循环检测: visited Set + MAX_INCLUDE_DEPTH=8
-- 文件查找: 当前目录 > 插件 bundled MaterialDB
+- 递归链检测: includeChain 数组 + MAX_INCLUDE_DEPTH=8（修订点 #4）
+- 文件查找: 当前目录 > workspaceFolders > 插件 bundled MaterialDB
+- resolveFilePath 使用 fileURLToPath（修订点 #4）
 - 文件不存在: 静默跳过，不崩溃
-- 5 个 include 测试覆盖递归/循环/缓存/文件缺失"
+- 9 个 include 测试覆盖递归/循环/缓存/文件缺失/重复 graft/优先级"
 ```
 
 ---
@@ -1655,7 +1842,7 @@ git commit -m "feat(sdevicepar): add include/Insert recursive resolution
 const { test, summary } = require('./helpers/test-runner');
 const assert = require('assert');
 const { buildParCompletions } = require('../src/lsp/sdevicepar/par-completion');
-const { BUILTIN_SCOPE_TYPES } = require('../src/lsp/sdevicepar/par-index-service');
+const { SCOPE_TYPES_ARRAY } = require('../src/lsp/sdevicepar/par-constants');
 
 // ── scopeType 补全 ──────────────────────────
 
@@ -1664,7 +1851,7 @@ test('top level suggests all scope types', () => {
     const symbols = [];
     const items = buildParCompletions(ctx, symbols);
     const labels = items.map(i => i.label);
-    for (const st of BUILTIN_SCOPE_TYPES) {
+    for (const st of SCOPE_TYPES_ARRAY) {
         assert.ok(labels.includes(st), `Should include ${st}`);
     }
 });
@@ -1784,9 +1971,7 @@ Expected: FAIL
 // src/lsp/sdevicepar/par-completion.js
 'use strict';
 
-const { BUILTIN_SCOPE_TYPES } = require('./par-index-service');
-
-const SOURCE_PRIORITY = { current: 0, include: 1, workspace: 2, materialdb: 3, builtin: 4 };
+const { SCOPE_TYPES_ARRAY, SOURCE_PRIORITY } = require('./par-constants');
 
 /**
  * 根据上下文和 symbols 构建补全列表。
@@ -1804,7 +1989,7 @@ function buildParCompletions(ctx, symbols) {
 
     if (ctx.completableKind === 'scopeType') {
         let idx = 0;
-        for (const st of BUILTIN_SCOPE_TYPES) {
+        for (const st of SCOPE_TYPES_ARRAY) {
             items.push({
                 label: st,
                 kind: 'scopeType',
@@ -1869,6 +2054,24 @@ function buildParCompletions(ctx, symbols) {
                 parentPath: ctx.parentPath,
             });
         });
+    } else if (ctx.completableKind === 'scopeName') {
+        // 修订点 #5: 最小 scope 名补全
+        // 从 symbols 中抽取同 scopeType 的已有名称
+        const seen = new Set();
+        for (const sym of symbols) {
+            if (sym.kind === 'scope' && sym.scopeType === ctx.scopeType && !seen.has(sym.name)) {
+                seen.add(sym.name);
+                items.push({
+                    label: sym.name,
+                    kind: 'scopeName',
+                    detail: `[par] ${ctx.scopeType} name`,
+                    sortText: `0_${sym.name}`,
+                    insertText: sym.name,
+                    source: sym.source || 'current',
+                    parentPath: '',
+                });
+            }
+        }
     }
 
     return items;
@@ -1921,10 +2124,12 @@ git commit -m "feat(sdevicepar): add context-aware completion builder
 - scopeType 上下文 → 推荐 6 种 scope 类型（builtin）
 - block 上下文 → 从 symbols 抽取该 parentPath 下的 block 名
 - parameter 上下文 → 从 symbols 抽取该 parentPath 下的 parameter 名
+- scopeName 上下文 → 从 symbols 抽取同 scopeType 的已有名称（修订点 #5）
 - 去重: (label, parentPath) 二元组
 - 排序: source 优先级 (current > include > workspace > materialdb > builtin)
 - insertText: scopeType 含完整模板，block 含大括号，parameter 含等号
 - ParIndexService.getCompletionsAt 重构为调用 buildParCompletions
+- Import 来源统一为 par-constants（修订点 #2）
 - 10 个测试覆盖补全层级/去重/优先级/insertText 格式"
 ```
 
@@ -2029,32 +2234,87 @@ function registerCompletionProviders(context, deps) {
     } = deps;
 ```
 
-2. 在 `provideCompletionItems` 函数体内，`if (langId !== 'sde')` 块之前（约第 186 行），添加 sdevicepar 分支：
+2. 在 `provideCompletionItems` 函数体内，`if (langId !== 'sde')` 块之前（约第 186 行），添加 sdevicepar 分支（修订点 #3 + #6）：
 ```js
 // sdevicepar 上下文补全
 if (langId === 'sdevicepar' && parIndexService) {
-    const parItems = parIndexService.getCompletionsAt(document, position);
-    if (parItems.length > 0) {
-        // 转换为 vscode.CompletionItem
-        const converted = parItems.map(pi => {
-            const kindMap = {
-                scopeType: vscode.CompletionItemKind.Module,
-                block: vscode.CompletionItemKind.Class,
-                parameter: vscode.CompletionItemKind.Property,
-            };
-            const item = new vscode.CompletionItem(pi.label, kindMap[pi.kind] || vscode.CompletionItemKind.Text);
-            item.detail = pi.detail;
-            item.sortText = pi.sortText;
-            item.insertText = new vscode.SnippetString(pi.insertText);
-            if (pi.parentPath) {
-                item.documentation = new vscode.MarkdownString(`Path: \`${pi.parentPath}\`\n\nSource: ${pi.source}`);
+    // 修订点 #6: lexical gate — 拒绝注释/字符串/赋值右侧内的补全
+    const lineText = document.lineAt(position.line).text;
+    const col = position.character;
+    const linePrefix = lineText.substring(0, col);
+
+    // 跳过注释行（#include 行除外，但 #include 不需要 par 补全）
+    const trimmedLine = lineText.trimStart();
+    if (trimmedLine.startsWith('#') || trimmedLine.startsWith('*')) {
+        // 走现有 all_keywords fallback
+    } else {
+        // 检测赋值右侧：如果行内光标前有 = 且不在引号内，说明在赋值右侧
+        let inRhs = false;
+        let inQuote = false;
+        for (let ci = 0; ci < col; ci++) {
+            if (lineText[ci] === '"') inQuote = !inQuote;
+            if (!inQuote && lineText[ci] === '=' && ci < col - 1) {
+                // = 后面还有内容（排除 scope 声明 Type = "Name" 的 = ）
+                // scope 声明由 Type = " 开头，不是 parameter 赋值
+                if (!/^\s*(Material|Region|Interface|MaterialInterface|RegionInterface|Electrode)\s*=\s*"/.test(lineText)) {
+                    inRhs = true;
+                }
             }
-            return item;
-        });
-        // 合并到现有 items（Index 结果优先），不 return，继续走 all_keywords fallback
-        items.push(...converted);
+        }
+
+        // 修订点 #5: scope 名引号内补全检测（如 Material = "|"）
+        const { detectScopeNameContext } = require('./lsp/sdevicepar/par-context');
+        const scopeNameCtx = detectScopeNameContext(lineText, col);
+
+        if (scopeNameCtx) {
+            // 在 scope 名引号内 → 提供 scopeName 补全（从 symbols 抽取同名 scopeType 的已有名称）
+            const cacheKey = `${document.uri.toString()}:v${document.version}`;
+            const cached = parIndexService._currentFileCache.get(cacheKey);
+            if (cached) {
+                const { buildParCompletions } = require('./lsp/sdevicepar/par-completion');
+                const scopeNameItems = buildParCompletions(
+                    { completableKind: 'scopeName', parentPath: '', scopeType: scopeNameCtx.scopeType, pendingBlockName: null },
+                    cached.symbols,
+                );
+                const converted = scopeNameItems.map(pi => {
+                    const item = new vscode.CompletionItem(pi.label, vscode.CompletionItemKind.Value);
+                    item.detail = pi.detail;
+                    item.sortText = pi.sortText;
+                    item.insertText = pi.insertText;
+                    return item;
+                });
+                return converted;
+            }
+        } else if (inQuote || inRhs) {
+            // 在字符串内或赋值右侧 → 走现有 fallback（不提供 par 上下文补全）
+        } else {
+            const parItems = parIndexService.getCompletionsAt(document, position);
+            if (parItems.length > 0) {
+                const kindMap = {
+                    scopeType: vscode.CompletionItemKind.Module,
+                    scopeName: vscode.CompletionItemKind.Value,
+                    block: vscode.CompletionItemKind.Class,
+                    parameter: vscode.CompletionItemKind.Property,
+                };
+                const converted = parItems.map(pi => {
+                    const item = new vscode.CompletionItem(pi.label, kindMap[pi.kind] || vscode.CompletionItemKind.Text);
+                    item.detail = pi.detail;
+                    item.sortText = pi.sortText;
+                    item.insertText = new vscode.SnippetString(pi.insertText);
+                    if (pi.parentPath) {
+                        item.documentation = new vscode.MarkdownString(`Path: \`${pi.parentPath}\`\n\nSource: ${pi.source}`);
+                    }
+                    return item;
+                });
+                // 修订点 #3: 不修改闭包级 items，创建局部合并数组
+                // par 补全优先，all_keywords 兜底
+                const parLabels = new Set(converted.map(i => i.label));
+                const keywordFallback = items.filter(i => !parLabels.has(i.label));
+                return [...converted, ...keywordFallback, ...envVarItems];
+            }
+        }
     }
-    // 缓存未就绪时继续走现有 all_keywords fallback
+    // 缓存未就绪 → 走现有 all_keywords fallback（不 return，继续后续逻辑）
 }
 ```
 
@@ -2078,8 +2338,11 @@ git commit -m "feat(sdevicepar): integrate par-index-service with extension
 - extension.js: 初始化 ParIndexService + debounced onDidChangeTextDocument (200ms)
 - extension.js: onDidOpenTextDocument 预热 + onDidCloseTextDocument 清理缓存
 - register-completion-providers.js: 添加 sdevicepar 分支
+  - lexical gate: 拒绝注释/字符串/赋值右侧补全（修订点 #6）
+  - scope 名引号内补全检测 (detectScopeNameContext)（修订点 #5）
   - 缓存命中 → ParCompletionItem 转 vscode.CompletionItem
   - 缓存未就绪 → 继续走 all_keywords fallback
+  - 局部合并 + 去重，不修改闭包级 items（修订点 #3）
   - 0 文件 IO 保证：getCompletionsAt 只查内存缓存
 - 补全结果与现有 all_keywords 合并，不破坏现有行为"
 ```
@@ -2100,6 +2363,7 @@ git commit -m "feat(sdevicepar): integrate par-index-service with extension
 | 8 | 所有测试通过 | `node tests/test-par-*.js` 全部 PASS |
 | 9 | getCompletionsAt 0 文件 IO | 缓存未就绪时返回空数组，fallback 到 all_keywords |
 | 10 | onDidChangeTextDocument 已 debounce | 快速连续输入不触发多次 include 解析 |
+| 11 | scope 名引号内补全（最小实现） | `Material = "|"` 引号内触发补全 → 显示同 type 的已有 scope 名 |
 
 ## 非验收标准（Phase 2.1 不包含）
 
@@ -2107,9 +2371,9 @@ git commit -m "feat(sdevicepar): integrate par-index-service with extension
 - ~~workspace 全量扫描~~
 - ~~MaterialDB 内置参考数据~~
 - ~~Hover/Definition~~
-- ~~scope 名补全（`Material = "|"` 推荐材料名）~~
 - ~~#include 文件路径补全~~
 - ~~参数合法性诊断~~
+- ~~scope 名补全的材料名推荐（MaterialDB 数据源）~~ — 仅实现了同 type 已有 scope 名的去重推荐，不从 MaterialDB 提取材料名
 
 ---
 
@@ -2128,17 +2392,18 @@ git commit -m "feat(sdevicepar): integrate par-index-service with extension
 | §9 预热 vs 热路径 | Task 6 (debounce + 0 IO) |
 | §9 缓存策略 | Task 3 (FIFO, version) |
 | §10 Include Resolution | Task 4 |
-| §10 查找顺序 | Task 4 (resolveFilePath) |
+| §10 查找顺序 | Task 4 (resolveFilePath: cwd > workspace > MaterialDB) |
 | §10 includeRawCache | Task 4 |
-| §10 递归保护 | Task 4 (visited + depth) |
+| §10 递归保护 | Task 4 (includeChain + depth) |
 | §11 Completion Design | Task 5 |
+| §11 scope 名补全 | Task 5 (scopeName handler) + Task 6 (detectScopeNameContext) |
 | §11 五级优先级 | Task 5 (SOURCE_PRIORITY) |
-| §11 Provider 集成 | Task 6 |
+| §11 Provider 集成 | Task 6 (lexical gate + 局部合并) |
 | §13 Caching | Task 3 + Task 4 |
 | §14 Integration Points | Task 6 |
 | §15 Test Plan | Task 1-5 |
 
-**Gap**: scope 名补全（`Material = "|"` 推荐材料名）在 spec §11 中定义，但 Phase 2.1 暂不实现。reason: 需要从 include/workspace/materialdb 中抽取 scope 名，Phase 2.1 只保证当前文件的上下文补全。
+**已关闭的 Gap**: scope 名补全（`Material = "|"` 推荐材料名）已在修订点 #5 中实现最小版本——从 symbols 中抽取同 scopeType 的已有名称。MaterialDB 数据源推荐不在 Phase 2.1 范围内。
 
 ### 2. Placeholder 扫描
 
@@ -2150,3 +2415,17 @@ git commit -m "feat(sdevicepar): integrate par-index-service with extension
 - `ParCompletionItem` 结构（label/kind/detail/sortText/insertText/source/parentPath）在 par-completion.js 输出和 register-completion-providers.js 消费端一致
 - `LineContext` 结构（line/stack/pendingBlockName）在 par-parser.js 输出和 par-context.js 消费端一致
 - `cacheKey(uri, version)` 格式 `"uri:v{version}"` 在 parseCurrentFile 和 getCompletionsAt 中一致
+- `StackFrame.scopeType` 统一用于 scope 帧（修订点 #1），不使用 `type` 字段
+- `SCOPE_TYPES`/`SCOPE_TYPES_ARRAY` 从 `par-constants.js` 统一导出（修订点 #2），不从 `par-index-service.js` 导出
+
+### 4. 修订点验收
+
+| 修订点 | 涉及文件 | 验证方式 |
+|--------|----------|----------|
+| #1 StackFrame 统一 scopeType | par-parser.js, par-context.js, par-completion.js | test-par-parser: scopeType 字段一致性测试 |
+| #2 par-constants.js 打破循环依赖 | par-constants.js, par-parser.js, par-index-service.js, par-completion.js | test-par-completion: import 路径验证 |
+| #3 不修改闭包级 items | register-completion-providers.js | test-par-index: completion provider 不污染全局 items |
+| #4 include resolver 递归链检测 | par-index-service.js | test-par-index: same include different parentPath graft |
+| #5 scope 名补全（最小实现） | par-context.js (detectScopeNameContext), par-completion.js (scopeName handler) | 验收标准 #11 |
+| #6 lexical gate | register-completion-providers.js | 注释行/字符串内/赋值右侧不触发 par 补全 |
+| #7 新增 5 个测试 | test-par-parser.js, test-par-index.js | `node tests/test-par-*.js` 全部 PASS |
