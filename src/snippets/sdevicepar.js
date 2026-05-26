@@ -7,17 +7,16 @@ module.exports = {
             lines: [
                 'Material = "Silicon" {',
                 '',
-                '\tEpsilon',
-                '\t{ * Ratio of the permittivities of material and vacuum',
-                '\t\tepsilon = 11.7',
+                '\tEpsilon {',
+                '\t\tepsilon = ${14:11.7}',
                 '\t}',
                 '',
                 '\tBandgap {',
-                '\t\tChi0 = 4.05',
-                '\t\tEg0 = 1.12',
-                '\t\talpha = 4.73e-4',
-                '\t\tbeta = 636',
-                '\t\tTpar = 300',
+                '\t\tChi0 = ${15:4.05}',
+                '\t\tEg0 = ${16:1.12}',
+                '\t\talpha = ${17:4.73e-4}',
+                '\t\tbeta = ${18:636}',
+                '\t\tTpar = ${19:300}',
                 '\t}',
                 '',
                 '\tScharfetter * relation and trap level for SRH recombination:',
@@ -39,8 +38,7 @@ module.exports = {
             lines: [
                 'Material = "Oxide" {',
                 '',
-                '\tEpsilon',
-                '\t{ * Ratio of the permittivities of material and vacuum',
+                '\tEpsilon {',
                 '\t\tepsilon = ${1:3.9}',
                 '\t}',
                 '',
@@ -77,12 +75,29 @@ module.exports = {
             ],
         },
     },
+    Interface: {
+        'RegionInterface': {
+            desc: 'RegionInterface 顶层块（区域间界面参数）',
+            lines: [
+                'RegionInterface = "${1:region1}/${2:region2}" {',
+                '\t$0',
+                '}',
+            ],
+        },
+        'MaterialInterface': {
+            desc: 'MaterialInterface 顶层块（材料间界面参数）',
+            lines: [
+                'MaterialInterface = "${1:mat1}/${2:mat2}" {',
+                '\t$0',
+                '}',
+            ],
+        },
+    },
     Section: {
         Epsilon: {
             desc: '介电常数 (Silicon 默认值)',
             lines: [
-                'Epsilon',
-                '{',
+                'Epsilon {',
                 '\tepsilon = ${1:11.7}',
                 '}',
             ],
