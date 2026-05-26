@@ -1,0 +1,139 @@
+Material = "Silicon" {
+
+#if "@cDir@" == "110"
+#include "Siliconc110.par"
+#elif "@cDir@" == "100"
+#include "Siliconc100.par"
+#endif
+
+#include "common.par"
+
+Band2BandTunneling
+{
+  * Hurkx model for the following keywords in input file:
+  * Band2Band(Hurkx)  : -Agen*D*(E/E0)^Pgen*exp(-Bgen*(Eg/Eg300)^1.5/E) if D < 0
+  *                     -Arec*D*(E/E0)^Prec*exp(-Brec*(Eg/Eg300)^1.5/E) if D > 0
+  *                     D = (n*p-ni^2)/(n+ni)/(p+ni)*(1-|alpha|)+alpha, E0 = 1 V/cm
+  *                     So, if alpha = 0, it's original Hurkx model,
+  *                         if alpha = -1, it's only generation,
+  *                         if alpha = +1, it's only recombination.
+
+*** Parameters in Hurkx's paper TED, vol. 39, no. 2, pp. 331-338, 1992
+        Agen    =       4.0e14  # [1/cm^3/sec]
+        Bgen    =       1.9e7   # [V/cm]
+        Pgen    =       2.5     # [1]
+
+        Arec    =       4.0e14  # [1/cm^3/sec]
+        Brec    =       1.9e7   # [V/cm]
+        Prec    =       2.5     # [1]
+
+        alpha   =       0
+}
+
+}
+
+Material = "SiliconGermanium" {
+
+#if "@cDir@" == "110"
+#include "SiliconGermaniumc110.par"
+#elif "@cDir@" == "100"
+#include "SiliconGermaniumc100.par"
+#endif
+
+#include "common.par"
+
+#include "common_SiGe.par"
+
+Band2BandTunneling
+{
+  * Hurkx model for the following keywords in input file:
+  * Band2Band(Hurkx)  : -Agen*D*(E/E0)^Pgen*exp(-Bgen*(Eg/Eg300)^1.5/E) if D < 0
+  *                     -Arec*D*(E/E0)^Prec*exp(-Brec*(Eg/Eg300)^1.5/E) if D > 0
+  *                     D = (n*p-ni^2)/(n+ni)/(p+ni)*(1-|alpha|)+alpha, E0 = 1 V/cm
+  *                     So, if alpha = 0, it's original Hurkx model,
+  *                         if alpha = -1, it's only generation,
+  *                         if alpha = +1, it's only recombination.
+
+        Xmax(0) =       0
+        Xmax(1) =       0.1
+        Xmax(2) =       0.2
+        Xmax(3) =       0.3
+        Xmax(4) =       0.4
+        Xmax(5) =       0.5
+        Xmax(6) =       0.6
+        Xmax(7) =       0.7
+        Xmax(8) =       0.8
+        Xmax(9) =       0.9
+        Xmax(10) =      1.0
+
+        Agen    =       4.0e14  # [1/cm^3/sec]
+        Bgen(0) =       1.9e7   # [V/cm]
+        Bgen(1) =       1.77e7 # [V/cm]
+        Bgen(2) =       1.68e7  # [V/cm]
+        Bgen(3) =       1.58e7  # [V/cm]
+        Bgen(4) =       1.48e7  # [V/cm]
+        Bgen(5) =       1.45e7  # [V/cm]
+        Bgen(6) =       1.40e7  # [V/cm]
+        Bgen(7) =       1.37e7  # [V/cm]
+        Bgen(8) =       1.35e7  # [V/cm]
+        Bgen(9) =       1.19e7  # [V/cm]
+        Bgen(10) =      8.79e6  # [V/cm]
+        Pgen    =       2.5     # [1]
+
+        Agen    =       4.0e14  # [1/cm^3/sec]
+        Bgen(0) =       1.9e7   # [V/cm]
+        Bgen(1) =       1.77e7 # [V/cm]
+        Bgen(2) =       1.68e7  # [V/cm]
+        Bgen(3) =       1.58e7  # [V/cm]
+        Bgen(4) =       1.48e7  # [V/cm]
+        Bgen(5) =       1.45e7  # [V/cm]
+        Bgen(6) =       1.40e7  # [V/cm]
+        Bgen(7) =       1.37e7  # [V/cm]
+        Bgen(8) =       1.35e7  # [V/cm]
+        Bgen(9) =       1.19e7  # [V/cm]
+        Bgen(10) =      8.79e6  # [V/cm]
+        Pgen    =       2.5     # [1]
+
+        Arec    =       4.0e14  # [1/cm^3/sec]
+        Brec(0) =       1.9e7   # [V/cm]
+        Brec(1) =       1.77e7 # [V/cm]
+        Brec(2) =       1.68e7  # [V/cm]
+        Brec(3) =       1.58e7  # [V/cm]
+        Brec(4) =       1.48e7  # [V/cm]
+        Brec(5) =       1.45e7  # [V/cm]
+        Brec(6) =       1.40e7  # [V/cm]
+        Brec(7) =       1.37e7  # [V/cm]
+        Brec(8) =       1.35e7  # [V/cm]
+        Brec(9) =       1.19e7  # [V/cm]
+        Brec(10) =      8.79e6  # [V/cm]
+        Prec    =       2.5     # [1]
+
+        alpha   =       0
+
+	Apath	 =	4.0e14	# [1/cm^3/sec]
+	Bpath(0) =       1.9e7   # [V/cm]
+	Bpath(1) =       1.77e7 # [V/cm]
+	Bpath(2) =       1.68e7  # [V/cm]
+	Bpath(3) =       1.58e7  # [V/cm]
+	Bpath(4) =       1.48e7  # [V/cm]
+	Bpath(5) =       1.45e7  # [V/cm]
+	Bpath(6) =       1.40e7  # [V/cm]
+	Bpath(7) =       1.37e7  # [V/cm]
+	Bpath(8) =       1.35e7  # [V/cm]
+	Bpath(9) =       1.19e7  # [V/cm]
+	Bpath(10) =      8.79e6  # [V/cm]
+}
+
+}
+
+Material = "HfO2" {
+Epsilon
+       {
+*        epsilon         =       22.0            #consenus value, large spreading from 16 to 26
+         epsilon = @EPSHIGHK@
+       }
+}
+
+#include "LowK.par"
+#include "TiNitride.par"
+#include "Gateoxide.par"

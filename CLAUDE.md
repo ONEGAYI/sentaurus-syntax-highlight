@@ -167,7 +167,8 @@ sentaurus-syntax-highlight/
 ├── display_test/                               ← 功能展示测试文件
 ├── build/                                      ← 批量处理中间产物
 ├── assets/pics/                                ← 效果截图与演示 GIF
-└── references/                                 ← Sentaurus 官方手册 PDF/Markdown + jEdit 宏模板 | 工作树中注意：大部分文档在主仓库，被忽略所以不会在工作树
+└── references/                                 ← Sentaurus 官方手册 PDF/Markdown + jEdit 宏模板 + MaterialDB | 工作树中注意：大部分文档在主仓库，被忽略所以不会在工作树
+    └── MaterialDB/                             ← SDEVICE 权威材料参数文件（Phase 2 词库数据源，from T-2022.03）
 ```
 
 ## 架构

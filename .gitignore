@@ -23,6 +23,7 @@ temp/
 
 TODOLIST.md
 
-# references but not md files
+# references but not md/par files
 references/*
 !references/*.md
+!references/MaterialDB/
