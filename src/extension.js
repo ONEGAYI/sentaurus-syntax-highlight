@@ -211,39 +211,48 @@ function activate(context) {
         } catch (_) { /* findFiles failed */ }
     }
 
-    // Fire-and-forget: 不阻塞 activate
-    scanWorkspaceParFiles();
+    // Fire-and-forget: 不阻塞 activate；.catch 防止 unhandled rejection
+    scanWorkspaceParFiles().catch(() => {});
 
     // FileSystemWatcher: workspace .par 文件增量更新
+    // 使用 500ms debounce 防止批量文件操作（如 git checkout）导致 O(N×M) preheat
+    let watcherDebounceTimer = null;
+    function debouncedPreheat() {
+        if (watcherDebounceTimer) clearTimeout(watcherDebounceTimer);
+        watcherDebounceTimer = setTimeout(() => {
+            if (parIndexService) preheatOpenParDocuments();
+        }, 500);
+    }
+
     const parWatcher = vscode.workspace.createFileSystemWatcher('**/*.par');
     parWatcher.onDidCreate(uri => {
         if (!parIndexService) return;
         try {
             const text = fs.readFileSync(uriToFsPath(uri), 'utf8');
             parIndexService.addWorkspaceFile(uri.toString(), text);
-        } catch (_) {}
-        // 新建文件也可能使已有 #include 从 unresolved 变为 resolved，
-        // 因此需要清 currentFileCache 并刷新打开文档。
-        parIndexService.onFileChanged(uri.toString());
-        preheatOpenParDocuments();
+            // 新建文件也可能使已有 #include 从 unresolved 变为 resolved，
+            // 因此需要清 currentFileCache 并刷新打开文档。
+            parIndexService.onFileChanged(uri.toString());
+            debouncedPreheat();
+        } catch (_) { /* readFileSync 失败 → 不执行 onFileChanged/preheat */ }
     });
     parWatcher.onDidChange(uri => {
         if (!parIndexService) return;
         try {
             const text = fs.readFileSync(uriToFsPath(uri), 'utf8');
             parIndexService.addWorkspaceFile(uri.toString(), text);
-        } catch (_) {}
-        // onFileChanged 同时清 includeRawCache + currentFileCache
-        parIndexService.onFileChanged(uri.toString());
-        // 刷新已打开的 .par 文档缓存
-        preheatOpenParDocuments();
+            // onFileChanged 同时清 includeRawCache + currentFileCache
+            parIndexService.onFileChanged(uri.toString());
+            // 刷新已打开的 .par 文档缓存
+            debouncedPreheat();
+        } catch (_) { /* readFileSync 失败 → 不执行 onFileChanged/preheat */ }
     });
     parWatcher.onDidDelete(uri => {
         if (!parIndexService) return;
         parIndexService.removeWorkspaceFile(uri.toString());
         // onFileChanged 处理 include 链失效
         parIndexService.onFileChanged(uri.toString());
-        preheatOpenParDocuments();
+        debouncedPreheat();
     });
     context.subscriptions.push(parWatcher);
 
@@ -276,7 +285,7 @@ function activate(context) {
     variableReferenceProvider.activate(context, schemeCache, tclCache, vscode);
 
     // === Snippet QuickPick Command ===
-    context.subscriptions.push({ dispose: () => { if (parIndexService) parIndexService.dispose(); } });
+    context.subscriptions.push({ dispose: () => { if (parIndexService) { parIndexService.dispose(); parIndexService = null; } } });
     context.subscriptions.push({ dispose: () => {
         for (const t of parDebounceTimers.values()) clearTimeout(t);
         parDebounceTimers.clear();

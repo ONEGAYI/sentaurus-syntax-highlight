@@ -433,7 +433,9 @@ test('getCompletionsAt includes workspace scope names in quote', () => {
 test('onFileChanged invalidates includeRawCache and currentFileCache', () => {
     // 使用 mutable fileMap 模拟磁盘文件变更
     const fileMap = { 'lib.par': 'OldParam = 1\n' };
+    let readCount = 0;
     const readFile = (p) => {
+        readCount++;
         const basename = path.basename(p);
         if (fileMap[basename]) return fileMap[basename];
         throw new Error('ENOENT: ' + p);
@@ -448,14 +450,21 @@ test('onFileChanged invalidates includeRawCache and currentFileCache', () => {
     const doc = mockDoc('#include "lib.par"\n', 1);
     const r1 = service.parseCurrentFile(doc);
     assert.ok(r1.symbols.find(s => s.name === 'OldParam'), 'Should see OldParam initially');
-    assert.ok(!r1.symbols.find(s => s.name === 'NewParam'), 'Should NOT see NewParam initially');
+    assert.strictEqual(readCount, 1, 'First parse should read lib.par once');
+
+    // 同一 version 再次解析应命中 includeRawCache（不重新读取）
+    readCount = 0;
+    service.parseCurrentFile(mockDoc('#include "lib.par"\n', 2));
+    assert.strictEqual(readCount, 0, 'Second parse should use includeRawCache');
 
     // 模拟 lib.par 在磁盘上变更
     fileMap['lib.par'] = 'NewParam = 2\n';
+    readCount = 0;
     service.onFileChanged('lib.par');
 
-    // 同一 document version 的缓存应被清除，重新解析应看到 NewParam
+    // onFileChanged 应清除 includeRawCache，重新解析需重新读取
     const r2 = service.parseCurrentFile(doc);
+    assert.strictEqual(readCount, 1, 'After onFileChanged, should re-read lib.par (includeRawCache cleared)');
     assert.ok(r2.symbols.find(s => s.name === 'NewParam'), 'After onFileChanged, should see NewParam');
     assert.ok(!r2.symbols.find(s => s.name === 'OldParam'), 'After onFileChanged, should NOT see OldParam');
 

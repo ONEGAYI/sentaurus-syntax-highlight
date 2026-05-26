@@ -100,6 +100,10 @@ function createParIndexService(deps) {
             filePath: uri,
         }));
         workspaceIndex.set(uri, symbols);
+        // FIFO 淘汰（与 includeRawCache 一致）
+        if (workspaceIndex.size > MAX_CACHE_SIZE) {
+            workspaceIndex.delete(workspaceIndex.keys().next().value);
+        }
     }
 
     /**
