@@ -7,6 +7,7 @@ const { URL, fileURLToPath } = require('url');
 const { parseParText } = require('./par-parser');
 const { stackToPath, getContextAtPosition, detectScopeNameContext } = require('./par-context');
 const { SCOPE_TYPES_ARRAY, SOURCE_PRIORITY, MAX_CACHE_SIZE, MAX_INCLUDE_DEPTH } = require('./par-constants');
+const { buildParCompletions } = require('./par-completion');
 
 /**
  * 创建 ParIndexService 实例。
@@ -192,79 +193,32 @@ function createParIndexService(deps) {
      * 缓存未就绪时返回空数组，由调用方 fallback 到 all_keywords。
      * @param {{ uri: { toString(): string }, version: number }} document
      * @param {{ line: number, character: number }} position
+     * @param {string} [lineText] - 可选，当前行的文本（用于 scopeName 检测）
      * @returns {Array<{label: string, kind: string, detail: string, sortText: string, insertText: string, source: string, parentPath: string}>}
      */
-    function getCompletionsAt(document, position) {
+    function getCompletionsAt(document, position, lineText) {
         const uri = document.uri.toString();
         const version = document.version;
         const key = cacheKey(uri, version);
 
         const cached = currentFileCache.get(key);
-        if (!cached) return []; // 缓存未就绪 → fallback 到 all_keywords
+        if (!cached) return [];
+
+        // 如果传入 lineText，先检测 scope 名引号内补全
+        if (lineText !== undefined) {
+            const scopeNameCtx = detectScopeNameContext(lineText, position.character);
+            if (scopeNameCtx) {
+                return buildParCompletions(
+                    { completableKind: 'scopeName', parentPath: '', scopeType: scopeNameCtx.scopeType, pendingBlockName: null },
+                    cached.symbols,
+                );
+            }
+        }
 
         const ctx = getContextAtPosition(cached.lineContexts, position.line, position.character);
         if (!ctx) return [];
 
-        const items = [];
-
-        if (ctx.completableKind === 'scopeType') {
-            // 文件顶层 → 推荐所有 scope 类型
-            for (const st of SCOPE_TYPES_ARRAY) {
-                items.push({
-                    label: st,
-                    kind: 'scopeType',
-                    detail: '[par] scope type',
-                    sortText: '4_' + st,
-                    insertText: st + ' = "$1" {\n\t$0\n}',
-                    source: 'builtin',
-                    parentPath: '',
-                });
-            }
-        } else if (ctx.completableKind === 'block') {
-            // scope 内 → 推荐已知 block（从 symbols 抽取）
-            const blockNames = new Set();
-            for (const sym of cached.symbols) {
-                if (sym.kind === 'block' && sym.parentPath.startsWith(ctx.parentPath)) {
-                    blockNames.add(sym.name);
-                }
-            }
-            // 也从 include 结果中收集（Task 4 加入后生效）
-            let idx = 0;
-            for (const name of blockNames) {
-                items.push({
-                    label: name,
-                    kind: 'block',
-                    detail: `[par] block (${ctx.scopeType || 'scope'})`,
-                    sortText: `0_${idx}_${name}`,
-                    insertText: name + ' {\n\t$0\n}',
-                    source: 'current',
-                    parentPath: ctx.parentPath,
-                });
-                idx++;
-            }
-        } else if (ctx.completableKind === 'parameter') {
-            // block 内 → 推荐已知 parameter（从 symbols 抽取）
-            const seen = new Set();
-            let idx = 0;
-            for (const sym of cached.symbols) {
-                if (sym.kind === 'parameter' && sym.parentPath === ctx.parentPath && !seen.has(sym.name)) {
-                    seen.add(sym.name);
-                    items.push({
-                        label: sym.name,
-                        kind: 'parameter',
-                        detail: sym.value ? `[par] = ${sym.value}` : '[par] parameter',
-                        sortText: `0_${idx}_${sym.name}`,
-                        insertText: sym.name + ' = ',
-                        source: sym.source || 'current',
-                        parentPath: ctx.parentPath,
-                    });
-                    idx++;
-                }
-            }
-        }
-        // blockPending / null → 不补全，由调用方 fallback
-
-        return items;
+        return buildParCompletions(ctx, cached.symbols);
     }
 
     function onFileChanged(uri) {

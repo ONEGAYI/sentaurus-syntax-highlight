@@ -268,9 +268,43 @@ test('same include file at different parentPath produces separate grafts', () =>
     service.dispose();
 });
 
-// ── Task 5 测试占位（依赖 par-completion.js，待 Task 5 完成后取消注释）──
-// test('source priority: current overrides include in dedup via buildParCompletions', () => { ... });
-// test('completion provider merge does not pollute original items array', () => { ... });
+// ── Task 5: buildParCompletions 集成测试 ──────
+
+test('source priority: current overrides include in dedup via buildParCompletions', () => {
+    const { buildParCompletions } = require('../src/lsp/sdevicepar/par-completion');
+    const ctx = { completableKind: 'parameter', parentPath: 'Material/Silicon/Bandgap', scopeType: 'Material', pendingBlockName: null };
+    const symbols = [
+        { kind: 'parameter', name: 'Eg0', value: '1.12', parentPath: 'Material/Silicon/Bandgap', source: 'include' },
+        { kind: 'parameter', name: 'Eg0', value: '1.16964', parentPath: 'Material/Silicon/Bandgap', source: 'current' },
+    ];
+    const items = buildParCompletions(ctx, symbols);
+    const eg0Items = items.filter(i => i.label === 'Eg0');
+    assert.strictEqual(eg0Items.length, 1, 'Should deduplicate to 1 item');
+    assert.strictEqual(eg0Items[0].source, 'current', 'current source should win over include');
+    assert.strictEqual(eg0Items[0].detail, '[par] = 1.16964', 'Should use current value');
+});
+
+test('completion provider merge does not pollute original items array', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    const doc = mockDoc('Material = "Silicon" {\n  Bandgap {\n    Eg0 = 1.12\n  }\n}\n', 1);
+    service.parseCurrentFile(doc);
+
+    const originalItems = [
+        { label: 'Bandgap' },
+        { label: 'SomeKeyword' },
+    ];
+    const originalLen = originalItems.length;
+
+    const parItems = service.getCompletionsAt(doc, { line: 1, character: 2 });
+    const parLabels = new Set(parItems.map(i => i.label));
+    const keywordFallback = originalItems.filter(i => !parLabels.has(i.label));
+    const merged = [...parItems, ...keywordFallback];
+
+    assert.strictEqual(originalItems.length, originalLen, 'originalItems should not be mutated');
+    assert.deepStrictEqual(originalItems[0], { label: 'Bandgap' }, 'originalItems content unchanged');
+    assert.ok(merged.length >= parItems.length, 'merged should include par items');
+    service.dispose();
+});
 
 test('already-open document pre-heats on activation', () => {
     const service = createParIndexService({ extensionPath: '/ext' });
