@@ -4,6 +4,20 @@
 
 ---
 
+## [2.0.8] - 2026-05-26
+
+新功能与 Bug 修复混合的小版本，新增 SDEVICE Resistor 关键词并修复 v2.0.1 引入的 SDE 悬停文档全面失效回归。
+
+### 新功能
+
+- **SDEVICE Resistor 关键词高亮、补全与文档**（#64）：为 Electrode 节添加 `Resistor` 关键词（集总串联电阻参数，功能等同 `Resist`，较新版本支持），覆盖语法高亮、自动补全和中英文 Hover 文档
+
+### Bug 修复
+
+- **修复 SDE 函数悬停文档全面失效的回归**（#65）：v2.0.1 为解决 SDEVICE ppDefine 符号干扰将 hover 文档查找改为纯标识符正则 `[\w]+`，导致 SDE 565 个含冒号 API 函数（如 `sdegeo:create-circle`）和 73 个含连字符的 Scheme 内置函数（如 `make-polar`）hover 文档全部失效。对 SDE 语言恢复使用完整词匹配，其他 Tcl 语言保持纯标识符匹配
+
+---
+
 ## [2.0.7] - 2026-05-23
 
 ### 新功能
@@ -1011,6 +1025,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.0.8]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.7...v2.0.8
 [2.0.7]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.6...v2.0.7
 [2.0.6]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.5...v2.0.6
 [2.0.5]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.4...v2.0.5
