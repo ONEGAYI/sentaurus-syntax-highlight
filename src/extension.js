@@ -16,12 +16,17 @@ const { SchemeParseCache, TclParseCache } = require('./lsp/parse-cache');
 const { DOC_LABELS } = require('./docs-loader');
 const { registerSnippetCommand } = require('./commands/snippet-picker');
 const envVarManager = require('./commands/env-var-manager');
+const { createParIndexService } = require('./lsp/sdevicepar/par-index-service');
 
 /** @type {SchemeParseCache} */
 let schemeCache;
 /** @type {TclParseCache} */
 let tclCache;
 let sdeviceStProvider;
+/** @type {ReturnType<typeof createParIndexService> | null} */
+let parIndexService = null;
+/** @type {Map<string, NodeJS.Timeout>} */
+let parDebounceTimers = new Map();
 
 function activate(context) {
     const keywordsPath = path.join(__dirname, '..', 'syntaxes', 'all_keywords.json');
@@ -58,6 +63,35 @@ function activate(context) {
             schemeCache.invalidate(uri);
             tclCache.invalidate(uri);
             if (sdeviceStProvider) sdeviceStProvider.invalidate(uri);
+            if (parIndexService) parIndexService.onFileClosed(uri);
+            // Clear pending debounce timer for this document
+            const pending = parDebounceTimers.get(uri);
+            if (pending) { clearTimeout(pending); parDebounceTimers.delete(uri); }
+        })
+    );
+
+    // Per-uri debounced pre-heat for sdevicepar ParIndexService
+    parDebounceTimers = new Map(); // uri → timer
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeTextDocument(e => {
+            if (e.document.languageId !== 'sdevicepar' || !parIndexService) return;
+            const uri = e.document.uri.toString();
+            const old = parDebounceTimers.get(uri);
+            if (old) clearTimeout(old);
+            parDebounceTimers.set(uri, setTimeout(() => {
+                parDebounceTimers.delete(uri);
+                try { parIndexService.parseCurrentFile(e.document); }
+                catch (_) { /* ignore parse errors during debounce */ }
+            }, 200));
+        })
+    );
+
+    // Pre-heat on document open
+    context.subscriptions.push(
+        vscode.workspace.onDidOpenTextDocument(doc => {
+            if (doc.languageId !== 'sdevicepar' || !parIndexService) return;
+            try { parIndexService.parseCurrentFile(doc); }
+            catch (_) { /* ignore */ }
         })
     );
 
@@ -127,6 +161,20 @@ function activate(context) {
     sdeviceStProvider = tclProviderResult.sdeviceStProvider;
     const sdeviceLowerToCanon = tclProviderResult.sdeviceLowerToCanon;
 
+    // ── ParIndexService（sdevicepar 上下文补全）──────────────
+    parIndexService = createParIndexService({
+        extensionPath: context.extensionPath,
+        workspaceFolders: vscode.workspace.workspaceFolders || [],
+    });
+
+    // Pre-heat already-open sdevicepar documents at activation
+    for (const doc of vscode.workspace.textDocuments) {
+        if (doc.languageId === 'sdevicepar' && parIndexService) {
+            try { parIndexService.parseCurrentFile(doc); }
+            catch (_) { /* ignore */ }
+        }
+    }
+
     // ── Completion/Hover/Definition Providers ──────────────────
     // Must come before registerSdeProviders — builds modeDispatchTable/symbolParamsTable
     // and calls schemeCache.setSymbolConfig internally.
@@ -138,6 +186,7 @@ function activate(context) {
         sdeviceStProvider,
         sdeviceLowerToCanon,
         useZh,
+        parIndexService,
     });
 
     // ── SDE Providers ──────────────────────────
@@ -155,6 +204,11 @@ function activate(context) {
     variableReferenceProvider.activate(context, schemeCache, tclCache, vscode);
 
     // === Snippet QuickPick Command ===
+    context.subscriptions.push({ dispose: () => { if (parIndexService) parIndexService.dispose(); } });
+    context.subscriptions.push({ dispose: () => {
+        for (const t of parDebounceTimers.values()) clearTimeout(t);
+        parDebounceTimers.clear();
+    } });
     registerSnippetCommand(context);
 
     // ── 环境变量管理命令 ──────────────────────────

@@ -91,6 +91,7 @@ function registerCompletionProviders(context, deps) {
         sdeviceStProvider,
         sdeviceLowerToCanon,
         useZh,
+        parIndexService,
     } = deps;
 
     const languages = ['sde', 'sdevice', 'sdevicepar', 'sprocess', 'emw', 'inspect', 'svisual'];
@@ -167,6 +168,72 @@ function registerCompletionProviders(context, deps) {
             {
                 provideCompletionItems(document, position) {
                     try {
+                        // ── sdevicepar 前置分支 ──
+                        let parConverted = null; // 延迟到函数末尾统一 merge
+                        if (langId === 'sdevicepar' && parIndexService) {
+                            const lineText = document.lineAt(position.line).text;
+                            const col = position.character;
+
+                            // Lexical gate: 注释行 → 跳过 par 补全
+                            const trimmedLine = lineText.trimStart();
+                            const isComment = trimmedLine.startsWith('#') || trimmedLine.startsWith('*');
+
+                            if (!isComment) {
+                                // 检测赋值右侧和字符串内
+                                let inRhs = false;
+                                let inQuote = false;
+                                for (let ci = 0; ci < col; ci++) {
+                                    if (lineText[ci] === '"') {
+                                        // Count preceding backslashes
+                                        let backslashes = 0;
+                                        let bi = ci - 1;
+                                        while (bi >= 0 && lineText[bi] === '\\') { backslashes++; bi--; }
+                                        // Even backslashes = quote is unescaped
+                                        if (backslashes % 2 === 0) inQuote = !inQuote;
+                                    }
+                                    if (!inQuote && lineText[ci] === '=' && ci < col - 1) {
+                                        if (!/^\s*(Material|Region|Interface|MaterialInterface|RegionInterface|Electrode)\s*=\s*"/.test(lineText)) {
+                                            inRhs = true;
+                                        }
+                                    }
+                                }
+
+                                // scope 名引号内补全：传 lineText 给 service 层检测
+                                const scopeNameItems = parIndexService.getCompletionsAt(document, position, lineText);
+                                if (scopeNameItems.length > 0 && scopeNameItems[0].kind === 'scopeName') {
+                                    const kindMapScope = { scopeName: vscode.CompletionItemKind.Value };
+                                    parConverted = scopeNameItems.map(pi => {
+                                        const item = new vscode.CompletionItem(pi.label, kindMapScope[pi.kind] || vscode.CompletionItemKind.Text);
+                                        item.detail = pi.detail;
+                                        item.sortText = pi.sortText;
+                                        item.insertText = pi.insertText;
+                                        return item;
+                                    });
+                                } else if (!inQuote && !inRhs) {
+                                    const parItems = parIndexService.getCompletionsAt(document, position);
+                                    if (parItems.length > 0) {
+                                        const kindMap = {
+                                            scopeType: vscode.CompletionItemKind.Module,
+                                            scopeName: vscode.CompletionItemKind.Value,
+                                            block: vscode.CompletionItemKind.Class,
+                                            parameter: vscode.CompletionItemKind.Property,
+                                        };
+                                        parConverted = parItems.map(pi => {
+                                            const item = new vscode.CompletionItem(pi.label, kindMap[pi.kind] || vscode.CompletionItemKind.Text);
+                                            item.detail = pi.detail;
+                                            item.sortText = pi.sortText;
+                                            item.insertText = new vscode.SnippetString(pi.insertText);
+                                            if (pi.parentPath) {
+                                                item.documentation = new vscode.MarkdownString(`Path: \`${pi.parentPath}\`\n\nSource: ${pi.source}`);
+                                            }
+                                            return item;
+                                        });
+                                    }
+                                }
+                            }
+                            // parConverted === null → 缓存未就绪或 lexical gate 拦截，走后续 all_keywords fallback
+                        }
+
                         if (langId !== 'sde') {
                             const linePrefix = document.lineAt(position.line).text.substring(0, position.character);
                             const subcmdContext = TCL_SUBCMD_COMPLETION_RE.exec(linePrefix);
@@ -185,7 +252,13 @@ function registerCompletionProviders(context, deps) {
                         }
 
                         const userDefs = defs.getDefinitions(document, langId);
-                        if (userDefs.length === 0) return items;
+                        if (userDefs.length === 0) {
+                            if (parConverted) {
+                                const parLabels = new Set(parConverted.map(i => i.label));
+                                return [...parConverted, ...items.filter(i => !parLabels.has(i.label))];
+                            }
+                            return items;
+                        }
 
                         const seenNames = new Set(items.map(it => it.label));
                         let filteredDefs = userDefs.filter(d => {
@@ -235,6 +308,11 @@ function registerCompletionProviders(context, deps) {
                                 return item;
                             });
 
+                        if (parConverted) {
+                            const parLabels = new Set(parConverted.map(i => i.label));
+                            const keywordFallback = items.filter(i => !parLabels.has(i.label));
+                            return [...parConverted, ...keywordFallback, ...envVarItems, ...userItems];
+                        }
                         return [...items, ...envVarItems, ...userItems];
                     } catch (e) {
                         console.error('Sentaurus: provideCompletionItems error', e);
