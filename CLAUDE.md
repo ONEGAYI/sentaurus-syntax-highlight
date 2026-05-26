@@ -31,7 +31,7 @@
 
 ```
 sentaurus-syntax-highlight/
-├── package.json                                ← 扩展清单：6 种语言注册、贡献点、命令
+├── package.json                                ← 扩展清单：7 种语言注册、贡献点、命令
 ├── package.nls.json                            ← 命令面板标题英文默认值
 ├── package.nls.zh-cn.json                      ← 命令面板标题中文翻译
 ├── CHANGELOG.md                                ← 版本变更日志
@@ -49,7 +49,8 @@ sentaurus-syntax-highlight/
 │   ├── emw.tmLanguage.json                     ← EMW 语法高亮规则
 │   ├── inspect.tmLanguage.json                 ← Inspect 语法高亮规则
 │   ├── svisual.tmLanguage.json                 ← Svisual 语法高亮规则
-│   ├── all_keywords.json                       ← 全工具关键词数据库（补全 + 语法共用）
+│   ├── sdevicepar.tmLanguage.json              ← SDEVICE PAR 参数文件语法高亮规则
+│   ├── all_keywords.json                       ← 全工具关键词数据库（补全 + 语法共用，7 种语言）
 │   ├── tree-sitter-tcl.wasm                    ← tree-sitter-tcl WASM 字节码
 │   ├── sde_function_docs.{json,zh-CN.json}     ← SDE 函数文档（中英文双语，565 API）
 │   ├── scheme_function_docs.{json,zh-CN.json}  ← Scheme 内置函数文档（中英文双语，191 函数）
@@ -61,7 +62,7 @@ sentaurus-syntax-highlight/
 │
 ├── language-configurations/                    ← 语言配置（注释符号、括号匹配、缩进）
 │   ├── sde.json                                ← SDE 配置：行注释 `;`
-│   └── tcl.json                                ← 5 种 Tcl 工具共用：行注释 `#`
+│   └── tcl.json                                ← 6 种 Tcl 工具共用：行注释 `#`
 │
 ├── snippets/                                   ← VSCode snippet JSON（按 language id 隔离）
 │   ├── sde.json                                ← SDE 代码片段
@@ -69,15 +70,16 @@ sentaurus-syntax-highlight/
 │   ├── sprocess.json                           ← SPROCESS 代码片段
 │   ├── emw.json                                ← EMW 代码片段
 │   ├── inspect.json                            ← Inspect 代码片段
-│   └── svisual.json                            ← Svisual 代码片段
+│   ├── svisual.json                            ← Svisual 代码片段
+│   └── sdevicepar.json                         ← SDEVICE PAR 代码片段（22 个原生 snippet）
 │
 ├── src/                                        ← 扩展源码（纯 CommonJS，无构建步骤）
 │   ├── extension.js                            ← 入口：activate() 协调入口（~440行）
 │   ├── definitions.js                          ← 用户变量补全/悬停/跳转（Scheme + Tcl）
 │   ├── docs-loader.js                          ← 文档加载常量（KIND_MAP/SORT_PREFIX/DETAIL_LABEL）与格式化工具
 │   ├── register-sde-providers.js               ← SDE 语言 Provider 注册（Folding/Bracket/Signature/SemanticTokens）
-│   ├── register-tcl-providers.js               ← 5 种 Tcl 语言共用 Provider 注册（Folding/Bracket/SemanticTokens）
-│   ├── register-completion-providers.js        ← Completion/Hover/Definition Provider 注册（6 种语言共用循环）
+│   ├── register-tcl-providers.js               ← 6 种 Tcl 语言共用 Provider 注册（Folding/Bracket/SemanticTokens）
+│   ├── register-completion-providers.js        ← Completion/Hover/Definition Provider 注册（7 种语言共用循环）
 │   │
 │   ├── commands/                               ← VSCode 命令实现
 │   │   ├── expression-converter.js             ← Scheme 前缀 ↔ 中缀表达式双向转换（含 CursorTracker 光标位置感知、尖括号连字符变量语法、QuickPick 变量补全和历史模式）
@@ -114,7 +116,7 @@ sentaurus-syntax-highlight/
 │   │       ├── unit-auto-close-logic.js        ← SPROCESS Unit 括号自动配对判断逻辑
 │   │       ├── unit-auto-close-provider.js     ← SPROCESS Unit 括号自动配对 Provider
 │   │       ├── quote-auto-delete-logic.js      ← 空引号对自动删除判断逻辑
-│   │       ├── quote-auto-delete-provider.js   ← 空引号对自动删除 Provider（6 种语言共用）
+│   │       ├── quote-auto-delete-provider.js   ← 空引号对自动删除 Provider（7 种语言共用）
 │   │       ├── tcl-env-var-semantic.js          ← SWB 环境变量 Semantic Token provider（粗体渲染 + 诊断豁免）
 │   │       ├── region-undef-diagnostic.js         ← Region/Material/Contact 未定义语义诊断（Scheme）
 │   │       ├── semantic-tokens-provider.js        ← SDE 用户定义函数调用 + #define 宏着色（Semantic Tokens）
@@ -130,7 +132,8 @@ sentaurus-syntax-highlight/
 │       ├── sdevice.js                          ← SDEVICE 器件仿真片段
 │       ├── sprocess.js                         ← SPROCESS 工艺仿真片段
 │       ├── inspect.js                          ← Inspect 数据分析片段
-│       └── mesh.js                             ← 网格生成片段
+│       ├── mesh.js                             ← 网格生成片段
+│       └── sdevicepar.js                       ← SDEVICE PAR 参数文件片段（QuickPick，21 条目）
 │
 ├── tests/                                      ← 测试套件（纯 Node.js assert，零外部依赖）
 │   └── @docs/file-trees/tests.md               ← 【子文件过多，已折叠，详细目录见子文档】
@@ -139,7 +142,9 @@ sentaurus-syntax-highlight/
 │   ├── syntax/                                 ← 语法生成与维护
 │   │   ├── extract_keywords.py                 ← [已不再维护] 从 XML mode 文件提取关键词并生成语法（历史参考）
 │   │   ├── split_long_matches.py               ← 拆分超长正则匹配模式（可读性优化）
-│   │   └── audit-sdevice-keywords.js           ← SDEVICE 关键词审计（扫描官方手册）
+│   │   ├── audit-sdevice-keywords.js           ← SDEVICE 关键词审计（扫描官方手册）
+│   │   ├── convert-jedit-mode.py               ← jEdit XML mode 转 TextMate JSON 语法（sdevicepar）
+│   │   └── jedit_modes/                        ← jEdit XML 源文件和测试样本
 │   └── docs/                                   ← 文档翻译、校验与处理
 │       ├── translate_docs.py                   ← 函数文档机器翻译 + 人工校对流程
 │       ├── validate_i18n.py                    ← 中英文文档一致性校验
@@ -173,11 +178,11 @@ sentaurus-syntax-highlight/
 
 ## 架构
 
-扩展为 Synopsys Sentaurus TCAD 工具链的 6 种语言提供 IDE 支持，采用三层架构：
+扩展为 Synopsys Sentaurus TCAD 工具链的 7 种语言提供 IDE 支持，采用三层架构：
 
 ### 第一层：TextMate 语法高亮
 
-由 `syntaxes/*.tmLanguage.json`（声明式 JSON）驱动，`package.json` 注册 6 种语言，每种通过 `filenamePatterns` 匹配文件（非扩展名），共用 `.cmd` 后缀互不冲突（Svisual 例外，使用 `_vis.tcl`）。
+由 `syntaxes/*.tmLanguage.json`（声明式 JSON）驱动，`package.json` 注册 7 种语言，每种通过 `filenamePatterns` 匹配文件（非扩展名），共用 `.cmd` 后缀互不冲突（Svisual 例外，使用 `_vis.tcl`）。
 
 | Language ID | 工具 | 方言 | 文件模式 | 语言配置 |
 |-------------|------|------|----------|----------|
@@ -187,6 +192,7 @@ sentaurus-syntax-highlight/
 | `emw` | EM Wave | Tcl | `*_eml.cmd`, `*_emw.cmd` | `tcl.json` |
 | `inspect` | Inspect | Tcl | `*_ins.cmd` | `tcl.json` |
 | `svisual` | Sentaurus Visual | Tcl | `*_vis.tcl` | `tcl.json`（注释 `#`） |
+| `sdevicepar` | Device Material DB | Tcl-like | `*.par` | `tcl.json`（注释 `#`） |
 | — | _(Sentaurus Visual)_ | _Python_ | _`*_vis.py`_ | _标准 Python 扩展覆盖，缺 `sv` 模块补全_ |
 
 每个语法文件按首匹配胜出规则依次包含：注释 → 字符串 → 数值 → `@Var@` SWB 参数 → 兜底标识符。关键词最初从 XML mode 文件通过 `scripts/syntax/extract_keywords.py`（已不再维护）提取，XML 标签映射为 TextMate scope（KEYWORD1→`keyword.control`, KEYWORD2→`keyword.other`, KEYWORD3→`entity.name.tag`, KEYWORD4→`support.class`, FUNCTION→`entity.name.function`），现改为直接手工维护 JSON 语法文件。
@@ -202,9 +208,9 @@ sentaurus-syntax-highlight/
 双解析器架构，按语言方言分治：
 
 - **Scheme（SDE）**：手写解析器（`scheme-parser.js`），生成自定义 AST → `scheme-analyzer.js` 提取定义（含 define+lambda params 检测）和折叠范围 → `scope-analyzer.js` 构建词法作用域树 → `semantic-dispatcher.js` 按函数调用模式分发语义 → `symbol-index.js` 根据声明式 symbolParams 配置提取 Region/Material/Contact 的定义和引用（支持 string-append 静态推断和 modeDispatch 动态类型）
-- **Tcl（其余 5 种）**：`tree-sitter-tcl` WASM 解析器（`tcl-parser-wasm.js`）→ `tcl-ast-utils.js` 通用 AST 工具（parseSafe/walkNodes/辅助函数）→ `tcl-scope.js` 作用域构建与索引（ScopeIndex/buildScopeIndex）→ `tcl-variable-extractor.js` 变量提取与引用查找 → `tcl-document-symbol.js` 文档大纲符号 → `tcl-bracket-check.js` 括号平衡检查 → `tcl-symbol-configs.js` 配置各工具 section 关键词和子 section → `pp-utils.js` 提供预处理器分支分析（`#if`/`#endif` 块映射）和 #define 宏定义提取/引用查找
+- **Tcl（其余 6 种）**：`tree-sitter-tcl` WASM 解析器（`tcl-parser-wasm.js`）→ `tcl-ast-utils.js` 通用 AST 工具（parseSafe/walkNodes/辅助函数）→ `tcl-scope.js` 作用域构建与索引（ScopeIndex/buildScopeIndex）→ `tcl-variable-extractor.js` 变量提取与引用查找 → `tcl-document-symbol.js` 文档大纲符号 → `tcl-bracket-check.js` 括号平衡检查 → `tcl-symbol-configs.js` 配置各工具 section 关键词和子 section → `pp-utils.js` 提供预处理器分支分析（`#if`/`#endif` 块映射）和 #define 宏定义提取/引用查找
 
-SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依赖 WASM，通过文本扫描追踪 `{}` 嵌套栈构建 section 上下文，为顶层 section 名分配 `sectionName` token、为子 section（Quasistationary/Coupled 等）分配 `subSection` token、为 section 内关键词分配 `sectionKeyword` token、为 #define 宏分配 `macro` token，并缓存至 `document.version` 避免重复扫描。`sdevice-vector-keywords.js` 提供 Plot/CurrentPlot section 中 57 个矢量基础关键词和 3 种后缀的数据模块。
+SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依赖 WASM，通过文本扫描追踪 `{}` 嵌套栈构建 section 上下文，为顶层 section 名分配 `sectionName` token、为子 section（Quasistationary/Coupled 等）分配 `subSection` token、为 section 内关键词分配 `sectionKeyword` token、为 #define 宏分配 `macro` token，并缓存至 `document.version` 避免重复扫描。`sdevice-vector-keywords.js` 提供 Plot/CurrentPlot section 中 57 个矢量基础关键词和 3 种后缀的数据模块。SDEVICE PAR（sdevicepar）复用 Tcl 共用 Provider 和 WASM 解析管线。
 
 共用 Provider（`src/lsp/providers/`）：
 - `undef-var-diagnostic.js` — 跨语言未定义/重复定义变量诊断（Scheme + Tcl）+ 未定义 #define 宏诊断
@@ -218,7 +224,7 @@ SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依
 - `scheme-on-enter-provider.js` — Scheme 括号内回车多级自动缩进（与 `sde.json` onEnterRules 协同，逻辑提取至 `scheme-on-enter-logic.js`）
 - `tcl-document-symbol-provider.js` — Tcl 文档大纲
 - `unit-auto-close-provider.js` — SPROCESS Unit 括号自动配对（含 logic 层判断逻辑）
-- `quote-auto-delete-provider.js` — 空引号对自动删除（6 种语言共用，含 logic 层判断逻辑）
+- `quote-auto-delete-provider.js` — 空引号对自动删除（7 种语言共用，含 logic 层判断逻辑）
 - `region-undef-diagnostic.js` — Region/Material/Contact 未定义语义诊断
 - `symbol-completion.js` — Region/Material/Contact 符号补全（声明式 symbolParams 配置）
 - `variable-reference-provider.js` — 用户变量 + #define 宏引用查找（Scheme + Tcl 双语言，作用域感知过滤）
@@ -257,7 +263,7 @@ SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依
 - 使用中文编写文档、提交和发布
 - 兼容性目标：CentOS 7 / VSCode v1.85.2 / GLIBC 2.17（无 TypeScript、无构建步骤、无原生二进制）
 - 所有插件 UI 文字使用 i18n 映射，而不是硬编码
-- 修改共享 Provider（如 `register-completion-providers.js`）等全局性文件时，必须考虑所有 6 种语言的兼容性——正则、分词、查找逻辑的变更可能对某一种语言造成回归，编写测试时应覆盖不同语言的典型用例
+- 修改共享 Provider（如 `register-completion-providers.js`）等全局性文件时，必须考虑所有 7 种语言的兼容性——正则、分词、查找逻辑的变更可能对某一种语言造成回归，编写测试时应覆盖不同语言的典型用例
 
 ## 发布流程
 

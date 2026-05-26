@@ -4,6 +4,17 @@
 
 ---
 
+## [2.1.0] - 2026-05-26
+
+新增 SDEVICE PAR 参数文件（`.par`）作为第 7 种语言，提供完整的语法高亮、自动补全、代码片段和 Provider 集成。
+
+### 新功能
+
+- **SDEVICE PAR 参数文件语法高亮与 Provider 集成**（#67）：新增 sdevicepar 语言（`.par` 扩展名），从 jEdit XML mode 转换关键词和语法规则，集成补全、悬停、折叠、语义 token 等 Provider 系统。支持 `* 注释`、`{ * comment }`、`#define/#if` 预处理器、section 名、字符串值等语法高亮
+- **SDEVICE PAR 内置 snippets 支持**（#70）：双轨制 snippet 系统——22 个 VSCode 原生 snippets（输入前缀自动触发）和 21 个 QuickPick 命令入口（多级菜单访问），覆盖顶层块骨架、高频 section 模板和完整材料骨架
+
+---
+
 ## [2.0.8] - 2026-05-26
 
 新功能与 Bug 修复混合的小版本，新增 SDEVICE Resistor 关键词并修复 v2.0.1 引入的 SDE 悬停文档全面失效回归。
@@ -1025,6 +1036,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.1.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.8...v2.1.0
 [2.0.8]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.7...v2.0.8
 [2.0.7]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.6...v2.0.7
 [2.0.6]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.5...v2.0.6
