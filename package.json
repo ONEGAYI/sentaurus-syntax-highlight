@@ -475,6 +475,20 @@
             "entity.name.variable.environment.tcl"
           ]
         }
+      },
+      {
+        "language": "sdevicepar",
+        "scopes": {
+          "userFunctionCall": [
+            "entity.name.function.sdevicepar"
+          ],
+          "ppMacro": [
+            "entity.name.type.sdevicepar"
+          ],
+          "environmentVariable": [
+            "entity.name.variable.environment.tcl"
+          ]
+        }
       }
     ]
   },

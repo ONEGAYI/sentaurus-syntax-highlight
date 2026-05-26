@@ -93,7 +93,7 @@ function registerCompletionProviders(context, deps) {
         useZh,
     } = deps;
 
-    const languages = ['sde', 'sdevice', 'sprocess', 'emw', 'inspect', 'svisual'];
+    const languages = ['sde', 'sdevice', 'sdevicepar', 'sprocess', 'emw', 'inspect', 'svisual'];
     const materialKeywords = allKeywords.MATERIAL || [];
     const mathfuncKeywords = allKeywords.MATHFUNC || [];
 
