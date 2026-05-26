@@ -7,6 +7,7 @@ const { applySnippetPrefixes } = require('../docs-loader');
 // === QuickPick Snippet Data ===
 const sdeSnippets = require('../snippets/sde');
 const sdeviceSnippets = require('../snippets/sdevice');
+const sdeviceparSnippets = require('../snippets/sdevicepar');
 const sprocessSnippets = require('../snippets/sprocess');
 const inspectSnippets = require('../snippets/inspect');
 const meshSnippets = require('../snippets/mesh');
@@ -15,13 +16,14 @@ const meshSnippets = require('../snippets/mesh');
 const snippetMap = {
     'Sentaurus-StructEditor': sdeSnippets,
     'Sentaurus-Device': sdeviceSnippets,
+    'Sentaurus-DevicePar': sdeviceparSnippets,
     'Sentaurus-Process': sprocessSnippets,
     'Sentaurus-Inspect': inspectSnippets,
     'Sentaurus-Mesh': meshSnippets,
 };
 
 const snippetCategories = [
-    'Sentaurus-Device', 'Sentaurus-Inspect', 'Sentaurus-Mesh',
+    'Sentaurus-Device', 'Sentaurus-DevicePar', 'Sentaurus-Inspect', 'Sentaurus-Mesh',
     'Sentaurus-Process', 'Sentaurus-StructEditor',
 ];
 
