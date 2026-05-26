@@ -367,4 +367,65 @@ test('getWorkspaceSymbols returns empty array when no workspace files', () => {
     service.dispose();
 });
 
+// ── Phase 2.2: Workspace 补全合并 ───────────────
+
+test('getCompletionsAt merges workspace block symbols', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+
+    // 当前文件：Material scope 内有空行
+    const doc = mockDoc('Material = "MyMat" {\n  \n}\n', 1);
+    service.parseCurrentFile(doc);
+
+    // workspace 文件：Material scope 下有 Bandgap block
+    service.addWorkspaceFile('file:///ws/Silicon.par', [
+        'Material = "Silicon" {',
+        '  Bandgap {',
+        '    Eg0 = 1.12',
+        '  }',
+        '}',
+    ].join('\n') + '\n');
+
+    // line 1 是 scope 内部空行（stack top = Material/MyMat scope）→ block 补全
+    const items = service.getCompletionsAt(doc, { line: 1, character: 2 });
+    const labels = items.map(i => i.label);
+    assert.ok(labels.includes('Bandgap'), 'Should include Bandgap from workspace (scopeType aggregation)');
+    service.dispose();
+});
+
+test('getCompletionsAt dedup prefers current over workspace', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+
+    // 当前文件有 Bandgap { Eg0 = 1.12 }
+    const doc = mockDoc('Material = "Silicon" {\n  Bandgap {\n    Eg0 = 1.12\n  }\n}\n', 1);
+    service.parseCurrentFile(doc);
+
+    // workspace 文件也有 Bandgap { Eg0 = 1.16964 }
+    service.addWorkspaceFile('file:///ws/other.par', 'Material = "Silicon" {\n  Bandgap {\n    Eg0 = 1.16964\n  }\n}\n');
+
+    // line 2 是 Bandgap block 内部 → parameter 补全
+    const items = service.getCompletionsAt(doc, { line: 2, character: 4 });
+    const eg0Items = items.filter(i => i.label === 'Eg0');
+    assert.strictEqual(eg0Items.length, 1, 'Should deduplicate Eg0 to 1 item');
+    // current (priority 0) beats workspace (priority 2)
+    assert.strictEqual(eg0Items[0].detail, '[par] = 1.12', 'Should use current value (1.12), not workspace value');
+    service.dispose();
+});
+
+test('getCompletionsAt includes workspace scope names in quote', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    const doc = mockDoc('Material = "Silicon" {\n}\n', 1);
+    service.parseCurrentFile(doc);
+
+    // workspace 有不同的 scope name
+    service.addWorkspaceFile('file:///ws/other.par', 'Material = "Oxide" {\n  Epsilon {\n    eps = 3.9\n  }\n}\n');
+
+    // scopeName 分支：传 lineText 检测引号内位置
+    const lineText = 'Material = "Si"';
+    const items = service.getCompletionsAt(doc, { line: 0, character: 13 }, lineText);
+    const labels = items.map(i => i.label);
+    assert.ok(labels.includes('Oxide'), 'Should include Oxide from workspace scope names');
+    assert.ok(!labels.includes('Bandgap'), 'Should not include block in scopeName context');
+    service.dispose();
+});
+
 summary();

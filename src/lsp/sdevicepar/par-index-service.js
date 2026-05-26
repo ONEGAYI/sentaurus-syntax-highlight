@@ -265,7 +265,7 @@ function createParIndexService(deps) {
             if (scopeNameCtx) {
                 return buildParCompletions(
                     { completableKind: 'scopeName', parentPath: '', scopeType: scopeNameCtx.scopeType, pendingBlockName: null },
-                    cached.symbols,
+                    cached.symbols.concat(getWorkspaceSymbols()),
                 );
             }
         }
@@ -273,7 +273,7 @@ function createParIndexService(deps) {
         const ctx = getContextAtPosition(cached.lineContexts, position.line, position.character);
         if (!ctx) return [];
 
-        return buildParCompletions(ctx, cached.symbols);
+        return buildParCompletions(ctx, cached.symbols.concat(getWorkspaceSymbols()));
     }
 
     function onFileChanged(uri) {
