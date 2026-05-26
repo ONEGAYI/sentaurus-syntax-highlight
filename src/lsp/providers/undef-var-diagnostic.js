@@ -94,11 +94,27 @@ function checkTclUndefVars(document) {
     const scopeIndex = tclCache.getScopeIndex(document);
     if (!scopeIndex) return [];
 
+    // sdevicepar 使用 `*` 作为注释符号，但 Tcl 解析器不识别，
+    // 需要按行过滤掉 `*` 开头的行上的诊断
+    const isParLang = document.languageId === 'sdevicepar';
+    const parCommentLines = isParLang ? new Set() : null;
+    if (isParLang) {
+        const lineCount = document.lineCount;
+        for (let i = 0; i < lineCount; i++) {
+            if (document.lineAt(i).text.trimStart().startsWith('*')) {
+                parCommentLines.add(i);
+            }
+        }
+    }
+
     const diagnostics = [];
     const envVarSet = getEnvVarSet();
     for (const ref of refs) {
         // 跳过环境变量白名单
         if (envVarSet.has(ref.name)) continue;
+
+        // sdevicepar: 跳过 `*` 注释行上的引用（Tcl 解析器不识别 PAR 的 `*` 注释）
+        if (parCommentLines && parCommentLines.has(ref.line - 1)) continue;
 
         // 检查引用行是否可见该变量
         const visibleAtLine = scopeIndex.getVisibleAt(ref.line);

@@ -4,27 +4,26 @@
 const { SCOPE_TYPES_ARRAY, SOURCE_PRIORITY } = require('./par-constants');
 
 /**
- * 按 (label, parentPath) 聚合 symbols，每组保留 SOURCE_PRIORITY 最高（数字最小）的 symbol。
- * 先聚合去重，再排序输出。
- * @param {object[]} symbols - 待过滤的 symbols
- * @param {string} kind - 过滤 kind
- * @param {string} parentPath - 过滤 parentPath
- * @returns {object[]} 去重后的 candidates（已按 source 优先级 + 名称排序）
+ * PAR 补全 sortText 前缀。`!` (0x21) < `0` (0x30)，确保 PAR 上下文项
+ * 始终排在 all_keywords fallback（SORT_PREFIX `0`/`1`/`2`）之前。
  */
-function dedupeByPriority(symbols, kind, parentPath) {
-    // 1. 收集匹配 symbols
-    const matched = symbols.filter(s => s.kind === kind && s.parentPath === parentPath);
-    // 2. 按 (name, parentPath) 聚合，保留每组最高优先级
-    const best = new Map(); // key: name → symbol with lowest priority number
-    for (const sym of matched) {
-        const key = sym.name;
-        const existing = best.get(key);
+const PAR_SORT_PREFIX = '!';
+
+/**
+ * 对预过滤后的 symbols 数组按 name 去重（保留 SOURCE_PRIORITY 最高即数字最小的），
+ * 再按 source 优先级升序 + 名称字母序排序。
+ * @param {object[]} symbols - 已过滤的 symbols（调用方负责 kind/parentPath 等过滤）
+ * @returns {object[]} 去重排序后的 candidates
+ */
+function dedupeAndSort(symbols) {
+    const best = new Map();
+    for (const sym of symbols) {
+        const existing = best.get(sym.name);
         const newPri = SOURCE_PRIORITY[sym.source] ?? 9;
         if (!existing || newPri < (SOURCE_PRIORITY[existing.source] ?? 9)) {
-            best.set(key, sym);
+            best.set(sym.name, sym);
         }
     }
-    // 3. 排序：source 优先级升序，名称字母序
     const candidates = Array.from(best.values());
     candidates.sort((a, b) => {
         const pa = SOURCE_PRIORITY[a.source] ?? 9;
@@ -33,6 +32,19 @@ function dedupeByPriority(symbols, kind, parentPath) {
         return a.name.localeCompare(b.name);
     });
     return candidates;
+}
+
+/**
+ * 按 (label, parentPath) 聚合 symbols，每组保留 SOURCE_PRIORITY 最高（数字最小）的 symbol。
+ * 先聚合去重，再排序输出。
+ * @param {object[]} symbols - 待过滤的 symbols
+ * @param {string} kind - 过滤 kind
+ * @param {string} parentPath - 过滤 parentPath
+ * @returns {object[]} 去重后的 candidates（已按 source 优先级 + 名称排序）
+ */
+function dedupeByPriority(symbols, kind, parentPath) {
+    const matched = symbols.filter(s => s.kind === kind && s.parentPath === parentPath);
+    return dedupeAndSort(matched);
 }
 
 /**
@@ -56,7 +68,7 @@ function buildParCompletions(ctx, symbols) {
                 label: st,
                 kind: 'scopeType',
                 detail: '[par] scope type',
-                sortText: `4_${idx}_${st}`,
+                sortText: `${PAR_SORT_PREFIX}4_${idx}_${st}`,
                 insertText: st + ' = "${1:name}" {\n\t${0}\n}',
                 source: 'builtin',
                 parentPath: '',
@@ -73,27 +85,13 @@ function buildParCompletions(ctx, symbols) {
                 return parts.length === 2 && parts[0] === scopeType;
             })
             : symbols.filter(s => s.kind === 'block' && s.parentPath === ctx.parentPath);
-        const best = new Map();
-        for (const sym of blocks) {
-            const existing = best.get(sym.name);
-            const newPri = SOURCE_PRIORITY[sym.source] ?? 9;
-            if (!existing || newPri < (SOURCE_PRIORITY[existing.source] ?? 9)) {
-                best.set(sym.name, sym);
-            }
-        }
-        const candidates = Array.from(best.values());
-        candidates.sort((a, b) => {
-            const pa = SOURCE_PRIORITY[a.source] ?? 9;
-            const pb = SOURCE_PRIORITY[b.source] ?? 9;
-            if (pa !== pb) return pa - pb;
-            return a.name.localeCompare(b.name);
-        });
+        const candidates = dedupeAndSort(blocks);
         candidates.forEach((sym, idx) => {
             items.push({
                 label: sym.name,
                 kind: 'block',
                 detail: `[par] block (${scopeType || 'scope'})`,
-                sortText: `${SOURCE_PRIORITY[sym.source] ?? 9}_${idx}_${sym.name}`,
+                sortText: `${PAR_SORT_PREFIX}${SOURCE_PRIORITY[sym.source] ?? 9}_${idx}_${sym.name}`,
                 insertText: sym.name + ' {\n\t${0}\n}',
                 source: sym.source || 'current',
                 parentPath: ctx.parentPath,
@@ -111,27 +109,13 @@ function buildParCompletions(ctx, symbols) {
                 return parts.length === 3 && parts[0] === scopeType && parts[2] === blockName;
             })
             : symbols.filter(s => s.kind === 'parameter' && s.parentPath === ctx.parentPath);
-        const best = new Map();
-        for (const sym of params) {
-            const existing = best.get(sym.name);
-            const newPri = SOURCE_PRIORITY[sym.source] ?? 9;
-            if (!existing || newPri < (SOURCE_PRIORITY[existing.source] ?? 9)) {
-                best.set(sym.name, sym);
-            }
-        }
-        const candidates = Array.from(best.values());
-        candidates.sort((a, b) => {
-            const pa = SOURCE_PRIORITY[a.source] ?? 9;
-            const pb = SOURCE_PRIORITY[b.source] ?? 9;
-            if (pa !== pb) return pa - pb;
-            return a.name.localeCompare(b.name);
-        });
+        const candidates = dedupeAndSort(params);
         candidates.forEach((sym, idx) => {
             items.push({
                 label: sym.name,
                 kind: 'parameter',
                 detail: sym.value ? `[par] = ${sym.value}` : '[par] parameter',
-                sortText: `${SOURCE_PRIORITY[sym.source] ?? 9}_${idx}_${sym.name}`,
+                sortText: `${PAR_SORT_PREFIX}${SOURCE_PRIORITY[sym.source] ?? 9}_${idx}_${sym.name}`,
                 insertText: `${sym.name} = `,
                 source: sym.source || 'current',
                 parentPath: ctx.parentPath,
@@ -140,27 +124,13 @@ function buildParCompletions(ctx, symbols) {
     } else if (ctx.completableKind === 'scopeName') {
         // Collect scope names across ALL parentPaths, dedupe by name with source priority
         const scopes = symbols.filter(s => s.kind === 'scope' && s.scopeType === ctx.scopeType);
-        const seen = new Map();
-        for (const sym of scopes) {
-            const existing = seen.get(sym.name);
-            const newPri = SOURCE_PRIORITY[sym.source] ?? 9;
-            if (!existing || newPri < (SOURCE_PRIORITY[existing.source] ?? 9)) {
-                seen.set(sym.name, sym);
-            }
-        }
-        const filtered = Array.from(seen.values());
-        filtered.sort((a, b) => {
-            const pa = SOURCE_PRIORITY[a.source] ?? 9;
-            const pb = SOURCE_PRIORITY[b.source] ?? 9;
-            if (pa !== pb) return pa - pb;
-            return a.name.localeCompare(b.name);
-        });
+        const filtered = dedupeAndSort(scopes);
         filtered.forEach((sym, idx) => {
             items.push({
                 label: sym.name,
                 kind: 'scopeName',
                 detail: `[par] ${ctx.scopeType} name`,
-                sortText: `${SOURCE_PRIORITY[sym.source] ?? 9}_${idx}_${sym.name}`,
+                sortText: `${PAR_SORT_PREFIX}${SOURCE_PRIORITY[sym.source] ?? 9}_${idx}_${sym.name}`,
                 insertText: sym.name,
                 source: sym.source || 'current',
                 parentPath: '',
@@ -171,4 +141,4 @@ function buildParCompletions(ctx, symbols) {
     return items;
 }
 
-module.exports = { buildParCompletions, SOURCE_PRIORITY, dedupeByPriority };
+module.exports = { buildParCompletions, SOURCE_PRIORITY, dedupeByPriority, dedupeAndSort };
