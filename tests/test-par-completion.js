@@ -20,7 +20,7 @@ test('top level suggests all scope types', () => {
 
 // ── block 补全 ──────────────────────────────
 
-test('scope context suggests known blocks', () => {
+test('scope context suggests known blocks (aggregated by scopeType)', () => {
     const ctx = { completableKind: 'block', parentPath: 'Material/Silicon', scopeType: 'Material', pendingBlockName: null };
     const symbols = [
         { kind: 'block', name: 'Bandgap', parentPath: 'Material/Silicon', source: 'current' },
@@ -31,7 +31,19 @@ test('scope context suggests known blocks', () => {
     const labels = items.map(i => i.label);
     assert.ok(labels.includes('Bandgap'), 'Should include Bandgap for Material/Silicon');
     assert.ok(labels.includes('Epsilon'), 'Should include Epsilon from include');
-    assert.ok(!labels.includes('OtherBlock'), 'Should NOT include OtherBlock from different parentPath');
+    assert.ok(labels.includes('OtherBlock'), 'Should include OtherBlock from same scopeType (Material/Oxide)');
+});
+
+test('block does not cross scopeType boundary', () => {
+    const ctx = { completableKind: 'block', parentPath: 'Material/Silicon', scopeType: 'Material', pendingBlockName: null };
+    const symbols = [
+        { kind: 'block', name: 'Bandgap', parentPath: 'Material/Silicon', source: 'current' },
+        { kind: 'block', name: 'Grid', parentPath: 'Region/R1', source: 'current' },
+    ];
+    const items = buildParCompletions(ctx, symbols);
+    const labels = items.map(i => i.label);
+    assert.ok(labels.includes('Bandgap'), 'Should include Bandgap');
+    assert.ok(!labels.includes('Grid'), 'Should NOT include block from different scopeType (Region)');
 });
 
 // ── parameter 补全 ──────────────────────────
@@ -59,6 +71,20 @@ test('parameter deduplication by (label, parentPath)', () => {
     const items = buildParCompletions(ctx, symbols);
     const eg0Items = items.filter(i => i.label === 'Eg0');
     assert.strictEqual(eg0Items.length, 1, 'Should deduplicate (label, parentPath)');
+});
+
+test('parameter aggregates across scopeName under same block', () => {
+    const ctx = { completableKind: 'parameter', parentPath: 'Material/Oxide/Bandgap', scopeType: 'Material', pendingBlockName: null };
+    const symbols = [
+        { kind: 'parameter', name: 'Eg0', value: '1.12', parentPath: 'Material/Silicon/Bandgap', source: 'current' },
+        { kind: 'parameter', name: 'Epsilon', value: '3.9', parentPath: 'Material/Silicon/Bandgap', source: 'current' },
+        { kind: 'parameter', name: 'n_l_f', value: '1.0', parentPath: 'Material/Silicon/AvalancheFactors', source: 'current' },
+    ];
+    const items = buildParCompletions(ctx, symbols);
+    const labels = items.map(i => i.label);
+    assert.ok(labels.includes('Eg0'), 'Should include Eg0 from Material/Silicon/Bandgap');
+    assert.ok(labels.includes('Epsilon'), 'Should include Epsilon from Material/Silicon/Bandgap');
+    assert.ok(!labels.includes('n_l_f'), 'Should NOT include parameter from different block (AvalancheFactors)');
 });
 
 // ── source 优先级 ───────────────────────────

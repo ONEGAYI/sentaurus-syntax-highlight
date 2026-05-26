@@ -64,12 +64,35 @@ function buildParCompletions(ctx, symbols) {
             idx++;
         }
     } else if (ctx.completableKind === 'block') {
-        const candidates = dedupeByPriority(symbols, 'block', ctx.parentPath);
+        // 按 scopeType 聚合，忽略具体 scopeName：Material/Silicon 的 block 也适用于 Material/Oxide
+        const scopeType = ctx.scopeType;
+        const blocks = scopeType
+            ? symbols.filter(s => {
+                if (s.kind !== 'block') return false;
+                const parts = s.parentPath.split('/');
+                return parts.length === 2 && parts[0] === scopeType;
+            })
+            : symbols.filter(s => s.kind === 'block' && s.parentPath === ctx.parentPath);
+        const best = new Map();
+        for (const sym of blocks) {
+            const existing = best.get(sym.name);
+            const newPri = SOURCE_PRIORITY[sym.source] ?? 9;
+            if (!existing || newPri < (SOURCE_PRIORITY[existing.source] ?? 9)) {
+                best.set(sym.name, sym);
+            }
+        }
+        const candidates = Array.from(best.values());
+        candidates.sort((a, b) => {
+            const pa = SOURCE_PRIORITY[a.source] ?? 9;
+            const pb = SOURCE_PRIORITY[b.source] ?? 9;
+            if (pa !== pb) return pa - pb;
+            return a.name.localeCompare(b.name);
+        });
         candidates.forEach((sym, idx) => {
             items.push({
                 label: sym.name,
                 kind: 'block',
-                detail: `[par] block (${ctx.scopeType || 'scope'})`,
+                detail: `[par] block (${scopeType || 'scope'})`,
                 sortText: `${SOURCE_PRIORITY[sym.source] ?? 9}_${idx}_${sym.name}`,
                 insertText: sym.name + ' {\n\t${0}\n}',
                 source: sym.source || 'current',
@@ -77,7 +100,32 @@ function buildParCompletions(ctx, symbols) {
             });
         });
     } else if (ctx.completableKind === 'parameter') {
-        const candidates = dedupeByPriority(symbols, 'parameter', ctx.parentPath);
+        // 按 scopeType + blockName 聚合，忽略 scopeName：Material/Si/Bandgap 的参数也适用于 Material/Oxide/Bandgap
+        const scopeType = ctx.scopeType;
+        const pathParts = ctx.parentPath.split('/');
+        const blockName = pathParts.length >= 3 ? pathParts[pathParts.length - 1] : null;
+        const params = (scopeType && blockName)
+            ? symbols.filter(s => {
+                if (s.kind !== 'parameter') return false;
+                const parts = s.parentPath.split('/');
+                return parts.length === 3 && parts[0] === scopeType && parts[2] === blockName;
+            })
+            : symbols.filter(s => s.kind === 'parameter' && s.parentPath === ctx.parentPath);
+        const best = new Map();
+        for (const sym of params) {
+            const existing = best.get(sym.name);
+            const newPri = SOURCE_PRIORITY[sym.source] ?? 9;
+            if (!existing || newPri < (SOURCE_PRIORITY[existing.source] ?? 9)) {
+                best.set(sym.name, sym);
+            }
+        }
+        const candidates = Array.from(best.values());
+        candidates.sort((a, b) => {
+            const pa = SOURCE_PRIORITY[a.source] ?? 9;
+            const pb = SOURCE_PRIORITY[b.source] ?? 9;
+            if (pa !== pb) return pa - pb;
+            return a.name.localeCompare(b.name);
+        });
         candidates.forEach((sym, idx) => {
             items.push({
                 label: sym.name,
