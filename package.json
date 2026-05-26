@@ -258,6 +258,10 @@
       {
         "language": "svisual",
         "path": "./snippets/svisual.json"
+      },
+      {
+        "language": "sdevicepar",
+        "path": "./snippets/sdevicepar.json"
       }
     ],
     "configuration": [

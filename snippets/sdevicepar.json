@@ -1,0 +1,282 @@
+{
+  "Material block": {
+    "prefix": "material",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Material = \"${1:Silicon}\" {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Material 顶层块"
+  },
+  "Region block": {
+    "prefix": "region",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Region = \"${1:name}\" {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Region 顶层块"
+  },
+  "Electrode block": {
+    "prefix": "electrode",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Electrode = \"${1:name}\" {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Electrode 顶层块"
+  },
+  "RegionInterface block": {
+    "prefix": "regioninterface",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "RegionInterface = \"${1:region1}/${2:region2}\" {",
+      "\t$0",
+      "}"
+    ],
+    "description": "RegionInterface 顶层块"
+  },
+  "MaterialInterface block": {
+    "prefix": "materialinterface",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "MaterialInterface = \"${1:mat1}/${2:mat2}\" {",
+      "\t$0",
+      "}"
+    ],
+    "description": "MaterialInterface 顶层块"
+  },
+  "Epsilon": {
+    "prefix": "epsilon",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Epsilon {",
+      "\tepsilon = ${1:11.7}",
+      "}"
+    ],
+    "description": "介电常数 (Silicon 默认值)"
+  },
+  "Bandgap": {
+    "prefix": "bandgap",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Bandgap {",
+      "\t* S-type bandgap model: Eg(T) = Eg0 - alpha*T^2/(T+beta)",
+      "\tChi0 = ${1:4.05}",
+      "\tEg0 = ${2:1.12}",
+      "\talpha = ${3:4.73e-4}",
+      "\tbeta = ${4:636}",
+      "\tTpar = ${5:300}",
+      "}"
+    ],
+    "description": "带隙 (S-type model, Silicon 默认值)"
+  },
+  "Scharfetter SRH": {
+    "prefix": "scharfetter",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Scharfetter * relation and trap level for SRH recombination:",
+      "{ * tau = taumin + ( taumax - taumin ) / ( 1 + ( N/Nref )^gamma)",
+      "  * tau(T) = tau * ( (T/300)^Talpha )          (TempDep)",
+      "  * tau(T) = tau * exp( Tcoeff * ((T/300)-1) ) (ExpTempDep)",
+      "\ttaumin = ${1:0.0e+00} ,\t${2:0.0e+00}\t# [s]",
+      "\ttaumax = ${3:1.0e-07} ,\t${4:1.0e-07}\t# [s]",
+      "\tNref = ${5:1.0e+16} ,\t${6:1.0e+16}\t# [cm^(-3)]",
+      "\tgamma = ${7:1} ,\t\t${8:1}\t\t# [1]",
+      "\tTalpha = ${9:-1.5e+00} ,\t${10:-1.5e+00}\t# [1]",
+      "\tTcoeff = ${11:2.55} ,\t${12:2.55}\t\t# [1]",
+      "\tEtrap = ${13:0.0e+00}\t\t\t# [eV]",
+      "}"
+    ],
+    "description": "SRH 复合寿命 (Scharfetter, Silicon 默认值)"
+  },
+  "ConstantMobility": {
+    "prefix": "constmob",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "ConstantMobility:",
+      "{ * mu_const = mumax (T/T0)^(-Exponent)",
+      "\tmumax = ${1:1414} ,\t${2:470}\t# [cm^2/(Vs)]",
+      "\tExponent = ${3:2.42} ,\t${4:2.2}\t# [1]",
+      "}"
+    ],
+    "description": "恒定迁移率 (Silicon 默认值)"
+  },
+  "DopingDependence": {
+    "prefix": "dopingmob",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "DopingDependence:",
+      "{ * Masetti model",
+      "\tmumin = ${1:55.2} ,\t${2:49.7}\t# [cm^2/(Vs)]",
+      "\tmumax = ${3:1414} ,\t${4:470}\t# [cm^2/(Vs)]",
+      "\tNref = ${5:1.072e+17} ,\t${6:1.606e+17}\t# [cm^(-3)]",
+      "\talpha = ${7:-2.3} ,\t${8:-2.2}\t# [1]",
+      "}"
+    ],
+    "description": "掺杂相关迁移率 (Masetti model, Silicon 默认值)"
+  },
+  "HighFieldDependence": {
+    "prefix": "hfd",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "HighFieldDependence:",
+      "{ * Caughey-Thomas model",
+      "\tbeta = ${1:1.109} ,\t${2:1.213}\t# [1]",
+      "\tvsat = ${3:1.07e+07} ,\t${4:8.37e+06}\t# [cm/s]",
+      "}"
+    ],
+    "description": "高场依赖迁移率 (Caughey-Thomas, Silicon 默认值)"
+  },
+  "Auger": {
+    "prefix": "auger",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Auger * coefficients:",
+      "{",
+      "\tCn = ${1:2.8e-31}\t# [cm^6/s]",
+      "\tCp = ${2:9.9e-32}\t# [cm^6/s]",
+      "}"
+    ],
+    "description": "Auger 复合系数 (Silicon 默认值)"
+  },
+  "RadiativeRecombination": {
+    "prefix": "radrec",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "RadiativeRecombination * coefficients:",
+      "{",
+      "\tC = ${1:1.1e-14}\t# [cm^3/s]",
+      "}"
+    ],
+    "description": "辐射复合系数 (Silicon 默认值)"
+  },
+  "Kappa": {
+    "prefix": "kappa",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Kappa",
+      "{ * Thermal conductivity",
+      "\tkappa = ${1:1.56}\t# [W/(cm*K)]",
+      "}"
+    ],
+    "description": "热导率 (Silicon 默认值)"
+  },
+  "Ionization": {
+    "prefix": "ionization",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Ionization {",
+      "\tSpecies (\"${1:ConcentrationName}\") {",
+      "\t\tE_0 = ${2:0.045}\t# [eV]",
+      "\t\talpha = ${3:0}\t# [eV*cm]",
+      "\t\tg = ${4:2}\t# [1]",
+      "\t\tXsec = ${5:1.0e-12}\t# [cm^2]",
+      "\t}",
+      "}"
+    ],
+    "description": "不完全电离 (Ionization Species 模板)"
+  },
+  "Material Silicon full": {
+    "prefix": "mat-si",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Material = \"Silicon\" {",
+      "",
+      "\tEpsilon {",
+      "\t\tepsilon = ${14:11.7}",
+      "\t}",
+      "",
+      "\tBandgap {",
+      "\t\tChi0 = ${15:4.05}",
+      "\t\tEg0 = ${16:1.12}",
+      "\t\talpha = ${17:4.73e-4}",
+      "\t\tbeta = ${18:636}",
+      "\t\tTpar = ${19:300}",
+      "\t}",
+      "",
+      "\tScharfetter * relation and trap level for SRH recombination:",
+      "\t{ * tau = taumin + ( taumax - taumin ) / ( 1 + ( N/Nref )^gamma)",
+      "\t\ttaumin = ${1:0.0e+00} ,\t${2:0.0e+00}\t# [s]",
+      "\t\ttaumax = ${3:1.0e-07} ,\t${4:1.0e-07}\t# [s]",
+      "\t\tNref = ${5:1.0e+16} ,\t${6:1.0e+16}\t# [cm^(-3)]",
+      "\t\tgamma = ${7:1} ,\t\t${8:1}\t\t# [1]",
+      "\t\tTalpha = ${9:-1.5e+00} ,\t${10:-1.5e+00}\t# [1]",
+      "\t\tTcoeff = ${11:2.55} ,\t${12:2.55}\t\t# [1]",
+      "\t\tEtrap = ${13:0.0e+00}\t\t\t# [eV]",
+      "\t}",
+      "",
+      "}"
+    ],
+    "description": "Material Silicon 完整骨架（Epsilon + Bandgap + Scharfetter）"
+  },
+  "Material Oxide full": {
+    "prefix": "mat-oxide",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Material = \"Oxide\" {",
+      "",
+      "\tEpsilon {",
+      "\t\tepsilon = ${1:3.9}",
+      "\t}",
+      "",
+      "}"
+    ],
+    "description": "Material Oxide 完整骨架（Epsilon）"
+  },
+  "Material generic": {
+    "prefix": "mat-generic",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Material = \"${1:material}\" {",
+      "\tInsert=\"${1:material}.par\"",
+      "\t$0",
+      "}"
+    ],
+    "description": "Material 通用骨架（带 Insert）"
+  },
+  "Insert command": {
+    "prefix": "insert",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Insert=\"${1:filename}.par\""
+    ],
+    "description": "Insert 引用外部参数文件"
+  },
+  "LatticeParameters": {
+    "prefix": "lattice",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "LatticeParameters {",
+      "\tX = (${1:0} ${2:0} ${3:-1})",
+      "\tY = (${4:1} ${5:0} ${6:0})",
+      "}"
+    ],
+    "description": "晶格参数（定义模拟坐标系）"
+  },
+  "Thermionic": {
+    "prefix": "thermionic",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "Thermionic {",
+      "\tFormula = ${1:1}",
+      "}"
+    ],
+    "description": "热电子发射模型"
+  },
+  "SurfaceRecombination": {
+    "prefix": "surfacerec",
+    "scope": "source.sentaurus.sdevicepar",
+    "body": [
+      "SurfaceRecombination * surface SRH recombination:",
+      "{",
+      "\tS0 = ${1:0} ,\t${2:0}\t# [cm/s]",
+      "\tSref = ${3:0}\t# [1]",
+      "}"
+    ],
+    "description": "表面复合"
+  }
+}
