@@ -149,6 +149,12 @@ function createParIndexService(deps) {
      */
     function parseCurrentFile(document) {
         const uri = document.uri.toString();
+        let uriPath;
+        try {
+            uriPath = uri.startsWith('file://') ? fileURLToPath(uri) : uri;
+        } catch (_) {
+            uriPath = uri;
+        }
         const version = document.version;
         const key = cacheKey(uri, version);
 
@@ -161,9 +167,9 @@ function createParIndexService(deps) {
         // 解析 include 递归
         const includeSymbols = resolveIncludes(
             rawResult.includes,
-            uri,
+            uri,      // baseUri stays as URI for resolveFilePath
             '', // outerPrefix (current file is top-level)
-            [uri], // includeChain（初始包含当前文件）
+            [uriPath], // Use filesystem path for consistent chain comparison
             0, // depth
         );
 
@@ -232,7 +238,13 @@ function createParIndexService(deps) {
                 currentFileCache.delete(key);
             }
         }
-        includeRawCache.delete(uri);
+        // includeRawCache keys are filesystem paths; convert URI for matching
+        try {
+            const fp = uri.startsWith('file://') ? fileURLToPath(uri) : uri;
+            includeRawCache.delete(fp);
+        } catch (_) {
+            includeRawCache.delete(uri); // fallback
+        }
     }
 
     function dispose() {

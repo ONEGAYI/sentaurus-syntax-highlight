@@ -1,6 +1,8 @@
 // src/lsp/sdevicepar/par-context.js
 'use strict';
 
+const { SCOPE_TYPES_ARRAY } = require('./par-constants');
+
 /**
  * 栈转路径字符串。
  * scope 帧 → "scopeType/name"，block 帧 → "name"
@@ -87,10 +89,11 @@ function matchParentPath(parentPath, pattern) {
  * @param {number} col - 光标列号
  * @returns {{ scopeType: string } | null} 如果在 scope 名引号内，返回 scopeType；否则 null
  */
+const scopeNameRe = new RegExp(`^\\s*(${SCOPE_TYPES_ARRAY.join('|')})\\s*=\\s*"`);
+
 function detectScopeNameContext(lineText, col) {
     // 匹配 Type = "xxx" 模式，光标在引号内
-    const scopeRe = /^\s*(Material|Region|Interface|MaterialInterface|RegionInterface|Electrode)\s*=\s*"/;
-    const m = lineText.match(scopeRe);
+    const m = lineText.match(scopeNameRe);
     if (!m) return null;
 
     const scopeType = m[1];

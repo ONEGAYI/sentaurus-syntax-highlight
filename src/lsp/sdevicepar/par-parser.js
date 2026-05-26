@@ -175,7 +175,7 @@ function parseParText(text, filePath) {
                 name: pendingBlockName,
                 scopeType: null,
                 parentPath,
-                fullPath: parentPath + '/' + pendingBlockName,
+                fullPath: parentPath ? parentPath + '/' + pendingBlockName : pendingBlockName,
                 filePath,
                 range: { startLine: pendingStartLine, startCol: 0, endLine: pendingStartLine, endCol: 0 },
                 value: null,
@@ -184,8 +184,8 @@ function parseParText(text, filePath) {
             });
             pendingBlockName = null;
             const brace = countBraceDelta(line);
-            if (brace.closes > 1) popStack(brace.closes - 1); // 第一个 } 关闭 block 自己
-            else if (brace.closes === 1) popStack(1);
+            const netCloses = brace.closes - Math.max(0, brace.opens - 1);
+            if (netCloses > 0) popStack(netCloses);
             continue;
         }
 
@@ -201,7 +201,7 @@ function parseParText(text, filePath) {
                 name: m[1],
                 scopeType: null,
                 parentPath,
-                fullPath: parentPath + '/' + m[1],
+                fullPath: parentPath ? parentPath + '/' + m[1] : m[1],
                 filePath,
                 range: { startLine: lineIdx, startCol: 0, endLine: lineIdx, endCol: line.length },
                 value: null,
@@ -226,7 +226,7 @@ function parseParText(text, filePath) {
                 name: m[1],
                 scopeType: null,
                 parentPath,
-                fullPath: parentPath + '/' + m[1],
+                fullPath: parentPath ? parentPath + '/' + m[1] : m[1],
                 filePath,
                 range: { startLine: lineIdx, startCol: 0, endLine: lineIdx, endCol: line.length },
                 value,

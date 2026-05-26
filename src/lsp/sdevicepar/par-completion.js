@@ -90,10 +90,23 @@ function buildParCompletions(ctx, symbols) {
             });
         });
     } else if (ctx.completableKind === 'scopeName') {
-        // scope 名补全：从 symbols 中抽取同 scopeType 的已有名称
-        const candidates = dedupeByPriority(symbols, 'scope', '');
-        // 再按 scopeType 过滤
-        const filtered = candidates.filter(sym => sym.scopeType === ctx.scopeType);
+        // Collect scope names across ALL parentPaths, dedupe by name with source priority
+        const scopes = symbols.filter(s => s.kind === 'scope' && s.scopeType === ctx.scopeType);
+        const seen = new Map();
+        for (const sym of scopes) {
+            const existing = seen.get(sym.name);
+            const newPri = SOURCE_PRIORITY[sym.source] ?? 9;
+            if (!existing || newPri < (SOURCE_PRIORITY[existing.source] ?? 9)) {
+                seen.set(sym.name, sym);
+            }
+        }
+        const filtered = Array.from(seen.values());
+        filtered.sort((a, b) => {
+            const pa = SOURCE_PRIORITY[a.source] ?? 9;
+            const pb = SOURCE_PRIORITY[b.source] ?? 9;
+            if (pa !== pb) return pa - pb;
+            return a.name.localeCompare(b.name);
+        });
         filtered.forEach((sym, idx) => {
             items.push({
                 label: sym.name,

@@ -183,7 +183,14 @@ function registerCompletionProviders(context, deps) {
                                 let inRhs = false;
                                 let inQuote = false;
                                 for (let ci = 0; ci < col; ci++) {
-                                    if (lineText[ci] === '"') inQuote = !inQuote;
+                                    if (lineText[ci] === '"') {
+                                        // Count preceding backslashes
+                                        let backslashes = 0;
+                                        let bi = ci - 1;
+                                        while (bi >= 0 && lineText[bi] === '\\') { backslashes++; bi--; }
+                                        // Even backslashes = quote is unescaped
+                                        if (backslashes % 2 === 0) inQuote = !inQuote;
+                                    }
                                     if (!inQuote && lineText[ci] === '=' && ci < col - 1) {
                                         if (!/^\s*(Material|Region|Interface|MaterialInterface|RegionInterface|Electrode)\s*=\s*"/.test(lineText)) {
                                             inRhs = true;
@@ -245,7 +252,13 @@ function registerCompletionProviders(context, deps) {
                         }
 
                         const userDefs = defs.getDefinitions(document, langId);
-                        if (userDefs.length === 0) return items;
+                        if (userDefs.length === 0) {
+                            if (parConverted) {
+                                const parLabels = new Set(parConverted.map(i => i.label));
+                                return [...parConverted, ...items.filter(i => !parLabels.has(i.label))];
+                            }
+                            return items;
+                        }
 
                         const seenNames = new Set(items.map(it => it.label));
                         let filteredDefs = userDefs.filter(d => {

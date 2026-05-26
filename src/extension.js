@@ -25,6 +25,8 @@ let tclCache;
 let sdeviceStProvider;
 /** @type {ReturnType<typeof createParIndexService> | null} */
 let parIndexService = null;
+/** @type {Map<string, NodeJS.Timeout>} */
+let parDebounceTimers = new Map();
 
 function activate(context) {
     const keywordsPath = path.join(__dirname, '..', 'syntaxes', 'all_keywords.json');
@@ -62,11 +64,14 @@ function activate(context) {
             tclCache.invalidate(uri);
             if (sdeviceStProvider) sdeviceStProvider.invalidate(uri);
             if (parIndexService) parIndexService.onFileClosed(uri);
+            // Clear pending debounce timer for this document
+            const pending = parDebounceTimers.get(uri);
+            if (pending) { clearTimeout(pending); parDebounceTimers.delete(uri); }
         })
     );
 
     // Per-uri debounced pre-heat for sdevicepar ParIndexService
-    const parDebounceTimers = new Map(); // uri → timer
+    parDebounceTimers = new Map(); // uri → timer
     context.subscriptions.push(
         vscode.workspace.onDidChangeTextDocument(e => {
             if (e.document.languageId !== 'sdevicepar' || !parIndexService) return;
@@ -200,6 +205,10 @@ function activate(context) {
 
     // === Snippet QuickPick Command ===
     context.subscriptions.push({ dispose: () => { if (parIndexService) parIndexService.dispose(); } });
+    context.subscriptions.push({ dispose: () => {
+        for (const t of parDebounceTimers.values()) clearTimeout(t);
+        parDebounceTimers.clear();
+    } });
     registerSnippetCommand(context);
 
     // ── 环境变量管理命令 ──────────────────────────
