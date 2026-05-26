@@ -53,7 +53,7 @@ function dedupeByPriority(symbols, kind, parentPath) {
  *
  * @param {{ completableKind: string, parentPath: string, scopeType: string|null, pendingBlockName: string|null }} ctx
  * @param {object[]} symbols - 所有可用 symbols（当前文件 + include）
- * @returns {Array<{label: string, kind: string, detail: string, sortText: string, insertText: string, source: string, parentPath: string}>}
+ * @returns {Array<{label: string, kind: string, detail: string, sortText: string, insertText: string, source: string, parentPath: string, filePath?: string}>}
  */
 function buildParCompletions(ctx, symbols) {
     if (!ctx || !ctx.completableKind) return [];
@@ -95,6 +95,7 @@ function buildParCompletions(ctx, symbols) {
                 insertText: sym.name + ' {\n\t${0}\n}',
                 source: sym.source || 'current',
                 parentPath: ctx.parentPath,
+                filePath: sym.filePath,
             });
         });
     } else if (ctx.completableKind === 'parameter') {
@@ -119,6 +120,7 @@ function buildParCompletions(ctx, symbols) {
                 insertText: `${sym.name} = `,
                 source: sym.source || 'current',
                 parentPath: ctx.parentPath,
+                filePath: sym.filePath,
             });
         });
     } else if (ctx.completableKind === 'scopeName') {
@@ -134,6 +136,7 @@ function buildParCompletions(ctx, symbols) {
                 insertText: sym.name,
                 source: sym.source || 'current',
                 parentPath: '',
+                filePath: sym.filePath,
             });
         });
     }

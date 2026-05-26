@@ -83,6 +83,136 @@ test('abandoned pendingBlockName when next line is assignment', () => {
     assert.ok(abandoned.length >= 1, 'Should warn about abandoned pending');
 });
 
+// ── Single-line inline blocks ───────────────
+
+test('inline block with single parameter: Bandgap { Eg0 = 1.12 }', () => {
+    const text = 'Bandgap { Eg0 = 1.12 }\n';
+    const result = parseParText(text, 'test.par');
+    assert.strictEqual(result.symbols.length, 2);
+    assert.strictEqual(result.symbols[0].kind, 'block');
+    assert.strictEqual(result.symbols[0].name, 'Bandgap');
+    assert.strictEqual(result.symbols[1].kind, 'parameter');
+    assert.strictEqual(result.symbols[1].name, 'Eg0');
+    assert.strictEqual(result.symbols[1].value, '1.12');
+    assert.strictEqual(result.symbols[1].parentPath, 'Bandgap');
+});
+
+test('inline block with multiple parameters', () => {
+    const text = 'Bandgap { Eg0 = 1.12 Chi0 = 4.05 }\n';
+    const result = parseParText(text, 'test.par');
+    assert.strictEqual(result.symbols.length, 3);
+    assert.strictEqual(result.symbols[0].kind, 'block');
+    assert.strictEqual(result.symbols[0].name, 'Bandgap');
+    assert.strictEqual(result.symbols[1].kind, 'parameter');
+    assert.strictEqual(result.symbols[1].name, 'Eg0');
+    assert.strictEqual(result.symbols[1].value, '1.12');
+    assert.strictEqual(result.symbols[2].kind, 'parameter');
+    assert.strictEqual(result.symbols[2].name, 'Chi0');
+    assert.strictEqual(result.symbols[2].value, '4.05');
+});
+
+test('scope with inline block and parameter', () => {
+    const text = 'Material = "Si" { Bandgap { Eg0 = 1.12 } }\n';
+    const result = parseParText(text, 'test.par');
+    assert.strictEqual(result.symbols.length, 3);
+    assert.strictEqual(result.symbols[0].kind, 'scope');
+    assert.strictEqual(result.symbols[0].name, 'Si');
+    assert.strictEqual(result.symbols[1].kind, 'block');
+    assert.strictEqual(result.symbols[1].name, 'Bandgap');
+    assert.strictEqual(result.symbols[1].parentPath, 'Material/Si');
+    assert.strictEqual(result.symbols[2].kind, 'parameter');
+    assert.strictEqual(result.symbols[2].name, 'Eg0');
+    assert.strictEqual(result.symbols[2].value, '1.12');
+    assert.strictEqual(result.symbols[2].parentPath, 'Material/Si/Bandgap');
+});
+
+test('pending block with inline parameter', () => {
+    const text = 'Bandgap\n{ Eg0 = 1.12 }\n';
+    const result = parseParText(text, 'test.par');
+    assert.strictEqual(result.symbols.length, 2);
+    assert.strictEqual(result.symbols[0].kind, 'block');
+    assert.strictEqual(result.symbols[0].name, 'Bandgap');
+    assert.strictEqual(result.symbols[1].kind, 'parameter');
+    assert.strictEqual(result.symbols[1].name, 'Eg0');
+    assert.strictEqual(result.symbols[1].value, '1.12');
+    assert.strictEqual(result.symbols[1].parentPath, 'Bandgap');
+});
+
+test('nested inline blocks: Outer { Inner { x = 1 } }', () => {
+    const text = 'Outer { Inner { x = 1 } }\n';
+    const result = parseParText(text, 'test.par');
+    assert.strictEqual(result.symbols.length, 3);
+    assert.strictEqual(result.symbols[0].kind, 'block');
+    assert.strictEqual(result.symbols[0].name, 'Outer');
+    assert.strictEqual(result.symbols[1].kind, 'block');
+    assert.strictEqual(result.symbols[1].name, 'Inner');
+    assert.strictEqual(result.symbols[1].parentPath, 'Outer');
+    assert.strictEqual(result.symbols[2].kind, 'parameter');
+    assert.strictEqual(result.symbols[2].name, 'x');
+    assert.strictEqual(result.symbols[2].value, '1');
+    assert.strictEqual(result.symbols[2].parentPath, 'Outer/Inner');
+});
+
+test('inline block with comment', () => {
+    const text = 'Block { x = 1 # this is a comment }\n';
+    const result = parseParText(text, 'test.par');
+    assert.strictEqual(result.symbols.length, 2);
+    assert.strictEqual(result.symbols[0].kind, 'block');
+    assert.strictEqual(result.symbols[0].name, 'Block');
+    assert.strictEqual(result.symbols[1].kind, 'parameter');
+    assert.strictEqual(result.symbols[1].name, 'x');
+    assert.strictEqual(result.symbols[1].value, '1');
+});
+
+test('inline block with string value', () => {
+    const text = 'Block { name = "test" }\n';
+    const result = parseParText(text, 'test.par');
+    assert.strictEqual(result.symbols.length, 2);
+    assert.strictEqual(result.symbols[0].kind, 'block');
+    assert.strictEqual(result.symbols[0].name, 'Block');
+    assert.strictEqual(result.symbols[1].kind, 'parameter');
+    assert.strictEqual(result.symbols[1].name, 'name');
+    assert.strictEqual(result.symbols[1].value, '"test"');
+});
+
+test('empty inline block creates just the block symbol', () => {
+    const text = 'Bandgap { }\n';
+    const result = parseParText(text, 'test.par');
+    assert.strictEqual(result.symbols.length, 1);
+    assert.strictEqual(result.symbols[0].kind, 'block');
+    assert.strictEqual(result.symbols[0].name, 'Bandgap');
+});
+
+test('inline block does not affect multiline parsing regression', () => {
+    const text = [
+        'Material = "Silicon" {',
+        '  Bandgap {',
+        '    Eg0 = 1.12',
+        '  }',
+        '}',
+    ].join('\n') + '\n';
+    const result = parseParText(text, 'test.par');
+    assert.strictEqual(result.symbols.length, 3);
+    assert.strictEqual(result.symbols.filter(s => s.kind === 'scope').length, 1);
+    assert.strictEqual(result.symbols.filter(s => s.kind === 'block').length, 1);
+    assert.strictEqual(result.symbols.filter(s => s.kind === 'parameter').length, 1);
+});
+
+test('scope with multiple inline blocks', () => {
+    const text = 'Material = "Si" { Bandgap { Eg0 = 1.12 } Avalanche { n_l_f = 1.0 } }\n';
+    const result = parseParText(text, 'test.par');
+    assert.strictEqual(result.symbols.length, 5);
+    assert.strictEqual(result.symbols[0].kind, 'scope');
+    assert.strictEqual(result.symbols[1].kind, 'block');
+    assert.strictEqual(result.symbols[1].name, 'Bandgap');
+    assert.strictEqual(result.symbols[2].kind, 'parameter');
+    assert.strictEqual(result.symbols[2].name, 'Eg0');
+    assert.strictEqual(result.symbols[3].kind, 'block');
+    assert.strictEqual(result.symbols[3].name, 'Avalanche');
+    assert.strictEqual(result.symbols[4].kind, 'parameter');
+    assert.strictEqual(result.symbols[4].name, 'n_l_f');
+});
+
 // ── Parameter 识别 ──────────────────────────
 
 test('parses parameter assignment', () => {

@@ -61,7 +61,7 @@ sdevicepar 分支中的补全调用流程：
 | 不做 | 原因 |
 |------|------|
 | MaterialDB preload | Phase 2.3 |
-| 修改 `par-parser.js` | Parser 逻辑完备，无需改动 |
+| ~~修改 `par-parser.js`~~ | ~~Parser 逻辑完备，无需改动~~ | **已修改**：新增 `findMatchingBrace` + `parseInlineContent` 辅助函数，修改 RE_SCOPE/pending block/RE_BLOCK 三个 handler 支持单行嵌套解析（如 `Bandgap { Eg0 = 1.12 }`） |
 | 修改 TextMate grammar / snippets / all_keywords | 不在本 Phase 范围 |
 | 引入异步 completion 热路径 | `getCompletionsAt` 必须同步 |
 | 修改 `register-completion-providers.js` Provider 架构 | 只需数据层扩展，不改注册结构 |
@@ -128,7 +128,7 @@ sdevicepar 分支中的补全调用流程：
 
 | 文件 | 原因 |
 |------|------|
-| `src/lsp/sdevicepar/par-parser.js` | workspace 扫描复用现有 parseParText |
+| ~~`src/lsp/sdevicepar/par-parser.js`~~ | ~~workspace 扫描复用现有 parseParText~~ | **已修改**：新增 `findMatchingBrace(str, openPos)` 定位匹配 `}`，`parseInlineContent(content, ...)` 递归解析 `{ }` 间内联符号。三个 handler（RE_SCOPE step5、pending block step7、RE_BLOCK step8）在 `symbols.push()` 后调用 `parseInlineContent`，不触碰主解析栈 |
 | `src/lsp/sdevicepar/par-context.js` | 上下文逻辑不变 |
 | `src/lsp/sdevicepar/par-completion.js` | dedupeAndSort 已支持 workspace source 优先级 |
 | `src/lsp/sdevicepar/par-constants.js` | SOURCE_PRIORITY 已包含 workspace: 2 |
@@ -841,7 +841,7 @@ Expected: PASS
    - 顶层空行能看到 scope type 补全（Material/Region/...）
 5. 在外部编辑器中修改 workspace 中的一个 `.par` 文件（添加新 parameter），保存
 6. 返回 VSCode，验证补全中包含新添加的 parameter
-7. **新建验证**：在 workspace 中新建一个 `.par` 文件（必须多行，当前 parser 是 line-oriented 不支持单行嵌套），内容如下，保存：
+7. **新建验证**：在 workspace 中新建一个 `.par` 文件（~~必须多行，当前 parser 是 line-oriented 不支持单行嵌套~~ **现已支持单行嵌套**，多行和单行格式均可），内容如下，保存：
    ```par
    Material = "TestMat" {
      NewBlock {
@@ -849,15 +849,16 @@ Expected: PASS
      }
    }
    ```
+   单行格式同样有效：`Material = "TestMat" { NewBlock { NewParam = 1.0 } }`
 8. 返回 VSCode 打开的 `.par` 文件，在 `Material = "..." { }` scope 内空行键入，确认补全中出现 `NewBlock`；进入 `NewBlock` 后确认出现 `NewParam`
 9. **删除验证**：删除该新建的 `.par` 文件，返回 VSCode 确认 `NewBlock` / `NewParam` 补全项消失
-10. **include create 验证**（必须多行）：在已有打开文件的 `Material` scope 内写好 `#include "new.par"`（`new.par` 不存在），例如：
+10. **include create 验证**（~~必须多行~~ **现已支持单行嵌套**）：在已有打开文件的 `Material` scope 内写好 `#include "new.par"`（`new.par` 不存在），例如：
     ```par
     Material = "TestMat" {
       #include "new.par"
     }
     ```
-    确认此时无 include 补全；然后创建 `new.par`（多行），内容：
+    确认此时无 include 补全；然后创建 `new.par`（多行或单行均可），内容：
     ```par
     Bandgap {
       Eg0 = 1.12
