@@ -1,0 +1,457 @@
+* Copyright (c) 1994-2014 Synopsys, Inc.
+* This parameter file and the associated documentation are proprietary
+* to Synopsys, Inc.  This parameter file may only be used in accordance
+* with the terms and conditions of a written license agreement with
+* Synopsys, Inc.  All other use, reproduction, or distribution of this
+* parameter file is strictly prohibited.
+
+
+
+Epsilon
+{ *  Ratio of the permittivities of material and vacuum
+
+  * epsilon() = epsilon
+	epsilon	= 15.8	# [1]
+}
+
+
+Epsilon_aniso
+{ *  Ratio of the permittivities of material and vacuum
+
+  * epsilon() = epsilon
+	epsilon	= 15.8	# [1]
+}
+
+
+RefractiveIndex
+{ *  Optical Refractive Index
+
+  * refractiveindex() = refractiveindex * (1 + alpha * (T-Tpar))
+	Tpar	= 3.0000e+02	# [K]
+	refractiveindex	= 1	# [1]
+	alpha	= 2.0000e-04	# [1/K]
+
+  * Gain dependence of refractive index in active region:
+  * a) Linear model: delta n = a0 * ( (n+p)/(2 * N0) - 1)
+  * b) Logarithmic model: delta n = a0 * log ( (n+p)/(2 * N0) )
+  * where n/p are the carrier densities in the active region. 
+	a0	= 0.0000e+00	# [1]
+	N0	= 1.0000e+18	# [1/cm^3]
+}
+
+
+ComplexRefractiveIndex
+{ *  Complex refractive index model: n_complex = n + i*k (unitless)
+  *  
+  *  with n = n_0 + delta_n_lambda + delta_n_T + delta_n_carr + delta_n_gain 
+  *       k = k_0 + delta_k_lambda             + delta_k_carr                
+  
+  * Base refractive index and extinction coefficient: 
+  *    n_0, k_0 
+  
+  * Wavelength dependence (real and imag): 
+  *    Formula 0: delta_n_lambda = Cn_lambda * lambda + Dn_lambda * lambda^2 
+  *               delta_k_lambda = Ck_lambda * lambda + Dk_lambda * lambda^2 
+  *    Formula 1: Read tabulated values 
+  *               NumericalTable (...)  
+  *    Formula 2: Read tabulated values from file 
+  *               NumericalTable = <string> 
+  *    Formula 3: Read tabulated values from ODB Table 
+  
+  * Temperature dependence (real): 
+  *    delta_n_T = n_0 * ( Cn_temp * (T-Tpar)) 
+  
+  * Carrier dependence (real) 
+  *    delta_n_carr = - Cn_carr * (const.) * (n/m_e + p/m_h) 
+  
+  * Carrier dependence (imag) 
+  *    delta_k_carr = 1 / (4*PI) * (wavelength^Gamma_k_carr_e*Ck_carr_e*n + wavelength^Gamma_k_carr_h*Ck_carr_h*p) 
+  
+  * Gain dependence (real) 
+  *    lin: delta_n_gain = Cn_gain * ( (n+p)/(2 * Npar) - 1) 
+  *    log: delta_n_gain = Cn_gain * log ( (n+p)/(2 * Npar ) )
+	n_0	= 1	# [1]
+	k_0	= 0.0000e+00	# [1]
+	Cn_lambda	= 0.0000e+00	# [um^-1]
+	Dn_lambda	= 0.0000e+00	# [um^-2]
+	Ck_lambda	= 0.0000e+00	# [um^-1]
+	Dk_lambda	= 0.0000e+00	# [um^-2]
+	Cn_temp	= 2.0000e-04	# [K^-1]
+	Cn_carr	= 1	# [1]
+	Ck_carr	= 0.0000e+00 ,	0.0000e+00	# [cm^2]
+	Gamma_k_carr	= 1 ,	1	# [1]
+	Cn_gain	= 0.0000e+00	# [1]
+	Npar	= 1.0000e+18	# [cm^-3]
+       Formula = 0
+	Tpar	= 3.0000e+02	# [K]
+} 
+
+
+* SpectralConversion
+* { * Spectral Conversion Model
+*   No default model, user has to define.
+*   All wavelength parameters should be in nanometers.
+*   Choice of Analytic or NumericalTable selected in Physics section of region
+*  
+*   ConversionEfficiency = float     * ratio of absorbed photons that are reemitted.
+*   AbsorptionScaling = float        * scale absorption
+*   EmissionScaling = float          * scale emission
+*   Analytic (
+*     AbsorptionProfile = (
+*        Gaussian(lambda0 sigma peakvalue dc_offset lambda_range0 lambda_range1)
+*        Lorentzian(lambda0 width peakvalue dc_offset lambda_range0 lambda_range1)
+*        ...
+*     )
+*     EmissionProfile = (
+*        Gaussian(lambda0 sigma peakvalue dc_offset lambda_range0 lambda_range1)
+*        Lorentzian(lambda0 width peakvalue dc_offset lambda_range0 lambda_range1)
+*        ...
+*     )
+*   )
+*   NumericalTable (
+*     AbsorptionProfile = (
+*        lambda0 value0
+*        lambda1 value1
+*        ...
+*     )
+*     EmissionProfile = (
+*        lambda0 value0
+*        lambda1 value1
+*        ...
+*     )
+
+*   ConversionEfficiency = 1.0
+* }
+
+
+Kappa
+{ *  Lattice thermal conductivity
+
+  * Formula = 1:
+  * kappa() = kappa + kappa_b * T + kappa_c * T^2 
+	kappa	= 1.66667	# [W/(K cm)]
+	kappa_b	= 0.0000e+00	# [W/(K^2 cm)]
+	kappa_c	= 0.0000e+00	# [W/(K^3 cm)]
+}
+
+
+Kappa_aniso
+{ *  Lattice thermal conductivity
+
+  * Formula = 1:
+  * kappa() = kappa + kappa_b * T + kappa_c * T^2 
+	kappa	= 1.66667	# [W/(K cm)]
+	kappa_b	= 0.0000e+00	# [W/(K^2 cm)]
+	kappa_c	= 0.0000e+00	# [W/(K^3 cm)]
+}
+
+Bandgap
+{ * Eg = Eg0 + alpha Tpar^2 / (beta + Tpar) - alpha T^2 / (beta + T)
+  * Parameter 'Tpar' specifies the value of lattice 
+  * temperature, at which parameters below are defined
+  * Chi0 is electron affinity.
+	Chi0	= 3.95988	# [eV]
+	Eg0	= 0.744	# [eV]
+	alpha	= 4.7700e-04	# [eV K^-1]
+	beta	= 2.3500e+02	# [K]
+	alpha2	= 0.0000e+00	# [eV K^-1]
+	beta2	= 0.0000e+00	# [K]
+	EgMin	= -1.0000e+01	# [eV]
+	dEgMin	= 0.0000e+00	# [eV]
+	Tpar	= 0.0000e+00	# [K]
+}
+
+JainRoulston
+{ * deltaEg = A_i N^(1/3) + B_i N^(1/4) + C_i N^(1/2) + D_i N^(1/2)
+  * where i is n for n-type or p for p-type
+	A_n	= 7.3000e-09	# [eV cm]
+	A_p	= 8.2100e-09	# [eV cm]
+	B_n	= 2.5700e-07	# [eV cm^(3/4)]
+	B_p	= 2.9100e-07	# [eV cm^(3/4)]
+	C_n	= 2.2900e-12	# [eV cm^(3/2)]
+	C_p	= 3.5800e-12	# [eV cm^(3/2)]
+	D_n	= 2.0300e-12	# [eV cm^(3/2)]
+	D_p	= 2.1900e-12	# [eV cm^(3/2)]
+}
+
+eDOSMass
+{
+  * For effective mass specificatition Formula1 (me approximation):
+  * or Formula2 (Nc300) can be used :
+	Formula	= 1	# [1]
+  * Formula1:
+  * me/m0 = [ (6 * mt)^2 *  ml ]^(1/3) + mm
+  * mt = a[Eg(0)/Eg(T)] 
+  * Nc(T) = 2(2pi*kB/h_Planck^2*me*T)^3/2 = 2.540e19 ((me/m0)*(T/300))^3/2 
+	a	= 0.0000e+00	# [1]
+	ml	= 0.0000e+00	# [1]
+	mm	= 0.55	# [1]
+}
+
+hDOSMass
+{
+  * For effective mass specificatition Formula1 (mh approximation):
+  * or Formula2 (Nv300) can be used :
+	Formula	= 1	# [1]
+  * Formula1:
+  * mh =  m0*{[(a+bT+cT^2+dT^3+eT^4)/(1+fT+gT^2+hT^3+iT^4)]^(2/3) + mm}
+  * Nv(T) = 2(2pi*kB/h_Planck^2*mh*T)^3/2 = 2.540e19 ((mh/m0)*(T/300))^3/2 
+	a	= 0	# [1]
+	b	= 0	# [K^-1]
+	c	= 0	# [K^-2]
+	d	= 0	# [K^-3]
+	e	= 0	# [K^-4]
+	f	= 0	# [K^-1]
+	g	= 0	# [K^-2]
+	h	= 0	# [K^-3]
+	i	= 0	# [K^-4]
+	mm	= 0.382	# [1]
+}
+
+ConstantMobility:
+{ * mu_const = mumax (T/T0)^(-Exponent)
+	mumax	= 3.9000e+03 ,	1.9000e+03	# [cm^2/(Vs)]
+	Exponent	= 1.6 ,	2.3	# [1]
+	mutunnel	= 0.05 ,	0.05	# [cm^2/(Vs)]
+}
+
+ConstantMobility_aniso:
+{ * mu_const = mumax (T/T0)^(-Exponent)
+	mumax	= 3.9000e+03 ,	1.9000e+03	# [cm^2/(Vs)]
+	Exponent	= 1.6 ,	2.3	# [1]
+	mutunnel	= 0.05 ,	0.05	# [cm^2/(Vs)]
+}
+
+DopingDependence:
+{
+  * For doping dependent mobility model three formulas
+  * can be used. Formula1 is based on Masetti et al. approximation.
+  * Formula2 uses approximation, suggested by Arora.
+	formula	= 2 ,	2	# [1]
+  * If formula=2, model suggested by Arora is used:
+  * mu_dop = muminA + mudA/(1.+(N/N00)^AA),
+  * where muminA=Ar_mumin*(T/T0)^Ar_alm; mudA = Ar_mud*(T/T0)^Ar_ald
+  * N is net doping
+  * N00=Ar_N0*(T/T0)^Ar_alN; AA = Ar_a*(T/T0)^Ar_ala
+	Ar_mumin	= 3.9000e+03 ,	1.9000e+03	# [cm^2/Vs]
+	Ar_alm  	= -1.6000e+00 ,	-2.3000e+00	# [1]
+	Ar_mud  	= 0.0000e+00 ,	0.0000e+00	# [cm^2/Vs]
+	Ar_ald  	= 0.0000e+00 ,	0.0000e+00	# [1]
+	Ar_N0   	= 1.0000e+17 ,	1.0000e+17	# [cm^(-3)]
+	Ar_alN  	= 0.0000e+00 ,	0.0000e+00	# [1]
+	Ar_a    	= 0.0000e+00 ,	0.0000e+00	# [1]
+	Ar_ala  	= 0.0000e+00 ,	0.0000e+00	# [1]
+}
+
+DopingDependence_aniso:
+{
+  * For doping dependent mobility model three formulas
+  * can be used. Formula1 is based on Masetti et al. approximation.
+  * Formula2 uses approximation, suggested by Arora.
+	formula	= 2 ,	2	# [1]
+  * If formula=2, model suggested by Arora is used:
+  * mu_dop = muminA + mudA/(1.+(N/N00)^AA),
+  * where muminA=Ar_mumin*(T/T0)^Ar_alm; mudA = Ar_mud*(T/T0)^Ar_ald
+  * N is net doping
+  * N00=Ar_N0*(T/T0)^Ar_alN; AA = Ar_a*(T/T0)^Ar_ala
+	Ar_mumin	= 3.9000e+03 ,	1.9000e+03	# [cm^2/Vs]
+	Ar_alm  	= -1.6000e+00 ,	-2.3000e+00	# [1]
+	Ar_mud  	= 0.0000e+00 ,	0.0000e+00	# [cm^2/Vs]
+	Ar_ald  	= 0.0000e+00 ,	0.0000e+00	# [1]
+	Ar_N0   	= 1.0000e+17 ,	1.0000e+17	# [cm^(-3)]
+	Ar_alN  	= 0.0000e+00 ,	0.0000e+00	# [1]
+	Ar_a    	= 0.0000e+00 ,	0.0000e+00	# [1]
+	Ar_ala  	= 0.0000e+00 ,	0.0000e+00	# [1]
+}
+
+HighFieldDependence:
+{ * Caughey-Thomas model:
+  * mu_highfield = ( (alpha+1)*mu_lowfield ) / 
+  *        ( alpha + ( 1 + ( (alpha+1)*mu_lowfield*E/vsat)^beta )^(1/beta) ) 
+  * beta = beta0 (T/T0)^betaexp.
+	beta0	= 1.109 ,	1.213	# [1]
+	betaexp	= 0.66 ,	0.17	# [1]
+	alpha	= 0.0000e+00 ,	0.0000e+00	# [1]
+
+  * Smoothing parameter for HydroHighField Caughey-Thomas model:
+  * if Tl < Tc < (1+K_dT)*Tl, then smoothing between low field mobility
+  * and HydroHighField mobility is used.
+	K_dT	= 0.2 ,	0.2	# [1]
+  * Transferred-Electron Effect:
+  * mu_highfield = (mu_lowfield+(vsat/E)*(E/E0_TrEf)^4)/(1+(E/E0_TrEf)^4)
+	E0_TrEf	= 4.0000e+03 ,	4.0000e+03	# [1]
+	Ksmooth_TrEf	= 1 ,	1	# [1]
+
+ * For vsat either Formula1 or Formula2 can be used.
+	Vsat_Formula	= 1 ,	1	# [1]
+ * Formula1 for saturation velocity:
+ *            vsat = vsat0 (T/T0)^(-Vsatexp)
+ * (Parameter Vsat_Formula has to be not equal to 2)
+	vsat0	= 7.4300e+06 ,	7.4300e+06	# [1]
+	vsatexp	= 0.87 ,	0.52	# [1]
+}
+
+HighFieldDependence_aniso:
+{ * Caughey-Thomas model:
+  * mu_highfield = ( (alpha+1)*mu_lowfield ) / 
+  *        ( alpha + ( 1 + ( (alpha+1)*mu_lowfield*E/vsat)^beta )^(1/beta) ) 
+  * beta = beta0 (T/T0)^betaexp.
+	beta0	= 1.109 ,	1.213	# [1]
+	betaexp	= 0.66 ,	0.17	# [1]
+	alpha	= 0.0000e+00 ,	0.0000e+00	# [1]
+
+  * Smoothing parameter for HydroHighField Caughey-Thomas model:
+  * if Tl < Tc < (1+K_dT)*Tl, then smoothing between low field mobility
+  * and HydroHighField mobility is used.
+	K_dT	= 0.2 ,	0.2	# [1]
+  * Transferred-Electron Effect:
+  * mu_highfield = (mu_lowfield+(vsat/E)*(E/E0_TrEf)^4)/(1+(E/E0_TrEf)^4)
+	E0_TrEf	= 4.0000e+03 ,	4.0000e+03	# [1]
+	Ksmooth_TrEf	= 1 ,	1	# [1]
+
+ * For vsat either Formula1 or Formula2 can be used.
+	Vsat_Formula	= 1 ,	1	# [1]
+ * Formula1 for saturation velocity:
+ *            vsat = vsat0 (T/T0)^(-Vsatexp)
+ * (Parameter Vsat_Formula has to be not equal to 2)
+	vsat0	= 7.4300e+06 ,	7.4300e+06	# [1]
+	vsatexp	= 0.87 ,	0.52	# [1]
+}
+
+PooleFrenkel
+{ * TrapXsection = Xsec0*(1+Gpf) 
+  * Gpf = (1+(a-1)*exp(a))/a^2-0.5 
+  * where 
+  *       a = (1/kT)*(q^3*F/pi/e0/epsPF)^0.5, 
+  *       F is the electric field. 
+	epsPF	= 15.8 ,	15.8	# [1]
+}
+
+vanOverstraetendeMan * Impact Ionization:
+{ * G_impact = alpha_n n v_drift_n  +  alpha_p p v_drift_p
+  * with alpha = gamma a  exp(-b gamma/E) for E<E0 (low) and E>E0 (high)
+  *  with gamma = tanh(hbarOmega/(2kT0)) / tanh(hbarOmega/(2kT))
+	a(low)	= 8.5500e+06 ,	2.8000e+06	# [1/cm]
+	a(high)	= 8.5500e+06 ,	2.8000e+06	# [1/cm]
+	b(low)	= 1.4200e+06 ,	1.0000e+06	# [V/cm]
+	b(high)	= 1.4200e+06 ,	1.0000e+06	# [V/cm]
+	E0	= 4.0000e+05 ,	4.0000e+05	# [V/cm]
+	hbarOmega	= 0.037 ,	0.037	# [eV]
+}
+
+vanOverstraetendeMan_aniso * Impact Ionization:
+{ * G_impact = alpha_n n v_drift_n  +  alpha_p p v_drift_p
+  * with alpha = gamma a  exp(-b gamma/E) for E<E0 (low) and E>E0 (high)
+  *  with gamma = tanh(hbarOmega/(2kT0)) / tanh(hbarOmega/(2kT))
+	a(low)	= 8.5500e+06 ,	2.8000e+06	# [1/cm]
+	a(high)	= 8.5500e+06 ,	2.8000e+06	# [1/cm]
+	b(low)	= 1.4200e+06 ,	1.0000e+06	# [V/cm]
+	b(high)	= 1.4200e+06 ,	1.0000e+06	# [V/cm]
+	E0	= 4.0000e+05 ,	4.0000e+05	# [V/cm]
+	hbarOmega	= 0.037 ,	0.037	# [eV]
+}
+
+Band2BandTunneling  
+{ * See Sentaurus Device manual `Band-To-Band Tunneling' 
+	A	= 8.9770e+20	# [1/cm/sec/V^2]
+	B	= 2.1466e+07	# [V/cm/eV^1.5]
+	hbarOmega	= 0.0186	# [eV]
+
+  * Traditional models for the following keywords in input file:
+  * Band2Band(E1)  : A1*E*exp(-B1/E)
+  * Band2Band(E1_5): A1_5*E^1.5*exp(-B1_5/E)
+  * Band2Band(E2)  : A2*E^2*exp(-B2/E)
+	A1	= 1.1000e+27	# [1/cm^2/sec/V]
+	B1	= 2.1300e+07	# [V/cm]
+	A1_5	= 1.9000e+24	# [1/cm^1.5/sec/V^1.5]
+	B1_5	= 2.1900e+07	# [V/cm]
+	A2	= 3.5000e+21	# [1/cm/sec/V^2]
+	B2	= 2.2500e+07	# [V/cm]
+
+  * Hurkx model for the following keywords in input file:
+  * Band2Band(Hurkx)  : -Agen*D*(E/E0)^Pgen*exp(-Bgen*(Eg/Eg300)^1.5/E) if D < 0
+  *                     -Arec*D*(E/E0)^Prec*exp(-Brec*(Eg/Eg300)^1.5/E) if D > 0
+  *                     D = (n*p-ni^2)/(n+ni)/(p+ni)*(1-|alpha|)+alpha, E0 = 1 V/cm
+  *                     So, if alpha = 0, it's original Hurkx model,
+  *                         if alpha = -1, it's only generation,
+  *                         if alpha = +1, it's only recombination.
+	Agen	= 3.5000e+21	# [1/cm^3/sec]
+	Bgen	= 2.2500e+07	# [V/cm]
+	Pgen	= 2	# [1]
+	Arec	= 3.5000e+21	# [1/cm^3/sec]
+	Brec	= 2.2500e+07	# [V/cm]
+	Prec	= 2	# [1]
+	alpha	= 0.0000e+00	# [1]
+
+  * nonlocal B2B models for the following keywords in command file:
+  * Band2Band(Model=NonlocalPath1) : Nonlocal B2B tunneling with single transition process   using the first tunneling path
+  * Band2Band(Model=NonlocalPath2) : Nonlocal B2B tunneling with two    transition processes using the first and second tunneling paths
+  * Band2Band(Model=NonlocalPath3) : Nonlocal B2B tunneling with three  transition processes using the all three tunneling paths
+  * For the i-th nonlocal B2B process (i=1, 2, or 3):
+  * Apathi : Prefactor Ad or Ap in the uniform field limit for the direct or indirect tunneling
+  * Bpathi : Exponent  Bd or Bp in the uniform field limit for the direct or indirect tunneling
+  * Dpathi : The conduction band offset D
+  * Ppathi : The phonon energy P
+  *          Note that the indirect tunneling process is assumed if P>0, and the direct tunneling process is assumed if P=0
+  * Rpathi : The ratio mv/mc. If Rpathi=0, it is automatically determined by
+  *          mv/mc = (1 + 2*mr)/(1 - 2*mr)
+  *          where mr=mc*mv/(mc+mv) is the reduced mass
+  * In the uniform field limit, the generation rate can be expressed by
+  * G = A * (F/F0)^2   * Exp(-B/F) for   direct tunneling
+  *   = A * (F/F0)^2.5 * Exp(-B/F) for indirect tunneling
+  * where
+  * Ad = g * mr^0.5 * (qF0)^2 / (36 * pi * h_bar^2 *E_T^0.5)
+  * Ap = g *(mc*mv)^1.5 * (1+2*N) * (qF0)^2.5 * Dop^2 / (2^7.75 * pi^2.5 * h_bar^2.5 * mr^1.25 * E_T^1.75 * rho * P)
+  * Bd = pi    * mr^0.5 * E_T^1.5 / (2 * h_bar * q)
+  * Bp = 2^2.5 * mr^0.5 * E_T^1.5 / (3 * h_bar * q)
+  * F0 = 1 V/cm, qF0 = 1 eV/cm, E_T = E_G + D
+  * From the above expression, the microscopic parameters such as mr, mc, and mv for the nonlocal B2B model are extracted internally
+	Apath1	= 9.1000e+16	# [1/cm^3/sec]
+	Bpath1	= 4.9000e+06	# [V/cm]
+	Dpath1	= 0.0000e+00	# [eV]
+	Ppath1	= 0.037	# [eV]
+	Rpath1	= 0.0000e+00	# [1]
+	Apath2	= 0.0000e+00	# [1/cm^3/sec]
+	Bpath2	= 0.0000e+00	# [V/cm]
+	Dpath2	= 0.0000e+00	# [eV]
+	Ppath2	= 0.0000e+00	# [eV]
+	Rpath2	= 0.0000e+00	# [1]
+	Apath3	= 0.0000e+00	# [1/cm^3/sec]
+	Bpath3	= 0.0000e+00	# [V/cm]
+	Dpath3	= 0.0000e+00	# [eV]
+	Ppath3	= 0.0000e+00	# [eV]
+	Rpath3	= 0.0000e+00	# [1]
+	QuantumPotentialFactor	= 0.0000e+00 ,	0.0000e+00	# [1]
+	MaxTunnelLength	= 1.0000e-05	# [cm]
+
+  * min length to interfaces (for traditional & Hurkx models):
+	dDist	= 0.0000e+00	# [cm]
+  * min potential difference on length dPot/E (for traditional & Hurkx models):
+	dPot	= 0.0000e+00	# [V]
+  * numeric smoothing
+	MinField	= 0.0000e+00	# [V/cm]
+	MinGradQF	= 0.0000e+00	# [eV/cm]
+	DenCorRef	= 0.0000e+00 ,	0.0000e+00	# [cm^-3]
+}
+
+
+BarrierTunneling  
+{ * Non Local Barrier Tunneling 
+  * G(r) = g*A*T/kB*F(r)*Pt(r)*ln[(1+exp((E(r)-Es)/kB/T))/(1+exp((E(r)-Em)/kB/T))]
+  * where: 
+  *     Pt(r) is WKB approximation for the tunneling probability 
+  *     g = As/A, As is the Richardson constant for carriers in semiconductor
+  *     A is the Richardson constant for free electrons 
+  *     F(r) is the electric field 
+  *     E(r) is carrier energy 
+  *     Es is carrier quasi fermi energy in semiconductor
+  *     Em is carrier fermi energy in metal 
+  *     alpha is the prefactor for quantum potential correction 
+  *     eoffset and hoffset are lists of band offsets
+	g	= 1.19 ,	0.34	# [1]
+	mt	= 0.0000e+00 ,	0.0000e+00	# [1]
+	alpha	= 0.0000e+00 ,	0.0000e+00	# [1]
+	eoffset = () # eV
+	hoffset = () # eV
+}
+

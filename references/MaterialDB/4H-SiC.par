@@ -1,0 +1,225 @@
+* Copyright (c) 1994-2014 Synopsys, Inc.
+* This parameter file and the associated documentation are proprietary
+* to Synopsys, Inc.  This parameter file may only be used in accordance
+* with the terms and conditions of a written license agreement with
+* Synopsys, Inc.  All other use, reproduction, or distribution of this
+* parameter file is strictly prohibited.
+
+
+*******************************************************************************
+*                             Model Parameters:                               *
+*******************************************************************************
+
+*************** Bandgap / Bandgap Narrowing / Intrinsic Density: **************
+* nieff = ni exp( deltaEg/(2 kT) ), ni = (Nc(T) Nv(T))^(1/2) exp( -Eg/(2kT) ) * 
+*******************************************************************************
+Bandgap *temperature dependent*
+{ * Eg = Eg0 - alpha T^2 / (beta + T)
+	alpha	= 3.3000e-04	# [eV K^-1]
+	beta	= 0.0000e+00	# [K]
+	#At T=300K Eg=3.26eV for 4H-SiC---------------------------------09/06/00
+	Eg0	= 3.359         # [eV]  Old number=3.1[eV] for 6H-SiC
+}
+
+OldSlotboom
+{ * deltaEg = Ebgn ( ln(N/Nref) + [ (ln(N/Nref))^2 + 0.5]^1/2 )
+	Ebgn	= 9.0000e-03	# [eV]
+	Nref	= 1.0000e+17	# [cm^(-3)]
+}
+
+**** Effective Densities of States: ****
+*   Nc(T) = 2.540e19 ( me(T) T )^3/2   *
+*   Nv(T) = 2.540e19 ( mh(T) T )^3/2   *
+**** Density of State Masses: ****
+eDOSMass
+{
+  * For effective mass specificatition Formula1 (me approximation):
+  * or Formula2 (Nc300) can be used :
+	Formula	= 1	# [1]
+  * Formula1:
+  * me/m0 = [ (6 * mt)^2 *  ml ]^(1/3) + mm
+  * mt = a[Eg(0)/Eg(T)] 
+  * Nc(T) = 2(2pi*kB/h_Planck^2*me*T)^3/2 = 2.540e19 ((me/m0)*(T/300))^3/2 
+	a	= 0.0625	# [1]
+	ml	= 1.5	# [1]
+	mm	= 0.0000e+00	# [1]
+  * Formula2:
+  * me/m0 = (Nc300/2.540e19)^2/3 
+  * Nc(T) = Nc300 * (T/300)^3/2 
+	Nc300	= 2.8900e+19	# [cm-3]
+}
+
+hDOSMass
+{
+  * For effective mass specificatition Formula1 (mh approximation):
+  * or Formula2 (Nv300) can be used :
+	Formula	= 1	# [1]
+  * Formula1:
+  * mh =  m0*{[(a+bT+cT^2+dT^3+eT^4)/(1+fT+gT^2+hT^3+iT^4)]^(2/3) + mm}
+  * Nv(T) = 2(2pi*kB/h_Planck^2*mh*T)^3/2 = 2.540e19 ((mh/m0)*(T/300))^3/2 
+	a	= 1	# [1]
+	b	= 0	# [K^-1]
+	c	= 0	# [K^-2]
+	d	= 0	# [K^-3]
+	e	= 0	# [K^-4]
+	f	= 0	# [K^-1]
+	g	= 0	# [K^-2]
+	h	= 0	# [K^-3]
+	i	= 0	# [K^-4]
+	mm	= 0	# [1]
+  * Formula2:
+  * mh/m0 = (Nv300/2.540e19)^2/3 
+  * Nv(T) = Nv300 * (T/300)^3/2 
+	Nv300	= 3.1400e+19	# [cm-3]
+}
+
+*****************************  Mobility Models: *******************************
+* mu_lowfield^(-1) = mu_dop(mu_max)^(-1) + mu_Enorm^(-1) + mu_cc^(-1)         *
+* Variable = electron value ,   hole value      # [units]                     *
+*******************************************************************************
+ConstantMobility:
+{ * mu_const = mumax (T/T0)^(-Exponent)
+	 mumax	= 947 ,	124	# [cm^2/(Vs)] [Cree] E perp c
+	*mumax	=1141 ,	124	# [cm^2/(Vs)] [Cree] E || c
+	Exponent	= 2 ,	2	# [Cree]
+}
+DopingDependence:
+{ * mu_dop = mumin1 exp(-Pc/N) + (mu_const - mumin2)/(1+(N/Cr)^alpha)
+  *                             - mu1/(1+(Cs/N)^beta)
+  * with mu_const from ConstantMobility
+	mumin1	= 0. ,  	15.9	        # [cm^2/Vs] [Cree]
+	mumin2	= 0.00 ,	0.0000e+00	# [cm^2/Vs]
+	mu1	= 0.00 ,	0.00	        # [cm^2/Vs]
+	Pc	= 0.0000e+00 ,	0.00	        # [cm^3]
+	Cr	= 1.94e+17 ,	1.76e+19	# [cm^3] [Cree]
+	Cs	= 3.4300e+20 ,	6.1000e+20	# [cm^3]
+	alpha	= 0.61 ,	0.34	# [Cree]
+	beta	= 2 ,		2	# [1]
+}
+
+HighFieldDependence:
+{ * mu_highfield = mu_lowfield / ( 1 + (mu_lowfield E / vsat)^beta )^1/beta
+  * beta = beta0 (T/T0)^betaexp; vsat = vsat0 (T/T0)^(-Vsatexp);
+	beta0	= 1.00 ,	1.213	# [R.M.]
+	betaexp	= 0.66 ,	0.17	# [1]
+	*vsat0	= 2.00e+07 ,	2.00e+7 # [1]  E perp c
+	vsat0	= 2.00e+07 ,	2.00e+7 # [R.M.] E || c
+	vsatexp	= 0.87 ,	0.52	# [1]
+}
+**************************  Recombination Models: *****************************
+* Variable = electron value ,   hole value      # [units]                     *
+*******************************************************************************
+Scharfetter * relation and trap level for SRH recombination:
+{ * tau = taumin + ( taumax - taumin ) / ( 1 + ( N/Nref )^gamma )
+  * tau(T) = tau * ( (T/300)^Talpha )          (TempDep)
+  * tau(T) = tau * exp( Tcoeff * ((T/300)-1) ) (ExpTempDep)
+	taumin	= 0.0000e+00 ,	0.0000e+00	# [s]
+	taumax	= 2.5000e-06 ,	0.50000e-06	# [s]
+       	Nref	= 3.0000e+17 ,	3.0000e+17	# [cm^(-3)]
+	gamma	= 0.3 ,	0.3	# [1]  IEEE TRANS. On Elec. Dev. Vol.41.No.6 1994
+	*Talpha	= -1.5000e+00 ,	-1.5000e+00	# [1]
+	*Lifetime increases as temperature increases
+	*alpha was changed to fit the experimental results. [M41]
+	*always use TempDep key in the input file.
+	Talpha	= 1.72000e+00 ,	1.7200e+00	# [1]
+	Tcoeff	= 2.55 ,	2.55	# [1]
+	Etrap	= 0.0000e+00	# [eV]
+}
+
+Auger * coefficients:
+{ * R_Auger = ( C_n n + C_p p ) ( n p - ni_eff^2)
+  * with C_n,p = A + B (T/T0) + C (T/T0)^2
+        *See ref. [9]
+	A	= 5.0000e-31 ,	9.9000e-32	# [cm^6/s]
+	B	= 0.00    ,	0.00    	# [cm^6/s]
+	C	= 0.00 ,	0.00    	# [cm^6/s]
+}
+
+* for low limit of BV ****************************
+OkutoCrowell * Impact Ionization:
+{ * G_impact = alpha_n n v_drift_n  +  alpha_p p v_drift_p
+  * with alpha = a (1+c(T-300)) E^gamma exp[-(b (1+d(T-300)) /E )^delta]
+	a	= 7.2600e+06,	6.8500e+06      # [1/cm]
+	b	= 2.3400e+07,	1.4100e+07	# [V/cm]
+	c	= -1.470e-03 ,	-1.560e-03	# [1/K]
+	d	= 0          ,	0         	# [1/K]
+	gamma	= 0 ,	0	# [1]
+	delta	= 1 ,	1	# [1]
+}
+* For high limit of BV **************************
+OkutoCrowell * Impact Ionization:
+{ * G_impact = alpha_n n v_drift_n  +  alpha_p p v_drift_p
+  * with alpha = a (1+c(T-300)) E^gamma exp[-(b (1+d(T-300)) /E )^delta]
+	a	= 3.2500e+05,	3.2500e+06      # [1/cm]
+	b	= 1.7100e+07,	1.7100e+07	# [V/cm]
+	c	= -3.29e-2 ,	-3.290e-03	# [1/K]
+	d	= 0          ,	0         	# [1/K]
+	gamma	= 0 ,	0	# [1]
+	delta	= 1 ,	1	# [1]
+}
+
+Hatakeyama * Impact ionization:
+{ * G_impact = alpha_n n v_drift_n  +  alpha_p p v_drift_p
+  * with alpha = a gamma exp(-b gamma/F)
+  *      gamma = tanh(hbarOmega/(2kT0)) / tanh(hbarOmega/(2kT))
+        a_0001    = 1.76e8 ,  3.41e8  # [1/cm]
+        a_1120    = 2.10e7 ,  2.96e7  # [1/cm]
+        b_0001    = 3.30e7 ,  2.50e7  # [V/cm]
+        b_1120    = 1.70e7 ,  1.60e7  # [V/cm]
+        hbarOmega = 0.19   ,  0.19    # [eV]
+        theta     = 1      ,  1       # [1]
+}
+
+**************************  Incomplete Ionization  ***************************
+* Nd,ion = Nd / ( 1 + g_D n/nt ); nt =  NC exp(-E_D/kT)      if Nd < NdCrit   *
+* Na,ion = Na / ( 1 + (1/g_A) p/pt ); pt =  NV exp(-E_A/kT)  if Na < NaCrit   *
+* where E_D = E_D_0 - alpha_D * (Nd + Na)^(1/3)                               *
+*       E_A = E_A_0 - alpha_A * (Nd + Na)^(1/3)                               *
+*******************************************************************************
+Ionization
+{ 
+* p-type 4H-SiC doped with Al      : 0.191eV
+* n-type 4H-SiC doped with Nitrogen: 0.065eV
+	E_As_0  	= 0.065	# [eV]
+	alpha_As	= 3.1000e-08	# [eV cm]
+	g_As    	= 2	# [1]
+	Xsec_As		= 1.0000e-12	# [cm^2/sec]
+
+	E_P_0   	= 0.065	# [eV]
+	alpha_P 	= 3.1000e-08	# [eV cm]
+	g_P     	= 2	# [1]
+	Xsec_P     	= 1.0000e-12	# [cm^2/sec]
+
+	E_Sb_0  	= 0.065	# [eV]
+	alpha_Sb	= 3.1000e-08	# [eV cm]
+	g_Sb    	= 2	# [1]
+	Xsec_Sb    	= 1.0000e-12	# [cm^2/sec]
+
+	E_B_0   	= 0.191	# [eV]
+	alpha_B 	= 3.1000e-08	# [eV cm]
+	g_B     	= 4	# [1]
+	Xsec_B     	= 1.0000e-12	# [cm^2/sec]
+
+	E_In_0  	= 0.191	# [eV]
+	alpha_In	= 3.1000e-08	# [eV cm]
+	g_In    	= 4	# [1]
+	Xsec_In    	= 1.0000e-12	# [cm^2/sec]
+
+	E_N_0		= 0.065	# [eV]
+	alpha_N 	= 3.1000e-08	# [eV cm]
+	g_N		= 2	# [1]
+	Xsec_N		= 1.0000e-12	# [cm^2/sec]
+
+	E_NDopant_0	= 0.065	# [eV]
+	alpha_NDopant 	= 3.1000e-08	# [eV cm]
+	g_NDopant	= 2	# [1]
+	Xsec_NDopant	= 1.0000e-12	# [cm^2/sec]
+
+	E_PDopant_0	= 0.191	# [eV]
+	alpha_PDopant 	= 3.1000e-08	# [eV cm]
+	g_PDopant	= 4	# [1]
+	Xsec_PDopant	= 1.0000e-12	# [cm^2/sec]
+
+	NdCrit  	= 1.0000e+22	# [cm-3]
+	NaCrit  	= 1.0000e+22	# [cm-3]
+}
