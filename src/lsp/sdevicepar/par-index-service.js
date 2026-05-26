@@ -276,8 +276,20 @@ function createParIndexService(deps) {
         return buildParCompletions(ctx, cached.symbols.concat(getWorkspaceSymbols()));
     }
 
-    function onFileChanged(uri) {
-        // 清除 include 缓存中该文件的 raw result（Task 4 完善）
+    function onFileChanged(uriOrPath) {
+        // 1. 清除 includeRawCache（key 为 filesystem path）
+        try {
+            const fp = uriOrPath.startsWith('file://') ? fileURLToPath(uriOrPath) : uriOrPath;
+            includeRawCache.delete(fp);
+        } catch (_) {
+            includeRawCache.delete(uriOrPath);
+        }
+        // 2. 粗粒度清空 currentFileCache
+        currentFileCache.clear();
+    }
+
+    function clearIncludeCacheForFile(filePath) {
+        includeRawCache.delete(filePath);
     }
 
     function onFileClosed(uri) {
@@ -310,6 +322,7 @@ function createParIndexService(deps) {
         addWorkspaceFile,
         removeWorkspaceFile,
         getWorkspaceSymbols,
+        clearIncludeCacheForFile,
         dispose,
     };
 }

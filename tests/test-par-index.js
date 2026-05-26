@@ -428,4 +428,73 @@ test('getCompletionsAt includes workspace scope names in quote', () => {
     service.dispose();
 });
 
+// ── Phase 2.2: 缓存失效 ──────────────────────
+
+test('onFileChanged invalidates includeRawCache and currentFileCache', () => {
+    // 使用 mutable fileMap 模拟磁盘文件变更
+    const fileMap = { 'lib.par': 'OldParam = 1\n' };
+    const readFile = (p) => {
+        const basename = path.basename(p);
+        if (fileMap[basename]) return fileMap[basename];
+        throw new Error('ENOENT: ' + p);
+    };
+    const service = createParIndexService({
+        extensionPath: '/ext',
+        readFile,
+        resolveFilePath: (refPath) => refPath,
+    });
+
+    // 解析：include lib.par → 应看到 OldParam
+    const doc = mockDoc('#include "lib.par"\n', 1);
+    const r1 = service.parseCurrentFile(doc);
+    assert.ok(r1.symbols.find(s => s.name === 'OldParam'), 'Should see OldParam initially');
+    assert.ok(!r1.symbols.find(s => s.name === 'NewParam'), 'Should NOT see NewParam initially');
+
+    // 模拟 lib.par 在磁盘上变更
+    fileMap['lib.par'] = 'NewParam = 2\n';
+    service.onFileChanged('lib.par');
+
+    // 同一 document version 的缓存应被清除，重新解析应看到 NewParam
+    const r2 = service.parseCurrentFile(doc);
+    assert.ok(r2.symbols.find(s => s.name === 'NewParam'), 'After onFileChanged, should see NewParam');
+    assert.ok(!r2.symbols.find(s => s.name === 'OldParam'), 'After onFileChanged, should NOT see OldParam');
+
+    service.dispose();
+});
+
+test('clearIncludeCacheForFile clears only the selected include raw entry', () => {
+    const fileMap = { 'a.par': 'AParam = 1\n', 'b.par': 'BParam = 2\n' };
+    let readCount = 0;
+    const readFile = (p) => {
+        readCount++;
+        const basename = path.basename(p);
+        if (fileMap[basename]) return fileMap[basename];
+        throw new Error('ENOENT: ' + p);
+    };
+    const service = createParIndexService({
+        extensionPath: '/ext',
+        readFile,
+        resolveFilePath: (refPath) => refPath,
+    });
+
+    // 第 1 次 parse：应读取两个 include 文件
+    service.parseCurrentFile(mockDoc('#include "a.par"\n#include "b.par"\n', 1));
+    assert.strictEqual(readCount, 2, 'First parse should read both include files');
+
+    // 第 2 次 parse（新 version）：不清缓存，不应重新读取
+    readCount = 0;
+    service.parseCurrentFile(mockDoc('#include "a.par"\n#include "b.par"\n', 2));
+    assert.strictEqual(readCount, 0, 'Second parse should use cached raw results');
+
+    // 只清除 a.par 的 include raw cache
+    service.clearIncludeCacheForFile('a.par');
+
+    // 第 3 次 parse（新 version）：应只重新读取 a.par
+    readCount = 0;
+    service.parseCurrentFile(mockDoc('#include "a.par"\n#include "b.par"\n', 3));
+    assert.strictEqual(readCount, 1, 'After clearing a.par only, should re-read only a.par');
+
+    service.dispose();
+});
+
 summary();
