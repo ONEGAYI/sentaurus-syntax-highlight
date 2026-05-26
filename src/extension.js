@@ -17,6 +17,7 @@ const { DOC_LABELS } = require('./docs-loader');
 const { registerSnippetCommand } = require('./commands/snippet-picker');
 const envVarManager = require('./commands/env-var-manager');
 const { createParIndexService } = require('./lsp/sdevicepar/par-index-service');
+const { fileURLToPath } = require('url');
 
 /** @type {SchemeParseCache} */
 let schemeCache;
@@ -174,6 +175,77 @@ function activate(context) {
             catch (_) { /* ignore */ }
         }
     }
+
+    // ── Phase 2.2: Workspace .par 文件扫描 ──────────────────
+
+    function uriToFsPath(uri) {
+        try {
+            return uri.fsPath;
+        } catch (_) {
+            try { return fileURLToPath(uri.toString()); }
+            catch (_) { return uri.toString(); }
+        }
+    }
+
+    function preheatOpenParDocuments() {
+        for (const doc of vscode.workspace.textDocuments) {
+            if (doc.languageId === 'sdevicepar' && parIndexService) {
+                try { parIndexService.parseCurrentFile(doc); }
+                catch (_) { /* 静默：不阻塞 watcher 处理 */ }
+            }
+        }
+    }
+
+    async function scanWorkspaceParFiles() {
+        if (!vscode.workspace.workspaceFolders || !parIndexService) return;
+        try {
+            const parFiles = await vscode.workspace.findFiles('**/*.par');
+            for (const fileUri of parFiles) {
+                try {
+                    const text = fs.readFileSync(uriToFsPath(fileUri), 'utf8');
+                    parIndexService.addWorkspaceFile(fileUri.toString(), text);
+                } catch (e) {
+                    // skip unreadable files
+                }
+            }
+        } catch (_) { /* findFiles failed */ }
+    }
+
+    // Fire-and-forget: 不阻塞 activate
+    scanWorkspaceParFiles();
+
+    // FileSystemWatcher: workspace .par 文件增量更新
+    const parWatcher = vscode.workspace.createFileSystemWatcher('**/*.par');
+    parWatcher.onDidCreate(uri => {
+        if (!parIndexService) return;
+        try {
+            const text = fs.readFileSync(uriToFsPath(uri), 'utf8');
+            parIndexService.addWorkspaceFile(uri.toString(), text);
+        } catch (_) {}
+        // 新建文件也可能使已有 #include 从 unresolved 变为 resolved，
+        // 因此需要清 currentFileCache 并刷新打开文档。
+        parIndexService.onFileChanged(uri.toString());
+        preheatOpenParDocuments();
+    });
+    parWatcher.onDidChange(uri => {
+        if (!parIndexService) return;
+        try {
+            const text = fs.readFileSync(uriToFsPath(uri), 'utf8');
+            parIndexService.addWorkspaceFile(uri.toString(), text);
+        } catch (_) {}
+        // onFileChanged 同时清 includeRawCache + currentFileCache
+        parIndexService.onFileChanged(uri.toString());
+        // 刷新已打开的 .par 文档缓存
+        preheatOpenParDocuments();
+    });
+    parWatcher.onDidDelete(uri => {
+        if (!parIndexService) return;
+        parIndexService.removeWorkspaceFile(uri.toString());
+        // onFileChanged 处理 include 链失效
+        parIndexService.onFileChanged(uri.toString());
+        preheatOpenParDocuments();
+    });
+    context.subscriptions.push(parWatcher);
 
     // ── Completion/Hover/Definition Providers ──────────────────
     // Must come before registerSdeProviders — builds modeDispatchTable/symbolParamsTable
