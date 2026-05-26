@@ -27,6 +27,10 @@ function createParIndexService(deps) {
     // Phase 2.1: resolved by resolveIncludes (Task 4)
     const includeRawCache = new Map();
 
+    // workspaceIndex: Map<uri, ParSymbol[]> — workspace .par 文件符号（标记 source: "workspace"）
+    // key 为 URI string，value 为已标记 source 的 symbol 数组
+    const workspaceIndex = new Map();
+
     /**
      * 获取缓存键。
      */
@@ -83,6 +87,37 @@ function createParIndexService(deps) {
         } catch (_) {}
 
         return null;
+    }
+
+    /**
+     * 添加 workspace 文件到索引。
+     */
+    function addWorkspaceFile(uri, text) {
+        const rawResult = parseParText(text, uri);
+        const symbols = rawResult.symbols.map(s => ({
+            ...s,
+            source: 'workspace',
+            filePath: uri,
+        }));
+        workspaceIndex.set(uri, symbols);
+    }
+
+    /**
+     * 从索引中移除 workspace 文件。
+     */
+    function removeWorkspaceFile(uri) {
+        workspaceIndex.delete(uri);
+    }
+
+    /**
+     * 获取所有 workspace 文件的符号（扁平化数组）。
+     */
+    function getWorkspaceSymbols() {
+        const all = [];
+        for (const symbols of workspaceIndex.values()) {
+            all.push(...symbols);
+        }
+        return all;
     }
 
     /**
@@ -264,6 +299,7 @@ function createParIndexService(deps) {
     function dispose() {
         currentFileCache.clear();
         includeRawCache.clear();
+        workspaceIndex.clear();
     }
 
     return {
@@ -271,6 +307,9 @@ function createParIndexService(deps) {
         getCompletionsAt,
         onFileChanged,
         onFileClosed,
+        addWorkspaceFile,
+        removeWorkspaceFile,
+        getWorkspaceSymbols,
         dispose,
     };
 }

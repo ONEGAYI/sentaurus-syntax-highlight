@@ -322,4 +322,49 @@ test('already-open document pre-heats on activation', () => {
     service.dispose();
 });
 
+// ── Phase 2.2: Workspace Index 数据结构 ───────────
+
+test('addWorkspaceFile stores symbols with source "workspace"', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    service.addWorkspaceFile('file:///ws/Silicon.par', [
+        'Bandgap {',
+        '  Eg0 = 1.12',
+        '}',
+    ].join('\n') + '\n');
+
+    const syms = service.getWorkspaceSymbols();
+    const eg0 = syms.find(s => s.name === 'Eg0');
+    assert.ok(eg0, 'Should find Eg0 in workspace symbols');
+    assert.strictEqual(eg0.source, 'workspace');
+    service.dispose();
+});
+
+test('removeWorkspaceFile removes symbols', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    service.addWorkspaceFile('file:///ws/Silicon.par', 'Bandgap {\n  Eg0 = 1.12\n}\n');
+    service.removeWorkspaceFile('file:///ws/Silicon.par');
+
+    const syms = service.getWorkspaceSymbols();
+    assert.strictEqual(syms.length, 0, 'Should have no workspace symbols after removal');
+    service.dispose();
+});
+
+test('addWorkspaceFile overwrites previous entry', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    service.addWorkspaceFile('file:///ws/Silicon.par', 'Bandgap {\n  Eg0 = 1.12\n}\n');
+    service.addWorkspaceFile('file:///ws/Silicon.par', 'Epsilon {\n  eps = 11.7\n}\n');
+
+    const syms = service.getWorkspaceSymbols();
+    assert.strictEqual(syms.length, 2, 'Should have 2 symbols (Epsilon block + eps param)');
+    assert.ok(syms.find(s => s.name === 'eps'), 'Should have eps from second parse');
+    assert.ok(!syms.find(s => s.name === 'Eg0'), 'Should NOT have Eg0 from first parse');
+    service.dispose();
+});
+
+test('getWorkspaceSymbols returns empty array when no workspace files', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    assert.deepStrictEqual(service.getWorkspaceSymbols(), []);
+    service.dispose();
+});
+
 summary();
