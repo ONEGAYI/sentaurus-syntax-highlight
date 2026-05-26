@@ -302,8 +302,10 @@ function registerCompletionProviders(context, deps) {
                     const identRange = document.getWordRangeAtPosition(position, /[\w]+/) || range;
                     const identWord = document.getText(identRange);
 
+                    // SDE 函数名含冒号（如 sdegeo:create-circle），文档查找需用完整词
+                    const docWord = langId === 'sde' ? word : identWord;
                     const vectorBase = vectorKW.resolveBaseKeywordCI(identWord);
-                    const effectiveWord = vectorBase || identWord;
+                    const effectiveWord = vectorBase || docWord;
                     const wordLower = effectiveWord.toLowerCase();
 
                     const docs = getDocs(langId) || {};
@@ -384,11 +386,13 @@ function registerCompletionProviders(context, deps) {
 
                     const canonKey = sdeviceLowerToCanon.get(wordLower);
                     const doc = (canonKey && docs[canonKey]) || docs[effectiveWord] || docs[decodeHtml(effectiveWord)];
-                    if (doc) return new vscode.Hover(formatDoc(doc, langId), identRange);
+                    // SDE 函数名含冒号，hover 范围需覆盖完整词
+                    const docHoverRange = langId === 'sde' ? range : identRange;
+                    if (doc) return new vscode.Hover(formatDoc(doc, langId), docHoverRange);
 
                     const userDefs = defs.getDefinitions(document, langId);
                     let def = null;
-                    let hoverRange = identRange;
+                    let hoverRange = langId === 'sde' ? range : identRange;
 
                     if (astUtils.TCL_LANGS.has(langId)) {
                         const bracedRange = document.getWordRangeAtPosition(position, /\$\{[\w:.\-<>?!+*/=]+\}/);
