@@ -19,7 +19,8 @@
   {
     "title": "SDEVICE PAR",
     "children": [
-      { "title": "参数补全", "file": "sdevicepar.md" }
+      { "title": "语法高亮", "file": "sdevicepar-highlighting.md" },
+      { "title": "自动补全", "file": "sdevicepar-completion.md" }
     ]
   },
   {

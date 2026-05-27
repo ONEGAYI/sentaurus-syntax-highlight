@@ -19,7 +19,8 @@
   {
     "title": "SDEVICE PAR",
     "children": [
-      { "title": "Parameter Completion", "file": "sdevicepar.md" }
+      { "title": "Syntax Highlighting", "file": "sdevicepar-highlighting.md" },
+      { "title": "Auto Completion", "file": "sdevicepar-completion.md" }
     ]
   },
   {

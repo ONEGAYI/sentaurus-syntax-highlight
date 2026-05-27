@@ -106,7 +106,7 @@ SDEVICE 拥有一套额外的语义着色系统，通过跟踪 `{}` 嵌套层级
 
 ### SDEVICE PAR 参数文件
 
-SDEVICE PAR 参数文件（`*.par`）拥有独立的声明式语法——scope → block → parameter 三级层次结构，与标准 Tcl 差异较大，因此扩展为它提供了专门的高亮规则。scopeType 关键字、物理模型 block 名称、参数赋值、Insert 引用等元素分别着色，并支持单行嵌套语法和预处理器指令。详见 [SDEVICE PAR 语法高亮](sdevicepar.md)。
+SDEVICE PAR 参数文件（`*.par`）拥有独立的声明式语法——scope → block → parameter 三级层次结构，与标准 Tcl 差异较大，因此扩展为它提供了专门的高亮规则。scopeType 关键字、物理模型 block 名称、参数赋值、Insert 引用等元素分别着色，并支持单行嵌套语法和预处理器指令。详见 [SDEVICE PAR 语法高亮](sdevicepar-highlighting.md)。
 
 ## 代码折叠
 

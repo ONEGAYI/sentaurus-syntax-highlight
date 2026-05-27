@@ -106,7 +106,7 @@ This means that in `Physics { Recombination { ... } }`, `Physics`, `Recombinatio
 
 ### SDEVICE PAR Parameter Files
 
-SDEVICE PAR parameter files (`*.par`) use a standalone declarative syntax — a three-level scope → block → parameter hierarchy that differs significantly from standard Tcl. The extension provides dedicated highlighting rules for this structure, with distinct colors for scopeType keywords, physical model block names, parameter assignments, Insert references, and more. Single-line nesting and preprocessor directives are also supported. See [SDEVICE PAR Syntax Highlighting](sdevicepar.md) for details.
+SDEVICE PAR parameter files (`*.par`) use a standalone declarative syntax — a three-level scope → block → parameter hierarchy that differs significantly from standard Tcl. The extension provides dedicated highlighting rules for this structure, with distinct colors for scopeType keywords, physical model block names, parameter assignments, Insert references, and more. Single-line nesting and preprocessor directives are also supported. See [SDEVICE PAR Syntax Highlighting](sdevicepar-highlighting.md) for details.
 
 ## Code Folding
 
