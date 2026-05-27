@@ -219,7 +219,7 @@ function activate(context) {
                 if (loaded === 0) {
                     parIndexService.loadBuiltinMaterialDb();
                 } else if (parStatusBar) {
-                    parStatusBar.text = `$(database) PAR MaterialDB: ${loaded} files`;
+                    parStatusBar.text = `$(database) ${vscode.l10n.t('statusBar.materialdb.loaded', loaded)}`;
                     parStatusBar.show();
                     setTimeout(() => { try { if (parStatusBar) parStatusBar.hide(); } catch(_) {} }, 4000);
                 }
@@ -255,7 +255,7 @@ function activate(context) {
         if (!vscode.workspace.workspaceFolders || !parIndexService) return;
         parIndexService.setWorkspaceScanning(true);
         if (parStatusBar) {
-            parStatusBar.text = '$(sync~spin) PAR index: scanning workspace...';
+            parStatusBar.text = `$(sync~spin) ${vscode.l10n.t('statusBar.scanning')}`;
             parStatusBar.show();
         }
         try {
@@ -274,11 +274,11 @@ function activate(context) {
             const fileCount = parIndexService.getWorkspaceFileCount();
             const missed = parIndexService.consumeWorkspaceCompletionMissed();
             if (missed) {
-                parStatusBar.text = `$(info) PAR index ready — trigger completion again for workspace symbols`;
+                parStatusBar.text = `$(info) ${vscode.l10n.t('statusBar.ready.missed')}`;
                 parStatusBar.backgroundColor = undefined;
                 setTimeout(() => { try { if (parStatusBar) parStatusBar.hide(); } catch(_) {} }, 6000);
             } else {
-                parStatusBar.text = `$(check) PAR index ready: ${fileCount} files`;
+                parStatusBar.text = `$(check) ${vscode.l10n.t('statusBar.ready.count', fileCount)}`;
                 setTimeout(() => { try { if (parStatusBar) parStatusBar.hide(); } catch(_) {} }, 4000);
             }
         }
