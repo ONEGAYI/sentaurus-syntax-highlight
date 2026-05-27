@@ -12,7 +12,8 @@
     "children": [
       { "title": "语法高亮", "file": "syntax-highlighting.md" },
       { "title": "自动补全", "file": "completion.md" },
-      { "title": "代码片段", "file": "snippets.md" }
+      { "title": "代码片段", "file": "snippets.md" },
+      { "title": "用户配置", "file": "configuration.md" }
     ]
   },
   {
