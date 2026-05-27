@@ -168,11 +168,62 @@ function activate(context) {
         workspaceFolders: vscode.workspace.workspaceFolders || [],
     });
 
+    // PAR 状态栏（必须提前创建，loadConfiguredMaterialDb 和 workspace scan 都需要）
+    const parStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 50);
+    context.subscriptions.push(parStatusBar);
+
+    // 加载 MaterialDB（配置路径或内置占位）—— 必须在 preheat 之前，
+    // 以确保补全时 materialdb symbols 已就绪
+    loadConfiguredMaterialDb();
+
     // Pre-heat already-open sdevicepar documents at activation
     for (const doc of vscode.workspace.textDocuments) {
         if (doc.languageId === 'sdevicepar' && parIndexService) {
             try { parIndexService.parseCurrentFile(doc); }
             catch (_) { /* ignore */ }
+        }
+    }
+
+    // ── Phase 2.3: MaterialDB 加载 ────────────────────────────
+
+    function loadConfiguredMaterialDb() {
+        if (!parIndexService) return;
+        parIndexService.clearMaterialDb();
+
+        const materialDbPath = vscode.workspace.getConfiguration('sentaurus').get('materialDbPath', '');
+
+        if (materialDbPath) {
+            try {
+                const stat = fs.statSync(materialDbPath);
+                if (!stat.isDirectory()) {
+                    parIndexService.loadBuiltinMaterialDb();
+                    return;
+                }
+                const entries = fs.readdirSync(materialDbPath);
+                let loaded = 0;
+                for (const entry of entries) {
+                    if (!entry.toLowerCase().endsWith('.par')) continue;
+                    try {
+                        const fullPath = path.join(materialDbPath, entry);
+                        const text = fs.readFileSync(fullPath, 'utf8');
+                        parIndexService.addMaterialDbFile(fullPath, text);
+                        if (parIndexService.getMaterialDbFileCount() > loaded) {
+                            loaded++;
+                        }
+                    } catch (_) { /* skip unreadable files */ }
+                }
+                if (loaded === 0) {
+                    parIndexService.loadBuiltinMaterialDb();
+                } else if (parStatusBar) {
+                    parStatusBar.text = `$(database) PAR MaterialDB: ${loaded} files`;
+                    parStatusBar.show();
+                    setTimeout(() => { if (parStatusBar) parStatusBar.hide(); }, 4000);
+                }
+            } catch (_) {
+                parIndexService.loadBuiltinMaterialDb();
+            }
+        } else {
+            parIndexService.loadBuiltinMaterialDb();
         }
     }
 
@@ -229,10 +280,6 @@ function activate(context) {
         }
     }
 
-    // PAR workspace 状态栏
-    const parStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 50);
-    context.subscriptions.push(parStatusBar);
-
     // Fire-and-forget: 不阻塞 activate；.catch 防止 unhandled rejection
     scanWorkspaceParFiles().catch(() => {
         parIndexService.setWorkspaceScanning(false);
@@ -280,6 +327,20 @@ function activate(context) {
         debouncedPreheat();
     });
     context.subscriptions.push(parWatcher);
+
+    // 配置变更监听：sentaurus.materialDbPath 变化时重新加载 MaterialDB
+    // 不清空 workspaceIndex，只影响 materialDbIndex + current cache
+    context.subscriptions.push(
+        vscode.workspace.onDidChangeConfiguration(e => {
+            if (e.affectsConfiguration('sentaurus.materialDbPath')) {
+                loadConfiguredMaterialDb();
+                if (parIndexService) {
+                    parIndexService.onFileChanged('__materialdb_config_change__');
+                    preheatOpenParDocuments();
+                }
+            }
+        })
+    );
 
     // ── Completion/Hover/Definition Providers ──────────────────
     // Must come before registerSdeProviders — builds modeDispatchTable/symbolParamsTable
