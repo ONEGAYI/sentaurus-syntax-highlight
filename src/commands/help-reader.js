@@ -652,16 +652,137 @@ const WEBVIEW_JS = `
   }
 
   // ═══ SECTION: Search ══════════════════════════════════════
-  // (ENHANCE: Task 8)
+  var SKIP_TAGS = { PRE: 1, CODE: 1, SCRIPT: 1, STYLE: 1, TEXTAREA: 1, INPUT: 1, BUTTON: 1 };
+  var searchTimer = null;
+
+  searchInput.addEventListener("input", function() {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function() {
+      performSearch(searchInput.value.trim());
+    }, 200);
+  });
+
+  searchInput.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (e.shiftKey) navigateHit(-1); else navigateHit(1);
+    }
+    if (e.key === "Escape") {
+      e.preventDefault();
+      searchInput.value = "";
+      clearSearch();
+    }
+  });
+
+  btnNext.addEventListener("click", function() { navigateHit(1); });
+  btnPrev.addEventListener("click", function() { navigateHit(-1); });
+  btnClear.addEventListener("click", function() {
+    searchInput.value = "";
+    clearSearch();
+  });
+
+  function performSearch(query) {
+    if (baseArticleHtml) {
+      article.innerHTML = baseArticleHtml;
+      buildOutline();
+    }
+    searchHits = [];
+    currentHitIndex = -1;
+
+    if (!query) { updateSearchUI(); saveState(); return; }
+
+    var lowerQuery = query.toLowerCase();
+    var walker = document.createTreeWalker(article, NodeFilter.SHOW_TEXT, {
+      acceptNode: function(node) {
+        var p = node.parentElement;
+        while (p && p !== article) {
+          if (SKIP_TAGS[p.tagName]) return NodeFilter.FILTER_REJECT;
+          p = p.parentElement;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+
+    var matches = [];
+    var n;
+    while (n = walker.nextNode()) {
+      var lower = n.textContent.toLowerCase();
+      var offset = 0;
+      var idx;
+      while ((idx = lower.indexOf(lowerQuery, offset)) >= 0) {
+        matches.push({ node: n, idx: idx, len: query.length });
+        offset = idx + 1;
+      }
+    }
+
+    // Use Map — DOM nodes cannot be plain object keys (all stringify to "[object Text]")
+    var nodeMap = new Map();
+    matches.forEach(function(m) {
+      if (!nodeMap.has(m.node)) nodeMap.set(m.node, []);
+      nodeMap.get(m.node).push(m);
+    });
+
+    // Process each node's matches from last to first to preserve offsets
+    searchHits = [];
+    nodeMap.forEach(function(hits, node) {
+      hits.sort(function(a, b) { return b.idx - a.idx; });
+      var nodeMarks = [];
+      hits.forEach(function(m) {
+        try {
+          var range = document.createRange();
+          range.setStart(node, m.idx);
+          range.setEnd(node, m.idx + m.len);
+          var mark = document.createElement("mark");
+          mark.className = "hit";
+          range.surroundContents(mark);
+          nodeMarks.push(mark);
+        } catch(e) { /* skip invalid range */ }
+      });
+      // nodeMarks are last-to-first; reverse to document order
+      for (var i = nodeMarks.length - 1; i >= 0; i--) {
+        searchHits.push(nodeMarks[i]);
+      }
+    });
+
+    if (searchHits.length) navigateHit(1);
+    updateSearchUI();
+    saveState();
+  }
 
   function clearSearch() {
-    if (baseArticleHtml) { article.innerHTML = baseArticleHtml; buildOutline(); }
+    if (baseArticleHtml) {
+      article.innerHTML = baseArticleHtml;
+      buildOutline();
+    }
     searchHits = []; currentHitIndex = -1;
     updateSearchUI();
   }
+
+  function navigateHit(dir) {
+    if (!searchHits.length) return;
+    if (currentHitIndex >= 0 && currentHitIndex < searchHits.length) {
+      searchHits[currentHitIndex].classList.remove("current");
+    }
+    currentHitIndex += dir;
+    if (currentHitIndex >= searchHits.length) currentHitIndex = 0;
+    if (currentHitIndex < 0) currentHitIndex = searchHits.length - 1;
+    searchHits[currentHitIndex].classList.add("current");
+    searchHits[currentHitIndex].scrollIntoView({ behavior: "smooth", block: "center" });
+    updateSearchUI();
+  }
+
   function updateSearchUI() {
-    searchCount.textContent = "";
-    btnPrev.disabled = true; btnNext.disabled = true; btnClear.disabled = true;
+    var hasHits = searchHits.length > 0;
+    if (hasHits) {
+      searchCount.textContent = (currentHitIndex + 1) + "/" + searchHits.length;
+    } else if (searchInput.value.trim()) {
+      searchCount.textContent = "无结果";
+    } else {
+      searchCount.textContent = "";
+    }
+    btnPrev.disabled = !hasHits;
+    btnNext.disabled = !hasHits;
+    btnClear.disabled = !searchInput.value;
   }
 
   // ═══ SECTION: State Persistence ═══════════════════════════
