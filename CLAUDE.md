@@ -312,8 +312,12 @@ SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依
 
 {{Release Workflow in Global CLAUDE.md}}
 5. **打包**：`npx vsce package`
-6. **推送**：`git push origin main`
-7. **双平台发布**：
+6. **打包审计**（必须）：`npx vsce ls --tree` 完整审查文件列表，确认：
+   - 无多打包：排除开发文档（`docs/superpowers/`、`docs/implicit-var-extracts/`、`docs/prompts/`）、测试、脚本、references 等非运行时文件
+   - 无漏打包：确保新增的运行时文件（新增模块、数据文件、media 资源等）已包含
+   - 检查总文件数和包大小是否合理（参考上次发布值）
+7. **推送**：`git push origin main`
+8. **双平台发布**：
    - GitHub Release：`gh release create v<version> sentaurus-tcad-syntax-<version>.vsix --title "v<version>" --notes "..."`，notes 内容直接复用 CHANGELOG 该版本的正文
    - VS Code Marketplace：`npx vsce publish`
 
