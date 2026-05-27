@@ -561,18 +561,94 @@ const WEBVIEW_JS = `
   });
 
   // ═══ SECTION: TOC Navigation ══════════════════════════════
-  // (ENHANCE: Task 7)
 
   var tocTreeData = [];
-  function handleToc(tree) { tocTreeData = tree || []; }
-  function updateTocActive(file) {}
+
+  function handleToc(tree) {
+    tocTreeData = tree || [];
+    navTree.innerHTML = "";
+    if (!tocTreeData.length) {
+      navTree.innerHTML = '<div class="help-empty">帮助目录配置缺失</div>';
+      return;
+    }
+    tocTreeData.forEach(function(node) {
+      navTree.appendChild(renderTocNode(node));
+    });
+  }
+
+  function renderTocNode(node) {
+    var div = document.createElement("div");
+    if (node.children && node.children.length) {
+      var title = document.createElement("div");
+      title.className = "nav-group-title";
+      title.textContent = node.title;
+      div.appendChild(title);
+      var group = document.createElement("div");
+      group.className = "nav-group";
+      node.children.forEach(function(child) {
+        group.appendChild(renderTocNode(child));
+      });
+      div.appendChild(group);
+    } else if (node.file) {
+      var item = document.createElement("div");
+      item.className = "nav-item";
+      item.textContent = node.title;
+      item.setAttribute("data-file", node.file);
+      item.addEventListener("click", function() {
+        vscodeApi.postMessage({ type: "openDoc", file: node.file });
+      });
+      div.appendChild(item);
+    }
+    return div;
+  }
+
+  function updateTocActive(file) {
+    var items = navTree.querySelectorAll(".nav-item");
+    for (var i = 0; i < items.length; i++) {
+      items[i].classList.toggle("active", items[i].getAttribute("data-file") === file);
+    }
+  }
 
   // ═══ SECTION: Outline ═════════════════════════════════════
-  // (ENHANCE: Task 7)
 
   function buildOutline() {
     outlineEl.innerHTML = "";
     if (outlineObserver) { outlineObserver.disconnect(); outlineObserver = null; }
+
+    var headings = article.querySelectorAll("h1, h2, h3, h4");
+    if (!headings.length) return;
+
+    var levelMap = { H1: 0, H2: 1, H3: 2, H4: 3 };
+    headings.forEach(function(h) {
+      var item = document.createElement("div");
+      item.className = "outline-item";
+      item.style.paddingLeft = (8 + levelMap[h.tagName] * 12) + "px";
+      item.textContent = h.textContent;
+      item.setAttribute("data-id", h.id);
+      item.addEventListener("click", function() {
+        setOutlineActive(h.id);
+        h.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+      outlineEl.appendChild(item);
+    });
+
+    outlineObserver = new IntersectionObserver(function(entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (entries[i].isIntersecting) {
+          setOutlineActive(entries[i].target.id);
+          break;
+        }
+      }
+    }, { root: contentEl, rootMargin: "0px 0px -80% 0px" });
+
+    headings.forEach(function(h) { outlineObserver.observe(h); });
+  }
+
+  function setOutlineActive(id) {
+    var items = outlineEl.querySelectorAll(".outline-item");
+    for (var i = 0; i < items.length; i++) {
+      items[i].classList.toggle("active", items[i].getAttribute("data-id") === id);
+    }
   }
 
   // ═══ SECTION: Search ══════════════════════════════════════
