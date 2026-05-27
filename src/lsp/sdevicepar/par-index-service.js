@@ -140,7 +140,9 @@ function createParIndexService(deps) {
     function inferMaterialNameFromPath(filePath) {
         const normalized = filePath.replace(/\\/g, '/');
         const filename = normalized.split('/').pop();
-        return filename ? filename.replace(/\.par$/i, '') : null;
+        if (!filename) return null;
+        const name = filename.replace(/\.par$/i, '');
+        return (name && !name.startsWith('.')) ? name : null;
     }
 
     /**
@@ -214,6 +216,9 @@ function createParIndexService(deps) {
 
         if (finalSymbols.length > 0) {
             materialDbIndex.set(filePath, finalSymbols);
+            if (materialDbIndex.size > MAX_CACHE_SIZE) {
+                materialDbIndex.delete(materialDbIndex.keys().next().value);
+            }
         }
     }
 

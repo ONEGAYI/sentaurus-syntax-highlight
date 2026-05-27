@@ -186,6 +186,9 @@ function activate(context) {
 
     // ── Phase 2.3: MaterialDB 加载 ────────────────────────────
 
+    const MATERIALDB_CONFIG_CHANGE_KEY = '__materialdb_config_change__';
+    const MAX_MATERIALDB_FILES = 200;
+
     function loadConfiguredMaterialDb() {
         if (!parIndexService) return;
         parIndexService.clearMaterialDb();
@@ -202,6 +205,7 @@ function activate(context) {
                 const entries = fs.readdirSync(materialDbPath);
                 let loaded = 0;
                 for (const entry of entries) {
+                    if (loaded >= MAX_MATERIALDB_FILES) break;
                     if (!entry.toLowerCase().endsWith('.par')) continue;
                     try {
                         const fullPath = path.join(materialDbPath, entry);
@@ -217,7 +221,7 @@ function activate(context) {
                 } else if (parStatusBar) {
                     parStatusBar.text = `$(database) PAR MaterialDB: ${loaded} files`;
                     parStatusBar.show();
-                    setTimeout(() => { if (parStatusBar) parStatusBar.hide(); }, 4000);
+                    setTimeout(() => { try { if (parStatusBar) parStatusBar.hide(); } catch(_) {} }, 4000);
                 }
             } catch (_) {
                 parIndexService.loadBuiltinMaterialDb();
@@ -272,10 +276,10 @@ function activate(context) {
             if (missed) {
                 parStatusBar.text = `$(info) PAR index ready — trigger completion again for workspace symbols`;
                 parStatusBar.backgroundColor = undefined;
-                setTimeout(() => { if (parStatusBar) parStatusBar.hide(); }, 6000);
+                setTimeout(() => { try { if (parStatusBar) parStatusBar.hide(); } catch(_) {} }, 6000);
             } else {
                 parStatusBar.text = `$(check) PAR index ready: ${fileCount} files`;
-                setTimeout(() => { if (parStatusBar) parStatusBar.hide(); }, 4000);
+                setTimeout(() => { try { if (parStatusBar) parStatusBar.hide(); } catch(_) {} }, 4000);
             }
         }
     }
@@ -335,7 +339,7 @@ function activate(context) {
             if (e.affectsConfiguration('sentaurus.materialDbPath')) {
                 loadConfiguredMaterialDb();
                 if (parIndexService) {
-                    parIndexService.onFileChanged('__materialdb_config_change__');
+                    parIndexService.onFileChanged(MATERIALDB_CONFIG_CHANGE_KEY);
                     preheatOpenParDocuments();
                 }
             }

@@ -323,4 +323,50 @@ test('workspace source wins over materialdb for same-name symbol', () => {
     service.dispose();
 });
 
+// ── 测试补全：空文件跳过 + 深层嵌套 graft ────────────────────
+
+test('addMaterialDbFile skips comment-only file (no symbols)', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    service.addMaterialDbFile('/db/empty.par', '# just a comment\n');
+    assert.strictEqual(service.getMaterialDbSymbols().length, 0);
+    assert.strictEqual(service.getMaterialDbFileCount(), 0);
+
+    service.addMaterialDbFile('/db/Real.par', 'Epsilon { epsilon = 1.0 }\n');
+    assert.strictEqual(service.getMaterialDbFileCount(), 1);
+
+    service.dispose();
+});
+
+test('addMaterialDbFile grafts deeply nested blocks correctly (format A)', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    const text = [
+        'Bandgap {',
+        '  SubBlock {',
+        '    param1 = 1.0',
+        '  }',
+        '}',
+    ].join('\n');
+    service.addMaterialDbFile('/db/DeepMat.par', text);
+
+    const symbols = service.getMaterialDbSymbols();
+
+    const scope = symbols.find(s => s.kind === 'scope' && s.name === 'DeepMat');
+    assert.ok(scope, 'Should have DeepMat synthetic scope');
+
+    const bandgap = symbols.find(s => s.kind === 'block' && s.name === 'Bandgap');
+    assert.strictEqual(bandgap.parentPath, 'Material/DeepMat');
+    assert.strictEqual(bandgap.fullPath, 'Material/DeepMat/Bandgap');
+
+    const subblock = symbols.find(s => s.kind === 'block' && s.name === 'SubBlock');
+    assert.ok(subblock, 'Should have SubBlock');
+    assert.strictEqual(subblock.parentPath, 'Material/DeepMat/Bandgap');
+    assert.strictEqual(subblock.fullPath, 'Material/DeepMat/Bandgap/SubBlock');
+
+    const param = symbols.find(s => s.kind === 'parameter' && s.name === 'param1');
+    assert.ok(param, 'Should have param1');
+    assert.strictEqual(param.parentPath, 'Material/DeepMat/Bandgap/SubBlock');
+
+    service.dispose();
+});
+
 summary();
