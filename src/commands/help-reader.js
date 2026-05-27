@@ -271,7 +271,295 @@ const HTML_BODY = [
     '  </div>',
     '</aside>'
 ].join('\n');
-const WEBVIEW_JS = ''; // Task 5
+const WEBVIEW_JS = `
+// ═══ Webview JS ═══════════════════════════════════════════════
+(function() {
+  "use strict";
+
+  var vscodeApi = acquireVsCodeApi();
+
+  // ── State ────────────────────────────────────────────────
+  var currentFile = "";
+  var docsBaseUri = "";
+  var baseArticleHtml = "";
+  var searchHits = [];
+  var currentHitIndex = -1;
+  var outlineObserver = null;
+  var markedConfigured = false;
+  var scrollSaveTimer = null;
+  var firstDocLoaded = false;
+
+  // ── DOM refs ─────────────────────────────────────────────
+  var article = document.getElementById("article");
+  var contentEl = document.getElementById("content");
+  var errorBanner = document.getElementById("error-banner");
+  var searchInput = document.getElementById("search-input");
+  var searchCount = document.getElementById("search-count");
+  var btnPrev = document.getElementById("btn-prev");
+  var btnNext = document.getElementById("btn-next");
+  var btnClear = document.getElementById("btn-clear");
+  var navTree = document.getElementById("nav-tree");
+  var outlineEl = document.getElementById("outline");
+  var sideLeft = document.getElementById("sidebar-left");
+  var sideRight = document.getElementById("sidebar-right");
+
+  // ── Saved state (from getState) ──────────────────────────
+  var savedState = vscodeApi.getState();
+
+  // ── Message Handling ──────────────────────────────────────
+  window.addEventListener("message", function(event) {
+    var msg = event.data;
+    if (!msg || !msg.type) return;
+    switch (msg.type) {
+      case "toc": handleToc(msg.tree); break;
+      case "docContent": handleDocContent(msg); break;
+      case "error": handleError(msg); break;
+    }
+  });
+
+  // Signal ready
+  vscodeApi.postMessage({
+    type: "ready",
+    restoreFile: (savedState && savedState.currentFile) ? savedState.currentFile : "index.md"
+  });
+
+  // ── Scroll debounced save ─────────────────────────────────
+  contentEl.addEventListener("scroll", function() {
+    clearTimeout(scrollSaveTimer);
+    scrollSaveTimer = setTimeout(saveState, 300);
+  });
+
+  // ═══ SECTION: Document Content ════════════════════════════
+
+  function handleDocContent(msg) {
+    currentFile = msg.file;
+    docsBaseUri = msg.docsBaseUri || "";
+    // Reset search state only (don't restore old article via clearSearch)
+    // clearSearch writes baseArticleHtml back to article which is wasteful
+    // since we're about to overwrite article.innerHTML anyway
+    searchInput.value = "";
+    searchHits = [];
+    currentHitIndex = -1;
+    updateSearchUI();
+    hideBanner();
+
+    if (typeof marked === "undefined") {
+      article.innerHTML = "<pre>" + escapeHtml(msg.content) + "</pre>";
+      baseArticleHtml = article.innerHTML;
+      buildOutline();
+      saveState();
+      if (!firstDocLoaded) { firstDocLoaded = true; restoreState(savedState); }
+      return;
+    }
+
+    // Configure marked renderer only once
+    if (!markedConfigured) {
+      marked.use({ renderer: createRenderer() });
+      markedConfigured = true;
+    }
+
+    var html = marked.parse(msg.content);
+    article.innerHTML = html;
+    cleanDom();
+    assignHeadingIds();
+    baseArticleHtml = article.innerHTML;
+    buildOutline();
+    updateTocActive(currentFile);
+
+    if (msg.anchor) {
+      scrollToAnchor(msg.anchor);
+    } else {
+      contentEl.scrollTop = 0;
+    }
+
+    saveState();
+    if (!firstDocLoaded) { firstDocLoaded = true; restoreState(savedState); }
+  }
+
+  // ═══ SECTION: Error Handling ══════════════════════════════
+
+  function handleError(msg) {
+    if (msg.nonFatal) {
+      showBanner(msg.message);
+    } else if (!currentFile) {
+      article.innerHTML = '<div class="help-error">' + escapeHtml(msg.message) + '</div>';
+    } else {
+      showBanner(msg.message);
+    }
+  }
+
+  function showBanner(message) {
+    errorBanner.innerHTML = '<div class="help-banner">' + escapeHtml(message) + '</div>';
+  }
+  function hideBanner() { errorBanner.innerHTML = ""; }
+
+  // ═══ SECTION: Markdown Renderer (Image) ═══════════════════
+
+  var IMAGE_EXTS = /\\.(png|jpe?g|gif|webp|bmp|ico)$/i;
+
+  function createRenderer() {
+    return {
+      image: function(href, title, text) {
+        if (/^https:/.test(href)) {
+          return '<img src="' + escapeAttr(href) + '" alt="' + escapeAttr(text) + '">';
+        }
+        if (/^data:image\\//i.test(href)) {
+          if (/^data:image\\/svg/i.test(href)) return '<em>[SVG 数据图片已拒绝]</em>';
+          return false;
+        }
+        if (/^[a-z]+:/i.test(href)) return '<em>[不支持的图片协议]</em>';
+
+        var cleanHref = href.replace(/[?#].*$/, "");
+        var decoded;
+        try { decoded = decodeURIComponent(cleanHref); }
+        catch(e) { return '<em>[图片路径编码错误]</em>'; }
+
+        var normalized = decoded.replace(/\\\\/g, "/").replace(/\\/+/g, "/");
+        if (!normalized) return '<em>[图片路径为空]</em>';
+        if (normalized.split("/").some(function(s) { return s === ".."; })) return '<em>[图片路径越界]</em>';
+        if (normalized.charAt(0) === "/") return '<em>[图片路径为绝对路径]</em>';
+        if (!IMAGE_EXTS.test(normalized)) return '<em>[非图片文件]</em>';
+
+        var encoded = normalized.split("/").map(function(seg) {
+          return encodeURIComponent(seg);
+        }).join("/");
+        var b = docsBaseUri.charAt(docsBaseUri.length - 1) === "/" ? docsBaseUri : docsBaseUri + "/";
+        var fullUri = b + encoded;
+        var t = title ? ' title="' + escapeAttr(title) + '"' : "";
+        return '<img src="' + escapeAttr(fullUri) + '" alt="' + escapeAttr(text) + '"' + t + '>';
+      }
+    };
+  }
+
+  // ═══ SECTION: DOM Cleanup ═════════════════════════════════
+
+  var DANGEROUS_TAGS = ["SCRIPT", "IFRAME", "OBJECT", "EMBED", "LINK", "STYLE"];
+
+  function cleanDom() {
+    var i, els;
+    for (i = 0; i < DANGEROUS_TAGS.length; i++) {
+      els = article.querySelectorAll(DANGEROUS_TAGS[i]);
+      for (var j = 0; j < els.length; j++) els[j].remove();
+    }
+    var all = article.querySelectorAll("*");
+    for (i = 0; i < all.length; i++) {
+      var attrs = all[i].attributes;
+      for (var k = attrs.length - 1; k >= 0; k--) {
+        if (attrs[k].name.length > 1 && attrs[k].name.charAt(0) === "o" && attrs[k].name.charAt(1) === "n") {
+          all[i].removeAttribute(attrs[k].name);
+        }
+      }
+    }
+    var links = article.querySelectorAll("a[href]");
+    for (i = 0; i < links.length; i++) {
+      var h = links[i].getAttribute("href") || "";
+      if (/^javascript:/i.test(h) || /^vbscript:/i.test(h)) links[i].removeAttribute("href");
+      else if (/^data:/i.test(h) && !/^data:image\\//i.test(h)) links[i].removeAttribute("href");
+    }
+  }
+
+  // ═══ SECTION: Heading IDs (Chinese-safe) ══════════════════
+
+  function assignHeadingIds() {
+    var headings = article.querySelectorAll("h1, h2, h3, h4");
+    var usedIds = {};
+    for (var i = 0; i < headings.length; i++) {
+      var h = headings[i];
+      var slug = h.id ? h.id : slugify(h.textContent);
+      var id = slug;
+      var counter = 2;
+      while (usedIds[id]) { id = slug + "-" + counter; counter++; }
+      usedIds[id] = true;
+      h.id = id;
+    }
+  }
+
+  function slugify(text) {
+    var s = String(text).trim().toLowerCase()
+      .replace(/\\s+/g, "-")
+      .replace(/[<>"'\`]/g, "")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+    return s || "heading";
+  }
+
+  // ═══ SECTION: Link Interception ═══════════════════════════
+  // (ENHANCE: Task 6 — 当前为空，链接点击不拦截)
+
+  // ═══ SECTION: Sidebar Toggle ══════════════════════════════
+
+  document.querySelectorAll(".toggle-btn").forEach(function(btn) {
+    btn.addEventListener("click", function() {
+      var target = document.getElementById(btn.getAttribute("data-target"));
+      if (!target) return;
+      var side = btn.getAttribute("data-side");
+      var isCollapsed = target.classList.toggle("collapsed");
+      if (side === "left") {
+        btn.textContent = isCollapsed ? "\\u25B6" : "\\u25C0";
+      } else {
+        btn.textContent = isCollapsed ? "\\u25C0" : "\\u25B6";
+      }
+      saveState();
+    });
+  });
+
+  // ═══ SECTION: TOC Navigation ══════════════════════════════
+  // (ENHANCE: Task 7)
+
+  var tocTreeData = [];
+  function handleToc(tree) { tocTreeData = tree || []; }
+  function updateTocActive(file) {}
+
+  // ═══ SECTION: Outline ═════════════════════════════════════
+  // (ENHANCE: Task 7)
+
+  function buildOutline() {
+    outlineEl.innerHTML = "";
+    if (outlineObserver) { outlineObserver.disconnect(); outlineObserver = null; }
+  }
+
+  // ═══ SECTION: Search ══════════════════════════════════════
+  // (ENHANCE: Task 8)
+
+  function clearSearch() {
+    if (baseArticleHtml) { article.innerHTML = baseArticleHtml; buildOutline(); }
+    searchHits = []; currentHitIndex = -1;
+    updateSearchUI();
+  }
+  function updateSearchUI() {
+    searchCount.textContent = "";
+    btnPrev.disabled = true; btnNext.disabled = true; btnClear.disabled = true;
+  }
+
+  // ═══ SECTION: State Persistence ═══════════════════════════
+  // (ENHANCE: Task 9)
+
+  function saveState() {
+    vscodeApi.setState({
+      currentFile: currentFile,
+      searchQuery: "",
+      scrollTop: contentEl.scrollTop,
+      leftCollapsed: sideLeft.classList.contains("collapsed"),
+      rightCollapsed: sideRight.classList.contains("collapsed")
+    });
+  }
+  function restoreState(state) {}
+
+  // ═══ SECTION: Utilities ═══════════════════════════════════
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function escapeAttr(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function scrollToAnchor(id) {
+    var el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+})();
+`;
 
 // ═══════════════════════════════════════
 // HelpReader Class
