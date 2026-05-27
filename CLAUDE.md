@@ -78,7 +78,7 @@ sentaurus-syntax-highlight/
 │   └── sdevicepar.json                         ← SDEVICE PAR 代码片段（22 个原生 snippet）
 │
 ├── src/                                        ← 扩展源码（纯 CommonJS，无构建步骤）
-│   ├── extension.js                            ← 入口：activate() 协调入口（~440行）
+│   ├── extension.js                            ← 入口：activate() 协调入口（~824行）
 │   ├── definitions.js                          ← 用户变量补全/悬停/跳转（Scheme + Tcl）
 │   ├── docs-loader.js                          ← 文档加载常量（KIND_MAP/SORT_PREFIX/DETAIL_LABEL）与格式化工具
 │   ├── register-sde-providers.js               ← SDE 语言 Provider 注册（Folding/Bracket/Signature/SemanticTokens）
@@ -88,7 +88,7 @@ sentaurus-syntax-highlight/
 │   ├── commands/                               ← VSCode 命令实现
 │   │   ├── expression-converter.js             ← Scheme 前缀 ↔ 中缀表达式双向转换（含 CursorTracker 光标位置感知、尖括号连字符变量语法、QuickPick 变量补全和历史模式）
 │   │   ├── env-var-manager.js                  ← SWB 环境变量管理命令（批量添加/搜索删除/导出/导入）
-│   │   ├── help-reader.js                      ← Webview 帮助阅读器（sentaurus.openHelp，三栏布局+搜索+大纲+状态持久化）
+│   │   ├── help-reader.js                      ← Webview 帮助阅读器（sentaurus.openHelp，~1022行，三栏布局+搜索+大纲+状态持久化）
 │   │   └── snippet-picker.js                   ← QuickPick 代码片段命令（sentaurus.insertSnippet）
 │   │
 │   ├── lsp/                                    ← 语义功能核心（AST 解析 + Provider 注册）
@@ -107,6 +107,13 @@ sentaurus-syntax-highlight/
 │   │   ├── tcl-symbol-configs.js               ← Tcl 工具 section 关键词 + 子 section 配置
 │   │   ├── pp-utils.js                         ← 预处理器分支分析 + #define 宏定义提取共享模块
 │   │   ├── parse-cache.js                      ← 统一解析缓存层（SchemeParseCache + TclParseCache）
+│   │   │
+│   │   └── sdevicepar/                         ← SDEVICE PAR 参数文件补全子系统（Phase 2）
+│   │       ├── par-parser.js                   ← scope/block/parameter 三级 AST 解析 + include 链递归
+│   │       ├── par-context.js                  ← 光标位置上下文推断（scopeType/block/parameter 定位）
+│   │       ├── par-constants.js                ← 常量定义（scopeType 列表、内置占位 MaterialDB）
+│   │       ├── par-index-service.js            ← 文件级索引管理 + workspace 全量扫描 + MaterialDB 集成
+│   │       └── par-completion.js               ← 三级补全调度（scopeType/block/parameter）
 │   │   │
 │   │   └── providers/                          ← VSCode Provider 实现
 │   │       ├── folding-provider.js             ← Scheme 代码折叠 + 预处理器块折叠
@@ -221,6 +228,14 @@ sentaurus-syntax-highlight/
 
 SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依赖 WASM，通过文本扫描追踪 `{}` 嵌套栈构建 section 上下文，为顶层 section 名分配 `sectionName` token、为子 section（Quasistationary/Coupled 等）分配 `subSection` token、为 section 内关键词分配 `sectionKeyword` token、为 #define 宏分配 `macro` token，并缓存至 `document.version` 避免重复扫描。`sdevice-vector-keywords.js` 提供 Plot/CurrentPlot section 中 57 个矢量基础关键词和 3 种后缀的数据模块。SDEVICE PAR（sdevicepar）复用 Tcl 共用 Provider 和 WASM 解析管线。
 
+**SDEVICE PAR 补全子系统**（`src/lsp/sdevicepar/`，Phase 2 三阶段）：
+- `par-parser.js` — scope/block/parameter 三级 AST 解析器，支持 include 链递归解析和单行嵌套（如 `Bandgap { Eg0 = 1.12 }`）
+- `par-context.js` — 光标位置上下文推断，定位当前 scopeType/block/parameter
+- `par-completion.js` — 三级补全调度：scopeType 级聚合（忽略具体 scopeName），block/parameter 按 scopeType 过滤
+- `par-index-service.js` — 文件级索引管理，workspace 全量扫描（FileSystemWatcher 监听 create/change/delete 增量更新），MaterialDB 集成（`sentaurus.materialDbPath` 配置，两种文件格式归一化，混合监听策略：existence poller + directory watcher）
+- `par-constants.js` — 常量定义（scopeType 列表、内置 Silicon/Oxide 占位 MaterialDB）
+- 优先级：workspace > materialdb，同名符号去重保留高优先级。补全项显示 Source 字段（来源文件名），状态栏反馈扫描进度
+
 共用 Provider（`src/lsp/providers/`）：
 - `undef-var-diagnostic.js` — 跨语言未定义/重复定义变量诊断（Scheme + Tcl）+ 未定义 #define 宏诊断
 - `folding-provider.js` / `tcl-folding-provider.js` — 代码折叠
@@ -265,7 +280,7 @@ SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依
 
 ### 帮助文档阅读器
 
-`src/commands/help-reader.js`（~860 行）实现基于 WebviewPanel 的自定义帮助文档阅读器（`sentaurus.openHelp` 命令），替代内置 Markdown Preview。单模块架构：Extension 侧（HelpReader 类）负责路径校验/文件读取/消息分发，Webview 侧（模板字符串 `WEBVIEW_JS`）负责 Markdown 渲染/DOM 处理。
+`src/commands/help-reader.js`（~1022 行）实现基于 WebviewPanel 的自定义帮助文档阅读器（`sentaurus.openHelp` 命令），替代内置 Markdown Preview。单模块架构：Extension 侧（HelpReader 类）负责路径校验/文件读取/消息分发，Webview 侧（模板字符串 `WEBVIEW_JS`）负责 Markdown 渲染/DOM 处理。
 
 **三栏布局**：左侧 toc 导航树（`toc.json` 驱动）+ 中间文章内容（`marked.js` 渲染）+ 右侧 heading 大纲（IntersectionObserver 追踪 active）。
 

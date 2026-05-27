@@ -1,6 +1,8 @@
 ```
 sentaurus-syntax-highlight/
 ├── tests/                                      ← 测试套件（纯 Node.js assert，零外部依赖）
+│   ├── helpers/                                ← 测试辅助模块
+│   │   └── mock-vscode.js                      ← VSCode API 模拟层（HelpReader 等测试用）
 │   ├── test-definitions.js                     ← 用户变量定义提取
 │   ├── test-expression-converter.js            ← 表达式转换
 │   ├── test-expression-quickpick.js            ← QuickPick 变量补全与历史模式纯函数测试
@@ -35,6 +37,12 @@ sentaurus-syntax-highlight/
 │   ├── test-symbol-completion.js               ← 符号补全过滤
 │   ├── test-symbol-reference.js                ← Find All References
 │   ├── test-implicit-var-functions.js           ← 15 种 Tcl 隐式变量声明函数测试（60 用例）
-│   └── benchmark.js                            ← 性能基准测试工具
+│   ├── test-par-parser.js                      ← SDEVICE PAR 三级 AST 解析 + include 链递归（41 测试）
+│   ├── test-par-context.js                     ← SDEVICE PAR 光标位置上下文推断（15 测试）
+│   ├── test-par-completion.js                  ← SDEVICE PAR 三级补全调度（15 测试）
+│   ├── test-par-index.js                       ← SDEVICE PAR workspace 全量扫描索引（30 测试）
+│   ├── test-par-materialdb.js                  ← SDEVICE PAR MaterialDB 集成（20 测试）
+│   ├── test-help-reader.js                     ← Webview 帮助阅读器（23 测试：路径校验/toc解析/HTML构建）
+│   ├── benchmark.js                            ← 性能基准测试工具
 │   └── benchmark-firstload.js                  ← 首次加载性能诊断脚本
 ```

@@ -33,6 +33,19 @@ A VSCode extension providing syntax highlighting, auto-completion, and semantic 
 | Comment Recognition | `#` universal comment; SDE additionally supports `;` (Scheme comment); SDevice/EMW/SProcess/Inspect/SDevicePAR additionally support `*` |
 | SWB Variables | Highlights `@Var@`, `@param:+2@`, and other Sentaurus Workbench parameter substitution syntax |
 | Bracket Matching | Auto-pairing for `{}` `[]` `()` |
+| **Built-in Help** | **Documentation reader** with three-panel layout (navigation tree + article + outline), search highlighting, and state persistence |
+
+### Built-in Help Documentation
+
+Run `Sentaurus: Open Help` from the Command Palette to open the built-in documentation reader. A Webview-based three-panel layout for a smooth reading experience:
+
+- **Left navigation tree**: Table of contents with one-click navigation, collapsible/expandable
+- **Center article area**: Markdown rendering with automatic link interception
+- **Right outline panel**: Heading hierarchy overview, IntersectionObserver tracks current reading position
+- **Full-text search highlighting**: Instant keyword highlighting with ▲▼/Enter/Esc navigation
+- **State persistence**: Automatically restores last reading position, search term, and sidebar state when reopening
+
+![Help Reader](assets/pics/vscode%20插件效果演示%20-%20内置帮助文档.gif)
 
 ### Supported File Types
 

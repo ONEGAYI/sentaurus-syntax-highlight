@@ -4,6 +4,35 @@
 
 ---
 
+## [2.2.0] - 2026-05-27
+
+新增 SDEVICE PAR 参数文件深度语义补全系统（Phase 2 三阶段）和 Webview 帮助文档阅读器，补全能力从关键词级提升至 workspace 跨文件符号级。
+
+### 新功能
+
+- **SDEVICE PAR 上下文感知补全**（#72）：新增 `par-parser.js`（scope/block/parameter 三级 AST 解析）、`par-context.js`（光标位置上下文推断）、`par-completion.js`（scopeType/block/parameter 三级补全调度）、`par-index-service.js`（文件级索引管理）、`par-constants.js`（常量定义）。支持 include 链递归解析，block/parameter 补全按 scopeType 聚合，补全项按优先级排序（PAR 项使用 `!` 前缀置顶）
+- **SDEVICE PAR Workspace 全量扫描索引 + 增量更新**（#73）：workspace `.par` 文件全量扫描构建索引，补全包含 workspace 中其他文件的 scope/block/parameter 符号。FileSystemWatcher 监听 create/change/delete，增量更新 workspaceIndex 并自动失效相关缓存。修复单行嵌套解析（如 `Bandgap { Eg0 = 1.12 }`），修复 scopeType 聚合导致跨 scope 实例参数泄漏（两阶段收集）。补全项新增 Source 字段显示来源文件名，状态栏反馈扫描进度
+- **SDEVICE PAR MaterialDB 集成**（#75）：支持两种 MaterialDB 文件格式归一化（格式 A 顶层 block 自动包裹 Material scope、格式 B 显式 Material scope 不二次包裹）。内置 Silicon/Oxide 占位 MaterialDB；`sentaurus.materialDbPath` 配置指向 .par 文件目录自动加载。混合监听策略：Existence poller（7s）检测 missing↔existing 状态转换 + Directory watcher 增量更新。优先级 workspace > materialdb，同名符号去重保留高优先级。配置热重载无需重启 VSCode
+- **Webview 帮助文档阅读器**（#74）：基于 WebviewPanel 的自定义帮助文档阅读器（`sentaurus.openHelp` 命令），替代内置 Markdown Preview。三栏布局：左侧 toc 导航树（`toc.json` 驱动）+ 中间 Markdown 渲染（`marked.js` v12）+ 右侧 heading 大纲（IntersectionObserver 追踪 active）。支持链接拦截（同文档/跨文档锚点/外部分流）、搜索高亮（Map 分组多匹配 DOM Text 节点）、侧栏折叠（28px 窄条保留展开按钮）、状态持久化（`getState/setState` 保存当前文档/scrollTop/搜索词/侧栏状态，面板重建时恢复）、CSP nonce 安全策略
+
+### 其他改进
+
+- 添加 `THIRD_PARTY_NOTICES.md` 声明 marked.js MIT 许可
+- `.vscodeignore` 三级例外确保 `docs/help/**` 和 `media/marked.min.js` 打包进 VSIX
+- 删除冗余的人工测试脚本 `display_test/test_lsp_features_dvs.cmd`
+
+### 测试
+
+- 新增 `test-par-parser.js`（41 个测试：scope/block/parameter 解析、include 链递归、单行嵌套、CRLF 兼容性）
+- 新增 `test-par-context.js`（15 个测试：光标位置上下文推断、scopeType/block/parameter 定位）
+- 新增 `test-par-completion.js`（15 个测试：三级补全调度、优先级排序、scopeType 聚合）
+- 新增 `test-par-index.js`（30 个测试：workspace 全量扫描索引、增量更新、文件监听缓存失效）
+- 新增 `test-par-materialdb.js`（20 个测试：MaterialDB 格式归一化、混合监听策略、Windows 路径规范化、配置热重载）
+- 新增 `test-help-reader.js`（23 个测试：路径安全校验、toc 解析、marked.js 加载、HTML 构建）
+- 新增 `helpers/mock-vscode.js`（VSCode API 模拟层）
+
+---
+
 ## [2.1.0] - 2026-05-26
 
 新增 SDEVICE PAR 参数文件（`.par`）作为第 7 种语言，提供完整的语法高亮、自动补全、代码片段和 Provider 集成。
@@ -1036,6 +1065,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.2.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.8...v2.1.0
 [2.0.8]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.7...v2.0.8
 [2.0.7]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.6...v2.0.7
