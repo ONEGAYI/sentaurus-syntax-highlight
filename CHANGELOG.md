@@ -4,6 +4,18 @@
 
 ---
 
+## [2.2.1] - 2026-05-27
+
+帮助文档系统国际化改造，支持中英双语自动切换。
+
+### 其他改进
+
+- **帮助文档 i18n**：帮助文档目录从单层拆分为 `zh-cn/` 和 `en/` 双语目录，`help-reader.js` 根据 VSCode 语言环境（`vscode.env.language`）自动选择对应语言的文档，找不到时 fallback 至英文。`<html lang>` 标签同步设置为当前语言
+- **修复 .vscodeignore 打包规则**：移除过于宽松的 `!docs/` 和 `!docs/help/` 通配规则，精确控制只打包 `docs/help/**` 子目录；同时修正 `media/` 规则，排除非必要媒体文件
+- **删除冗余检查清单**：移除 `VERIFICATION_CHECKLIST.md`，相关流程已整合至 CLAUDE.md
+
+---
+
 ## [2.2.0] - 2026-05-27
 
 新增 SDEVICE PAR 参数文件深度语义补全系统（Phase 2 三阶段）和 Webview 帮助文档阅读器，补全能力从关键词级提升至 workspace 跨文件符号级。
@@ -1065,6 +1077,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.2.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.8...v2.1.0
 [2.0.8]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.7...v2.0.8
