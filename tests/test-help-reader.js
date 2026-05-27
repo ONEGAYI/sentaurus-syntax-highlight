@@ -91,4 +91,80 @@ test('数字类型 → false', () => {
     assert.strictEqual(createReader()._validatePath(123), false);
 });
 
+console.log('\n_parseToc:');
+
+test('正常读取 toc.json 返回数组', () => {
+    const reader = createReader();
+    const tree = reader._parseToc();
+    assert(Array.isArray(tree));
+    assert(tree.length > 0);
+});
+
+test('toc.json 首项为首页', () => {
+    const reader = createReader();
+    const tree = reader._parseToc();
+    assert.strictEqual(tree[0].file, 'index.md');
+    assert.strictEqual(tree[0].title, '首页');
+});
+
+test('toc.json 包含 children 层级', () => {
+    const reader = createReader();
+    const tree = reader._parseToc();
+    const withChildren = tree.find(n => n.children);
+    assert(withChildren);
+    assert(withChildren.children.length > 0);
+});
+
+console.log('\n_loadMarkedJs:');
+
+test('正常加载 marked.min.js', () => {
+    const reader = createReader();
+    const js = reader._loadMarkedJs();
+    assert(typeof js === 'string');
+    assert(js.length > 100);
+    assert(js.indexOf('marked') >= 0);
+});
+
+console.log('\n_buildHtml:');
+
+test('HTML 包含 CSP nonce', () => {
+    const reader = createReader();
+    reader.panel = {
+        webview: {
+            cspSource: 'https://test.vscode',
+            asWebviewUri: () => ({ toString: () => 'vscode-file://test' })
+        }
+    };
+    const html = reader._buildHtml('/* test */');
+    assert(html.indexOf('Content-Security-Policy') >= 0);
+    assert(html.indexOf('nonce-') >= 0);
+});
+
+test('HTML 包含 sidebar-left / sidebar-right / article', () => {
+    const reader = createReader();
+    reader.panel = {
+        webview: {
+            cspSource: 'https://test.vscode',
+            asWebviewUri: () => ({ toString: () => 'vscode-file://test' })
+        }
+    };
+    const html = reader._buildHtml('/* test */');
+    assert(html.indexOf('sidebar-left') >= 0);
+    assert(html.indexOf('sidebar-right') >= 0);
+    assert(html.indexOf('id="article"') >= 0);
+});
+
+test('marked.js 为空时 HTML 仍有效', () => {
+    const reader = createReader();
+    reader.panel = {
+        webview: {
+            cspSource: 'https://test.vscode',
+            asWebviewUri: () => ({ toString: () => 'vscode-file://test' })
+        }
+    };
+    const html = reader._buildHtml('');
+    assert(html.indexOf('article') >= 0);
+    assert(html.indexOf('</script>') >= 0);
+});
+
 summary();
