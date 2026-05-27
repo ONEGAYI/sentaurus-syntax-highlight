@@ -8,6 +8,7 @@
   "sentaurus.removeEnvironmentVariables": "Sentaurus: 搜索并删除环境变量",
   "sentaurus.exportEnvironmentVariables": "Sentaurus: 导出环境变量",
   "sentaurus.importEnvironmentVariables": "Sentaurus: 导入环境变量",
+  "sentaurus.openHelp": "Sentaurus: 打开帮助文档",
 
   "config.title.syntax": "Sentaurus TCAD 语法",
   "config.title.envVars": "Sentaurus 环境变量",
