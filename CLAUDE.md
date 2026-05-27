@@ -40,7 +40,11 @@ sentaurus-syntax-highlight/
 ├── icon.png                                    ← 扩展图标
 ├── language-configuration.json                 ← 遗留配置（已被 language-configurations/ 取代）
 ├── .vscodeignore                               ← VSIX 打包排除规则
+├── THIRD_PARTY_NOTICES.md                      ← 第三方许可证声明（marked.js MIT）
 ├── AGENTS.md                                   ← AI 辅助开发项目概述与指引
+│
+├── media/                                      ← Webview 静态资源
+│   └── marked.min.js                           ← marked.js v12（Markdown 渲染，~35KB）
 │
 ├── syntaxes/                                   ← TextMate 语法 + 函数文档数据
 │   ├── sde.tmLanguage.json                     ← SDE (Scheme) 语法高亮规则
@@ -84,6 +88,7 @@ sentaurus-syntax-highlight/
 │   ├── commands/                               ← VSCode 命令实现
 │   │   ├── expression-converter.js             ← Scheme 前缀 ↔ 中缀表达式双向转换（含 CursorTracker 光标位置感知、尖括号连字符变量语法、QuickPick 变量补全和历史模式）
 │   │   ├── env-var-manager.js                  ← SWB 环境变量管理命令（批量添加/搜索删除/导出/导入）
+│   │   ├── help-reader.js                      ← Webview 帮助阅读器（sentaurus.openHelp，三栏布局+搜索+大纲+状态持久化）
 │   │   └── snippet-picker.js                   ← QuickPick 代码片段命令（sentaurus.insertSnippet）
 │   │
 │   ├── lsp/                                    ← 语义功能核心（AST 解析 + Provider 注册）
@@ -155,6 +160,10 @@ sentaurus-syntax-highlight/
 │       └── extract_svisual_sections.js         ← 提取 Svisual section 信息
 │
 ├── docs/                                       ← 项目文档与术语表
+│   ├── help/                                   ← Webview 帮助阅读器文档（打包进 VSIX）
+│   │   ├── index.md                            ← 首页（功能概览）
+│   │   ├── {getting-started,installation,syntax-highlighting,completion,snippets,sdevicepar,faq}.md ← 占位文档
+│   │   └── toc.json                            ← 导航目录声明（标题+文件+children）
 │   ├── glossary.json                           ← TCAD 术语数据库
 │   ├── 函数文档提取与编写规范.md                 ← 文档编写规范
 │   ├── scope-color-reference.md                ← 全语言 Scope + Color + KeywordType 查询表
@@ -253,6 +262,23 @@ SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依
 ### 表达式转换
 
 `src/commands/expression-converter.js` 实现 Scheme 前缀表示 ↔ 中缀表示的双向转换（算术运算 + 数学函数）。连字符标识符（如 `W-doping`）在中缀表达式中通过 `<var-name>` 尖括号语法消除与减号的歧义——`tokenizeInfix` 解析尖括号为标识符 token，`astToInfix` 自动包裹连字符标识符。QuickPick 输入框通过 `CursorTracker` 启发式推断光标位置，实现光标位置感知补全（含尖括号区域感知），并支持 `!` 历史模式（`!` 浏览全部、`!3` 精确选中、`! 文本` 模糊过滤）。
+
+### 帮助文档阅读器
+
+`src/commands/help-reader.js`（~860 行）实现基于 WebviewPanel 的自定义帮助文档阅读器（`sentaurus.openHelp` 命令），替代内置 Markdown Preview。单模块架构：Extension 侧（HelpReader 类）负责路径校验/文件读取/消息分发，Webview 侧（模板字符串 `WEBVIEW_JS`）负责 Markdown 渲染/DOM 处理。
+
+**三栏布局**：左侧 toc 导航树（`toc.json` 驱动）+ 中间文章内容（`marked.js` 渲染）+ 右侧 heading 大纲（IntersectionObserver 追踪 active）。
+
+**核心功能**：
+- 链接拦截：事件委托 + `safeDecodeURIComponent`，同文档锚点/跨文档锚点/外部链接分流处理
+- 搜索高亮：Map 分组 DOM Text 节点 + 从后往前 wrap 避免偏移，支持 ▲▼/Enter/Esc 导航
+- 侧栏折叠：28px 窄条保留展开按钮（◀▶）
+- 状态持久化：`acquireVsCodeApi().getState/setState` 保存当前文档、scrollTop、搜索词、侧栏状态，面板重建时恢复
+- CSP nonce：`crypto.randomUUID()` 生成 nonce，仅允许内联脚本执行
+
+**数据文件**：`docs/help/` 下 8 个 `.md` 文档 + `toc.json` 导航声明。`media/marked.min.js`（v12，MIT 许可）通过 `asWebviewUri` 加载到 Webview。`.vscodeignore` 三级例外确保 `docs/help/**` 和 `media/marked.min.js` 打包进 VSIX。
+
+**测试**：`tests/test-help-reader.js`（23 个），覆盖 `_validatePath`（16 个路径安全测试）、`_parseToc`（3 个）、`_loadMarkedJs`（1 个）、`_buildHtml`（3 个），通过 `tests/helpers/mock-vscode.js` 模拟 VSCode API，无需 VSCode 运行时。
 
 ## 关键约束
 
