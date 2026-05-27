@@ -1,0 +1,32 @@
+[
+  { "title": "Home", "file": "index.md" },
+  {
+    "title": "Getting Started",
+    "children": [
+      { "title": "Quick Start", "file": "getting-started.md" },
+      { "title": "Installation", "file": "installation.md" }
+    ]
+  },
+  {
+    "title": "Features",
+    "children": [
+      { "title": "Syntax Highlighting", "file": "syntax-highlighting.md" },
+      { "title": "Auto Completion", "file": "completion.md" },
+      { "title": "Snippets", "file": "snippets.md" },
+      { "title": "Configuration", "file": "configuration.md" }
+    ]
+  },
+  {
+    "title": "SDEVICE PAR",
+    "children": [
+      { "title": "Syntax Highlighting", "file": "sdevicepar-highlighting.md" },
+      { "title": "Auto Completion", "file": "sdevicepar-completion.md" }
+    ]
+  },
+  {
+    "title": "FAQ",
+    "children": [
+      { "title": "FAQ", "file": "faq.md" }
+    ]
+  }
+]

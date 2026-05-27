@@ -850,11 +850,22 @@ const WEBVIEW_JS = `
 class HelpReader {
     constructor(context) {
         this.context = context;
-        this.docsDir = vscode.Uri.joinPath(context.extensionUri, 'docs', 'help');
+        this.docsDir = this._resolveDocsDir(context);
         this.docsDirFsPath = path.normalize(
             typeof this.docsDir.fsPath === 'string' ? this.docsDir.fsPath : this.docsDir.path
         );
         this.panel = undefined;
+    }
+
+    _resolveDocsDir(context) {
+        const base = vscode.Uri.joinPath(context.extensionUri, 'docs', 'help');
+        const lang = vscode.env.language || 'en';
+        const target = vscode.Uri.joinPath(base, lang);
+        const fs = require('fs');
+        try {
+            if (fs.statSync(typeof target.fsPath === 'string' ? target.fsPath : target.path).isDirectory()) return target;
+        } catch (_) { /* fallback */ }
+        return vscode.Uri.joinPath(base, 'en');
     }
 
     register() {
@@ -926,7 +937,7 @@ class HelpReader {
             "script-src 'nonce-" + nonce + "'"
         ].join('; ');
         return '<!DOCTYPE html>'
-            + '<html lang="zh-CN"><head>'
+            + '<html lang="' + (vscode.env.language || 'en') + '"><head>'
             + '<meta charset="UTF-8">'
             + '<meta http-equiv="Content-Security-Policy" content="' + csp + '">'
             + '<meta name="viewport" content="width=device-width, initial-scale=1.0">'

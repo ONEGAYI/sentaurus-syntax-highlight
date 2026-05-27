@@ -9,7 +9,7 @@ const assert = require('assert');
 const path = require('path');
 const HelpReader = require('../src/commands/help-reader')._HelpReader;
 
-const DOCS_DIR = path.normalize(path.join(__dirname, '..', 'docs', 'help'));
+const DOCS_DIR = path.normalize(path.join(__dirname, '..', 'docs', 'help', 'zh-cn'));
 
 function createReader() {
     var r = Object.create(HelpReader.prototype);
