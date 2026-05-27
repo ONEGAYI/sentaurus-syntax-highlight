@@ -369,4 +369,28 @@ test('addMaterialDbFile grafts deeply nested blocks correctly (format A)', () =>
     service.dispose();
 });
 
+// ── 回归测试：scope 名补全不依赖当前文件缓存 ──────────────────
+
+test('scopeName completion works without currentFileCache (cache miss)', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    service.loadBuiltinMaterialDb();
+
+    // 不调用 parseCurrentFile — 模拟文档版本已变更但 debounce 未触发的场景
+    const doc = {
+        uri: { toString: () => 'file:///uncached.par' },
+        version: 99,
+        getText: () => 'Material = "',
+    };
+
+    const items = service.getCompletionsAt(doc, { line: 0, character: 12 }, 'Material = "');
+    const scopeNameItems = items.filter(i => i.kind === 'scopeName');
+
+    assert.ok(scopeNameItems.length > 0, 'Should still have scopeName completions without cache');
+    const names = scopeNameItems.map(i => i.label);
+    assert.ok(names.includes('Silicon'), 'Should suggest Silicon from materialdb');
+    assert.ok(names.includes('Oxide'), 'Should suggest Oxide from materialdb');
+
+    service.dispose();
+});
+
 summary();

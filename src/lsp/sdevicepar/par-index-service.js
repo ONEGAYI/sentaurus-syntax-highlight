@@ -393,23 +393,29 @@ function createParIndexService(deps) {
         // 记录补全请求时 workspace 是否仍在扫描
         if (_workspaceScanning) _workspaceCompletionMissed = true;
 
+        // scope 名补全不依赖当前文件缓存 — MaterialDB + workspace 即可提供候选
+        if (lineText !== undefined) {
+            const scopeNameCtx = detectScopeNameContext(lineText, position.character);
+            if (scopeNameCtx) {
+                const uri = document.uri.toString();
+                const version = document.version;
+                const cached = currentFileCache.get(cacheKey(uri, version));
+                const symbols = cached
+                    ? cached.symbols.concat(getWorkspaceSymbols(), getMaterialDbSymbols())
+                    : getWorkspaceSymbols().concat(getMaterialDbSymbols());
+                return buildParCompletions(
+                    { completableKind: 'scopeName', parentPath: '', scopeType: scopeNameCtx.scopeType, pendingBlockName: null },
+                    symbols,
+                );
+            }
+        }
+
         const uri = document.uri.toString();
         const version = document.version;
         const key = cacheKey(uri, version);
 
         const cached = currentFileCache.get(key);
         if (!cached) return [];
-
-        // 如果传入 lineText，先检测 scope 名引号内补全
-        if (lineText !== undefined) {
-            const scopeNameCtx = detectScopeNameContext(lineText, position.character);
-            if (scopeNameCtx) {
-                return buildParCompletions(
-                    { completableKind: 'scopeName', parentPath: '', scopeType: scopeNameCtx.scopeType, pendingBlockName: null },
-                    cached.symbols.concat(getWorkspaceSymbols(), getMaterialDbSymbols()),
-                );
-            }
-        }
 
         const ctx = getContextAtPosition(cached.lineContexts, position.line, position.character);
         if (!ctx) return [];
