@@ -791,13 +791,41 @@ const WEBVIEW_JS = `
   function saveState() {
     vscodeApi.setState({
       currentFile: currentFile,
-      searchQuery: "",
+      searchQuery: searchInput.value,
       scrollTop: contentEl.scrollTop,
       leftCollapsed: sideLeft.classList.contains("collapsed"),
       rightCollapsed: sideRight.classList.contains("collapsed")
     });
   }
-  function restoreState(state) {}
+
+  function restoreState(state) {
+    if (!state) return;
+
+    // Restore sidebar collapse state
+    if (state.leftCollapsed) {
+      sideLeft.classList.add("collapsed");
+      var btn = sideLeft.querySelector(".toggle-btn");
+      if (btn) btn.textContent = "\\u25B6";
+    }
+    if (state.rightCollapsed) {
+      sideRight.classList.add("collapsed");
+      var btn2 = sideRight.querySelector(".toggle-btn");
+      if (btn2) btn2.textContent = "\\u25C0";
+    }
+
+    // Restore search — set input value then execute
+    if (state.searchQuery) {
+      searchInput.value = state.searchQuery;
+      performSearch(state.searchQuery);
+    }
+
+    // Restore scroll position (after DOM renders)
+    if (state.scrollTop) {
+      requestAnimationFrame(function() {
+        contentEl.scrollTop = state.scrollTop;
+      });
+    }
+  }
 
   // ═══ SECTION: Utilities ═══════════════════════════════════
 
