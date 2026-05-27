@@ -367,6 +367,19 @@
             "order": 1
           }
         }
+      },
+      {
+        "title": "%config.title.par%",
+        "properties": {
+          "sentaurus.materialDbPath": {
+            "type": "string",
+            "default": "",
+            "description": "%config.materialDbPath.description%",
+            "markdownDescription": "%config.materialDbPath.mdDesc%",
+            "scope": "machine",
+            "order": 1
+          }
+        }
       }
     ],
     "configurationDefaults": {

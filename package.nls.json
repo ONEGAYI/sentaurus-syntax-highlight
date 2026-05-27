@@ -51,5 +51,15 @@
   "semanticToken.sectionKeyword": "SDEVICE section parameter or keyword",
   "semanticToken.subSection": "SDEVICE Solve sub-section name (e.g. Quasistationary, Coupled, Transient)",
   "semanticToken.macro": "Preprocessor macro reference",
-  "semanticModifier.declaration": "Macro definition location"
+  "semanticModifier.declaration": "Macro definition location",
+
+  "config.title.par": "Sentaurus PAR MaterialDB",
+  "config.materialDbPath.description": "Path to MaterialDB directory containing .par files. Leave empty to use built-in placeholder data.",
+  "config.materialDbPath.mdDesc": "Absolute path to a **MaterialDB directory** containing `.par` files.\n\nWhen set, all direct child `.par` files in this directory are parsed and their parameters become available in completions (tagged as `materialdb` source).\n\nWhen empty or invalid, a built-in placeholder dataset is used. The full built-in MaterialDB will be populated in a future update.\n\n**Priority:** `materialdb` source has lower priority than `current` / `include` / `workspace`.",
+  "statusBar.materialdb.loaded": "PAR MaterialDB: {0} files",
+  "statusBar.scanning": "PAR index: scanning workspace...",
+  "statusBar.ready.missed": "PAR index ready — trigger completion again for workspace symbols",
+  "statusBar.ready.count": "PAR index ready: {0} files",
+  "hover.source": "Source: {0} (`{1}`)",
+  "hover.sourceNoFile": "Source: {0}"
 }
