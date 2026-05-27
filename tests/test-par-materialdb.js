@@ -221,4 +221,106 @@ test('clearMaterialDb followed by addMaterialDbFile works', () => {
     service.dispose();
 });
 
+// ── getCompletionsAt 集成 MaterialDB ──────────────────────
+
+test('scopeName completion includes builtin materialdb', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    service.loadBuiltinMaterialDb();
+
+    const doc = {
+        uri: { toString: () => 'file:///test.par' },
+        version: 1,
+        getText: () => '',
+    };
+    service.parseCurrentFile(doc);
+
+    const items = service.getCompletionsAt(doc, { line: 0, character: 12 }, 'Material = "|"');
+    const scopeNameItems = items.filter(i => i.kind === 'scopeName');
+    assert.ok(scopeNameItems.length > 0, 'Should have scopeName completions');
+
+    const names = scopeNameItems.map(i => i.label);
+    assert.ok(names.includes('Silicon'), 'Should suggest Silicon');
+    assert.ok(names.includes('Oxide'), 'Should suggest Oxide');
+
+    const siliconItem = scopeNameItems.find(i => i.label === 'Silicon');
+    assert.strictEqual(siliconItem.source, 'materialdb');
+
+    service.dispose();
+});
+
+test('block completion inside Material scope includes materialdb', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    service.loadBuiltinMaterialDb();
+
+    const text = 'Material = "Silicon" {\n  \n}\n';
+    const doc = {
+        uri: { toString: () => 'file:///test.par' },
+        version: 1,
+        getText: () => text,
+    };
+    service.parseCurrentFile(doc);
+
+    const items = service.getCompletionsAt(doc, { line: 1, character: 2 });
+    const blockItems = items.filter(i => i.kind === 'block');
+
+    const blockNames = blockItems.map(i => i.label);
+    assert.ok(blockNames.includes('Epsilon') || blockNames.includes('Bandgap'),
+        'Should suggest Epsilon or Bandgap from materialdb');
+
+    const epsilonItem = blockItems.find(i => i.label === 'Epsilon');
+    if (epsilonItem) {
+        assert.strictEqual(epsilonItem.source, 'materialdb');
+    }
+
+    service.dispose();
+});
+
+test('parameter completion inside Material block includes materialdb', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    service.loadBuiltinMaterialDb();
+
+    const text = 'Material = "Silicon" {\n  Epsilon {\n    \n  }\n}\n';
+    const doc = {
+        uri: { toString: () => 'file:///test.par' },
+        version: 1,
+        getText: () => text,
+    };
+    service.parseCurrentFile(doc);
+
+    const items = service.getCompletionsAt(doc, { line: 2, character: 4 });
+    const paramItems = items.filter(i => i.kind === 'parameter');
+
+    const paramNames = paramItems.map(i => i.label);
+    assert.ok(paramNames.includes('epsilon'), 'Should suggest epsilon from materialdb');
+
+    const epsItem = paramItems.find(i => i.label === 'epsilon');
+    assert.strictEqual(epsItem.source, 'materialdb');
+
+    service.dispose();
+});
+
+test('workspace source wins over materialdb for same-name symbol', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+
+    service.addWorkspaceFile('file:///ws/test.par',
+        'Material = "Silicon" {\n  Bandgap {\n    Eg0 = 1.08\n  }\n}\n');
+
+    service.loadBuiltinMaterialDb();
+
+    const doc = {
+        uri: { toString: () => 'file:///current.par' },
+        version: 1,
+        getText: () => '',
+    };
+    service.parseCurrentFile(doc);
+
+    const items = service.getCompletionsAt(doc, { line: 0, character: 12 }, 'Material = "|"');
+    const siliconItems = items.filter(i => i.label === 'Silicon');
+
+    assert.strictEqual(siliconItems.length, 1, 'Deduped to one Silicon');
+    assert.strictEqual(siliconItems[0].source, 'workspace', 'Workspace should win over materialdb');
+
+    service.dispose();
+});
+
 summary();

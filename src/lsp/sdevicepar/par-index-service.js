@@ -401,7 +401,7 @@ function createParIndexService(deps) {
             if (scopeNameCtx) {
                 return buildParCompletions(
                     { completableKind: 'scopeName', parentPath: '', scopeType: scopeNameCtx.scopeType, pendingBlockName: null },
-                    cached.symbols.concat(getWorkspaceSymbols()),
+                    cached.symbols.concat(getWorkspaceSymbols(), getMaterialDbSymbols()),
                 );
             }
         }
@@ -409,7 +409,7 @@ function createParIndexService(deps) {
         const ctx = getContextAtPosition(cached.lineContexts, position.line, position.character);
         if (!ctx) return [];
 
-        return buildParCompletions(ctx, cached.symbols.concat(getWorkspaceSymbols()));
+        return buildParCompletions(ctx, cached.symbols.concat(getWorkspaceSymbols(), getMaterialDbSymbols()));
     }
 
     function onFileChanged(uriOrPath) {
