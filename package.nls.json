@@ -8,6 +8,7 @@
   "sentaurus.removeEnvironmentVariables": "Sentaurus: Search and Remove Environment Variables",
   "sentaurus.exportEnvironmentVariables": "Sentaurus: Export Environment Variables",
   "sentaurus.importEnvironmentVariables": "Sentaurus: Import Environment Variables",
+  "sentaurus.openHelp": "Sentaurus: Open Help",
 
   "config.title.syntax": "Sentaurus TCAD Syntax",
   "config.title.envVars": "Sentaurus Environment Variables",

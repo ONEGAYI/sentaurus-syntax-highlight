@@ -34,6 +34,7 @@ function createParIndexService(deps) {
     // materialDbIndex: Map<filePath, ParSymbol[]> — MaterialDB 文件符号（标记 source: "materialdb"）
     const materialDbIndex = new Map();
 
+
     // workspace 扫描状态
     let _workspaceScanning = false;
     let _workspaceCompletionMissed = false;
@@ -504,6 +505,7 @@ function createParIndexService(deps) {
         clearMaterialDb,
         getMaterialDbSymbols,
         getMaterialDbFileCount,
+
         dispose,
     };
 }

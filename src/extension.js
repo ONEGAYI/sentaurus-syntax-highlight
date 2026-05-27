@@ -375,6 +375,7 @@ function activate(context) {
         }, 500);
     }
 
+
     // ── Phase 2.2: Workspace .par 文件扫描 ──────────────────
 
     function uriToFsPath(uri) {
@@ -489,6 +490,7 @@ function activate(context) {
             }
         })
     );
+
 
     // ── Completion/Hover/Definition Providers ──────────────────
     // Must come before registerSdeProviders — builds modeDispatchTable/symbolParamsTable
@@ -805,6 +807,10 @@ function activate(context) {
         }
     });
     context.subscriptions.push(helpDisposable);
+
+    // ── 帮助文档命令 ──────────────────────────
+    const { register: registerHelpReader } = require('./commands/help-reader');
+    registerHelpReader(context);
 }
 
 function deactivate() {

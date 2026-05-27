@@ -1,0 +1,30 @@
+[
+  { "title": "首页", "file": "index.md" },
+  {
+    "title": "入门指南",
+    "children": [
+      { "title": "快速开始", "file": "getting-started.md" },
+      { "title": "安装配置", "file": "installation.md" }
+    ]
+  },
+  {
+    "title": "功能特性",
+    "children": [
+      { "title": "语法高亮", "file": "syntax-highlighting.md" },
+      { "title": "自动补全", "file": "completion.md" },
+      { "title": "代码片段", "file": "snippets.md" }
+    ]
+  },
+  {
+    "title": "SDEVICE PAR",
+    "children": [
+      { "title": "参数补全", "file": "sdevicepar.md" }
+    ]
+  },
+  {
+    "title": "常见问题",
+    "children": [
+      { "title": "FAQ", "file": "faq.md" }
+    ]
+  }
+]
