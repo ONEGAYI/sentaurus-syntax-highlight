@@ -6,7 +6,7 @@ const fs = require('fs');
 const { URL, fileURLToPath } = require('url');
 const { parseParText } = require('./par-parser');
 const { stackToPath, getContextAtPosition, detectScopeNameContext } = require('./par-context');
-const { SCOPE_TYPES_ARRAY, SOURCE_PRIORITY, MAX_CACHE_SIZE, MAX_INCLUDE_DEPTH } = require('./par-constants');
+const { SCOPE_TYPES_ARRAY, SOURCE_PRIORITY, MAX_CACHE_SIZE, MAX_INCLUDE_DEPTH, BUILTIN_MATERIALDB_STUB_FILES } = require('./par-constants');
 const { buildParCompletions } = require('./par-completion');
 
 /**
@@ -30,6 +30,9 @@ function createParIndexService(deps) {
     // workspaceIndex: Map<uri, ParSymbol[]> — workspace .par 文件符号（标记 source: "workspace"）
     // key 为 URI string，value 为已标记 source 的 symbol 数组
     const workspaceIndex = new Map();
+
+    // materialDbIndex: Map<filePath, ParSymbol[]> — MaterialDB 文件符号（标记 source: "materialdb"）
+    const materialDbIndex = new Map();
 
     // workspace 扫描状态
     let _workspaceScanning = false;
@@ -126,6 +129,128 @@ function createParIndexService(deps) {
             all.push(...symbols);
         }
         return all;
+    }
+
+    /**
+     * 从文件路径推断 Material 名称。
+     * 取文件名（去掉 .par 后缀），如 /db/Silicon.par → "Silicon"。
+     * @param {string} filePath
+     * @returns {string|null}
+     */
+    function inferMaterialNameFromPath(filePath) {
+        const normalized = filePath.replace(/\\/g, '/');
+        const filename = normalized.split('/').pop();
+        return filename ? filename.replace(/\.par$/i, '') : null;
+    }
+
+    /**
+     * 添加单个 MaterialDB 文件到索引。
+     *
+     * 支持两种文件格式的归一化：
+     * - 格式 A（顶层 block，如 Silicon.par）：自动创建 synthetic Material scope 并 graft
+     * - 格式 B（显式 Material scope，如 example_sdevice.par）：直接标记 source
+     *
+     * @param {string} filePath - 文件路径（绝对路径或标识字符串）
+     * @param {string} text - 文件文本内容
+     */
+    function addMaterialDbFile(filePath, text) {
+        const rawResult = parseParText(text, filePath);
+        const rawSymbols = rawResult.symbols;
+
+        const hasExplicitMaterialScope = rawSymbols.some(
+            s => s.kind === 'scope' && s.scopeType === 'Material'
+        );
+
+        let finalSymbols;
+
+        if (hasExplicitMaterialScope) {
+            // 格式 B：已有 Material scope — 直接标记 source
+            finalSymbols = rawSymbols.map(s => ({
+                ...s,
+                source: 'materialdb',
+                filePath,
+            }));
+        } else {
+            // 格式 A：顶层 block/parameter — synthetic wrap + graft
+            const materialName = inferMaterialNameFromPath(filePath);
+            if (!materialName || rawSymbols.length === 0) {
+                finalSymbols = rawSymbols.map(s => ({
+                    ...s,
+                    source: 'materialdb',
+                    filePath,
+                }));
+            } else {
+                const scopePrefix = 'Material/' + materialName;
+
+                const syntheticScope = {
+                    kind: 'scope',
+                    name: materialName,
+                    scopeType: 'Material',
+                    parentPath: '',
+                    fullPath: scopePrefix,
+                    range: { startLine: 0, startCol: 0, endLine: 0, endCol: 0 },
+                    value: null,
+                    source: 'materialdb',
+                    filePath,
+                    includeChain: [],
+                };
+
+                const grafted = rawSymbols.map(s => {
+                    const newParentPath = s.parentPath
+                        ? scopePrefix + '/' + s.parentPath
+                        : scopePrefix;
+                    return {
+                        ...s,
+                        parentPath: newParentPath,
+                        fullPath: newParentPath + '/' + s.name,
+                        source: 'materialdb',
+                        filePath,
+                    };
+                });
+
+                finalSymbols = [syntheticScope, ...grafted];
+            }
+        }
+
+        if (finalSymbols.length > 0) {
+            materialDbIndex.set(filePath, finalSymbols);
+        }
+    }
+
+    /**
+     * 加载内置 MaterialDB 占位数据。
+     * 通过 addMaterialDbFile 走相同归一化管线。
+     */
+    function loadBuiltinMaterialDb() {
+        materialDbIndex.clear();
+        for (const entry of BUILTIN_MATERIALDB_STUB_FILES) {
+            addMaterialDbFile(entry.filePath, entry.text);
+        }
+    }
+
+    /**
+     * 清空 MaterialDB 索引。
+     */
+    function clearMaterialDb() {
+        materialDbIndex.clear();
+    }
+
+    /**
+     * 获取所有 MaterialDB 文件的符号（扁平化数组）。
+     */
+    function getMaterialDbSymbols() {
+        const all = [];
+        for (const symbols of materialDbIndex.values()) {
+            all.push(...symbols);
+        }
+        return all;
+    }
+
+    /**
+     * 获取 MaterialDB 索引中的文件数量。
+     */
+    function getMaterialDbFileCount() {
+        return materialDbIndex.size;
     }
 
     /**
@@ -323,6 +448,7 @@ function createParIndexService(deps) {
         currentFileCache.clear();
         includeRawCache.clear();
         workspaceIndex.clear();
+        materialDbIndex.clear();
         _workspaceScanning = false;
         _workspaceCompletionMissed = false;
     }
@@ -353,6 +479,11 @@ function createParIndexService(deps) {
         setWorkspaceScanning,
         consumeWorkspaceCompletionMissed,
         getWorkspaceFileCount,
+        addMaterialDbFile,
+        loadBuiltinMaterialDb,
+        clearMaterialDb,
+        getMaterialDbSymbols,
+        getMaterialDbFileCount,
         dispose,
     };
 }
