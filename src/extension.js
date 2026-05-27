@@ -594,6 +594,10 @@ function activate(context) {
         }
     });
     context.subscriptions.push(helpDisposable);
+
+    // ── 帮助文档命令 ──────────────────────────
+    const { register: registerHelpReader } = require('./commands/help-reader');
+    registerHelpReader(context);
 }
 
 function deactivate() {

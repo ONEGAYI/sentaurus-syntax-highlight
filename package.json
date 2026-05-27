@@ -17,7 +17,8 @@
     "onLanguage:sprocess",
     "onLanguage:emw",
     "onLanguage:inspect",
-    "onLanguage:svisual"
+    "onLanguage:svisual",
+    "onCommand:sentaurus.openHelp"
   ],
   "engines": {
     "vscode": "^1.60.0"
@@ -232,6 +233,10 @@
       {
         "command": "sentaurus.importEnvironmentVariables",
         "title": "%sentaurus.importEnvironmentVariables%"
+      },
+      {
+        "command": "sentaurus.openHelp",
+        "title": "%sentaurus.openHelp%"
       }
     ],
     "snippets": [
