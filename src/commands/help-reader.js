@@ -483,8 +483,65 @@ const WEBVIEW_JS = `
     return s || "heading";
   }
 
-  // ═══ SECTION: Link Interception ═══════════════════════════
-  // (ENHANCE: Task 6 — 当前为空，链接点击不拦截)
+  // ═══ SECTION: Link Interception ══════════════════════════
+  // Safe decode — malformed % encoding won't crash the click handler
+  function safeDecodeURIComponent(s) {
+    try { return decodeURIComponent(s); }
+    catch (e) { return s; }
+  }
+
+  // Event delegation on article — survives innerHTML rewrites
+  article.addEventListener("click", function(e) {
+    var a = e.target.closest("a");
+    if (!a) return;
+    e.preventDefault();
+    var href = a.getAttribute("href") || "";
+
+    // #anchor — same-document scroll (supports CJK / encoded anchors)
+    if (href.charAt(0) === "#" && href.length > 1) {
+      var anchorId = safeDecodeURIComponent(href.substring(1));
+      if (anchorId) scrollToAnchor(anchorId);
+      return;
+    }
+
+    // Reject dangerous protocols
+    if (/^javascript:/i.test(href)) return;
+    if (/^vbscript:/i.test(href)) return;
+    if (/^data:/i.test(href)) return;
+    if (/^vscode:/i.test(href)) return;
+    if (/^command:/i.test(href)) return;
+
+    // http: — reject
+    if (/^http:/i.test(href)) return;
+
+    // .md link (with optional #anchor)
+    var hashIdx = href.indexOf("#");
+    var filePart = hashIdx >= 0 ? href.substring(0, hashIdx) : href;
+    if (/.md$/i.test(filePart)) {
+      var anchorPart = hashIdx >= 0 ? href.substring(hashIdx + 1) : null;
+      // Phase 1: file name is sent as-is (no decode), anchor is safely decoded
+      vscodeApi.postMessage({
+        type: "openDoc",
+        file: filePart,
+        anchor: anchorPart ? safeDecodeURIComponent(anchorPart) : undefined
+      });
+      return;
+    }
+
+    // https: — open external
+    if (/^https:/i.test(href)) {
+      vscodeApi.postMessage({ type: "openExternal", href: href });
+      return;
+    }
+
+    // mailto: — open external
+    if (/^mailto:/i.test(href)) {
+      vscodeApi.postMessage({ type: "openExternal", href: href });
+      return;
+    }
+
+    // All other — silently ignore
+  });
 
   // ═══ SECTION: Sidebar Toggle ══════════════════════════════
 
