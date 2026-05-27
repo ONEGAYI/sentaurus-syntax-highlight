@@ -50,5 +50,9 @@
   "semanticToken.sectionKeyword": "SDEVICE section 内匹配的参数或关键词",
   "semanticToken.subSection": "SDEVICE Solve 子 section 块名（如 Quasistationary、Coupled、Transient）",
   "semanticToken.macro": "预处理器宏引用",
-  "semanticModifier.declaration": "宏定义声明位置"
+  "semanticModifier.declaration": "宏定义声明位置",
+
+  "config.title.par": "Sentaurus PAR 材料数据库",
+  "config.materialDbPath.description": "MaterialDB 目录路径（包含 .par 文件）。留空则使用内置占位数据。",
+  "config.materialDbPath.mdDesc": "包含 `.par` 文件的 **MaterialDB 目录**的绝对路径。\n\n设置后，该目录下所有直接子级 `.par` 文件将被解析，其参数可在补全中使用（标记为 `materialdb` 来源）。\n\n留空或无效时使用内置占位数据。完整的内置 MaterialDB 将在后续更新中填充。\n\n**优先级：** `materialdb` 来源的优先级低于 `current` / `include` / `workspace`。"
 }
