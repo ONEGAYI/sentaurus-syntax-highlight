@@ -68,13 +68,50 @@ cp "docs/Built-in Help/index.md" docs/help/index.md
 
 - [ ] **Step 3: 创建占位帮助文档**
 
-toc.json 引用了 7 个子文档，全部创建占位文件：
+toc.json 引用了 7 个子文档，全部创建占位文件。使用 `cat <<EOF` 确保 Markdown 内容正确生成（不依赖 `echo \n` 或 `sed \u` 等可移植性差的命令）：
 
 ```bash
-for f in getting-started installation syntax-highlighting completion snippets sdevicepar faq; do
-  title=$(echo "$f" | sed 's/-/ /g' | sed 's/\b\(.\)/\u\u\1/g')
-  echo "# ${title}\n\n> 内容待补充。" > "docs/help/${f}.md"
-done
+cat > docs/help/getting-started.md <<'EOF'
+# 快速开始
+
+> 内容待补充。
+EOF
+
+cat > docs/help/installation.md <<'EOF'
+# 安装配置
+
+> 内容待补充。
+EOF
+
+cat > docs/help/syntax-highlighting.md <<'EOF'
+# 语法高亮
+
+> 内容待补充。
+EOF
+
+cat > docs/help/completion.md <<'EOF'
+# 自动补全
+
+> 内容待补充。
+EOF
+
+cat > docs/help/snippets.md <<'EOF'
+# 代码片段
+
+> 内容待补充。
+EOF
+
+cat > docs/help/sdevicepar.md <<'EOF'
+# SDEVICE PAR 参数
+
+> 内容待补充。
+EOF
+
+cat > docs/help/faq.md <<'EOF'
+# 常见问题
+
+> 内容待补充。
+EOF
 ```
 
 - [ ] **Step 4: 创建 toc.json**
@@ -121,17 +158,39 @@ curl -sL https://cdn.jsdelivr.net/npm/marked@12/marked.min.js -o media/marked.mi
 wc -c media/marked.min.js
 ```
 
-期望文件大小 15-30KB。下载后验证 API 可用：
+期望文件大小 15-30KB。下载后验证 API 可用。简单的字符串检查不足以证明 bundle 可执行，需要真实解析 smoke test：
 
 ```bash
 node -e "
 const fs = require('fs');
 const src = fs.readFileSync('media/marked.min.js', 'utf8');
-console.log('length:', src.length);
-console.log('has marked.parse:', src.includes('.parse'));
-console.log('has marked.use:', src.includes('.use'));
+console.log('file length:', src.length);
+
+// Smoke test: execute the bundle and verify core APIs work
+const vm = require('vm');
+const sandbox = { console: console, exports: {}, module: { exports: {} } };
+vm.createContext(sandbox);
+vm.runInContext(src, sandbox);
+const marked = sandbox.marked;
+
+// Test 1: basic parse
+const html1 = marked.parse('# Title');
+console.log('parse h1:', html1.indexOf('<h1') >= 0 ? 'OK' : 'FAIL');
+
+// Test 2: custom image renderer
+marked.use({
+  renderer: {
+    image: function(href, title, text) {
+      return '<img data-test=\"custom\" src=\"' + href + '\" alt=\"' + text + '\">';
+    }
+  }
+});
+const html2 = marked.parse('![alt](images/a.png)');
+console.log('image renderer:', html2.indexOf('data-test=\"custom\"') >= 0 ? 'OK' : 'FAIL');
 "
 ```
+
+期望输出：`file length: 15000-30000`、`parse h1: OK`、`image renderer: OK`。如果 vm 沙箱加载 browser bundle 失败（某些版本依赖 `window`），则在 Task 12 验收中确认 image renderer 生效（打开含相对图片的 Markdown，确认图片 src 以 `vscode-file://` 开头而非 marked 默认渲染）。
 
 - [ ] **Step 6: 创建 THIRD_PARTY_NOTICES.md**
 
@@ -989,9 +1048,13 @@ const WEBVIEW_JS = `
   function handleDocContent(msg) {
     currentFile = msg.file;
     docsBaseUri = msg.docsBaseUri || "";
-    // 清空搜索（普通切换）— restoreState 在首次加载后恢复
+    // Reset search state only (don't restore old article via clearSearch)
+    // clearSearch writes baseArticleHtml back to article which is wasteful
+    // since we're about to overwrite article.innerHTML anyway
     searchInput.value = "";
-    clearSearch();
+    searchHits = [];
+    currentHitIndex = -1;
+    updateSearchUI();
     hideBanner();
 
     if (typeof marked === "undefined") {
@@ -1018,7 +1081,8 @@ const WEBVIEW_JS = `
     updateTocActive(currentFile);
 
     if (msg.anchor) {
-      scrollToAnchor(decodeURIComponent(msg.anchor));
+      // anchor already decoded by safeDecodeURIComponent in link handler (Task 6)
+      scrollToAnchor(msg.anchor);
     } else {
       contentEl.scrollTop = 0;
     }
@@ -1271,6 +1335,12 @@ No-op stub（标记 ENHANCE）：
 找到标记 `// ═══ SECTION: Link Interception ═════════════════════════════` 及其下一行 `// (ENHANCE: Task 6 — 当前为空，链接点击不拦截)`，替换为以下完整实现：
 
 ```js
+  // Safe decode — malformed % encoding won't crash the click handler
+  function safeDecodeURIComponent(s) {
+    try { return decodeURIComponent(s); }
+    catch (e) { return s; }
+  }
+
   // Event delegation on article — survives innerHTML rewrites
   article.addEventListener("click", function(e) {
     var a = e.target.closest("a");
@@ -1280,7 +1350,7 @@ No-op stub（标记 ENHANCE）：
 
     // #anchor — same-document scroll (supports CJK / encoded anchors)
     if (href.charAt(0) === "#" && href.length > 1) {
-      var anchorId = decodeURIComponent(href.substring(1));
+      var anchorId = safeDecodeURIComponent(href.substring(1));
       if (anchorId) scrollToAnchor(anchorId);
       return;
     }
@@ -1300,10 +1370,11 @@ No-op stub（标记 ENHANCE）：
     var filePart = hashIdx >= 0 ? href.substring(0, hashIdx) : href;
     if (/\\.md$/i.test(filePart)) {
       var anchorPart = hashIdx >= 0 ? href.substring(hashIdx + 1) : null;
+      // Phase 1: file name is sent as-is (no decode), anchor is safely decoded
       vscodeApi.postMessage({
         type: "openDoc",
         file: filePart,
-        anchor: anchorPart ? decodeURIComponent(anchorPart) : undefined
+        anchor: anchorPart ? safeDecodeURIComponent(anchorPart) : undefined
       });
       return;
     }
@@ -1324,7 +1395,7 @@ No-op stub（标记 ENHANCE）：
   });
 ```
 
-> **链接解析改进：** 不使用正则限制 anchor 格式。先按 `#` 分割 href，filePart 以 `.md` 结尾则走 openDoc，anchor 通过 `decodeURIComponent` 支持中文。纯 `#anchor` 走当前文档滚动。事件委托绑定在 `article` 上，`innerHTML` 重写不影响。
+> **链接解析改进：** 不使用正则限制 anchor 格式。先按 `#` 分割 href，filePart 以 `.md` 结尾则走 openDoc，anchor 通过 `safeDecodeURIComponent` 支持中文且不因 malformed `%` 编码崩溃。纯 `#anchor` 走当前文档滚动。事件委托绑定在 `article` 上，`innerHTML` 重写不影响。**Phase 1 不支持 URL 编码的 .md 文件名**——`filePart` 原样发送给 Extension，不做 decode。
 
 - [ ] **Step 2: 语法检查**
 
@@ -1552,36 +1623,21 @@ IntersectionObserver (root=content, rootMargin=-80%) 追踪 active。
       }
     }
 
-    // Wrap matches — group by node, process from end to start within each node
-    var byNode = {};
+    // Wrap matches — group by text node using Map
+    // (DOM nodes cannot be used as plain object keys, they all stringify to "[object Text]")
+    var nodeMap = new Map();
     matches.forEach(function(m) {
-      var key = m.node;
-      if (!byNode.get) byNode[key] = byNode[key] || []; // plain object fallback
+      if (!nodeMap.has(m.node)) nodeMap.set(m.node, []);
+      nodeMap.get(m.node).push(m);
     });
 
-    // Simpler approach: process all matches in reverse document order
-    // After each surroundContents, the text node splits, so we must track
-    matches.forEach(function(m) {
-      // Re-find the match position in the current text node
-      // (offsets may shift if earlier matches on same node were processed)
-    });
-
-    // Correct approach: collect matches, then process each text node's matches
-    // from last to first to avoid offset shifts
-    var nodeMatches = {};
-    matches.forEach(function(m) {
-      var id = m.node;
-      if (!nodeMatches[id]) nodeMatches[id] = { node: m.node, hits: [] };
-      nodeMatches[id].hits.push(m);
-    });
-
-    var allHits = [];
-    Object.keys(nodeMatches).forEach(function(key) {
-      var entry = nodeMatches[key];
-      // Sort by idx descending within this node
-      entry.hits.sort(function(a, b) { return b.idx - a.idx; });
-      var node = entry.node;
-      entry.hits.forEach(function(m) {
+    // Process each node's matches from last to first to preserve offsets.
+    // Collect <mark> elements in document order.
+    searchHits = [];
+    nodeMap.forEach(function(hits, node) {
+      hits.sort(function(a, b) { return b.idx - a.idx; });
+      var nodeMarks = [];
+      hits.forEach(function(m) {
         try {
           var range = document.createRange();
           range.setStart(node, m.idx);
@@ -1589,14 +1645,14 @@ IntersectionObserver (root=content, rootMargin=-80%) 追踪 active。
           var mark = document.createElement("mark");
           mark.className = "hit";
           range.surroundContents(mark);
-          allHits.push(mark);
+          nodeMarks.push(mark);
         } catch(e) { /* skip invalid range */ }
       });
+      // nodeMarks are last-to-first within this node; reverse to document order
+      for (var i = nodeMarks.length - 1; i >= 0; i--) {
+        searchHits.push(nodeMarks[i]);
+      }
     });
-
-    // allHits are in reverse order (last node first, last match first)
-    // Reverse to get document order
-    searchHits = allHits.reverse();
 
     if (searchHits.length) navigateHit(1);
     updateSearchUI();
@@ -1640,7 +1696,7 @@ IntersectionObserver (root=content, rootMargin=-80%) 追踪 active。
   }
 ```
 
-> **多匹配搜索：** 对每个文本节点收集所有匹配位置。按节点分组，同一节点内从末尾到开头处理，避免 `surroundContents` 改变前面的 offset。`searchHits` 计数 = 所有匹配项数量，不是文本节点数量。
+> **多匹配搜索：** 对每个文本节点收集所有匹配位置。使用 `Map`（而非 plain object）按 DOM Text node 分组——因为 DOM node 作为 object key 会全部变成 `"[object Text]"` 导致不同节点互相覆盖。同一节点内从末尾到开头处理，避免 `surroundContents` 改变前面的 offset。`searchHits` 计数 = 所有匹配项数量，不是文本节点数量。`Map.forEach` 按插入顺序迭代（即 TreeWalker 遍历顺序），每个节点内 `nodeMarks` 反转后追加，保证最终 `searchHits` 为文档顺序。
 
 - [ ] **Step 2: 语法检查**
 
@@ -1767,18 +1823,26 @@ restoreState: 首次 docContent 加载后恢复
 
 - [ ] **Step 2: 更新 .vscodeignore**
 
-找到 `docs/**` 行。在其**之后**、`benchmarks/**` 行**之前**，添加以下例外规则。由于 `docs/**` 排除了整个 docs 目录，必须先重新允许 `docs/` 再允许子目录：
+将 `.vscodeignore` 中 `docs` 相关的规则**整理为以下最终形态**（替换原有 `docs/**` 行，不要重复添加第二个 `docs/**`）：
 
 ```text
 docs/**
 !docs/
 !docs/help/
 !docs/help/**
+```
+
+然后在文件中适当位置添加 `media` 例外：
+
+```text
 !media/
 !media/marked.min.js
 ```
 
-> **注意：** 这些行必须放在 `docs/**` 之后、其他规则之前。如果 `.vscodeignore` 中存在更靠后的 `*.js` 排除规则，需确认 `media/marked.min.js` 仍被保留。最终以 `npx vsce package` + `unzip -l` 验证为准。
+**注意：**
+- 如果 `.vscodeignore` 后方有更广泛的排除规则（如 `**/*.js`），确保 `!media/marked.min.js` 在该规则之后仍能覆盖
+- 不要重复写入 `docs/**`
+- 最终必须通过 Task 12 的 `npx vsce package` + `unzip -l` 验证打包内容正确
 
 - [ ] **Step 3: 语法检查**
 
@@ -1961,7 +2025,7 @@ git commit -m "test(help-reader): 扩展单元测试 + 清理旧目录
 - [ ] **Step 4: 导航验收**
 
 - [ ] 点击左侧各 toc 条目 → 切换文档（占位文档正常显示）
-- [ ] 点击不存在的 toc 条目 → 保留当前正文 + 顶部 banner 提示
+- [ ] **不存在文档的容错测试：** 临时在 index.md 中添加 `[不存在](nonexistent.md)` 链接，点击后确认当前正文保留 + 顶部 banner 提示；测试后 `git checkout docs/help/index.md` 还原
 - [ ] 点击右侧大纲项 → 文章滚动到对应 heading
 - [ ] 滚动文章 → 大纲 active 项跟随变化
 
@@ -2072,7 +2136,7 @@ git checkout docs/help/index.md
 
 所有测试通过 `tests/helpers/mock-vscode.js` mock `vscode` 模块，无需 VSCode 运行时。`node tests/test-help-reader.js` 可在普通 Node 环境运行。
 
-### 5. 修订项闭环检查
+### 5. v2 修订项闭环检查（22 项）
 
 | # | 要求 | 闭环 |
 |---|------|------|
@@ -2098,3 +2162,16 @@ git checkout docs/help/index.md
 | 二十 | grep 清理旧路径 → Task 11 Step 3 | ✅ |
 | 二十一 | 验收测试 → Task 12 增加中文 anchor、多命中、侧栏、scrollTop 等 | ✅ |
 | 二十二 | 计划结构 → 每个 Task 语法有效、测试可运行 | ✅ |
+
+### 6. v2.1 修订项闭环检查（8 项）
+
+| # | 要求 | 闭环 |
+|---|------|------|
+| 1 | 搜索 DOM node 当 object key → Map 方案，删除 byNode/nodeMatches 残片 | ✅ Task 8 |
+| 2 | 占位文档 sed/echo 可移植性差 → cat <<EOF 显式写入 | ✅ Task 1 Step 3 |
+| 3 | marked.js 验证太弱 → vm sandbox smoke test（parse + custom renderer） | ✅ Task 1 Step 5 |
+| 4 | decodeURIComponent 无保护 → safeDecodeURIComponent + Phase 1 不 decode filePart | ✅ Task 6 |
+| 5 | .vscodeignore 指令歧义 → "整理为最终形态"，不追加重复规则 | ✅ Task 10 |
+| 6 | "不存在 toc 条目" 验收矛盾 → 临时在 index.md 添加 nonexistent.md 链接测试 | ✅ Task 12 |
+| 7 | handleDocContent clearSearch 副作用 → 直接重置搜索状态，不恢复旧 article | ✅ Task 5 |
+| 8 | Self-Review 更新 → 新增 v2.1 修订项闭环表 | ✅ 本节 |
