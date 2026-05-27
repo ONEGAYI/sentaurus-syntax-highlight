@@ -596,12 +596,8 @@ function activate(context) {
     context.subscriptions.push(helpDisposable);
 
     // ── 帮助文档命令 ──────────────────────────
-    context.subscriptions.push(
-        vscode.commands.registerCommand('sentaurus.openHelp', () => {
-            const helpPath = vscode.Uri.joinPath(context.extensionUri, 'docs', 'Built-in Help', 'index.md');
-            vscode.commands.executeCommand('markdown.showPreview', helpPath);
-        })
-    );
+    const { register: registerHelpReader } = require('./commands/help-reader');
+    registerHelpReader(context);
 }
 
 function deactivate() {

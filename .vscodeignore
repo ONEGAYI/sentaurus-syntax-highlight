@@ -22,6 +22,9 @@ display_test/**
 
 references/**
 docs/**
+!docs/
+!docs/help/
+!docs/help/**
 
 benchmarks/**
 tests/**
@@ -34,3 +37,7 @@ node_modules/web-tree-sitter/lib/**
 node_modules/web-tree-sitter/src/**
 node_modules/web-tree-sitter/*.map
 # node_modules/web-tree-sitter/*.cjs — 不能排除，CommonJS require 入口
+
+# webview 帮助阅读器资源
+!media/
+!media/marked.min.js
