@@ -104,6 +104,10 @@ This means that in `Physics { Recombination { ... } }`, `Physics`, `Recombinatio
 
 > **Note**: Semantic tokens fall back to the default editor foreground color under the Dark+ theme (i.e., no additional coloring). To see the distinction, you can customize colors via `editor.semanticTokenColorCustomizations` in your `settings.json`.
 
+### SDEVICE PAR Parameter Files
+
+SDEVICE PAR parameter files (`*.par`) use a standalone declarative syntax — a three-level scope → block → parameter hierarchy that differs significantly from standard Tcl. The extension provides dedicated highlighting rules for this structure, with distinct colors for scopeType keywords, physical model block names, parameter assignments, Insert references, and more. Single-line nesting and preprocessor directives are also supported. See [SDEVICE PAR Syntax Highlighting](sdevicepar.md) for details.
+
 ## Code Folding
 
 All 7 languages support code folding. You can collapse code blocks using the fold arrows next to line numbers or keyboard shortcuts:

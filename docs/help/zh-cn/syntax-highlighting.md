@@ -104,6 +104,10 @@ SDEVICE 拥有一套额外的语义着色系统，通过跟踪 `{}` 嵌套层级
 
 > **注意**：语义 Token 在 Dark+ 主题下默认回退到编辑器前景色（即不会额外着色）。如果你希望看到区分效果，可以在 `settings.json` 中通过 `editor.semanticTokenColorCustomizations` 自定义颜色。
 
+### SDEVICE PAR 参数文件
+
+SDEVICE PAR 参数文件（`*.par`）拥有独立的声明式语法——scope → block → parameter 三级层次结构，与标准 Tcl 差异较大，因此扩展为它提供了专门的高亮规则。scopeType 关键字、物理模型 block 名称、参数赋值、Insert 引用等元素分别着色，并支持单行嵌套语法和预处理器指令。详见 [SDEVICE PAR 语法高亮](sdevicepar.md)。
+
 ## 代码折叠
 
 所有 7 种语言都支持代码折叠功能，你可以通过行号旁的折叠箭头或快捷键收起代码块：
