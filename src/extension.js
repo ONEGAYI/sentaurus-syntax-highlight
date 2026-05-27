@@ -172,6 +172,23 @@ function activate(context) {
     const parStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 50);
     context.subscriptions.push(parStatusBar);
 
+    // MaterialDB 目录 watcher（随配置变更反复创建/销毁）
+    let materialDbWatcher = null;
+    let materialDbRefreshTimer = null;
+    // Early cleanup: ensure watcher is disposed even if activate() throws later
+    context.subscriptions.push({ dispose: () => disposeMaterialDbWatcher() });
+
+    function disposeMaterialDbWatcher() {
+        if (materialDbWatcher) {
+            materialDbWatcher.dispose();
+            materialDbWatcher = null;
+        }
+        if (materialDbRefreshTimer) {
+            clearTimeout(materialDbRefreshTimer);
+            materialDbRefreshTimer = null;
+        }
+    }
+
     // 加载 MaterialDB（配置路径或内置占位）—— 必须在 preheat 之前，
     // 以确保补全时 materialdb symbols 已就绪
     loadConfiguredMaterialDb();
@@ -191,7 +208,8 @@ function activate(context) {
 
     function loadConfiguredMaterialDb() {
         if (!parIndexService) return;
-        parIndexService.clearMaterialDb();
+        disposeMaterialDbWatcher();       // dispose watcher first to stop pending events
+        parIndexService.clearMaterialDb(); // then clear index safely
 
         const materialDbPath = vscode.workspace.getConfiguration('sentaurus').get('materialDbPath', '');
 
@@ -202,13 +220,16 @@ function activate(context) {
                     parIndexService.loadBuiltinMaterialDb();
                     return;
                 }
-                const entries = fs.readdirSync(materialDbPath);
+                // Normalize path casing on Windows to avoid map key divergence
+                // with uri.fsPath (which reflects actual disk casing)
+                const realDbPath = fs.realpathSync(materialDbPath);
+                const entries = fs.readdirSync(realDbPath);
                 let loaded = 0;
                 for (const entry of entries) {
                     if (loaded >= MAX_MATERIALDB_FILES) break;
                     if (!entry.toLowerCase().endsWith('.par')) continue;
                     try {
-                        const fullPath = path.join(materialDbPath, entry);
+                        const fullPath = path.join(realDbPath, entry);
                         const text = fs.readFileSync(fullPath, 'utf8');
                         parIndexService.addMaterialDbFile(fullPath, text);
                         if (parIndexService.getMaterialDbFileCount() > loaded) {
@@ -218,16 +239,56 @@ function activate(context) {
                 }
                 if (loaded === 0) {
                     parIndexService.loadBuiltinMaterialDb();
-                } else if (parStatusBar) {
-                    parStatusBar.text = `$(database) ${vscode.l10n.t('statusBar.materialdb.loaded', loaded)}`;
-                    parStatusBar.show();
-                    setTimeout(() => { try { if (parStatusBar) parStatusBar.hide(); } catch(_) {} }, 4000);
+                } else {
+                    if (parStatusBar) {
+                        parStatusBar.text = `$(database) ${vscode.l10n.t('statusBar.materialdb.loaded', loaded)}`;
+                        parStatusBar.show();
+                        setTimeout(() => { try { if (parStatusBar) parStatusBar.hide(); } catch(_) {} }, 4000);
+                    }
+                    // 创建 MaterialDB 目录 watcher（非递归，仅 *.par）
+                    materialDbWatcher = vscode.workspace.createFileSystemWatcher(
+                        new vscode.RelativePattern(realDbPath, '*.par')
+                    );
+                    materialDbWatcher.onDidCreate(uri => {
+                        if (!parIndexService) return;
+                        try {
+                            const fp = uriToFsPath(uri);
+                            const text = fs.readFileSync(fp, 'utf8');
+                            parIndexService.addMaterialDbFile(fp, text);
+                            debouncedMaterialDbRefresh();
+                        } catch (_) {}
+                    });
+                    materialDbWatcher.onDidChange(uri => {
+                        if (!parIndexService) return;
+                        try {
+                            const fp = uriToFsPath(uri);
+                            const text = fs.readFileSync(fp, 'utf8');  // read FIRST
+                            parIndexService.removeMaterialDbFile(fp);    // then remove
+                            parIndexService.addMaterialDbFile(fp, text); // then add
+                            debouncedMaterialDbRefresh();
+                        } catch (_) {}
+                    });
+                    materialDbWatcher.onDidDelete(uri => {
+                        if (!parIndexService) return;
+                        parIndexService.removeMaterialDbFile(uriToFsPath(uri));
+                        debouncedMaterialDbRefresh();
+                    });
                 }
             } catch (_) {
                 parIndexService.loadBuiltinMaterialDb();
             }
         } else {
             parIndexService.loadBuiltinMaterialDb();
+        }
+
+        function debouncedMaterialDbRefresh() {
+            if (materialDbRefreshTimer) clearTimeout(materialDbRefreshTimer);
+            materialDbRefreshTimer = setTimeout(() => {
+                if (parIndexService) {
+                    parIndexService.onFileChanged(MATERIALDB_CONFIG_CHANGE_KEY);
+                    preheatOpenParDocuments();
+                }
+            }, 500);
         }
     }
 
@@ -375,7 +436,9 @@ function activate(context) {
     variableReferenceProvider.activate(context, schemeCache, tclCache, vscode);
 
     // === Snippet QuickPick Command ===
-    context.subscriptions.push({ dispose: () => { if (parIndexService) { parIndexService.dispose(); parIndexService = null; } } });
+    context.subscriptions.push({ dispose: () => {
+        if (parIndexService) { parIndexService.dispose(); parIndexService = null; }
+    } });
     context.subscriptions.push({ dispose: () => {
         for (const t of parDebounceTimers.values()) clearTimeout(t);
         parDebounceTimers.clear();

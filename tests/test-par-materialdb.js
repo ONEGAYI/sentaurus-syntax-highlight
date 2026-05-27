@@ -369,6 +369,47 @@ test('addMaterialDbFile grafts deeply nested blocks correctly (format A)', () =>
     service.dispose();
 });
 
+// ── removeMaterialDbFile 单文件增量移除 ──────────────────
+
+test('removeMaterialDbFile removes a single file from index', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    service.addMaterialDbFile('/db/A.par', 'Epsilon { epsilon = 1.0 }\n');
+    service.addMaterialDbFile('/db/B.par', 'Bandgap { Eg0 = 1.12 }\n');
+
+    assert.strictEqual(service.getMaterialDbFileCount(), 2);
+    assert.ok(service.getMaterialDbSymbols().some(s => s.name === 'A'));
+    assert.ok(service.getMaterialDbSymbols().some(s => s.name === 'B'));
+
+    service.removeMaterialDbFile('/db/A.par');
+
+    assert.strictEqual(service.getMaterialDbFileCount(), 1);
+    assert.ok(!service.getMaterialDbSymbols().some(s => s.name === 'A'), 'A should be removed');
+    assert.ok(service.getMaterialDbSymbols().some(s => s.name === 'B'), 'B should remain');
+
+    service.dispose();
+});
+
+test('removeMaterialDbFile then addMaterialDbFile updates file', () => {
+    const service = createParIndexService({ extensionPath: '/ext' });
+    service.addMaterialDbFile('/db/Mat.par', 'Epsilon { epsilon = 1.0 }\n');
+
+    let symbols = service.getMaterialDbSymbols();
+    let eps = symbols.find(s => s.name === 'epsilon');
+    assert.ok(eps);
+    assert.strictEqual(eps.value, '1.0');
+
+    // 模拟文件内容变更：remove + add
+    service.removeMaterialDbFile('/db/Mat.par');
+    service.addMaterialDbFile('/db/Mat.par', 'Epsilon { epsilon = 2.5 }\n');
+
+    symbols = service.getMaterialDbSymbols();
+    eps = symbols.find(s => s.name === 'epsilon');
+    assert.ok(eps);
+    assert.strictEqual(eps.value, '2.5');
+
+    service.dispose();
+});
+
 // ── 回归测试：scope 名补全不依赖当前文件缓存 ──────────────────
 
 test('scopeName completion works without currentFileCache (cache miss)', () => {

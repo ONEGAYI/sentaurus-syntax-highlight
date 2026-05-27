@@ -241,6 +241,14 @@ function createParIndexService(deps) {
     }
 
     /**
+     * 从索引中移除单个 MaterialDB 文件。
+     * @param {string} filePath
+     */
+    function removeMaterialDbFile(filePath) {
+        materialDbIndex.delete(filePath);
+    }
+
+    /**
      * 获取所有 MaterialDB 文件的符号（扁平化数组）。
      */
     function getMaterialDbSymbols() {
@@ -491,6 +499,7 @@ function createParIndexService(deps) {
         consumeWorkspaceCompletionMissed,
         getWorkspaceFileCount,
         addMaterialDbFile,
+        removeMaterialDbFile,
         loadBuiltinMaterialDb,
         clearMaterialDb,
         getMaterialDbSymbols,
