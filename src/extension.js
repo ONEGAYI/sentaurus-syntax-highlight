@@ -172,10 +172,13 @@ function activate(context) {
     const parStatusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 50);
     context.subscriptions.push(parStatusBar);
 
-    // MaterialDB 目录 watcher（随配置变更反复创建/销毁）
+    // MaterialDB 目录 watcher + existence poller（随配置变更反复创建/销毁）
     let materialDbWatcher = null;
     let materialDbRefreshTimer = null;
-    // Early cleanup: ensure watcher is disposed even if activate() throws later
+    let materialDbPoller = null;          // setInterval ID for existence polling
+    let materialDbPollerPath = '';        // 当前轮询的配置路径
+    let materialDbPollerExists = false;   // 上一次轮询时路径是否存在
+    // Early cleanup: ensure watcher+poller is disposed even if activate() throws later
     context.subscriptions.push({ dispose: () => disposeMaterialDbWatcher() });
 
     function disposeMaterialDbWatcher() {
@@ -187,7 +190,70 @@ function activate(context) {
             clearTimeout(materialDbRefreshTimer);
             materialDbRefreshTimer = null;
         }
+        stopExistencePoller();
     }
+
+    function stopExistencePoller() {
+        if (materialDbPoller) {
+            clearInterval(materialDbPoller);
+            materialDbPoller = null;
+        }
+        materialDbPollerPath = '';
+        materialDbPollerExists = false;
+    }
+
+    /**
+     * 启动低频轮询，检测配置路径的存在性变化。
+     * missing → existing: 全量重载 + 创建 watcher
+     * existing → missing: dispose watcher + fallback builtin
+     */
+    function startExistencePoller(dbPath) {
+        stopExistencePoller();
+        materialDbPollerPath = dbPath;
+        // 检测初始状态
+        try {
+            materialDbPollerExists = fs.statSync(dbPath).isDirectory();
+        } catch (_) {
+            materialDbPollerExists = false;
+        }
+        console.log('[SentaurusSyntax][MaterialDB] startExistencePoller — path:', JSON.stringify(dbPath), 'exists:', materialDbPollerExists);
+
+        materialDbPoller = setInterval(() => {
+            if (!parIndexService || !materialDbPollerPath) {
+                stopExistencePoller();
+                return;
+            }
+            let nowExists;
+            try {
+                nowExists = fs.statSync(materialDbPollerPath).isDirectory();
+            } catch (_) {
+                nowExists = false;
+            }
+
+            if (nowExists && !materialDbPollerExists) {
+                // missing → existing
+                console.log('[SentaurusSyntax][MaterialDB] poller detected: missing → existing → reload');
+                materialDbPollerExists = true;
+                loadConfiguredMaterialDb();
+            } else if (!nowExists && materialDbPollerExists) {
+                // existing → missing
+                console.log('[SentaurusSyntax][MaterialDB] poller detected: existing → missing → fallback builtin');
+                materialDbPollerExists = false;
+                if (materialDbWatcher) {
+                    materialDbWatcher.dispose();
+                    materialDbWatcher = null;
+                }
+                parIndexService.clearMaterialDb();
+                parIndexService.loadBuiltinMaterialDb();
+                debouncedMaterialDbRefresh();
+            }
+        }, 7000);
+    }
+
+    // ── Phase 2.3: MaterialDB 加载 ────────────────────────────
+
+    const MATERIALDB_CONFIG_CHANGE_KEY = '__materialdb_config_change__';
+    const MAX_MATERIALDB_FILES = 200;
 
     // 加载 MaterialDB（配置路径或内置占位）—— 必须在 preheat 之前，
     // 以确保补全时 materialdb symbols 已就绪
@@ -201,27 +267,26 @@ function activate(context) {
         }
     }
 
-    // ── Phase 2.3: MaterialDB 加载 ────────────────────────────
-
-    const MATERIALDB_CONFIG_CHANGE_KEY = '__materialdb_config_change__';
-    const MAX_MATERIALDB_FILES = 200;
-
     function loadConfiguredMaterialDb() {
         if (!parIndexService) return;
-        disposeMaterialDbWatcher();       // dispose watcher first to stop pending events
+        disposeMaterialDbWatcher();       // dispose watcher + poller first
         parIndexService.clearMaterialDb(); // then clear index safely
 
         const materialDbPath = vscode.workspace.getConfiguration('sentaurus').get('materialDbPath', '');
+        console.log('[SentaurusSyntax][MaterialDB] loadConfiguredMaterialDb — path:', JSON.stringify(materialDbPath));
 
         if (materialDbPath) {
+            // 非空路径：始终启动 existence poller
+            startExistencePoller(materialDbPath);
+
             try {
                 const stat = fs.statSync(materialDbPath);
+                console.log('[SentaurusSyntax][MaterialDB] stat succeeded — isDirectory:', stat.isDirectory());
                 if (!stat.isDirectory()) {
                     parIndexService.loadBuiltinMaterialDb();
                     return;
                 }
                 // Normalize path casing on Windows to avoid map key divergence
-                // with uri.fsPath (which reflects actual disk casing)
                 const realDbPath = fs.realpathSync(materialDbPath);
                 const entries = fs.readdirSync(realDbPath);
                 let loaded = 0;
@@ -237,6 +302,7 @@ function activate(context) {
                         }
                     } catch (_) { /* skip unreadable files */ }
                 }
+                console.log('[SentaurusSyntax][MaterialDB] loaded files:', loaded);
                 if (loaded === 0) {
                     parIndexService.loadBuiltinMaterialDb();
                 } else {
@@ -245,51 +311,68 @@ function activate(context) {
                         parStatusBar.show();
                         setTimeout(() => { try { if (parStatusBar) parStatusBar.hide(); } catch(_) {} }, 4000);
                     }
-                    // 创建 MaterialDB 目录 watcher（非递归，仅 *.par）
-                    materialDbWatcher = vscode.workspace.createFileSystemWatcher(
-                        new vscode.RelativePattern(realDbPath, '*.par')
-                    );
-                    materialDbWatcher.onDidCreate(uri => {
-                        if (!parIndexService) return;
-                        try {
-                            const fp = uriToFsPath(uri);
-                            const text = fs.readFileSync(fp, 'utf8');
-                            parIndexService.addMaterialDbFile(fp, text);
-                            debouncedMaterialDbRefresh();
-                        } catch (_) {}
-                    });
-                    materialDbWatcher.onDidChange(uri => {
-                        if (!parIndexService) return;
-                        try {
-                            const fp = uriToFsPath(uri);
-                            const text = fs.readFileSync(fp, 'utf8');  // read FIRST
-                            parIndexService.removeMaterialDbFile(fp);    // then remove
-                            parIndexService.addMaterialDbFile(fp, text); // then add
-                            debouncedMaterialDbRefresh();
-                        } catch (_) {}
-                    });
-                    materialDbWatcher.onDidDelete(uri => {
-                        if (!parIndexService) return;
-                        parIndexService.removeMaterialDbFile(uriToFsPath(uri));
-                        debouncedMaterialDbRefresh();
-                    });
+                    // 创建目录内 .par watcher（非递归，增量更新）
+                    createMaterialDbWatcher(realDbPath);
                 }
-            } catch (_) {
+            } catch (e) {
+                // 路径不存在 — fallback 到 builtin，poller 会持续检测
+                console.log('[SentaurusSyntax][MaterialDB] stat FAILED — fallback builtin, poller watching. error:', e.message);
                 parIndexService.loadBuiltinMaterialDb();
             }
         } else {
+            // 空路径：builtin，无 poller
+            console.log('[SentaurusSyntax][MaterialDB] empty path — loading builtin');
             parIndexService.loadBuiltinMaterialDb();
         }
+    }
 
-        function debouncedMaterialDbRefresh() {
-            if (materialDbRefreshTimer) clearTimeout(materialDbRefreshTimer);
-            materialDbRefreshTimer = setTimeout(() => {
-                if (parIndexService) {
-                    parIndexService.onFileChanged(MATERIALDB_CONFIG_CHANGE_KEY);
-                    preheatOpenParDocuments();
-                }
-            }, 500);
-        }
+    /**
+     * 创建 MaterialDB 目录的 FileSystemWatcher（目录已存在）。
+     * 监听 dirPath 下的 *.par 文件增删改，增量更新索引。
+     */
+    function createMaterialDbWatcher(dirPath) {
+        console.log('[SentaurusSyntax][MaterialDB] createMaterialDbWatcher — dirPath:', JSON.stringify(dirPath));
+
+        materialDbWatcher = vscode.workspace.createFileSystemWatcher(
+            new vscode.RelativePattern(dirPath, '*.par')
+        );
+        materialDbWatcher.onDidCreate(uri => {
+            console.log('[SentaurusSyntax][MaterialDB] onDidCreate fired — uri:', uri.toString());
+            if (!parIndexService) return;
+            try {
+                const fp = uriToFsPath(uri);
+                const text = fs.readFileSync(fp, 'utf8');
+                parIndexService.addMaterialDbFile(fp, text);
+                debouncedMaterialDbRefresh();
+            } catch (_) {}
+        });
+        materialDbWatcher.onDidChange(uri => {
+            console.log('[SentaurusSyntax][MaterialDB] onDidChange fired — uri:', uri.toString());
+            if (!parIndexService) return;
+            try {
+                const fp = uriToFsPath(uri);
+                const text = fs.readFileSync(fp, 'utf8');  // read FIRST
+                parIndexService.removeMaterialDbFile(fp);    // then remove
+                parIndexService.addMaterialDbFile(fp, text); // then add
+                debouncedMaterialDbRefresh();
+            } catch (_) {}
+        });
+        materialDbWatcher.onDidDelete(uri => {
+            console.log('[SentaurusSyntax][MaterialDB] onDidDelete fired — uri:', uri.toString());
+            if (!parIndexService) return;
+            parIndexService.removeMaterialDbFile(uriToFsPath(uri));
+            debouncedMaterialDbRefresh();
+        });
+    }
+
+    function debouncedMaterialDbRefresh() {
+        if (materialDbRefreshTimer) clearTimeout(materialDbRefreshTimer);
+        materialDbRefreshTimer = setTimeout(() => {
+            if (parIndexService) {
+                parIndexService.onFileChanged(MATERIALDB_CONFIG_CHANGE_KEY);
+                preheatOpenParDocuments();
+            }
+        }, 500);
     }
 
     // ── Phase 2.2: Workspace .par 文件扫描 ──────────────────
