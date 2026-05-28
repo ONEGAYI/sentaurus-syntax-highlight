@@ -349,8 +349,11 @@
         "2": { "name": "entity.name.type.tcl" },
         "3": {
           "patterns": [
-            { "match": "\"[^\"]*\"", "name": "string.quoted.double.tcl" },
-            { "match": "\\b(defined|TRUE|FALSE)\\b", "name": "keyword.control.preprocessor.tcl" }
+            { "match": "\\b(defined|TRUE|FALSE)\\b", "name": "keyword.control.preprocessor.tcl" },
+            { "begin": "\"", "end": "\"", "name": "string.quoted.double.tcl", "patterns": [
+                { "match": "@[a-zA-Z_<][^@]*@", "name": "constant.character.format.placeholder" }
+            ]},
+            { "match": "@[a-zA-Z_<][^@]*@", "name": "constant.character.format.placeholder" }
           ]
         }
       }
@@ -379,7 +382,10 @@
         "2": {
           "patterns": [
             { "match": "\\b(defined|TRUE|FALSE)\\b", "name": "keyword.control.preprocessor.tcl" },
-            { "match": "\"[^\"]*\"", "name": "string.quoted.double.tcl" }
+            { "begin": "\"", "end": "\"", "name": "string.quoted.double.tcl", "patterns": [
+                { "match": "@[a-zA-Z_<][^@]*@", "name": "constant.character.format.placeholder" }
+            ]},
+            { "match": "@[a-zA-Z_<][^@]*@", "name": "constant.character.format.placeholder" }
           ]
         }
       }

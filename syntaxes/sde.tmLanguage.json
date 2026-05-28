@@ -446,8 +446,11 @@
                 "2": { "name": "entity.name.type.sde" },
                 "3": {
                     "patterns": [
-                        { "match": "\"[^\"]*\"", "name": "string.quoted.double.sde" },
-                        { "match": "\\b(defined|TRUE|FALSE)\\b", "name": "keyword.control.preprocessor.sde" }
+                        { "match": "\\b(defined|TRUE|FALSE)\\b", "name": "keyword.control.preprocessor.sde" },
+                        { "begin": "\"", "end": "\"", "name": "string.quoted.double.sde", "patterns": [
+                            { "match": "@[a-zA-Z_<][^@]*@", "name": "constant.character.format.placeholder" }
+                        ]},
+                        { "match": "@[a-zA-Z_<][^@]*@", "name": "constant.character.format.placeholder" }
                     ]
                 }
             }
@@ -476,7 +479,10 @@
                 "2": {
                     "patterns": [
                         { "match": "\\b(defined|TRUE|FALSE)\\b", "name": "keyword.control.preprocessor.sde" },
-                        { "match": "\"[^\"]*\"", "name": "string.quoted.double.sde" }
+                        { "begin": "\"", "end": "\"", "name": "string.quoted.double.sde", "patterns": [
+                            { "match": "@[a-zA-Z_<][^@]*@", "name": "constant.character.format.placeholder" }
+                        ]},
+                        { "match": "@[a-zA-Z_<][^@]*@", "name": "constant.character.format.placeholder" }
                     ]
                 }
             }
