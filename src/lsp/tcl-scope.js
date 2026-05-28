@@ -804,6 +804,14 @@ function _collectLocalDefsForIndex(node, defs) {
             }
         }
 
+        if (child.type === 'if') {
+            _collectBracedWordDefs(child, defs, true);
+        }
+
+        if (child.type === 'while') {
+            _collectBracedWordDefs(child, defs);
+        }
+
         if (child.type === 'command') {
             const firstChild = child.child(0);
             if (firstChild && firstChild.type === 'simple_word') {

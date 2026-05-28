@@ -2,11 +2,13 @@
 // 集成测试：用真实 WASM 解析器验证 buildScopeMap 对 word_list 包装命令的处理
 'use strict';
 
-const { test, summary } = require('./helpers/test-runner');
+const { test } = require('./helpers/test-runner');
 const assert = require('assert');
-let Parser;
+let ParserClass, Language;
 try {
-    Parser = require('web-tree-sitter');
+    const wt = require('web-tree-sitter');
+    ParserClass = wt.Parser;
+    Language = wt.Language;
 } catch (e) {
     if (e.code === 'MODULE_NOT_FOUND') {
         console.error('⚠ web-tree-sitter 未安装。请在此工作树中运行 npm install');
@@ -19,15 +21,11 @@ const astUtils = require('../src/lsp/tcl-scope');
 const varExtractor = require('../src/lsp/tcl-variable-extractor');
 
 async function main() {
-    await Parser.init({
-        locateFile(scriptName) {
-            return path.join(__dirname, '..', 'node_modules', 'web-tree-sitter', scriptName);
-        },
-    });
-    const language = await Parser.Language.load(
+    await ParserClass.init();
+    const language = await Language.load(
         path.join(__dirname, '..', 'syntaxes', 'tree-sitter-tcl.wasm')
     );
-    const parser = new Parser();
+    const parser = new ParserClass();
     parser.setLanguage(language);
 
     function parseAndCheck(code, expectVisible, expectUndefined) {
@@ -131,7 +129,44 @@ async function main() {
         );
     });
 
+    test('嵌套 if 块内变量在同级可见', () => {
+        parseAndCheck(
+            'set x 1\nif { $x > 0 } {\n    if { $x < 10 } {\n        set inner 42\n    }\n    puts $inner\n}',
+            [{ name: 'inner', line: 6 }, { name: 'x', line: 6 }],
+            []
+        );
+    });
+
+    test('if/else 双分支定义的变量都可见', () => {
+        parseAndCheck(
+            'set cond 1\nif { $cond } {\n    set shared alpha\n} else {\n    set shared beta\n}\nputs $shared',
+            [{ name: 'shared', line: 7 }],
+            []
+        );
+    });
+
+    test('while 循环体内变量在后续可见', () => {
+        parseAndCheck(
+            'set i 0\nwhile { $i < 3 } {\n    set result $i\n    incr i\n}\nputs $result',
+            [{ name: 'result', line: 5 }, { name: 'i', line: 5 }],
+            []
+        );
+    });
+
+    test('while 嵌套在 if 体内，变量可见', () => {
+        parseAndCheck(
+            'set cond 1\nif { $cond } {\n    set i 0\n    while { $i < 3 } {\n        set buf $i\n        incr i\n    }\n    puts $buf\n}',
+            [{ name: 'buf', line: 8 }, { name: 'i', line: 8 }],
+            []
+        );
+    });
+
     // 异步测试中用 process.exitCode 替代 process.exit() 避免 libuv 句柄警告
     const { printSummary } = require('./helpers/test-runner');
     printSummary();
 }
+
+main().catch(e => {
+    console.error('测试初始化失败:', e);
+    process.exit(1);
+});
