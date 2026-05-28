@@ -54,12 +54,13 @@
             "3": {
               "patterns": [
                 {
-                  "match": "\"[^\"]*\"",
-                  "name": "string.quoted.double"
-                },
-                {
                   "match": "\\b(defined|TRUE|FALSE)\\b",
                   "name": "keyword.control.preprocessor.sdevicepar"
+                },
+                { "include": "#strings" },
+                {
+                  "match": "@[a-zA-Z_<][^@]*?@",
+                  "name": "constant.character.format.placeholder"
                 }
               ]
             }
@@ -90,9 +91,10 @@
                   "match": "\\b(defined|TRUE|FALSE)\\b",
                   "name": "keyword.control.preprocessor.sdevicepar"
                 },
+                { "include": "#strings" },
                 {
-                  "match": "\"[^\"]*\"",
-                  "name": "string.quoted.double"
+                  "match": "@[a-zA-Z_<][^@]*?@",
+                  "name": "constant.character.format.placeholder"
                 }
               ]
             }
