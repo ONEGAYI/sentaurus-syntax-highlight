@@ -4,6 +4,17 @@
 
 ---
 
+## [2.2.2] - 2026-05-28
+
+修复预处理器指令中 SWB 参数高亮失效和嵌套 if/while 块内变量定义提取遗漏的问题。
+
+### Bug 修复
+
+- **修复预处理器指令中 SWB 参数 @Var@ 高亮失效**（#78）：在 `#if`、`#elif`、`#define` 等预处理器指令中，`@Var@` 形式的 SWB 参数无法被正确高亮（如 `#if "@Region@"` 中的 `@Region@` 显示为普通文本）。有 strings 仓库的文件复用已有 begin/end 字符串定义（内含 @Var@ 子匹配），无 strings 仓库的文件使用内联 begin/end 模式 + 嵌套子匹配，同时追加独立 @Var@ 匹配模式处理引号外场景
+- **修复嵌套 if/while 块内变量定义未被提取导致误报 undef-var**（#79）：`_collectLocalDefsForIndex` 函数缺少对 `if` 和 `while` 节点的处理，导致嵌套结构（如 if 内嵌套另一个 if）中的 `set` 变量定义不会被提取到作用域索引，从而触发误报的 undef-var 诊断
+
+---
+
 ## [2.2.1] - 2026-05-27
 
 帮助文档系统国际化改造，支持中英双语自动切换。
@@ -1077,6 +1088,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.2.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.0.8...v2.1.0
