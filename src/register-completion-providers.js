@@ -528,7 +528,9 @@ function registerCompletionProviders(context, deps) {
                             }
                         }
                     } else {
-                        def = userDefs.find(d => d.name === identWord);
+                        // Scheme 标识符可含连字符和特殊符号（如 fillet-radius-sio2），
+                        // 必须用完整 word 匹配，而非纯字母数字的 identWord
+                        def = userDefs.find(d => d.name === word);
                     }
 
                     if (def) {
