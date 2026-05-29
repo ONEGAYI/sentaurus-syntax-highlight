@@ -1550,7 +1550,7 @@
     "symbolParams": [
       {
         "index": 1,
-        "role": "ref",
+        "role": "def",
         "type": "contact"
       }
     ]
@@ -1598,7 +1598,7 @@
     "symbolParams": [
       {
         "index": 1,
-        "role": "ref",
+        "role": "def",
         "type": "contact"
       }
     ]
@@ -1639,7 +1639,7 @@
     "symbolParams": [
       {
         "index": 2,
-        "role": "ref",
+        "role": "def",
         "type": "contact"
       }
     ]

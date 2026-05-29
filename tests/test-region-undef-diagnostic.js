@@ -153,4 +153,63 @@ test('用户定义材料覆盖内置名 → 无诊断', () => {
     assert.strictEqual(undefs.length, 0);
 });
 
+// --- sdegeo:set-contact 系列：应作为 contact 定义（role=def），而非引用（role=ref） ---
+
+test('sdegeo:set-contact 定义 contact → 后续引用无诊断', () => {
+    const code = `
+(sdegeo:set-contact (find-face-id (position 0 0 0)) "gate")
+(sde:show-contact "gate")
+`;
+    const table = {
+        'sdegeo:set-contact': {
+            symbolParams: [{ index: 1, role: 'def', type: 'contact' }],
+        },
+        'sde:show-contact': {
+            symbolParams: [{ index: 0, role: 'ref', type: 'contact' }],
+        },
+    };
+    const undefs = computeUndefDiagnostics(code, table);
+    assert.strictEqual(undefs.length, 0);
+});
+
+test('sdegeo:set-contact 多次同名定义 → 无诊断', () => {
+    const code = `
+(sdegeo:set-contact (find-face-id (position 1 0 0)) "source")
+(sdegeo:set-contact (find-face-id (position 2 0 0)) "source")
+(sde:show-contact "source")
+`;
+    const table = {
+        'sdegeo:set-contact': {
+            symbolParams: [{ index: 1, role: 'def', type: 'contact' }],
+        },
+        'sde:show-contact': {
+            symbolParams: [{ index: 0, role: 'ref', type: 'contact' }],
+        },
+    };
+    const undefs = computeUndefDiagnostics(code, table);
+    assert.strictEqual(undefs.length, 0);
+});
+
+test('sdegeo:set-contact-edges 定义 contact → 无诊断', () => {
+    const code = `(sdegeo:set-contact-edges (list 1 2 3) "drain")`;
+    const table = {
+        'sdegeo:set-contact-edges': {
+            symbolParams: [{ index: 1, role: 'def', type: 'contact' }],
+        },
+    };
+    const undefs = computeUndefDiagnostics(code, table);
+    assert.strictEqual(undefs.length, 0);
+});
+
+test('sdegeo:set-contact-faces-by-polygon 定义 contact → 无诊断', () => {
+    const code = `(sdegeo:set-contact-faces-by-polygon (list (list (position 0 0 0))) (list (gvector 0 0 1)) "substrate")`;
+    const table = {
+        'sdegeo:set-contact-faces-by-polygon': {
+            symbolParams: [{ index: 2, role: 'def', type: 'contact' }],
+        },
+    };
+    const undefs = computeUndefDiagnostics(code, table);
+    assert.strictEqual(undefs.length, 0);
+});
+
 summary();
