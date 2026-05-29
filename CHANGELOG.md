@@ -4,6 +4,17 @@
 
 ---
 
+## [2.2.3] - 2026-05-29
+
+修复 SDE Contact 未定义误报和 Scheme 连字符变量 Hover 失效两个回归问题。
+
+### Bug 修复
+
+- **修复 sdegeo:set-contact 系列 Contact 未定义误报**（#80）：`sdegeo:set-contact`、`sdegeo:set-contact-edges`、`sdegeo:set-contact-faces-by-polygon` 三个函数的 `symbolParams.role` 误标为 `ref`（引用），实际应为 `def`（定义），导致 `region-undef-diagnostic` 误报 Contact 未定义。新增 4 个测试覆盖 set-contact 系列的 Contact 定义提取
+- **修复 Scheme 连字符变量（如 fillet-radius-sio2）Hover 失效**（#81）：HoverProvider 中 Scheme 用户定义查找误用 `identWord`（纯 `[\w]+` 分词），导致连字符变量名被截断无法匹配。此问题由 commit `5616e963` 为修复 SDEVICE 符号粘连引入 `identWord` 时波及 Scheme 分支所致，将 Scheme 分支恢复为 `word` 完整匹配
+
+---
+
 ## [2.2.2] - 2026-05-28
 
 修复预处理器指令中 SWB 参数高亮失效和嵌套 if/while 块内变量定义提取遗漏的问题。
@@ -1088,6 +1099,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.2.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.2.2...v2.2.3
 [2.2.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.2.0...v2.2.1
 [2.2.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.1.0...v2.2.0
