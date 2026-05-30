@@ -1,0 +1,1744 @@
+{
+  "Globals": {
+    "section": "Simulation Setup",
+    "signature": "Globals { GridFile=<string> ParameterFile=<string> ResultFile=<string> LogFile=<string> NumberOfThreads=<int> TotalTimeSteps=<int> }",
+    "description": "Defines global simulation parameters including the tensor grid file, material parameter file, output file names, parallelization settings, and time-stepping controls. This section is mandatory and must occur exactly once.",
+    "parameters": [
+      { "name": "GridFile", "type": "string", "desc": "Tensor grid file for the simulation." },
+      { "name": "ParameterFile", "type": "string", "desc": "Specifies the material parameter file." },
+      { "name": "ResultFile", "type": "string", "desc": "Name of result file. Default: result_eml.plt." },
+      { "name": "LogFile", "type": "string", "desc": "Name of the log file. By default, the name of the command file is used with the extension .log. If the name ends with .z or .gz, a compressed log file will be written." },
+      { "name": "NumberOfThreads", "type": "int", "desc": "Number of threads to be used for shared-memory parallelization. Either an integer greater than zero or 'maximum'." },
+      { "name": "OutputFilePrefix", "type": "string", "desc": "Optional. String to be prepended to all output file names including the log file." },
+      { "name": "CompressTDR", "type": "enum", "desc": "Optional. Controls whether output TDR files are compressed beyond the basic compression level. Options: Yes, No." },
+      { "name": "CRIMIPath", "type": "string", "desc": "Optional. Search path for shared objects used by complex refractive index model interface. Default: '.'." },
+      { "name": "DomainDecomposition", "type": "enum", "desc": "Optional. Overrides automatic MPI domain decomposition. Used to enforce domain decomposition in only one Cartesian direction. Options: Automatic, X, Y, Z." },
+      { "name": "FieldDataFile", "type": "string", "desc": "Optional. Data file containing datasets, for example, spatial temperature profile, on which the complex refractive index depends." },
+      { "name": "LoadFile", "type": "string", "desc": "Optional. Name of the results file to be loaded for postprocessing." },
+      { "name": "OverSampling", "type": "float", "desc": "Optional. Reduces the calculated maximum stable time step by the OverSampling factor. Default: 1." },
+      { "name": "ParallelLicenses", "type": "list", "desc": "Optional. List of allowed licenses to be used by EMW when run in parallel mode. Options: MPI, SMP. Default: {MPI SMP}." },
+      { "name": "TdrNativeTensorGridUnit", "type": "enum", "desc": "Optional. Overrides automatic detection of length unit in input tensor grid. Options: Automatic, m, um." },
+      { "name": "Temperature", "type": "float", "desc": "Optional. Global device temperature in Kelvin. Default: 300." },
+      { "name": "TimeStep", "type": "float", "desc": "Optional. Overwrites calculated simulation time step." },
+      { "name": "TotalSimulationTime", "type": "float", "desc": "Optional. Maximum simulation time after which the simulation is terminated." },
+      { "name": "TotalTimeSteps", "type": "int", "desc": "Optional. Maximum number of time steps to be performed." },
+      { "name": "UnavailableLicenseAction", "type": "enum", "desc": "Optional. Action to be taken when requested license is not available. Options: serial, reduce, wait, abort." }
+    ],
+    "example": "Globals {\n  GridFile        = \"@tdr@\"\n  ParameterFile   = \"@parameter@\"\n  ResultFile      = \"@plot@\"\n  LogFile         = \"@log@\"\n  NumberOfThreads = 1\n  TotalTimeSteps  = 50000\n  OverSampling    = 3.6\n}",
+    "keywords": ["GridFile", "ParameterFile", "ResultFile", "LogFile", "NumberOfThreads", "OutputFilePrefix", "CompressTDR", "CRIMIPath", "DomainDecomposition", "FieldDataFile", "LoadFile", "OverSampling", "ParallelLicenses", "TdrNativeTensorGridUnit", "Temperature", "TimeStep", "TotalSimulationTime", "TotalTimeSteps", "UnavailableLicenseAction"]
+  },
+  "ComplexRefractiveIndex": {
+    "section": "Material",
+    "signature": "ComplexRefractiveIndex { Material=<string> Region=<string> Type=<enum> WavelengthDep=<list> }",
+    "description": "Specifies the complex refractive index distribution for materials or regions in the simulation domain. Supports homogeneous, inhomogeneous, and file-based distributions with optional wavelength, temperature, carrier, and gain dependencies.",
+    "parameters": [
+      { "name": "Material", "type": "string", "desc": "Names of materials to which the complex refractive index specification applies." },
+      { "name": "Region", "type": "string", "desc": "Names of regions to which the complex refractive index specification applies." },
+      { "name": "Type", "type": "enum", "desc": "Optional. Controls type of complex refractive index distribution. Options: Homogeneous, Inhomogeneous, FromFile. Default: Homogeneous." },
+      { "name": "WavelengthDep", "type": "list", "desc": "Optional. Controls wavelength dependency of real and imaginary parts. Options: Real, Imag." },
+      { "name": "TemperatureDep", "type": "list", "desc": "Optional. Controls temperature dependency. Options: Real, Imag." },
+      { "name": "CarrierDep", "type": "list", "desc": "Optional. Controls carrier dependency of real and imaginary parts. Options: Real, Imag." },
+      { "name": "GainDep", "type": "list", "desc": "Optional. Controls gain dependency of real part. Options: RealLin, RealLog." },
+      { "name": "Extrapolate", "type": "enum", "desc": "Optional. Controls extrapolation behavior for interpolation of datasets in FieldDataFile. Options: Yes, No. Default: No." },
+      { "name": "IgnoreMaterials", "type": "enum", "desc": "Optional. Controls whether interpolation between vertices of different materials is permitted when loading datasets. Options: Yes, No. Default: No." },
+      { "name": "CRIModel", "type": "string", "desc": "Optional. Name of user-provided complex refractive index model." }
+    ],
+    "example": "ComplexRefractiveIndex {\n  WavelengthDep = {Real, Imag}\n}",
+    "keywords": ["Material", "Region", "Type", "WavelengthDep", "TemperatureDep", "CarrierDep", "GainDep", "Extrapolate", "IgnoreMaterials", "CRIModel"]
+  },
+  "DispersiveMedia": {
+    "section": "Material",
+    "signature": "DispersiveMedia { Material=<string> Model=<enum> ModelParameters=<enum> }",
+    "description": "Specifies dispersive media models for materials that exhibit frequency-dependent permittivity. Supports Debye, Drude, Lorentz, and modulated Lorentz models with parameters computed from the complex refractive index or user-defined.",
+    "parameters": [
+      { "name": "Material", "type": "string", "desc": "Names of materials to which the dispersive medium specification applies." },
+      { "name": "Region", "type": "string", "desc": "Names of regions to which the dispersive medium specification applies." },
+      { "name": "Model", "type": "enum", "desc": "Selects dispersive model. Options: Debye, Drude, DrudeLorentz, DrudeModLorentz, Lorentz, ModLorentz, SingleDipoleDebye, SingleDipoleDrude." },
+      { "name": "ModelParameters", "type": "enum", "desc": "Optional. Specifies how dispersive model parameters are determined. Options: ComputeFromComplexRefractiveIndex, UserDefined. Default: ComputeFromComplexRefractiveIndex." },
+      { "name": "DeltaK", "type": "float", "desc": "Optional. Activate dispersive model for k + DeltaK >= n. Default: 0." },
+      { "name": "ExcludeMaterial", "type": "string", "desc": "Names of materials to which dispersive medium specification does not apply." },
+      { "name": "ExcludeRegion", "type": "string", "desc": "Names of regions to which dispersive medium specification does not apply." },
+      { "name": "InterfaceAveraging", "type": "enum", "desc": "Optional. Controls whether interface averaging is granted for dispersive regions or materials. Options: Yes, No. Default: No." }
+    ],
+    "example": "DispersiveMedia {\n  Material = {\"Silver\"}\n  Model = SingleDipoleDrude\n  ModelParameters = ComputeFromComplexRefractiveIndex\n  InterfaceAveraging = yes\n}",
+    "keywords": ["Material", "Region", "Model", "ModelParameters", "DeltaK", "ExcludeMaterial", "ExcludeRegion", "InterfaceAveraging"]
+  },
+  "PECMedia": {
+    "section": "Material",
+    "signature": "PECMedia { Material=<string> Region=<string> }",
+    "description": "Assigns perfect electric conductor (PEC) properties to specified materials or regions. PEC media reflect electromagnetic waves perfectly with zero tangential electric field at the surface.",
+    "parameters": [
+      { "name": "Material", "type": "string", "desc": "Names of materials to which the PEC medium specification applies." },
+      { "name": "Region", "type": "string", "desc": "Names of regions to which the PEC medium specification applies." },
+      { "name": "ExcludeMaterial", "type": "string", "desc": "Names of materials to which PEC medium specification does not apply." },
+      { "name": "ExcludeRegion", "type": "string", "desc": "Names of regions to which PEC medium specification does not apply." }
+    ],
+    "example": "PECMedia {\n  Material = \"Copper\"\n}",
+    "keywords": ["Material", "Region", "ExcludeMaterial", "ExcludeRegion"]
+  },
+  "PMCMedia": {
+    "section": "Material",
+    "signature": "PMCMedia { Material=<string> Region=<string> }",
+    "description": "Assigns perfect magnetic conductor (PMC) properties to specified materials or regions. PMC media reflect electromagnetic waves with zero tangential magnetic field at the surface.",
+    "parameters": [
+      { "name": "Material", "type": "string", "desc": "Names of materials to which the PMC medium specification applies." },
+      { "name": "Region", "type": "string", "desc": "Names of regions to which the PMC medium specification applies." },
+      { "name": "ExcludeMaterial", "type": "string", "desc": "Names of materials to which PMC medium specification does not apply." },
+      { "name": "ExcludeRegion", "type": "string", "desc": "Names of regions to which PMC medium specification does not apply." }
+    ],
+    "example": "PMCMedia {\n  Region = \"waveguide_wall\"\n}",
+    "keywords": ["Material", "Region", "ExcludeMaterial", "ExcludeRegion"]
+  },
+  "Boundary": {
+    "section": "Boundary",
+    "signature": "Boundary { Type=<enum> Sides=<list> Thickness=<int> }",
+    "description": "Defines boundary conditions for the simulation domain. Supports CPML, Higdon, Mur, PEC, Periodic, PeriodicOblique, and PMC boundary types. This section is mandatory and can occur up to six times to specify different conditions for different sides.",
+    "parameters": [
+      { "name": "Type", "type": "enum", "desc": "Type of boundary condition. Options: CPML, Higdon, Mur, PEC, Periodic, PeriodicOblique, PMC. Default: PeriodicOblique." },
+      { "name": "Sides", "type": "list", "desc": "Sides to which the boundary specification applies. Options: All, X, Xmin, Xmax, Y, Ymin, Ymax, Z, Zmin, Zmax. Default: {All}." },
+      { "name": "Thickness", "type": "int", "desc": "Optional. Thickness of PML boundary in terms of number of tensor-grid cells. Default: 15." },
+      { "name": "SigmaMax", "type": "float", "desc": "Optional. Maximum value of PML parameter sigma. The default value is computed automatically." },
+      { "name": "SigmaProfile", "type": "list", "desc": "Optional. Profile of PML parameter sigma used in grading of PML tensor coefficient." },
+      { "name": "OrderSigma", "type": "int", "desc": "Optional. Order of polynomial grading for PML parameter sigma. Default: 3." },
+      { "name": "AlphaMax", "type": "float", "desc": "Optional. Maximum value of PML parameter alpha. Default: 0.2." },
+      { "name": "AlphaProfile", "type": "list", "desc": "Optional. Profile of PML parameter alpha used in grading of PML tensor coefficient." },
+      { "name": "OrderAlpha", "type": "int", "desc": "Optional. Order of polynomial grading for PML parameter alpha. Default: 1." },
+      { "name": "KappaMax", "type": "float", "desc": "Optional. Maximum value of PML parameter kappa. Default: 15." },
+      { "name": "KappaProfile", "type": "list", "desc": "Optional. Profile of PML parameter kappa used in grading of PML tensor coefficient." },
+      { "name": "OrderKappa", "type": "int", "desc": "Optional. Order of polynomial grading for PML parameter kappa. Default: 3." }
+    ],
+    "example": "Boundary {\n  Type  = PeriodicOblique\n  Sides = {X}\n}\n\nBoundary {\n  Type  = CPML\n  Sides = {Y}\n}",
+    "keywords": ["Type", "Sides", "Thickness", "SigmaMax", "SigmaProfile", "OrderSigma", "AlphaMax", "AlphaProfile", "OrderAlpha", "KappaMax", "KappaProfile", "OrderKappa"]
+  },
+  "PlaneWaveExcitation": {
+    "section": "Excitation",
+    "signature": "PlaneWaveExcitation { Wavelength=<float> Intensity=<float> Direction=<enum> Theta=<float> Phi=<float> Psi=<float> }",
+    "description": "Defines a plane wave excitation source for the simulation. Supports illumination from top or bottom, arbitrary angles of incidence, and both harmonic and Gaussian transient signal forms with polarization control.",
+    "parameters": [
+      { "name": "Wavelength", "type": "float", "desc": "Signal wavelength in nm." },
+      { "name": "Frequency", "type": "float", "desc": "Signal frequency in s-1." },
+      { "name": "Amplitude", "type": "float", "desc": "Optional. Signal amplitude in V/m. Default: 1." },
+      { "name": "Intensity", "type": "float", "desc": "Optional. Signal intensity in W/cm^2. Default: 1.32721e-07." },
+      { "name": "Direction", "type": "enum", "desc": "Optional. Illumination direction. Automatically sets Theta, Phi, Psi, and excitation plane. Options: fromTop, fromBottom." },
+      { "name": "Theta", "type": "float", "desc": "Optional. Polar angle of incidence in degrees. Default: 180." },
+      { "name": "Phi", "type": "float", "desc": "Optional. Azimuth angle of incidence in degrees. Default: 0." },
+      { "name": "Psi", "type": "float", "desc": "Optional. Polarization angle in degrees. Default: 45." },
+      { "name": "Polarization", "type": "float", "desc": "Optional. Polarization, either TE (0) or TM (1), or a value between 0 and 1. Default: 0.5." },
+      { "name": "PolarizationAngle", "type": "float", "desc": "Optional. Polarization angle in degrees. Default: 45." },
+      { "name": "EllipticalPolarizationMagnitude", "type": "float", "desc": "Optional. Polarization ratio magnitude. Default: 0." },
+      { "name": "EllipticalPolarizationPhase", "type": "float", "desc": "Optional. Polarization ratio phase in degrees. Default: 0." },
+      { "name": "Signal", "type": "enum", "desc": "Optional. Sets the transient form of the signal. Options: Gauss, Harmonic. Default: Harmonic." },
+      { "name": "Sigma", "type": "float", "desc": "Optional. Width of transient Gaussian pulse in terms of number of signal periods. Default: 1." },
+      { "name": "NRise", "type": "float", "desc": "Optional. Number of signal periods before full amplitude is reached. Default: 2." },
+      { "name": "Delay", "type": "float", "desc": "Optional. Number of signal periods before signal starts. Default: 0." },
+      { "name": "NumberOfPlaneWaves", "type": "int", "desc": "Optional. Number of excitation plane waves. Default: 1." },
+      { "name": "NumericalAperture", "type": "float", "desc": "Optional. Numerical aperture. Default: 0." },
+      { "name": "PartialCoherenceFactor", "type": "float", "desc": "Optional. Partial coherence factor. Default: 1." },
+      { "name": "BoxCorner1", "type": "list", "desc": "Optional. One of the two corners of a box that specifies the excitation plane." },
+      { "name": "BoxCorner2", "type": "list", "desc": "Optional. One of the two corners of a box that specifies the excitation plane." },
+      { "name": "Region", "type": "string", "desc": "Optional. Box that specifies the excitation plane." },
+      { "name": "PlaneX", "type": "float", "desc": "Optional. Excitation line or plane perpendicular to the x-axis." },
+      { "name": "PlaneY", "type": "float", "desc": "Optional. Excitation line or plane perpendicular to the y-axis." },
+      { "name": "PlaneZ", "type": "float", "desc": "Optional. Excitation plane perpendicular to the z-axis." }
+    ],
+    "example": "PlaneWaveExcitation {\n  PlaneY     = -0.5\n  Theta      = 0\n  Psi        = 0\n  Wavelength = 550\n  Intensity  = 0.1 * W/cm2\n  Nrise      = 4\n}",
+    "keywords": ["Wavelength", "Frequency", "Amplitude", "Intensity", "Direction", "Theta", "Phi", "Psi", "Polarization", "PolarizationAngle", "EllipticalPolarizationMagnitude", "EllipticalPolarizationPhase", "Signal", "Sigma", "NRise", "Delay", "NumberOfPlaneWaves", "NumericalAperture", "PartialCoherenceFactor", "BoxCorner1", "BoxCorner2", "Region", "PlaneX", "PlaneY", "PlaneZ"]
+  },
+  "CodeVExcitation": {
+    "section": "Excitation",
+    "signature": "CodeVExcitation { InputDataFile=<list> AnchorPoint1=<list> AnchorPoint2=<list> Wavelength=<float> }",
+    "description": "Defines an excitation source from CODE V optical design software data files. Requires two input data files and their anchor points to reconstruct the excitation field pattern.",
+    "parameters": [
+      { "name": "InputDataFile", "type": "list", "desc": "Names of two input data files from CODE V." },
+      { "name": "AnchorPoint1", "type": "list", "desc": "Anchor point (of smallest coordinates) for the first data file in um." },
+      { "name": "AnchorPoint2", "type": "list", "desc": "Anchor point (of smallest coordinates) for the second data file in um." },
+      { "name": "Wavelength", "type": "float", "desc": "Signal wavelength in nm." },
+      { "name": "Frequency", "type": "float", "desc": "Signal frequency in s-1." },
+      { "name": "Signal", "type": "enum", "desc": "Optional. Sets transient form of the signal. Options: Gauss, Harmonic. Default: Harmonic." },
+      { "name": "AmplitudeScaling", "type": "float", "desc": "Optional. Scaling factor for electric field amplitude. Default: 1." },
+      { "name": "Delay", "type": "float", "desc": "Optional. Number of signal periods before signal starts. Default: 0." },
+      { "name": "NRise", "type": "float", "desc": "Optional. Number of signal periods before full amplitude is reached. Default: 2." },
+      { "name": "PhaseShift", "type": "float", "desc": "Optional. Linear phase shift for electric field in degrees. Default: 0." }
+    ],
+    "example": "CodeVExcitation {\n  InputDataFile = {\"data_z1.dat\", \"data_z2.dat\"}\n  AnchorPoint1  = {-0.5, -0.5, -0.3125}\n  AnchorPoint2  = {-0.5, -0.5, -0.25}\n  Wavelength    = 550\n  Nrise         = 5\n}",
+    "keywords": ["InputDataFile", "AnchorPoint1", "AnchorPoint2", "Wavelength", "Frequency", "Signal", "AmplitudeScaling", "Delay", "NRise", "PhaseShift"]
+  },
+  "GaussianBeamExcitation": {
+    "section": "Excitation",
+    "signature": "GaussianBeamExcitation { Wavelength=<float> BeamRadius=<float> BeamCenter=<list> Direction=<enum> }",
+    "description": "Defines a Gaussian beam excitation source with controllable beam waist, center position, and illumination direction. Supports both harmonic and Gaussian transient signal forms.",
+    "parameters": [
+      { "name": "Wavelength", "type": "float", "desc": "Signal wavelength in nm." },
+      { "name": "Frequency", "type": "float", "desc": "Signal frequency in s-1." },
+      { "name": "BeamRadius", "type": "float", "desc": "Radius (waist) of the Gaussian beam in um." },
+      { "name": "BeamCenter", "type": "list", "desc": "Coordinates of the center (focus) of the Gaussian beam in um." },
+      { "name": "BeamPower", "type": "float", "desc": "Optional. Signal power of the Gaussian beam in W. Default: 2.08478e-15." },
+      { "name": "Amplitude", "type": "float", "desc": "Optional. Signal amplitude in V/m. Default: 1." },
+      { "name": "Intensity", "type": "float", "desc": "Optional. Signal intensity in W/cm^2. Default: 1.32721e-07." },
+      { "name": "Direction", "type": "enum", "desc": "Optional. Illumination direction. Options: fromTop, fromBottom." },
+      { "name": "Theta", "type": "float", "desc": "Optional. Polar angle of incidence in degrees. Default: 180." },
+      { "name": "Phi", "type": "float", "desc": "Optional. Azimuth angle of incidence in degrees. Default: 0." },
+      { "name": "Psi", "type": "float", "desc": "Optional. Polarization angle in degrees. Default: 45." },
+      { "name": "Polarization", "type": "float", "desc": "Optional. Polarization, either TE or TM, or a value between 0 and 1. Default: 0.5." },
+      { "name": "PolarizationAngle", "type": "float", "desc": "Optional. Polarization angle in degrees. Default: 45." },
+      { "name": "EllipticalPolarizationMagnitude", "type": "float", "desc": "Optional. Polarization ratio magnitude. Default: 0." },
+      { "name": "EllipticalPolarizationPhase", "type": "float", "desc": "Optional. Polarization ratio phase in degrees. Default: 0." },
+      { "name": "Signal", "type": "enum", "desc": "Optional. Sets the transient form of the signal. Options: Gauss, Harmonic. Default: Harmonic." },
+      { "name": "Sigma", "type": "float", "desc": "Optional. Width of transient Gaussian pulse in terms of number of signal periods. Default: 1." },
+      { "name": "NRise", "type": "float", "desc": "Optional. Number of signal periods before full amplitude is reached. Default: 2." },
+      { "name": "Delay", "type": "float", "desc": "Optional. Number of signal periods before signal starts. Default: 0." },
+      { "name": "BoxCorner1", "type": "list", "desc": "Optional. One of the two corners of a box that specifies the excitation plane." },
+      { "name": "BoxCorner2", "type": "list", "desc": "Optional. One of the two corners of a box that specifies the excitation plane." },
+      { "name": "Region", "type": "string", "desc": "Optional. Box that specifies the excitation plane." },
+      { "name": "PlaneX", "type": "float", "desc": "Optional. Excitation line or plane perpendicular to the x-axis." },
+      { "name": "PlaneY", "type": "float", "desc": "Optional. Excitation line or plane perpendicular to the y-axis." },
+      { "name": "PlaneZ", "type": "float", "desc": "Optional. Excitation plane perpendicular to the z-axis." }
+    ],
+    "example": "GaussianBeamExcitation {\n  Direction   = fromTop\n  Wavelength  = 550\n  BeamRadius  = 2.0\n  BeamCenter  = {0.0, 0.0, 5.0}\n  Intensity   = 0.1 * W/cm2\n  Nrise       = 4\n}",
+    "keywords": ["Wavelength", "Frequency", "BeamRadius", "BeamCenter", "BeamPower", "Amplitude", "Intensity", "Direction", "Theta", "Phi", "Psi", "Polarization", "PolarizationAngle", "EllipticalPolarizationMagnitude", "EllipticalPolarizationPhase", "Signal", "Sigma", "NRise", "Delay", "BoxCorner1", "BoxCorner2", "Region", "PlaneX", "PlaneY", "PlaneZ"]
+  },
+  "TruncatedPlaneWaveExcitation": {
+    "section": "Excitation",
+    "signature": "TruncatedPlaneWaveExcitation { Wavelength=<float> Intensity=<float> BoxCorner1=<list> BoxCorner2=<list> Direction=<enum> }",
+    "description": "Defines a truncated plane wave excitation with finite spatial extent specified by box corners. Supports partial coherence and multiple plane waves with the same polarization and angle controls as PlaneWaveExcitation.",
+    "parameters": [
+      { "name": "Wavelength", "type": "float", "desc": "Signal wavelength in nm." },
+      { "name": "Frequency", "type": "float", "desc": "Signal frequency in s-1." },
+      { "name": "Amplitude", "type": "float", "desc": "Optional. Signal amplitude in V/m. Default: 1." },
+      { "name": "Intensity", "type": "float", "desc": "Optional. Signal intensity in W/cm^2. Default: 1.32721e-07." },
+      { "name": "BoxCorner1", "type": "list", "desc": "One of the two corners of a box that specifies the excitation plane." },
+      { "name": "BoxCorner2", "type": "list", "desc": "One of the two corners of a box that specifies the excitation plane." },
+      { "name": "Direction", "type": "enum", "desc": "Optional. Illumination direction. Options: fromTop, fromBottom." },
+      { "name": "Theta", "type": "float", "desc": "Optional. Polar angle of incidence in degrees. Default: 180." },
+      { "name": "Phi", "type": "float", "desc": "Optional. Azimuth angle of incidence in degrees. Default: 0." },
+      { "name": "Psi", "type": "float", "desc": "Optional. Polarization angle in degrees. Default: 45." },
+      { "name": "Polarization", "type": "float", "desc": "Optional. Polarization, either TE or TM, or a value between 0 and 1. Default: 0.5." },
+      { "name": "PolarizationAngle", "type": "float", "desc": "Optional. Polarization angle in degrees. Default: 45." },
+      { "name": "EllipticalPolarizationMagnitude", "type": "float", "desc": "Optional. Polarization ratio magnitude. Default: 0." },
+      { "name": "EllipticalPolarizationPhase", "type": "float", "desc": "Optional. Polarization ratio phase in degrees. Default: 0." },
+      { "name": "Signal", "type": "enum", "desc": "Optional. Sets the transient form of the signal. Options: Gauss, Harmonic. Default: Harmonic." },
+      { "name": "Sigma", "type": "float", "desc": "Optional. Width of transient Gaussian pulse in terms of number of signal periods. Default: 1." },
+      { "name": "NRise", "type": "float", "desc": "Optional. Number of signal periods before full amplitude is reached. Default: 2." },
+      { "name": "Delay", "type": "float", "desc": "Optional. Number of signal periods before signal starts. Default: 0." },
+      { "name": "NumberOfPlaneWaves", "type": "int", "desc": "Optional. Number of excitation plane waves. Default: 1." },
+      { "name": "NumericalAperture", "type": "float", "desc": "Optional. Numerical aperture. Default: 0." },
+      { "name": "PartialCoherenceFactor", "type": "float", "desc": "Optional. Partial coherence factor. Default: 1." },
+      { "name": "Region", "type": "string", "desc": "Optional. Box that specifies the excitation plane." },
+      { "name": "PlaneX", "type": "float", "desc": "Optional. Excitation line or plane perpendicular to the x-axis." },
+      { "name": "PlaneY", "type": "float", "desc": "Optional. Excitation line or plane perpendicular to the y-axis." },
+      { "name": "PlaneZ", "type": "float", "desc": "Optional. Excitation plane perpendicular to the z-axis." }
+    ],
+    "example": "TruncatedPlaneWaveExcitation {\n  BoxCorner1 = {0.0, -0.5, 0.0}\n  BoxCorner2 = {0.1, -0.5, 0.0}\n  Theta      = 0\n  Psi        = 0\n  Wavelength = 550\n  Intensity  = 0.1 * W/cm2\n  Nrise      = 4\n}",
+    "keywords": ["Wavelength", "Frequency", "Amplitude", "Intensity", "BoxCorner1", "BoxCorner2", "Direction", "Theta", "Phi", "Psi", "Polarization", "PolarizationAngle", "EllipticalPolarizationMagnitude", "EllipticalPolarizationPhase", "Signal", "Sigma", "NRise", "Delay", "NumberOfPlaneWaves", "NumericalAperture", "PartialCoherenceFactor", "Region", "PlaneX", "PlaneY", "PlaneZ"]
+  },
+  "Detector": {
+    "section": "Termination",
+    "signature": "Detector { Tolerance=<float> Type=<enum> }",
+    "description": "Monitors the convergence of the electromagnetic field simulation and terminates the time-stepping when the field has reached steady state. The simulation stops when the maximum deviation is smaller than the specified tolerance.",
+    "parameters": [
+      { "name": "Tolerance", "type": "float", "desc": "The simulation is terminated when the maximum deviation is smaller than this value. Default: 0.001." },
+      { "name": "Type", "type": "enum", "desc": "Optional. Type of detector. Options: Periodic, Decayed. Default: Periodic." },
+      { "name": "Frequency", "type": "float", "desc": "Optional. Detector frequency in s-1. The default value is calculated from the excitation wavelength." },
+      { "name": "Region", "type": "string", "desc": "Valid box or region name of the tensor grid where the detector is evaluated." },
+      { "name": "BoxCorner1", "type": "list", "desc": "Optional. One of the two corners of a box that specifies the detector domain." },
+      { "name": "BoxCorner2", "type": "list", "desc": "Optional. One of the two corners of a box that specifies the detector domain." },
+      { "name": "StartTick", "type": "int", "desc": "Optional. Number of tick steps when to start the detector evaluation. Default: 0." },
+      { "name": "StartTime", "type": "float", "desc": "Optional. Simulation time when to start the detector evaluation. Default: 0." },
+      { "name": "StepX", "type": "int", "desc": "Optional. Detection is performed on every N-th grid point in the x-direction. Default: 10." },
+      { "name": "StepY", "type": "int", "desc": "Optional. Detection is performed on every N-th grid point in the y-direction. Default: 10." },
+      { "name": "StepZ", "type": "int", "desc": "Optional. Detection is performed on every N-th grid point in the z-direction. Default: 10." },
+      { "name": "BreakOnError", "type": "enum", "desc": "Optional. Specifies whether the simulation stops if an error is encountered. Options: Yes, No. Default: Yes." },
+      { "name": "FailureOnUnreachedTolerance", "type": "enum", "desc": "Optional. Specifies whether the exit code will be nonzero if tolerance is not reached. Options: Yes, No. Default: Yes." }
+    ],
+    "example": "Detector {\n  Tolerance = 1e-3\n}",
+    "keywords": ["Tolerance", "Type", "Frequency", "Region", "BoxCorner1", "BoxCorner2", "StartTick", "StartTime", "StepX", "StepY", "StepZ", "BreakOnError", "FailureOnUnreachedTolerance"]
+  },
+  "Plot": {
+    "section": "Output",
+    "signature": "Plot { Name=<string> Quantity=<list> BoxCorner1=<list> BoxCorner2=<list> }",
+    "description": "Outputs field data to TDR files for visualization. Supports volume and surface plotting of electromagnetic field quantities, complex refractive index, and derived quantities such as absorbed photon density.",
+    "parameters": [
+      { "name": "Name", "type": "string", "desc": "Defines the name of the plot, which also is used for the output file name by appending _eml.tdr." },
+      { "name": "Quantity", "type": "list", "desc": "Sets the list of quantities to be plotted. Options include: AbsElectricField, RealElectricField(X/Y/Z), ImagElectricField(X/Y/Z), AbsMagneticField, RealMagneticField(X/Y/Z), ImagMagneticField(X/Y/Z), CplxRefIndex, CplxExtCoeff, AbsorbedPhotonDensity, PowerFluxDensity, OpticalGeneration, Region, and many more. Default: {AbsElectricField}." },
+      { "name": "BoxCorner1", "type": "list", "desc": "Optional. One of the two corners of a box for which data must be plotted." },
+      { "name": "BoxCorner2", "type": "list", "desc": "Optional. One of the two corners of a box for which data must be plotted." },
+      { "name": "Region", "type": "string", "desc": "Optional. Regions for which data must be plotted." },
+      { "name": "PlaneX", "type": "float", "desc": "Optional. Plot domain specified as a line or plane perpendicular to the x-axis." },
+      { "name": "PlaneY", "type": "float", "desc": "Optional. Plot domain specified as a line or plane perpendicular to the y-axis." },
+      { "name": "PlaneZ", "type": "float", "desc": "Optional. Plot domain specified as a plane perpendicular to the z-axis." },
+      { "name": "Domain", "type": "enum", "desc": "Optional. Specifies whether values for Volume or Surface will be plotted. Options: Surface, Volume. Default: Volume." },
+      { "name": "Sides", "type": "list", "desc": "Optional. When Domain=Surface, defines the sidewall where plotting will be performed. Options: All, X, Xmin, Xmax, Y, Ymin, Ymax, Z, Zmin, Zmax. Default: {All}." },
+      { "name": "GridFile", "type": "string", "desc": "Optional. Name of mixed-element grid file for output data." },
+      { "name": "Interpolation", "type": "enum", "desc": "Optional. Method of interpolating plot data from tensor grid to mixed-element grid. Options: Standard, Simple, Conservative. Default: Standard." },
+      { "name": "StartTick", "type": "int", "desc": "Optional. Beginning of the active tick step interval." },
+      { "name": "EndTick", "type": "int", "desc": "Optional. End of the active tick step interval." },
+      { "name": "StartTime", "type": "float", "desc": "Optional. Beginning of the active time interval." },
+      { "name": "EndTime", "type": "float", "desc": "Optional. End of the active time interval." },
+      { "name": "TickStep", "type": "int", "desc": "Optional. Plotting is performed every N tick steps. Default: 100." },
+      { "name": "FinalPlot", "type": "enum", "desc": "Optional. Controls whether a final plot is created at end of simulation. Options: Yes, No. Default: Yes." },
+      { "name": "ScatteredFieldOnly", "type": "enum", "desc": "Optional. Specifies whether the plot involves only scattered fields. Options: Yes, No. Default: No." },
+      { "name": "WriteBehavior", "type": "enum", "desc": "Optional. Controls how consecutive plot instances are written. Options: Numbered, Overwrite, OverwriteAndNumbered. Default: Numbered." },
+      { "name": "WavelengthList", "type": "list", "desc": "Optional. List of wavelengths for DFT-type simulations." },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "Optional. Precision for matching wavelengths. Default: 0." },
+      { "name": "WavelengthRange", "type": "list", "desc": "Optional. Wavelength range for DFT-type simulations as {min, max}." }
+    ],
+    "example": "Plot {\n  Name      = \"n@node@_Eabs\"\n  Quantity  = {AbsElectricField, Region}\n  TickStep  = 300\n  StartTick = 100\n  EndTick   = 800\n  FinalPlot = yes\n}",
+    "keywords": ["Name", "Quantity", "BoxCorner1", "BoxCorner2", "Region", "PlaneX", "PlaneY", "PlaneZ", "Domain", "Sides", "GridFile", "Interpolation", "StartTick", "EndTick", "StartTime", "EndTime", "TickStep", "FinalPlot", "ScatteredFieldOnly", "WriteBehavior", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "Extractor": {
+    "section": "Output",
+    "signature": "Extractor { Name=<string> Quantity=<list> BoxCorner1=<list> BoxCorner2=<list> }",
+    "description": "Extracts field quantities from the tensor grid to TDR files, optionally mapping data onto a mixed-element grid. Supports extraction of absorbed photon density, power flux density, optical generation, and electromagnetic field components.",
+    "parameters": [
+      { "name": "Name", "type": "string", "desc": "Defines the name of the extractor, which also is used for the output file name by appending _eml.tdr." },
+      { "name": "Quantity", "type": "list", "desc": "Specifies the quantities to extract. Options: AbsorbedPhotonDensity, AbsorbedPowerDensity, OpticalGeneration, PowerFluxDensity, AbsElectricField, RealElectricField(X/Y/Z), ImagElectricField(X/Y/Z), RealMagneticField(X/Y/Z), ImagMagneticField(X/Y/Z), Region." },
+      { "name": "BoxCorner1", "type": "list", "desc": "Optional. One of the two corners of a box for which data must be extracted." },
+      { "name": "BoxCorner2", "type": "list", "desc": "Optional. One of the two corners of a box for which data must be extracted." },
+      { "name": "Region", "type": "string", "desc": "Optional. Regions for which data must be extracted." },
+      { "name": "PlaneX", "type": "float", "desc": "Optional. Extractor domain as a line or plane perpendicular to the x-axis." },
+      { "name": "PlaneY", "type": "float", "desc": "Optional. Extractor domain as a line or plane perpendicular to the y-axis." },
+      { "name": "PlaneZ", "type": "float", "desc": "Optional. Extractor domain as a plane perpendicular to the z-axis." },
+      { "name": "GridFile", "type": "string", "desc": "Optional. Name of mixed-element grid file for output data." },
+      { "name": "Interpolation", "type": "enum", "desc": "Optional. Way of interpolating extraction data from tensor grid to mixed-element grid. Options: Standard, Simple, Conservative. Default: Standard." },
+      { "name": "ScatteredFieldOnly", "type": "enum", "desc": "Optional. Specifies whether the extractor involves only scattered fields. Options: Yes, No. Default: No." },
+      { "name": "WavelengthList", "type": "list", "desc": "Optional. List of wavelengths for DFT-type simulations." },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "Optional. Precision for matching wavelengths. Default: 0." },
+      { "name": "WavelengthRange", "type": "list", "desc": "Optional. Wavelength range for DFT-type simulations as {min, max}." }
+    ],
+    "example": "Extractor {\n  Name     = \"n@node@_g\"\n  Quantity = {AbsorbedPhotonDensity, PowerFluxDensity}\n  PlaneX   = 0.05\n}",
+    "keywords": ["Name", "Quantity", "BoxCorner1", "BoxCorner2", "Region", "PlaneX", "PlaneY", "PlaneZ", "GridFile", "Interpolation", "ScatteredFieldOnly", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "Sensor": {
+    "section": "Output",
+    "signature": "Sensor { Name=<string> Quantity=<enum> Mode=<list> BoxCorner1=<list> BoxCorner2=<list> }",
+    "description": "Integrates or averages field quantities over a specified volume, surface, or plane. Commonly used to compute reflection, transmission, and absorption coefficients by placing sensors at appropriate locations.",
+    "parameters": [
+      { "name": "Name", "type": "string", "desc": "Defines the name of the sensor, which also is used in the dataset name in the result file." },
+      { "name": "Quantity", "type": "enum", "desc": "Specifies the integration quantity. Fluxes are integrated over surfaces; all others are integrated over volume. Options: AbsorbedPhotonDensity, AbsorbedPowerDensity, OpticalGeneration, PowerFluxDensity, PhotonFluxDensity, IncoherentAbsorbedPhotonDensity, IncoherentOpticalGeneration." },
+      { "name": "Mode", "type": "list", "desc": "Optional. Integrate integrates a quantity over a surface or volume. Average divides the integrated value by the volume or surface area. Options: Integrate, Average. Default: {Integrate Average}." },
+      { "name": "BoxCorner1", "type": "list", "desc": "Optional. One of the two corners of a box that specifies the sensor domain." },
+      { "name": "BoxCorner2", "type": "list", "desc": "Optional. One of the two corners of a box that specifies the sensor domain." },
+      { "name": "BoxCenter", "type": "list", "desc": "Optional. Center of a nonaxis-aligned box in um." },
+      { "name": "BoxDimensions", "type": "list", "desc": "Optional. Dimensions of a nonaxis-aligned box in um." },
+      { "name": "RotationAngles", "type": "list", "desc": "Optional. Rotation angles (theta, phi, psi) of a nonaxis-aligned box in degrees. Default: {0 90 0}." },
+      { "name": "Region", "type": "string", "desc": "Optional. Regions to which sensor applies." },
+      { "name": "Material", "type": "string", "desc": "Optional. Materials to which sensor applies." },
+      { "name": "Domains", "type": "enum", "desc": "Optional. Set operation on volumes defined by region and box corners. Options: United, Intersecting, Separate. Default: Separate." },
+      { "name": "PlaneX", "type": "float", "desc": "Optional. Sensor domain as a line or plane perpendicular to the x-axis." },
+      { "name": "PlaneY", "type": "float", "desc": "Optional. Sensor domain as a line or plane perpendicular to the y-axis." },
+      { "name": "PlaneZ", "type": "float", "desc": "Optional. Sensor domain as a plane perpendicular to the z-axis." },
+      { "name": "Sides", "type": "list", "desc": "Optional. If the quantity is a flux, specifies the sides for integration. Options: All, X, Xmin, Xmax, Y, Ymin, Ymax, Z, Zmin, Zmax. Default: {All}." },
+      { "name": "CoordinateTransformation", "type": "enum", "desc": "Optional. Type of coordinate transformation. Options: Standard, Unified. Default: Unified." },
+      { "name": "ScatteredFieldOnly", "type": "enum", "desc": "Optional. Specifies whether the sensor involves only scattered fields. Options: Yes, No. Default: No." },
+      { "name": "Frequency", "type": "float", "desc": "Optional. Sensor frequency in s-1. Default is calculated from excitation wavelength." },
+      { "name": "StartTick", "type": "int", "desc": "Optional. Beginning of the active tick step interval." },
+      { "name": "EndTick", "type": "int", "desc": "Optional. End of the active tick step interval." },
+      { "name": "StartTime", "type": "float", "desc": "Optional. Beginning of the active time interval." },
+      { "name": "EndTime", "type": "float", "desc": "Optional. End of the active time interval." },
+      { "name": "TickStep", "type": "int", "desc": "Optional. Sensing is performed every N tick steps. Default: 100." },
+      { "name": "WavelengthList", "type": "list", "desc": "Optional. List of wavelengths for DFT-type simulations." },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "Optional. Precision for matching wavelengths. Default: 0." },
+      { "name": "WavelengthRange", "type": "list", "desc": "Optional. Wavelength range for DFT-type simulations as {min, max}." }
+    ],
+    "example": "Sensor {\n  Name       = \"total\"\n  Quantity   = PhotonFluxDensity\n  PlaneY     = -0.2\n  Mode       = {Integrate}\n}",
+    "keywords": ["Name", "Quantity", "Mode", "BoxCorner1", "BoxCorner2", "BoxCenter", "BoxDimensions", "RotationAngles", "Region", "Material", "Domains", "PlaneX", "PlaneY", "PlaneZ", "Sides", "CoordinateTransformation", "ScatteredFieldOnly", "Frequency", "StartTick", "EndTick", "StartTime", "EndTime", "TickStep", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "RTA": {
+    "section": "Output",
+    "signature": "RTA { Log=<list> Sensors=<list> StartTick=<int> TickStep=<int> }",
+    "description": "Computes reflection (R), transmission (T), and absorption (A) coefficients by integrating Poynting vector fluxes over the simulation domain boundaries. Results are written as DOE parameters to the log file.",
+    "parameters": [
+      { "name": "Log", "type": "list", "desc": "Optional. Specifies quantities written as DOE parameters to the log file. Options: R, T, A, RTA, Rnorm, Tnorm, Anorm, all, none. Default: {all}." },
+      { "name": "Sensors", "type": "list", "desc": "Optional. Type of sensors to be activated. Options: R, T, A, all. Default: {all}." },
+      { "name": "LogPrecision", "type": "int", "desc": "Optional. Number of digits to the right of the decimal point for DOE parameters. Default: 3." },
+      { "name": "StartTick", "type": "int", "desc": "Optional. Beginning of the active tick step interval." },
+      { "name": "EndTick", "type": "int", "desc": "Optional. End of the active tick step interval." },
+      { "name": "StartTime", "type": "float", "desc": "Optional. Beginning of the active time interval." },
+      { "name": "EndTime", "type": "float", "desc": "Optional. End of the active time interval." },
+      { "name": "TickStep", "type": "int", "desc": "Optional. Sensing is performed every N tick steps. Default: 100." },
+      { "name": "WavelengthList", "type": "list", "desc": "Optional. List of wavelengths for DFT-type simulations." },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "Optional. Precision for matching wavelengths. Default: 0." },
+      { "name": "WavelengthRange", "type": "list", "desc": "Optional. Wavelength range for DFT-type simulations as {min, max}." }
+    ],
+    "example": "RTA {\n  Log = {R, T, A, RTA}\n  StartTick = 0\n  LogPrecision = 4\n}",
+    "keywords": ["Log", "Sensors", "LogPrecision", "StartTick", "EndTick", "StartTime", "EndTime", "TickStep", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "DFT": {
+    "section": "Output",
+    "signature": "DFT { MinWavelength=<float> MaxWavelength=<float> NumberOfWavelengths=<int> }",
+    "description": "Configures discrete Fourier transform (DFT) settings for multi-wavelength simulations. Defines the wavelength table over which the DFT is computed, enabling broadband spectral analysis from a single time-domain simulation.",
+    "parameters": [
+      { "name": "MinWavelength", "type": "float", "desc": "Start wavelength of the DFT wavelength table." },
+      { "name": "MaxWavelength", "type": "float", "desc": "End wavelength of the DFT wavelength table." },
+      { "name": "NumberOfWavelengths", "type": "int", "desc": "Number of elements in the DFT wavelength table." },
+      { "name": "DownSampling", "type": "int", "desc": "Optional. Downsampling rate of DFT." }
+    ],
+    "example": "DFT {\n  MinWavelength      = 400\n  MaxWavelength      = 700\n  NumberOfWavelengths = 10\n}",
+    "keywords": ["MinWavelength", "MaxWavelength", "NumberOfWavelengths", "DownSampling"]
+  },
+  "Farfield": {
+    "section": "Output",
+    "signature": "Farfield { Name=<string> BoxCorner1=<list> BoxCorner2=<list> WavelengthList=<list> }",
+    "description": "Computes the far-field radiation pattern from a near-field surface in the simulation domain. Supports angular discretization in both polar and azimuthal directions, array factor modeling, and power integration over angular ranges.",
+    "parameters": [
+      { "name": "Name", "type": "string", "desc": "Defines the name of the far field, which also is used for the output file name by appending _eml.tdr." },
+      { "name": "BoxCorner1", "type": "list", "desc": "One of the two corners of a box defining the near-field plane for far-field computation." },
+      { "name": "BoxCorner2", "type": "list", "desc": "One of the two corners of a box defining the near-field plane for far-field computation." },
+      { "name": "Region", "type": "string", "desc": "Near-field region to be used for far-field computation. Must be a plane in the 3D domain." },
+      { "name": "Radius", "type": "float", "desc": "Optional. Radius (distance) at which the far field is calculated in um. Default: 1000." },
+      { "name": "ArraySize", "type": "list", "desc": "Optional. Number of times the near-field domain is replicated in each coordinate direction. Default: {1 1}." },
+      { "name": "PolarRange", "type": "list", "desc": "Optional. Range and discretization of polar angles {Min, Max, Step} in degrees. Default: {0 90 1}." },
+      { "name": "AzimuthalRange", "type": "list", "desc": "Optional. Range and discretization of azimuthal angles {Min, Max, Step} in degrees. Default: {0 360 1}." },
+      { "name": "PolarCutList", "type": "list", "desc": "Optional. Explicit list of polar angles for constant-polar-angle plots." },
+      { "name": "PolarCutRange", "type": "list", "desc": "Optional. Range of polar angles {Min, Max, Step} for constant-polar-angle plots." },
+      { "name": "AzimuthalCutList", "type": "list", "desc": "Optional. Explicit list of azimuthal angles for constant-azimuthal-angle plots." },
+      { "name": "AzimuthalCutRange", "type": "list", "desc": "Optional. Range of azimuthal angles {Min, Max, Step} for constant-azimuthal-angle plots." },
+      { "name": "IntegrationRange", "type": "list", "desc": "Optional. Integration ranges for power computation in format {MinAzi, MaxAzi, AziStep, MinPol, MaxPol, PolStep}." },
+      { "name": "WavelengthList", "type": "list", "desc": "Optional. List of wavelengths for DFT-type simulations." },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "Optional. Precision for matching wavelengths. Default: 0." },
+      { "name": "WavelengthRange", "type": "list", "desc": "Optional. Wavelength range for DFT-type simulations as {min, max}." }
+    ],
+    "example": "Farfield {\n  Name        = \"n@node@_ff\"\n  Region      = \"nearfield_plane\"\n  Radius      = 500\n  PolarRange  = {0, 90, 1}\n  AzimuthalRange = {0, 360, 1}\n}",
+    "keywords": ["Name", "BoxCorner1", "BoxCorner2", "Region", "Radius", "ArraySize", "PolarRange", "AzimuthalRange", "PolarCutList", "PolarCutRange", "AzimuthalCutList", "AzimuthalCutRange", "IntegrationRange", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "Monitor": {
+    "section": "Output",
+    "signature": "Monitor { Name=<string> Location=<list> Quantity=<list> StartTick=<int> EndTick=<int> }",
+    "description": "Monitors electromagnetic field quantities at specific point locations over time. Useful for tracking the time evolution of fields at points of interest and debugging simulation behavior.",
+    "parameters": [
+      { "name": "Name", "type": "string", "desc": "Defines the name of the monitor, which also is used in the dataset name in the result file." },
+      { "name": "Location", "type": "list", "desc": "Locations to monitor as coordinate triplets in um." },
+      { "name": "Quantity", "type": "list", "desc": "Optional. Specifies the quantities to monitor. Options include AbsElectricField, CplxEMField, CplxElectricField, RealElectricField(X/Y/Z), ImagElectricField(X/Y/Z), AbsMagneticField, CplxMagneticField, RealMagneticField(X/Y/Z), ImagMagneticField(X/Y/Z). Default: {AbsElectricField}." },
+      { "name": "Frequency", "type": "float", "desc": "Optional. Monitor frequency in s-1. Default is calculated from the excitation wavelength." },
+      { "name": "StartTick", "type": "int", "desc": "Optional. Beginning of the active tick step interval. Default: 0." },
+      { "name": "EndTick", "type": "int", "desc": "Optional. End of the active tick step interval." },
+      { "name": "StartTime", "type": "float", "desc": "Optional. Beginning of the active time interval. Default: 0." },
+      { "name": "EndTime", "type": "float", "desc": "Optional. End of the active time interval." },
+      { "name": "TickStep", "type": "int", "desc": "Optional. Monitoring is performed every N tick steps." },
+      { "name": "WavelengthList", "type": "list", "desc": "Optional. List of wavelengths for DFT-type simulations." },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "Optional. Precision for matching wavelengths. Default: 0." },
+      { "name": "WavelengthRange", "type": "list", "desc": "Optional. Wavelength range for DFT-type simulations as {min, max}." }
+    ],
+    "example": "Monitor {\n  Name     = \"point1\"\n  Location = {0.0, 0.0, 0.0}\n  Quantity = {AbsElectricField, AbsMagneticField}\n  StartTick = 100\n}",
+    "keywords": ["Name", "Location", "Quantity", "Frequency", "StartTick", "EndTick", "StartTime", "EndTime", "TickStep", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "Save": {
+    "section": "Output",
+    "signature": "Save { Name=<string> Quantity=<list> BoxCorner1=<list> BoxCorner2=<list> }",
+    "description": "Saves raw electromagnetic field data to TDR files for postprocessing or restarting simulations. Unlike Extractor, Save preserves data on the native tensor grid without interpolation to a mixed-element grid.",
+    "parameters": [
+      { "name": "Name", "type": "string", "desc": "Defines the name of the Save section, which also is used for the output file name by appending _eml.tdr." },
+      { "name": "Quantity", "type": "list", "desc": "Specifies the quantities to save. Options: AbsorbedPhotonDensity, IncoherentAbsorbedPhotonDensity, PowerFluxDensity, CplxEMField, CplxElectricField, RealElectricField(X/Y/Z), ImagElectricField(X/Y/Z), CplxMagneticField, RealMagneticField(X/Y/Z), ImagMagneticField(X/Y/Z)." },
+      { "name": "BoxCorner1", "type": "list", "desc": "Optional. One of the two corners of a box for which data must be saved." },
+      { "name": "BoxCorner2", "type": "list", "desc": "Optional. One of the two corners of a box for which data must be saved." },
+      { "name": "Region", "type": "string", "desc": "Optional. Regions for which data must be saved." },
+      { "name": "WavelengthList", "type": "list", "desc": "Optional. List of wavelengths for DFT-type simulations." },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "Optional. Precision for matching wavelengths. Default: 0." },
+      { "name": "WavelengthRange", "type": "list", "desc": "Optional. Wavelength range for DFT-type simulations as {min, max}." }
+    ],
+    "example": "Save {\n  Name = \"@save@\"\n  Quantity = {AbsorbedPhotonDensity, PowerFluxDensity}\n}",
+    "keywords": ["Name", "Quantity", "BoxCorner1", "BoxCorner2", "Region", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "Acceleware": {
+    "section": "Parallelization",
+    "signature": "Acceleware { LibraryPath=<string> LogFilePrefix=<string> LogLevel=<enum> }",
+    "description": "Configures GPU hardware acceleration using the Acceleware framework for FDTD simulations. Enables execution on NVIDIA GPU accelerators for significantly improved simulation performance compared to CPU-only runs.",
+    "parameters": [
+      { "name": "LibraryPath", "type": "string", "desc": "Optional. Path to the Acceleware library directory." },
+      { "name": "LogFilePrefix", "type": "string", "desc": "Optional. Prefix for GPU acceleration log files." },
+      { "name": "LogLevel", "type": "enum", "desc": "Optional. Verbosity level of GPU acceleration logging." }
+    ],
+    "example": "Acceleware {\n  LibraryPath   = \"/opt/acceleware/lib\"\n  LogFilePrefix = \"gpu\"\n  LogLevel      = Default\n}",
+    "keywords": ["LibraryPath", "LogFilePrefix", "LogLevel"]
+  },
+  "AlphaMax": {
+    "section": "Boundary",
+    "signature": "AlphaMax = <float>",
+    "description": "Sets the maximum value of PML parameter alpha used in polynomial grading of the PML tensor coefficient. Default: 0.2.",
+    "parameters": [],
+    "example": "AlphaMax = 0.2",
+    "keywords": []
+  },
+  "AlphaProfile": {
+    "section": "Boundary",
+    "signature": "AlphaProfile = <float> | { <float>, ... }",
+    "description": "Specifies the profile of PML parameter alpha used in grading of the PML tensor coefficient. The number of profile points must be double the size of the Thickness parameter.",
+    "parameters": [],
+    "example": "AlphaProfile = {0.0, 0.05, 0.1, 0.2}",
+    "keywords": []
+  },
+  "Amplitude": {
+    "section": "Excitation",
+    "signature": "Amplitude = <float>",
+    "description": "Sets the signal amplitude in V/m. Default: 1.",
+    "parameters": [],
+    "example": "Amplitude = 2.0",
+    "keywords": []
+  },
+  "AmplitudeScaling": {
+    "section": "Excitation",
+    "signature": "AmplitudeScaling = <float>",
+    "description": "Specifies the scaling factor for electric field amplitude in CodeVExcitation. Default: 1.",
+    "parameters": [],
+    "example": "AmplitudeScaling = 0.5",
+    "keywords": []
+  },
+  "AnchorPoint1": {
+    "section": "Excitation",
+    "signature": "AnchorPoint1 = { <float>, <float>, <float> }",
+    "description": "Specifies the anchor point (of smallest coordinates) for the first CODE V data file in um.",
+    "parameters": [],
+    "example": "AnchorPoint1 = {-0.5, -0.5, -0.3125}",
+    "keywords": []
+  },
+  "AnchorPoint2": {
+    "section": "Excitation",
+    "signature": "AnchorPoint2 = { <float>, <float>, <float> }",
+    "description": "Specifies the anchor point (of smallest coordinates) for the second CODE V data file in um.",
+    "parameters": [],
+    "example": "AnchorPoint2 = {-0.5, -0.5, -0.25}",
+    "keywords": []
+  },
+  "ArraySize": {
+    "section": "Output",
+    "signature": "ArraySize = { <int>, <int> }",
+    "description": "Specifies the number of times the near-field domain is replicated in each coordinate direction for far-field computation. Default: {1 1}.",
+    "parameters": [],
+    "example": "ArraySize = {3 3}",
+    "keywords": []
+  },
+  "Axis": {
+    "section": "Simulation Setup",
+    "signature": "Axis = <enum>",
+    "description": "Specifies the axis convention used for the simulation domain. Used to control coordinate system orientation.",
+    "parameters": [],
+    "example": "Axis = Z",
+    "keywords": []
+  },
+  "AzimuthalCutList": {
+    "section": "Output",
+    "signature": "AzimuthalCutList = <float> | { <float>, ... }",
+    "description": "Defines an explicit list of azimuthal angles in degrees for constant-azimuthal-angle far-field plots.",
+    "parameters": [],
+    "example": "AzimuthalCutList = {0, 45, 90, 135}",
+    "keywords": []
+  },
+  "AzimuthalCutRange": {
+    "section": "Output",
+    "signature": "AzimuthalCutRange = { <float>, <float>, <float> }",
+    "description": "Defines a range of azimuthal angles {Min, Max, Step} in degrees for constant-azimuthal-angle far-field plots.",
+    "parameters": [],
+    "example": "AzimuthalCutRange = {0, 360, 15}",
+    "keywords": []
+  },
+  "AzimuthalRange": {
+    "section": "Output",
+    "signature": "AzimuthalRange = { <float>, <float>, <float> }",
+    "description": "Specifies the range and discretization of azimuthal angles {Min, Max, Step} in degrees for far-field computation. Default: {0 360 1}.",
+    "parameters": [],
+    "example": "AzimuthalRange = {0, 180, 2}",
+    "keywords": []
+  },
+  "BeamCenter": {
+    "section": "Excitation",
+    "signature": "BeamCenter = { <float>, <float>, <float> }",
+    "description": "Specifies the coordinates of the center (focus) of the Gaussian beam in um.",
+    "parameters": [],
+    "example": "BeamCenter = {0.0, 0.0, 5.0}",
+    "keywords": []
+  },
+  "BeamPower": {
+    "section": "Excitation",
+    "signature": "BeamPower = <float>",
+    "description": "Sets the signal power of the Gaussian beam in W. Default: 2.08478e-15.",
+    "parameters": [],
+    "example": "BeamPower = 1e-12",
+    "keywords": []
+  },
+  "BeamRadius": {
+    "section": "Excitation",
+    "signature": "BeamRadius = <float>",
+    "description": "Specifies the radius (waist) of the Gaussian beam in um.",
+    "parameters": [],
+    "example": "BeamRadius = 2.0",
+    "keywords": []
+  },
+  "BoxCenter": {
+    "section": "Output",
+    "signature": "BoxCenter = { <float>, <float>, <float> }",
+    "description": "Specifies the center of a nonaxis-aligned box in um for Sensor domain definition.",
+    "parameters": [],
+    "example": "BoxCenter = {0.0, 0.0, 0.0}",
+    "keywords": []
+  },
+  "BoxCorner1": {
+    "section": "Output",
+    "signature": "BoxCorner1 = { <float>, <float>, <float> }",
+    "description": "Specifies one of the two corners of a box that defines the spatial domain. Supports min/max keywords for device extents.",
+    "parameters": [],
+    "example": "BoxCorner1 = {0.0, -0.5, 0.0}",
+    "keywords": [],
+    "contexts": {
+      "Plot": "One of the two corners of a box for which data must be plotted.",
+      "Extractor": "One of the two corners of a box for which data must be extracted.",
+      "Sensor": "One of the two corners of a box that specifies the sensor domain.",
+      "Farfield": "One of the two corners of a box defining the near-field plane for far-field computation.",
+      "Save": "One of the two corners of a box for which data must be saved.",
+      "Detector": "One of the two corners of a box that specifies the detector domain.",
+      "PlaneWaveExcitation": "One of the two corners of a box that specifies the excitation plane.",
+      "TruncatedPlaneWaveExcitation": "One of the two corners of a box that specifies the excitation plane.",
+      "GaussianBeamExcitation": "One of the two corners of a box that specifies the excitation plane."
+    }
+  },
+  "BoxCorner2": {
+    "section": "Output",
+    "signature": "BoxCorner2 = { <float>, <float>, <float> }",
+    "description": "Specifies the second corner of a box that defines the spatial domain. Supports min/max keywords for device extents.",
+    "parameters": [],
+    "example": "BoxCorner2 = {0.1, 0.5, 0.0}",
+    "keywords": [],
+    "contexts": {
+      "Plot": "One of the two corners of a box for which data must be plotted.",
+      "Extractor": "One of the two corners of a box for which data must be extracted.",
+      "Sensor": "One of the two corners of a box that specifies the sensor domain.",
+      "Farfield": "One of the two corners of a box defining the near-field plane for far-field computation.",
+      "Save": "One of the two corners of a box for which data must be saved.",
+      "Detector": "One of the two corners of a box that specifies the detector domain.",
+      "PlaneWaveExcitation": "One of the two corners of a box that specifies the excitation plane.",
+      "TruncatedPlaneWaveExcitation": "One of the two corners of a box that specifies the excitation plane.",
+      "GaussianBeamExcitation": "One of the two corners of a box that specifies the excitation plane."
+    }
+  },
+  "BoxDimensions": {
+    "section": "Output",
+    "signature": "BoxDimensions = { <float>, <float>, <float> }",
+    "description": "Specifies the dimensions of a nonaxis-aligned box in um for Sensor domain definition.",
+    "parameters": [],
+    "example": "BoxDimensions = {1.0, 2.0, 0.5}",
+    "keywords": []
+  },
+  "BreakOnError": {
+    "section": "Termination",
+    "signature": "BreakOnError = <enum>",
+    "description": "Controls whether the simulation stops if an error is encountered during the simulation. Options: Yes, No. Default: Yes.",
+    "parameters": [],
+    "example": "BreakOnError = No",
+    "keywords": []
+  },
+  "CRIMIPath": {
+    "section": "Simulation Setup",
+    "signature": "CRIMIPath = <string>",
+    "description": "Specifies the search path for shared objects used by the complex refractive index model interface. Default: '.'.",
+    "parameters": [],
+    "example": "CRIMIPath = \"/opt/emw/models\"",
+    "keywords": []
+  },
+  "CRIModel": {
+    "section": "Material",
+    "signature": "CRIModel = <string>",
+    "description": "Specifies the name of a user-provided complex refractive index model.",
+    "parameters": [],
+    "example": "CRIModel = \"MyCustomCRI\"",
+    "keywords": []
+  },
+  "CarrierDep": {
+    "section": "Material",
+    "signature": "CarrierDep = <enum> | { <enum>, ... }",
+    "description": "Controls the carrier dependency of the real and imaginary parts of the complex refractive index. Options: Real, Imag.",
+    "parameters": [],
+    "example": "CarrierDep = {Real, Imag}",
+    "keywords": []
+  },
+  "CompressTDR": {
+    "section": "Simulation Setup",
+    "signature": "CompressTDR = <enum>",
+    "description": "Controls whether output TDR files are compressed beyond the basic compression level. Options: Yes, No. Default: No.",
+    "parameters": [],
+    "example": "CompressTDR = Yes",
+    "keywords": []
+  },
+  "CoordinateTransformation": {
+    "section": "Output",
+    "signature": "CoordinateTransformation = <enum>",
+    "description": "Specifies the type of coordinate transformation for Sensor integration. Options: Standard, Unified. Default: Unified.",
+    "parameters": [],
+    "example": "CoordinateTransformation = Standard",
+    "keywords": []
+  },
+  "Delay": {
+    "section": "Excitation",
+    "signature": "Delay = <float>",
+    "description": "Specifies the number of signal periods before the excitation signal starts. Default: 0.",
+    "parameters": [],
+    "example": "Delay = 2.0",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Number of signal periods before the plane wave signal starts.",
+      "CodeVExcitation": "Number of signal periods before the CODE V excitation signal starts.",
+      "GaussianBeamExcitation": "Number of signal periods before the Gaussian beam signal starts.",
+      "TruncatedPlaneWaveExcitation": "Number of signal periods before the truncated plane wave signal starts."
+    }
+  },
+  "DeltaK": {
+    "section": "Material",
+    "signature": "DeltaK = <float>",
+    "description": "Activates the dispersive model for k + DeltaK >= n. Default: 0.",
+    "parameters": [],
+    "example": "DeltaK = 0.1",
+    "keywords": []
+  },
+  "Direction": {
+    "section": "Excitation",
+    "signature": "Direction = <enum>",
+    "description": "Sets the illumination direction with respect to the coordinate system of the input tensor grid. Automatically sets Theta, Phi, Psi, and the excitation plane. Options: fromTop, fromBottom.",
+    "parameters": [],
+    "example": "Direction = fromTop",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Illumination direction for plane wave excitation.",
+      "GaussianBeamExcitation": "Illumination direction for Gaussian beam excitation.",
+      "TruncatedPlaneWaveExcitation": "Illumination direction for truncated plane wave excitation."
+    }
+  },
+  "Domain": {
+    "section": "Output",
+    "signature": "Domain = <enum>",
+    "description": "Specifies whether values for Volume or Surface will be plotted. Options: Surface, Volume. Default: Volume.",
+    "parameters": [],
+    "example": "Domain = Surface",
+    "keywords": []
+  },
+  "DomainDecomposition": {
+    "section": "Simulation Setup",
+    "signature": "DomainDecomposition = <enum>",
+    "description": "Overrides automatic MPI domain decomposition to enforce decomposition in only one Cartesian direction. Options: Automatic, X, Y, Z. Default: Automatic.",
+    "parameters": [],
+    "example": "DomainDecomposition = Z",
+    "keywords": []
+  },
+  "Domains": {
+    "section": "Output",
+    "signature": "Domains = <enum>",
+    "description": "Specifies the set operation on volumes defined by region and box corners for Sensor absorption and optical generation. Options: United, Intersecting, Separate. Default: Separate.",
+    "parameters": [],
+    "example": "Domains = United",
+    "keywords": []
+  },
+  "DownSampling": {
+    "section": "Output",
+    "signature": "DownSampling = <int>",
+    "description": "Specifies the downsampling rate of the DFT computation.",
+    "parameters": [],
+    "example": "DownSampling = 2",
+    "keywords": []
+  },
+  "EllipticalPolarizationMagnitude": {
+    "section": "Excitation",
+    "signature": "EllipticalPolarizationMagnitude = <float>",
+    "description": "Sets the polarization ratio magnitude for elliptical polarization. Default: 0.",
+    "parameters": [],
+    "example": "EllipticalPolarizationMagnitude = 0.5",
+    "keywords": []
+  },
+  "EllipticalPolarizationPhase": {
+    "section": "Excitation",
+    "signature": "EllipticalPolarizationPhase = <float>",
+    "description": "Sets the polarization ratio phase in degrees for elliptical polarization. Default: 0.",
+    "parameters": [],
+    "example": "EllipticalPolarizationPhase = 90.0",
+    "keywords": []
+  },
+  "EndTick": {
+    "section": "Output",
+    "signature": "EndTick = <int>",
+    "description": "Specifies the end of the active tick step interval. Default: +inf.",
+    "parameters": [],
+    "example": "EndTick = 10000",
+    "keywords": [],
+    "contexts": {
+      "Plot": "End of the active tick step interval for plotting.",
+      "Sensor": "End of the active tick step interval for sensing.",
+      "RTA": "End of the active tick step interval for RTA computation.",
+      "Monitor": "End of the active tick step interval for monitoring.",
+      "Detector": "End of the active tick step interval for detection."
+    }
+  },
+  "EndTime": {
+    "section": "Output",
+    "signature": "EndTime = <float>",
+    "description": "Specifies the end of the active time interval in seconds. Default: +inf.",
+    "parameters": [],
+    "example": "EndTime = 1e-12",
+    "keywords": [],
+    "contexts": {
+      "Plot": "End of the active time interval for plotting.",
+      "Sensor": "End of the active time interval for sensing.",
+      "RTA": "End of the active time interval for RTA computation.",
+      "Monitor": "End of the active time interval for monitoring.",
+      "Detector": "End of the active time interval for detection."
+    }
+  },
+  "ExcludeMaterial": {
+    "section": "Material",
+    "signature": "ExcludeMaterial = <string> | { <string>, ... }",
+    "description": "Specifies names of materials to which the current section specification does not apply.",
+    "parameters": [],
+    "example": "ExcludeMaterial = {\"Air\"}",
+    "keywords": [],
+    "contexts": {
+      "PECMedia": "Materials excluded from PEC medium specification.",
+      "PMCMedia": "Materials excluded from PMC medium specification.",
+      "DispersiveMedia": "Materials excluded from dispersive medium specification."
+    }
+  },
+  "ExcludeRegion": {
+    "section": "Material",
+    "signature": "ExcludeRegion = <string> | { <string>, ... }",
+    "description": "Specifies names of regions to which the current section specification does not apply.",
+    "parameters": [],
+    "example": "ExcludeRegion = {\"substrate\"}",
+    "keywords": [],
+    "contexts": {
+      "PECMedia": "Regions excluded from PEC medium specification.",
+      "PMCMedia": "Regions excluded from PMC medium specification.",
+      "DispersiveMedia": "Regions excluded from dispersive medium specification."
+    }
+  },
+  "Extrapolate": {
+    "section": "Material",
+    "signature": "Extrapolate = <enum>",
+    "description": "Controls extrapolation behavior for interpolation of datasets in FieldDataFile. Options: Yes, No. Default: No.",
+    "parameters": [],
+    "example": "Extrapolate = Yes",
+    "keywords": []
+  },
+  "FailureOnUnreachedTolerance": {
+    "section": "Termination",
+    "signature": "FailureOnUnreachedTolerance = <enum>",
+    "description": "Specifies whether the exit code will be set to nonzero if the simulation has not reached the specified tolerance. Options: Yes, No. Default: Yes.",
+    "parameters": [],
+    "example": "FailureOnUnreachedTolerance = No",
+    "keywords": []
+  },
+  "Field": {
+    "section": "Simulation Setup",
+    "signature": "Field = <enum>",
+    "description": "Specifies the electromagnetic field component type for output or excitation.",
+    "parameters": [],
+    "example": "Field = Electric",
+    "keywords": []
+  },
+  "FieldDataFile": {
+    "section": "Simulation Setup",
+    "signature": "FieldDataFile = <string>",
+    "description": "Specifies a data file containing datasets (e.g., spatial temperature profile) on which the complex refractive index depends.",
+    "parameters": [],
+    "example": "FieldDataFile = \"temperature_profile.tdr\"",
+    "keywords": []
+  },
+  "FinalPlot": {
+    "section": "Output",
+    "signature": "FinalPlot = <enum>",
+    "description": "Controls whether a final plot is created at the end of the simulation. Options: Yes, No. Default: Yes.",
+    "parameters": [],
+    "example": "FinalPlot = Yes",
+    "keywords": []
+  },
+  "Frequency": {
+    "section": "Excitation",
+    "signature": "Frequency = <float>",
+    "description": "Specifies the signal frequency in s-1. Alternative to Wavelength for defining the excitation.",
+    "parameters": [],
+    "example": "Frequency = 5.45e14",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Signal frequency for plane wave excitation.",
+      "CodeVExcitation": "Signal frequency for CODE V excitation.",
+      "GaussianBeamExcitation": "Signal frequency for Gaussian beam excitation.",
+      "TruncatedPlaneWaveExcitation": "Signal frequency for truncated plane wave excitation.",
+      "Detector": "Detector frequency. Default is calculated from excitation wavelength.",
+      "Sensor": "Sensor frequency. Default is calculated from excitation wavelength.",
+      "Monitor": "Monitor frequency. Default is calculated from excitation wavelength."
+    }
+  },
+  "GainDep": {
+    "section": "Material",
+    "signature": "GainDep = <enum> | { <enum>, ... }",
+    "description": "Controls the gain dependency of the real part of the complex refractive index. Options: RealLin, RealLog.",
+    "parameters": [],
+    "example": "GainDep = RealLin",
+    "keywords": []
+  },
+  "GridFile": {
+    "section": "Simulation Setup",
+    "signature": "GridFile = <string>",
+    "description": "Specifies the tensor grid file for the simulation, or the mixed-element grid file for output data.",
+    "parameters": [],
+    "example": "GridFile = \"@tdr@\"",
+    "keywords": [],
+    "contexts": {
+      "Globals": "Tensor grid file for the simulation.",
+      "Plot": "Name of mixed-element grid file for output data.",
+      "Extractor": "Name of mixed-element grid file for output data."
+    }
+  },
+  "IgnoreMaterials": {
+    "section": "Material",
+    "signature": "IgnoreMaterials = <enum>",
+    "description": "Controls whether interpolation between vertices of different materials is permitted when loading datasets from FieldDataFile. Options: Yes, No. Default: No.",
+    "parameters": [],
+    "example": "IgnoreMaterials = Yes",
+    "keywords": []
+  },
+  "InputDataFile": {
+    "section": "Excitation",
+    "signature": "InputDataFile = <string> | { <string>, ... }",
+    "description": "Specifies the names of two input data files from CODE V optical design software.",
+    "parameters": [],
+    "example": "InputDataFile = {\"data_z1.dat\", \"data_z2.dat\"}",
+    "keywords": []
+  },
+  "IntegrationRange": {
+    "section": "Output",
+    "signature": "IntegrationRange = { <float>, <float>, <float>, <float>, <float>, <float> }",
+    "description": "Specifies integration ranges and discretization for far-field power computation in format {MinAzi, MaxAzi, AziStep, MinPol, MaxPol, PolStep}.",
+    "parameters": [],
+    "example": "IntegrationRange = {0, 360, 10, 0, 90, 5}",
+    "keywords": []
+  },
+  "Intensity": {
+    "section": "Excitation",
+    "signature": "Intensity = <float>",
+    "description": "Sets the signal intensity in W/cm^2. Default: 1.32721e-07.",
+    "parameters": [],
+    "example": "Intensity = 0.1 * W/cm2",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Signal intensity for plane wave excitation.",
+      "GaussianBeamExcitation": "Signal intensity for Gaussian beam excitation.",
+      "TruncatedPlaneWaveExcitation": "Signal intensity for truncated plane wave excitation."
+    }
+  },
+  "InterfaceAveraging": {
+    "section": "Material",
+    "signature": "InterfaceAveraging = <enum>",
+    "description": "Controls whether interface averaging is granted for dispersive regions or materials. Options: Yes, No. Default: No.",
+    "parameters": [],
+    "example": "InterfaceAveraging = Yes",
+    "keywords": []
+  },
+  "Interpolation": {
+    "section": "Output",
+    "signature": "Interpolation = <enum>",
+    "description": "Specifies the method of interpolating data from the tensor grid to a mixed-element grid. Options: Standard, Simple, Conservative. Default: Standard.",
+    "parameters": [],
+    "example": "Interpolation = Conservative",
+    "keywords": [],
+    "contexts": {
+      "Plot": "Method of interpolating plot data from tensor grid to mixed-element grid.",
+      "Extractor": "Method of interpolating extraction data from tensor grid to mixed-element grid."
+    }
+  },
+  "KappaMax": {
+    "section": "Boundary",
+    "signature": "KappaMax = <float>",
+    "description": "Sets the maximum value of PML parameter kappa used in polynomial grading of the PML tensor coefficient. Default: 15.",
+    "parameters": [],
+    "example": "KappaMax = 20.0",
+    "keywords": []
+  },
+  "KappaProfile": {
+    "section": "Boundary",
+    "signature": "KappaProfile = <float> | { <float>, ... }",
+    "description": "Specifies the profile of PML parameter kappa used in grading of the PML tensor coefficient. The number of profile points must be double the size of the Thickness parameter.",
+    "parameters": [],
+    "example": "KappaProfile = {1.0, 5.0, 10.0, 15.0}",
+    "keywords": []
+  },
+  "LibraryPath": {
+    "section": "Parallelization",
+    "signature": "LibraryPath = <string>",
+    "description": "Specifies the path to the Acceleware library directory for GPU acceleration.",
+    "parameters": [],
+    "example": "LibraryPath = \"/opt/acceleware/lib\"",
+    "keywords": []
+  },
+  "LoadFile": {
+    "section": "Simulation Setup",
+    "signature": "LoadFile = <string>",
+    "description": "Specifies the name of the results file to be loaded for postprocessing.",
+    "parameters": [],
+    "example": "LoadFile = \"previous_result_eml.tdr\"",
+    "keywords": []
+  },
+  "Location": {
+    "section": "Output",
+    "signature": "Location = { <float>, <float>, <float> } | { { <float>, <float>, <float> }, ... }",
+    "description": "Specifies the point locations to monitor as coordinate triplets in um.",
+    "parameters": [],
+    "example": "Location = {0.0, 0.0, 0.0}",
+    "keywords": []
+  },
+  "Log": {
+    "section": "Output",
+    "signature": "Log = <enum> | { <enum>, ... }",
+    "description": "Specifies quantities written as DOE parameters to the log file. Options: R, T, A, RTA, Rnorm, Tnorm, Anorm, all, none. Default: {all}.",
+    "parameters": [],
+    "example": "Log = {R, T, A, RTA}",
+    "keywords": []
+  },
+  "LogFile": {
+    "section": "Simulation Setup",
+    "signature": "LogFile = <string>",
+    "description": "Specifies the name of the log file. If the name ends with .z or .gz, a compressed log file will be written.",
+    "parameters": [],
+    "example": "LogFile = \"@log@\"",
+    "keywords": []
+  },
+  "LogFilePrefix": {
+    "section": "Parallelization",
+    "signature": "LogFilePrefix = <string>",
+    "description": "Specifies the prefix for GPU acceleration log files.",
+    "parameters": [],
+    "example": "LogFilePrefix = \"gpu\"",
+    "keywords": []
+  },
+  "LogLevel": {
+    "section": "Parallelization",
+    "signature": "LogLevel = <enum>",
+    "description": "Controls the verbosity level of GPU acceleration logging.",
+    "parameters": [],
+    "example": "LogLevel = Default",
+    "keywords": []
+  },
+  "LogPrecision": {
+    "section": "Output",
+    "signature": "LogPrecision = <int>",
+    "description": "Specifies the number of digits to the right of the decimal point for DOE parameters written to the log file. Default: 3.",
+    "parameters": [],
+    "example": "LogPrecision = 4",
+    "keywords": []
+  },
+  "Material": {
+    "section": "Material",
+    "signature": "Material = <string> | { <string>, ... }",
+    "description": "Specifies the names of materials to which the current section applies.",
+    "parameters": [],
+    "example": "Material = {\"Silver\", \"Gold\"}",
+    "keywords": [],
+    "contexts": {
+      "ComplexRefractiveIndex": "Materials to which the complex refractive index specification applies.",
+      "DispersiveMedia": "Materials to which the dispersive medium specification applies.",
+      "PECMedia": "Materials to which the PEC medium specification applies.",
+      "PMCMedia": "Materials to which the PMC medium specification applies.",
+      "Sensor": "Materials to which the sensor applies."
+    }
+  },
+  "MaxWavelength": {
+    "section": "Output",
+    "signature": "MaxWavelength = <float>",
+    "description": "Specifies the end wavelength of the DFT wavelength table.",
+    "parameters": [],
+    "example": "MaxWavelength = 700",
+    "keywords": []
+  },
+  "MinWavelength": {
+    "section": "Output",
+    "signature": "MinWavelength = <float>",
+    "description": "Specifies the start wavelength of the DFT wavelength table.",
+    "parameters": [],
+    "example": "MinWavelength = 400",
+    "keywords": []
+  },
+  "Mode": {
+    "section": "Output",
+    "signature": "Mode = <enum> | { <enum>, ... }",
+    "description": "Specifies the integration mode for Sensor. Integrate integrates over surface or volume; Average divides by area or volume. Options: Integrate, Average. Default: {Integrate Average}.",
+    "parameters": [],
+    "example": "Mode = {Integrate}",
+    "keywords": []
+  },
+  "Model": {
+    "section": "Material",
+    "signature": "Model = <enum>",
+    "description": "Selects the dispersive model for materials. Options: Debye, Drude, DrudeLorentz, DrudeModLorentz, Lorentz, ModLorentz, SingleDipoleDebye, SingleDipoleDrude.",
+    "parameters": [],
+    "example": "Model = SingleDipoleDrude",
+    "keywords": []
+  },
+  "ModelParameters": {
+    "section": "Material",
+    "signature": "ModelParameters = <enum>",
+    "description": "Specifies how dispersive model parameters are determined. Options: ComputeFromComplexRefractiveIndex, UserDefined. Default: ComputeFromComplexRefractiveIndex.",
+    "parameters": [],
+    "example": "ModelParameters = UserDefined",
+    "keywords": []
+  },
+  "NRise": {
+    "section": "Excitation",
+    "signature": "NRise = <float>",
+    "description": "Specifies the number of signal periods before full amplitude is reached. Default: 2.",
+    "parameters": [],
+    "example": "NRise = 4",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Signal periods before full amplitude for plane wave excitation.",
+      "CodeVExcitation": "Signal periods before full amplitude for CODE V excitation.",
+      "GaussianBeamExcitation": "Signal periods before full amplitude for Gaussian beam excitation.",
+      "TruncatedPlaneWaveExcitation": "Signal periods before full amplitude for truncated plane wave excitation."
+    }
+  },
+  "Name": {
+    "section": "Output",
+    "signature": "Name = <string>",
+    "description": "Defines the name of the section, used for output file naming or dataset identification.",
+    "parameters": [],
+    "example": "Name = \"n@node@_Eabs\"",
+    "keywords": [],
+    "contexts": {
+      "Plot": "Defines the name of the plot, used for the output file name by appending _eml.tdr.",
+      "Extractor": "Defines the name of the extractor, used for the output file name by appending _eml.tdr.",
+      "Sensor": "Defines the name of the sensor, used in the dataset name in the result file.",
+      "Farfield": "Defines the name of the far field, used for the output file name by appending _eml.tdr.",
+      "Monitor": "Defines the name of the monitor, used in the dataset name in the result file.",
+      "Save": "Defines the name of the Save section, used for the output file name by appending _eml.tdr."
+    }
+  },
+  "NumberOfPlaneWaves": {
+    "section": "Excitation",
+    "signature": "NumberOfPlaneWaves = <int>",
+    "description": "Specifies the number of excitation plane waves for plane wave and truncated plane wave excitations. Default: 1.",
+    "parameters": [],
+    "example": "NumberOfPlaneWaves = 10",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Number of plane waves for plane wave excitation.",
+      "TruncatedPlaneWaveExcitation": "Number of plane waves for truncated plane wave excitation."
+    }
+  },
+  "NumberOfThreads": {
+    "section": "Simulation Setup",
+    "signature": "NumberOfThreads = <int> | maximum",
+    "description": "Specifies the number of threads for shared-memory parallelization. Either an integer greater than zero or 'maximum'. Default: 1.",
+    "parameters": [],
+    "example": "NumberOfThreads = 4",
+    "keywords": []
+  },
+  "NumberOfWavelengths": {
+    "section": "Output",
+    "signature": "NumberOfWavelengths = <int>",
+    "description": "Specifies the number of elements in the DFT wavelength table.",
+    "parameters": [],
+    "example": "NumberOfWavelengths = 10",
+    "keywords": []
+  },
+  "NumericalAperture": {
+    "section": "Excitation",
+    "signature": "NumericalAperture = <float>",
+    "description": "Specifies the numerical aperture for excitation. Default: 0.",
+    "parameters": [],
+    "example": "NumericalAperture = 0.5",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Numerical aperture for plane wave excitation.",
+      "TruncatedPlaneWaveExcitation": "Numerical aperture for truncated plane wave excitation."
+    }
+  },
+  "OrderAlpha": {
+    "section": "Boundary",
+    "signature": "OrderAlpha = <int>",
+    "description": "Specifies the order of polynomial grading for PML parameter alpha. Default: 1.",
+    "parameters": [],
+    "example": "OrderAlpha = 2",
+    "keywords": []
+  },
+  "OrderKappa": {
+    "section": "Boundary",
+    "signature": "OrderKappa = <int>",
+    "description": "Specifies the order of polynomial grading for PML parameter kappa. Default: 3.",
+    "parameters": [],
+    "example": "OrderKappa = 3",
+    "keywords": []
+  },
+  "OrderSigma": {
+    "section": "Boundary",
+    "signature": "OrderSigma = <int>",
+    "description": "Specifies the order of polynomial grading for PML parameter sigma. Default: 3.",
+    "parameters": [],
+    "example": "OrderSigma = 4",
+    "keywords": []
+  },
+  "OutputFilePrefix": {
+    "section": "Simulation Setup",
+    "signature": "OutputFilePrefix = <string>",
+    "description": "Specifies a string to be prepended to all output file names including the log file. Default: empty.",
+    "parameters": [],
+    "example": "OutputFilePrefix = \"run1_\"",
+    "keywords": []
+  },
+  "OverSampling": {
+    "section": "Simulation Setup",
+    "signature": "OverSampling = <float>",
+    "description": "Reduces the calculated maximum stable time step by the OverSampling factor. Default: 1.",
+    "parameters": [],
+    "example": "OverSampling = 3.6",
+    "keywords": []
+  },
+  "ParallelLicenses": {
+    "section": "Simulation Setup",
+    "signature": "ParallelLicenses = <enum> | { <enum>, ... }",
+    "description": "Specifies the list of allowed licenses to be used by EMW when run in parallel mode. Options: MPI, SMP. Default: {MPI SMP}.",
+    "parameters": [],
+    "example": "ParallelLicenses = {MPI}",
+    "keywords": []
+  },
+  "ParameterFile": {
+    "section": "Simulation Setup",
+    "signature": "ParameterFile = <string>",
+    "description": "Specifies the material parameter file for the simulation.",
+    "parameters": [],
+    "example": "ParameterFile = \"@parameter@\"",
+    "keywords": []
+  },
+  "PartialCoherenceFactor": {
+    "section": "Excitation",
+    "signature": "PartialCoherenceFactor = <float>",
+    "description": "Specifies the partial coherence factor for excitation. Default: 1.",
+    "parameters": [],
+    "example": "PartialCoherenceFactor = 0.5",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Partial coherence factor for plane wave excitation.",
+      "TruncatedPlaneWaveExcitation": "Partial coherence factor for truncated plane wave excitation."
+    }
+  },
+  "Phase": {
+    "section": "Excitation",
+    "signature": "Phase = <float>",
+    "description": "Specifies the phase of the electromagnetic field in degrees.",
+    "parameters": [],
+    "example": "Phase = 45.0",
+    "keywords": []
+  },
+  "PhaseShift": {
+    "section": "Excitation",
+    "signature": "PhaseShift = <float>",
+    "description": "Specifies the linear phase shift for the electric field in degrees. Default: 0.",
+    "parameters": [],
+    "example": "PhaseShift = 90.0",
+    "keywords": []
+  },
+  "Phi": {
+    "section": "Excitation",
+    "signature": "Phi = <float>",
+    "description": "Specifies the azimuth angle of incidence in degrees. Default: 0.",
+    "parameters": [],
+    "example": "Phi = 90",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Azimuth angle for plane wave excitation.",
+      "GaussianBeamExcitation": "Azimuth angle for Gaussian beam excitation.",
+      "TruncatedPlaneWaveExcitation": "Azimuth angle for truncated plane wave excitation."
+    }
+  },
+  "PlaneX": {
+    "section": "Output",
+    "signature": "PlaneX = <float> | min | max",
+    "description": "Specifies a line (2D) or plane (3D) perpendicular to the x-axis for spatial domain selection.",
+    "parameters": [],
+    "example": "PlaneX = 0.05",
+    "keywords": [],
+    "contexts": {
+      "Plot": "Plot domain specified as a line or plane perpendicular to the x-axis.",
+      "Extractor": "Extractor domain specified as a line or plane perpendicular to the x-axis.",
+      "Sensor": "Sensor domain specified as a line or plane perpendicular to the x-axis.",
+      "Detector": "Detector domain specified as a line or plane perpendicular to the x-axis.",
+      "PlaneWaveExcitation": "Excitation line or plane perpendicular to the x-axis.",
+      "GaussianBeamExcitation": "Excitation line or plane perpendicular to the x-axis.",
+      "TruncatedPlaneWaveExcitation": "Excitation line or plane perpendicular to the x-axis."
+    }
+  },
+  "PlaneY": {
+    "section": "Output",
+    "signature": "PlaneY = <float> | min | max",
+    "description": "Specifies a line (2D) or plane (3D) perpendicular to the y-axis for spatial domain selection.",
+    "parameters": [],
+    "example": "PlaneY = -0.5",
+    "keywords": [],
+    "contexts": {
+      "Plot": "Plot domain specified as a line or plane perpendicular to the y-axis.",
+      "Extractor": "Extractor domain specified as a line or plane perpendicular to the y-axis.",
+      "Sensor": "Sensor domain specified as a line or plane perpendicular to the y-axis.",
+      "Detector": "Detector domain specified as a line or plane perpendicular to the y-axis.",
+      "PlaneWaveExcitation": "Excitation line or plane perpendicular to the y-axis.",
+      "GaussianBeamExcitation": "Excitation line or plane perpendicular to the y-axis.",
+      "TruncatedPlaneWaveExcitation": "Excitation line or plane perpendicular to the y-axis."
+    }
+  },
+  "PlaneZ": {
+    "section": "Output",
+    "signature": "PlaneZ = <float> | min | max",
+    "description": "Specifies a plane perpendicular to the z-axis for spatial domain selection.",
+    "parameters": [],
+    "example": "PlaneZ = 0.0",
+    "keywords": [],
+    "contexts": {
+      "Plot": "Plot domain specified as a plane perpendicular to the z-axis.",
+      "Extractor": "Extractor domain specified as a plane perpendicular to the z-axis.",
+      "Sensor": "Sensor domain specified as a plane perpendicular to the z-axis.",
+      "Detector": "Detector domain specified as a plane perpendicular to the z-axis.",
+      "PlaneWaveExcitation": "Excitation plane perpendicular to the z-axis.",
+      "GaussianBeamExcitation": "Excitation plane perpendicular to the z-axis.",
+      "TruncatedPlaneWaveExcitation": "Excitation plane perpendicular to the z-axis."
+    }
+  },
+  "PolarCutList": {
+    "section": "Output",
+    "signature": "PolarCutList = <float> | { <float>, ... }",
+    "description": "Defines an explicit list of polar angles in degrees for constant-polar-angle far-field plots.",
+    "parameters": [],
+    "example": "PolarCutList = {0, 30, 60, 90}",
+    "keywords": []
+  },
+  "PolarCutRange": {
+    "section": "Output",
+    "signature": "PolarCutRange = { <float>, <float>, <float> }",
+    "description": "Defines a range of polar angles {Min, Max, Step} in degrees for constant-polar-angle far-field plots.",
+    "parameters": [],
+    "example": "PolarCutRange = {0, 90, 10}",
+    "keywords": []
+  },
+  "PolarRange": {
+    "section": "Output",
+    "signature": "PolarRange = { <float>, <float>, <float> }",
+    "description": "Specifies the range and discretization of polar angles {Min, Max, Step} in degrees for far-field computation. Default: {0 90 1}.",
+    "parameters": [],
+    "example": "PolarRange = {0, 90, 1}",
+    "keywords": []
+  },
+  "Polarization": {
+    "section": "Excitation",
+    "signature": "Polarization = <float> | TE | TM",
+    "description": "Specifies the polarization state, either TE (0) or TM (1), or a value between 0 and 1. Default: 0.5.",
+    "parameters": [],
+    "example": "Polarization = TE",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Polarization for plane wave excitation.",
+      "GaussianBeamExcitation": "Polarization for Gaussian beam excitation.",
+      "TruncatedPlaneWaveExcitation": "Polarization for truncated plane wave excitation."
+    }
+  },
+  "PolarizationAngle": {
+    "section": "Excitation",
+    "signature": "PolarizationAngle = <float>",
+    "description": "Specifies the polarization angle in degrees. Default: 45.",
+    "parameters": [],
+    "example": "PolarizationAngle = 0",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Polarization angle for plane wave excitation.",
+      "GaussianBeamExcitation": "Polarization angle for Gaussian beam excitation.",
+      "TruncatedPlaneWaveExcitation": "Polarization angle for truncated plane wave excitation."
+    }
+  },
+  "Psi": {
+    "section": "Excitation",
+    "signature": "Psi = <float>",
+    "description": "Specifies the polarization angle in degrees. Default: 45.",
+    "parameters": [],
+    "example": "Psi = 0",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Polarization angle for plane wave excitation.",
+      "GaussianBeamExcitation": "Polarization angle for Gaussian beam excitation.",
+      "TruncatedPlaneWaveExcitation": "Polarization angle for truncated plane wave excitation."
+    }
+  },
+  "Quantity": {
+    "section": "Output",
+    "signature": "Quantity = <enum> | { <enum>, ... }",
+    "description": "Specifies the field quantities to plot, extract, monitor, or save.",
+    "parameters": [],
+    "example": "Quantity = {AbsElectricField, Region}",
+    "keywords": [],
+    "contexts": {
+      "Plot": "Quantities to be plotted. Options include AbsElectricField, CplxRefIndex, AbsorbedPhotonDensity, Region, and many more.",
+      "Extractor": "Quantities to extract. Options: AbsorbedPhotonDensity, PowerFluxDensity, OpticalGeneration, and field components.",
+      "Sensor": "Integration quantity. Options: AbsorbedPhotonDensity, PowerFluxDensity, PhotonFluxDensity, OpticalGeneration.",
+      "Monitor": "Quantities to monitor at point locations. Options: AbsElectricField, CplxEMField, and field components.",
+      "Save": "Quantities to save. Options: AbsorbedPhotonDensity, PowerFluxDensity, CplxEMField, and field components."
+    }
+  },
+  "Radius": {
+    "section": "Output",
+    "signature": "Radius = <float>",
+    "description": "Specifies the radius (distance) at which the far field is calculated in um. Default: 1000.",
+    "parameters": [],
+    "example": "Radius = 500",
+    "keywords": []
+  },
+  "Region": {
+    "section": "Material",
+    "signature": "Region = <string> | { <string>, ... }",
+    "description": "Specifies the names of regions to which the current section applies, or a region-based spatial domain.",
+    "parameters": [],
+    "example": "Region = \"waveguide\"",
+    "keywords": [],
+    "contexts": {
+      "ComplexRefractiveIndex": "Regions to which the complex refractive index specification applies.",
+      "DispersiveMedia": "Regions to which the dispersive medium specification applies.",
+      "PECMedia": "Regions to which the PEC medium specification applies.",
+      "PMCMedia": "Regions to which the PMC medium specification applies.",
+      "Sensor": "Regions to which the sensor applies.",
+      "Detector": "Valid box or region name of the tensor grid where the detector is evaluated.",
+      "Farfield": "Near-field region to be used for far-field computation.",
+      "Plot": "Regions for which data must be plotted.",
+      "Extractor": "Regions for which data must be extracted.",
+      "Save": "Regions for which data must be saved.",
+      "PlaneWaveExcitation": "Box that specifies the excitation plane.",
+      "GaussianBeamExcitation": "Box that specifies the excitation plane.",
+      "TruncatedPlaneWaveExcitation": "Box that specifies the excitation plane."
+    }
+  },
+  "ResultFile": {
+    "section": "Simulation Setup",
+    "signature": "ResultFile = <string>",
+    "description": "Specifies the name of the result file. Default: result_eml.plt.",
+    "parameters": [],
+    "example": "ResultFile = \"@plot@\"",
+    "keywords": []
+  },
+  "RotationAngles": {
+    "section": "Output",
+    "signature": "RotationAngles = { <float>, <float>, <float> }",
+    "description": "Specifies the rotation angles (theta, phi, psi) of a nonaxis-aligned box in degrees. Default: {0 90 0}.",
+    "parameters": [],
+    "example": "RotationAngles = {0, 45, 0}",
+    "keywords": []
+  },
+  "ScatteredFieldOnly": {
+    "section": "Output",
+    "signature": "ScatteredFieldOnly = <enum>",
+    "description": "Specifies whether only scattered fields are involved. Options: Yes, No. Default: No.",
+    "parameters": [],
+    "example": "ScatteredFieldOnly = Yes",
+    "keywords": [],
+    "contexts": {
+      "Plot": "Specifies whether the plot involves only scattered fields.",
+      "Extractor": "Specifies whether the extractor involves only scattered fields.",
+      "Sensor": "Specifies whether the sensor involves only scattered fields."
+    }
+  },
+  "Sensors": {
+    "section": "Output",
+    "signature": "Sensors = <enum> | { <enum>, ... }",
+    "description": "Specifies the type of sensors to be activated for RTA computation. Options: R, T, A, all. Default: {all}.",
+    "parameters": [],
+    "example": "Sensors = {R, T}",
+    "keywords": []
+  },
+  "Sides": {
+    "section": "Boundary",
+    "signature": "Sides = <enum> | { <enum>, ... }",
+    "description": "Specifies the sides to which the boundary or surface plotting applies. Options: All, X, Xmin, Xmax, Y, Ymin, Ymax, Z, Zmin, Zmax. Default: {All}.",
+    "parameters": [],
+    "example": "Sides = {X, Y}",
+    "keywords": [],
+    "contexts": {
+      "Boundary": "Sides to which the boundary specification applies.",
+      "Plot": "When Domain=Surface, defines the sidewall where plotting will be performed.",
+      "Sensor": "If the quantity is a flux, specifies the sides for integration."
+    }
+  },
+  "Sigma": {
+    "section": "Excitation",
+    "signature": "Sigma = <float>",
+    "description": "Specifies the width of the transient Gaussian pulse in terms of the number of signal periods. Default: 1.",
+    "parameters": [],
+    "example": "Sigma = 2.0",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Width of transient Gaussian pulse for plane wave excitation.",
+      "GaussianBeamExcitation": "Width of transient Gaussian pulse for Gaussian beam excitation.",
+      "TruncatedPlaneWaveExcitation": "Width of transient Gaussian pulse for truncated plane wave excitation."
+    }
+  },
+  "SigmaMax": {
+    "section": "Boundary",
+    "signature": "SigmaMax = <float>",
+    "description": "Sets the maximum value of PML parameter sigma used in polynomial grading of the PML tensor coefficient. The default is computed automatically from grid spacing and refractive index.",
+    "parameters": [],
+    "example": "SigmaMax = 1.5",
+    "keywords": []
+  },
+  "SigmaProfile": {
+    "section": "Boundary",
+    "signature": "SigmaProfile = <float> | { <float>, ... }",
+    "description": "Specifies the profile of PML parameter sigma used in grading of the PML tensor coefficient. The number of profile points must be double the size of the Thickness parameter.",
+    "parameters": [],
+    "example": "SigmaProfile = {0.0, 0.2, 0.5, 1.0}",
+    "keywords": []
+  },
+  "Signal": {
+    "section": "Excitation",
+    "signature": "Signal = <enum>",
+    "description": "Sets the transient form of the excitation signal. Options: Gauss, Harmonic. Default: Harmonic.",
+    "parameters": [],
+    "example": "Signal = Gauss",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Transient signal form for plane wave excitation.",
+      "CodeVExcitation": "Transient signal form for CODE V excitation.",
+      "GaussianBeamExcitation": "Transient signal form for Gaussian beam excitation.",
+      "TruncatedPlaneWaveExcitation": "Transient signal form for truncated plane wave excitation."
+    }
+  },
+  "StartTick": {
+    "section": "Output",
+    "signature": "StartTick = <int>",
+    "description": "Specifies the beginning of the active tick step interval. Default: 0.",
+    "parameters": [],
+    "example": "StartTick = 100",
+    "keywords": [],
+    "contexts": {
+      "Plot": "Beginning of the active tick step interval for plotting.",
+      "Sensor": "Beginning of the active tick step interval for sensing.",
+      "RTA": "Beginning of the active tick step interval for RTA computation.",
+      "Monitor": "Beginning of the active tick step interval for monitoring.",
+      "Detector": "Number of tick steps when to start the detector evaluation."
+    }
+  },
+  "StartTime": {
+    "section": "Output",
+    "signature": "StartTime = <float>",
+    "description": "Specifies the beginning of the active time interval in seconds. Default: 0.",
+    "parameters": [],
+    "example": "StartTime = 0",
+    "keywords": [],
+    "contexts": {
+      "Plot": "Beginning of the active time interval for plotting.",
+      "Sensor": "Beginning of the active time interval for sensing.",
+      "RTA": "Beginning of the active time interval for RTA computation.",
+      "Monitor": "Beginning of the active time interval for monitoring.",
+      "Detector": "Simulation time when to start the detector evaluation."
+    }
+  },
+  "StepX": {
+    "section": "Termination",
+    "signature": "StepX = <int>",
+    "description": "Detection is performed on every N-th grid point in the x-direction. Default: 10.",
+    "parameters": [],
+    "example": "StepX = 5",
+    "keywords": []
+  },
+  "StepY": {
+    "section": "Termination",
+    "signature": "StepY = <int>",
+    "description": "Detection is performed on every N-th grid point in the y-direction. Default: 10.",
+    "parameters": [],
+    "example": "StepY = 5",
+    "keywords": []
+  },
+  "StepZ": {
+    "section": "Termination",
+    "signature": "StepZ = <int>",
+    "description": "Detection is performed on every N-th grid point in the z-direction. Default: 10.",
+    "parameters": [],
+    "example": "StepZ = 5",
+    "keywords": []
+  },
+  "TdrNativeTensorGridUnit": {
+    "section": "Simulation Setup",
+    "signature": "TdrNativeTensorGridUnit = <enum>",
+    "description": "Overrides automatic detection of length unit in the input tensor grid. Options: Automatic, m, um. Default: Automatic.",
+    "parameters": [],
+    "example": "TdrNativeTensorGridUnit = um",
+    "keywords": []
+  },
+  "Temperature": {
+    "section": "Simulation Setup",
+    "signature": "Temperature = <float>",
+    "description": "Specifies the global device temperature in Kelvin. Default: 300.",
+    "parameters": [],
+    "example": "Temperature = 350",
+    "keywords": []
+  },
+  "TemperatureDep": {
+    "section": "Material",
+    "signature": "TemperatureDep = <enum> | { <enum>, ... }",
+    "description": "Controls the temperature dependency of the real and imaginary parts of the complex refractive index. Options: Real, Imag.",
+    "parameters": [],
+    "example": "TemperatureDep = {Real, Imag}",
+    "keywords": []
+  },
+  "Theta": {
+    "section": "Excitation",
+    "signature": "Theta = <float>",
+    "description": "Specifies the polar angle of incidence in degrees. Default: 180.",
+    "parameters": [],
+    "example": "Theta = 0",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Polar angle for plane wave excitation.",
+      "GaussianBeamExcitation": "Polar angle for Gaussian beam excitation.",
+      "TruncatedPlaneWaveExcitation": "Polar angle for truncated plane wave excitation."
+    }
+  },
+  "Thickness": {
+    "section": "Boundary",
+    "signature": "Thickness = <int>",
+    "description": "Specifies the thickness of the PML boundary in terms of the number of tensor-grid cells. Default: 15.",
+    "parameters": [],
+    "example": "Thickness = 20",
+    "keywords": []
+  },
+  "TickStep": {
+    "section": "Output",
+    "signature": "TickStep = <int>",
+    "description": "Specifies that the operation is performed every N tick steps. Default: 100.",
+    "parameters": [],
+    "example": "TickStep = 300",
+    "keywords": [],
+    "contexts": {
+      "Plot": "Plotting is performed every N tick steps.",
+      "Sensor": "Sensing is performed every N tick steps.",
+      "RTA": "Sensing is performed every N tick steps for RTA computation.",
+      "Monitor": "Monitoring is performed every N tick steps."
+    }
+  },
+  "TimeStep": {
+    "section": "Simulation Setup",
+    "signature": "TimeStep = <float>",
+    "description": "Overwrites the calculated simulation time step in seconds.",
+    "parameters": [],
+    "example": "TimeStep = 3.0e-17",
+    "keywords": []
+  },
+  "Tolerance": {
+    "section": "Termination",
+    "signature": "Tolerance = <float>",
+    "description": "The simulation is terminated when the maximum deviation is smaller than this value. Default: 0.001.",
+    "parameters": [],
+    "example": "Tolerance = 1e-3",
+    "keywords": []
+  },
+  "TotalSimulationTime": {
+    "section": "Simulation Setup",
+    "signature": "TotalSimulationTime = <float>",
+    "description": "Specifies the maximum simulation time in seconds after which the simulation is terminated. Default: +inf.",
+    "parameters": [],
+    "example": "TotalSimulationTime = 1e-12",
+    "keywords": []
+  },
+  "TotalTimeSteps": {
+    "section": "Simulation Setup",
+    "signature": "TotalTimeSteps = <int>",
+    "description": "Specifies the maximum number of time steps to be performed. Default: +inf.",
+    "parameters": [],
+    "example": "TotalTimeSteps = 50000",
+    "keywords": []
+  },
+  "Type": {
+    "section": "Boundary",
+    "signature": "Type = <enum>",
+    "description": "Specifies the type of the boundary condition, detector, or complex refractive index distribution.",
+    "parameters": [],
+    "example": "Type = CPML",
+    "keywords": [],
+    "contexts": {
+      "Boundary": "Boundary condition type. Options: CPML, Higdon, Mur, PEC, Periodic, PeriodicOblique, PMC. Default: PeriodicOblique.",
+      "Detector": "Detector type. Options: Periodic, Decayed. Default: Periodic.",
+      "ComplexRefractiveIndex": "Complex refractive index distribution type. Options: Homogeneous, Inhomogeneous, FromFile. Default: Homogeneous."
+    }
+  },
+  "UnavailableLicenseAction": {
+    "section": "Simulation Setup",
+    "signature": "UnavailableLicenseAction = <enum>",
+    "description": "Specifies the action to be taken when the requested license is not available. Options: serial, reduce, wait, abort. Default: serial.",
+    "parameters": [],
+    "example": "UnavailableLicenseAction = wait",
+    "keywords": []
+  },
+  "Wavelength": {
+    "section": "Excitation",
+    "signature": "Wavelength = <float>",
+    "description": "Specifies the signal wavelength in nm. Alternative to Frequency for defining the excitation.",
+    "parameters": [],
+    "example": "Wavelength = 550",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "Signal wavelength for plane wave excitation.",
+      "CodeVExcitation": "Signal wavelength for CODE V excitation.",
+      "GaussianBeamExcitation": "Signal wavelength for Gaussian beam excitation.",
+      "TruncatedPlaneWaveExcitation": "Signal wavelength for truncated plane wave excitation."
+    }
+  },
+  "WavelengthDep": {
+    "section": "Material",
+    "signature": "WavelengthDep = <enum> | { <enum>, ... }",
+    "description": "Controls the wavelength dependency of the real and imaginary parts of the complex refractive index. Options: Real, Imag.",
+    "parameters": [],
+    "example": "WavelengthDep = {Real, Imag}",
+    "keywords": []
+  },
+  "WavelengthList": {
+    "section": "Output",
+    "signature": "WavelengthList = <float> | { <float>, ... }",
+    "description": "Specifies a list of wavelengths in nm to be used for DFT-type simulations.",
+    "parameters": [],
+    "example": "WavelengthList = {450, 550, 650}",
+    "keywords": [],
+    "contexts": {
+      "Plot": "List of wavelengths for DFT-type plot simulations.",
+      "Extractor": "List of wavelengths for DFT-type extractor simulations.",
+      "Sensor": "List of wavelengths for DFT-type sensor simulations.",
+      "Farfield": "List of wavelengths for DFT-type far-field simulations.",
+      "RTA": "List of wavelengths for DFT-type RTA simulations.",
+      "Monitor": "List of wavelengths for DFT-type monitor simulations.",
+      "Save": "List of wavelengths for DFT-type save simulations."
+    }
+  },
+  "WavelengthPrecision": {
+    "section": "Output",
+    "signature": "WavelengthPrecision = <int>",
+    "description": "Specifies the precision used for matching wavelengths between WavelengthList and DFT wavelengths. Default: 0.",
+    "parameters": [],
+    "example": "WavelengthPrecision = 2",
+    "keywords": [],
+    "contexts": {
+      "Plot": "Precision for matching wavelengths in plot output.",
+      "Extractor": "Precision for matching wavelengths in extractor output.",
+      "Sensor": "Precision for matching wavelengths in sensor output.",
+      "Farfield": "Precision for matching wavelengths in far-field output.",
+      "RTA": "Precision for matching wavelengths in RTA output.",
+      "Monitor": "Precision for matching wavelengths in monitor output.",
+      "Save": "Precision for matching wavelengths in save output."
+    }
+  },
+  "WavelengthRange": {
+    "section": "Output",
+    "signature": "WavelengthRange = { <float>, <float> }",
+    "description": "Specifies the wavelength range {min, max} in nm for DFT-type simulations.",
+    "parameters": [],
+    "example": "WavelengthRange = {400, 700}",
+    "keywords": [],
+    "contexts": {
+      "Plot": "Wavelength range for DFT-type plot simulations.",
+      "Extractor": "Wavelength range for DFT-type extractor simulations.",
+      "Sensor": "Wavelength range for DFT-type sensor simulations.",
+      "Farfield": "Wavelength range for DFT-type far-field simulations.",
+      "RTA": "Wavelength range for DFT-type RTA simulations.",
+      "Monitor": "Wavelength range for DFT-type monitor simulations.",
+      "Save": "Wavelength range for DFT-type save simulations."
+    }
+  },
+  "WriteBehavior": {
+    "section": "Output",
+    "signature": "WriteBehavior = <enum>",
+    "description": "Controls how consecutive plot instances are written to file. Options: Numbered, Overwrite, OverwriteAndNumbered. Default: Numbered.",
+    "parameters": [],
+    "example": "WriteBehavior = Overwrite",
+    "keywords": []
+  }
+}
