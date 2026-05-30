@@ -122,6 +122,7 @@ function registerCompletionProviders(context, deps) {
                 const langSpecificDocs = (() => {
                     if (langId === 'sdevice') return loadDocsJson('sdevice_command_docs.json', useZh) || {};
                     if (langId === 'svisual') return loadDocsJson('svisual_command_docs.json', useZh) || {};
+                    if (langId === 'inspect') return loadDocsJson('inspect_command_docs.json', useZh) || {};
                     return {};
                 })();
                 _docsCache[langId] = { ..._docsCache.tcl, ..._docsCache.tclMath, ...langSpecificDocs };

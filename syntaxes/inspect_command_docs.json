@@ -1,0 +1,4771 @@
+{
+  "ft_scalar": {
+    "section": "General",
+    "signature": "ft_scalar <variableName> <variableValue>",
+    "description": "Outputs a DOE extraction line to create a Sentaurus Workbench extracted variable with the specified name and value. This command only produces output when the current Inspect script belongs to a Sentaurus Workbench project.",
+    "parameters": [
+      {
+        "name": "<variableName>",
+        "type": "string",
+        "desc": "Name of the Sentaurus Workbench variable to extract."
+      },
+      {
+        "name": "<variableValue>",
+        "type": "string",
+        "desc": "Value of the Sentaurus Workbench variable."
+      }
+    ],
+    "example": "ft_scalar Vth 0.45",
+    "keywords": [
+      "DOE",
+      "extract",
+      "Workbench",
+      "variable"
+    ]
+  },
+  "cv_write": {
+    "section": "File I/O",
+    "signature": "cv_write <type> <fileName> <curveList>",
+    "description": "Writes (exports) the data of the specified curves to a file in the given format. Supported output formats are plt, xgraph, and xmgr.",
+    "parameters": [
+      {
+        "name": "<type>",
+        "type": "string",
+        "desc": "Output format: \"plt\", \"xgraph\", or \"xmgr\"."
+      },
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "Name of the file to write."
+      },
+      {
+        "name": "<curveList>",
+        "type": "list",
+        "desc": "List of curve names to export."
+      }
+    ],
+    "example": "cv_write plt output.plt {curve1 curve2}",
+    "keywords": [
+      "export",
+      "write",
+      "file",
+      "plot"
+    ]
+  },
+  "fi_writeBitmap": {
+    "section": "File I/O",
+    "signature": "fi_writeBitmap <fileName>",
+    "description": "Writes the current plot area to a PNG bitmap file.",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "Name of the PNG file to write."
+      }
+    ],
+    "example": "fi_writeBitmap plot.png",
+    "keywords": [
+      "bitmap",
+      "image",
+      "PNG",
+      "export"
+    ]
+  },
+  "fi_writeEps": {
+    "section": "File I/O",
+    "signature": "fi_writeEps <fileName> ?orientation? ?height? ?width?",
+    "description": "Writes the current plot area to an EPS (Encapsulated PostScript) file. If height or width is not specified, the actual plot size is used.",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "Name of the EPS file to write."
+      },
+      {
+        "name": "?orientation?",
+        "type": "string",
+        "desc": "Optional. Image orientation: \"portrait\" (default) or \"landscape\"."
+      },
+      {
+        "name": "?height?",
+        "type": "string",
+        "desc": "Optional. Height of the saved image in pixels."
+      },
+      {
+        "name": "?width?",
+        "type": "string",
+        "desc": "Optional. Width of the saved image in pixels."
+      }
+    ],
+    "example": "fi_writeEps test.eps landscape 200 100",
+    "keywords": [
+      "EPS",
+      "export",
+      "image",
+      "PostScript"
+    ]
+  },
+  "fi_writePs": {
+    "section": "File I/O",
+    "signature": "fi_writePs <fileName> ?orientation? ?printSize? ?height? ?width? ?offsetHeight? ?offsetWidth? ?sizeUnit?",
+    "description": "Writes the current plot area to a PostScript file with configurable page size, image dimensions, and page offset. If height or width is not specified, the actual plot size is used.",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "Name of the PostScript file to write."
+      },
+      {
+        "name": "?orientation?",
+        "type": "string",
+        "desc": "Optional. Image orientation: \"portrait\" (default) or \"landscape\"."
+      },
+      {
+        "name": "?printSize?",
+        "type": "string",
+        "desc": "Optional. Page size: \"US LETTER\" (default), \"DIN_A3\", or \"DIN_A4\"."
+      },
+      {
+        "name": "?height?",
+        "type": "string",
+        "desc": "Optional. Height of the saved image in the unit specified by sizeUnit."
+      },
+      {
+        "name": "?width?",
+        "type": "string",
+        "desc": "Optional. Width of the saved image in the unit specified by sizeUnit."
+      },
+      {
+        "name": "?offsetHeight?",
+        "type": "string",
+        "desc": "Optional. Vertical page offset in sizeUnit."
+      },
+      {
+        "name": "?offsetWidth?",
+        "type": "string",
+        "desc": "Optional. Horizontal page offset in sizeUnit."
+      },
+      {
+        "name": "?sizeUnit?",
+        "type": "string",
+        "desc": "Optional. Unit for height, width, and offset values: \"i\" (inch, default), \"m\" (millimeter), or \"c\" (centimeter)."
+      }
+    ],
+    "example": "fi_writePs test.ps landscape DIN_A4 450 300 5 5 m",
+    "keywords": [
+      "PostScript",
+      "export",
+      "print",
+      "page"
+    ]
+  },
+  "graph_load": {
+    "section": "File I/O",
+    "signature": "graph_load <fileName>",
+    "description": "Loads a previously saved Inspect save file. All currently loaded projects are deleted before the new file is loaded.",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "Name of the save file to load."
+      }
+    ],
+    "example": "graph_load session.ins",
+    "keywords": [
+      "load",
+      "save",
+      "session",
+      "file"
+    ]
+  },
+  "graph_write": {
+    "section": "File I/O",
+    "signature": "graph_write <fileName>",
+    "description": "Saves the current Inspect state (including all loaded projects, curves, and settings) to a save file.",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "Name of the file to save."
+      }
+    ],
+    "example": "graph_write session.ins",
+    "keywords": [
+      "save",
+      "session",
+      "file",
+      "state"
+    ]
+  },
+  "param_load": {
+    "section": "File I/O",
+    "signature": "param_load <fileName>",
+    "description": "Loads a parameter file into Inspect. Parameter files store extracted values and settings for reuse across sessions.",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "Name of the parameter file to load."
+      }
+    ],
+    "example": "param_load parameters.par",
+    "keywords": [
+      "parameter",
+      "load",
+      "file",
+      "settings"
+    ]
+  },
+  "param_write": {
+    "section": "File I/O",
+    "signature": "param_write <fileName>",
+    "description": "Saves current parameters to a parameter file for later reuse.",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "Name of the parameter file to write."
+      }
+    ],
+    "example": "param_write parameters.par",
+    "keywords": [
+      "parameter",
+      "save",
+      "file",
+      "settings"
+    ]
+  },
+  "proj_getDataSet": {
+    "section": "File I/O",
+    "signature": "proj_getDataSet <projectName> <dataSetId>",
+    "description": "Returns a list of all values from the specified dataset in a project. If no dataset is found, an empty list is returned.",
+    "parameters": [
+      {
+        "name": "<projectName>",
+        "type": "string",
+        "desc": "Name of the project containing the dataset."
+      },
+      {
+        "name": "<dataSetId>",
+        "type": "string",
+        "desc": "Dataset name, including its group name if applicable (e.g., \"node_A data_1\")."
+      }
+    ],
+    "example": "set y_data [proj_getDataSet \"tutorial_ins\" \"node_A data_1\"]",
+    "keywords": [
+      "dataset",
+      "data",
+      "values",
+      "project"
+    ]
+  },
+  "proj_getList": {
+    "section": "File I/O",
+    "signature": "proj_getList",
+    "description": "Returns a list of all currently loaded project names. If no projects are loaded, an empty list is returned.",
+    "parameters": [],
+    "example": "set projects [proj_getList]",
+    "keywords": [
+      "project",
+      "list",
+      "names",
+      "loaded"
+    ]
+  },
+  "proj_getNodeList": {
+    "section": "File I/O",
+    "signature": "proj_getNodeList <projectName>",
+    "description": "Returns a list of group (node) names in the specified project. If no groups are found, an empty list is returned.",
+    "parameters": [
+      {
+        "name": "<projectName>",
+        "type": "string",
+        "desc": "Name of the project."
+      }
+    ],
+    "example": "set groups [proj_getNodeList \"nmos_des\"]",
+    "keywords": [
+      "group",
+      "node",
+      "project",
+      "list"
+    ]
+  },
+  "proj_load": {
+    "section": "File I/O",
+    "signature": "proj_load <fileName>",
+    "description": "Loads a data file and creates a new project. The base name of the file is used as the project name.",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "Name of the data file to load."
+      }
+    ],
+    "example": "proj_load nmos_des_des.tdr",
+    "keywords": [
+      "load",
+      "project",
+      "data",
+      "file"
+    ]
+  },
+  "proj_unload": {
+    "section": "File I/O",
+    "signature": "proj_unload <projectName>",
+    "description": "Deletes a project and all curves associated with it from the current Inspect session.",
+    "parameters": [
+      {
+        "name": "<projectName>",
+        "type": "string",
+        "desc": "Name of the project to unload."
+      }
+    ],
+    "example": "proj_unload nmos_des",
+    "keywords": [
+      "unload",
+      "delete",
+      "project",
+      "remove"
+    ]
+  },
+  "proj_write": {
+    "section": "File I/O",
+    "signature": "proj_write <projectName> <fileName>",
+    "description": "Writes a project and its datasets to a specified file.",
+    "parameters": [
+      {
+        "name": "<projectName>",
+        "type": "string",
+        "desc": "Name of the project to write."
+      },
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "Name of the output file."
+      }
+    ],
+    "example": "proj_write nmos_des output_des.plt",
+    "keywords": [
+      "write",
+      "project",
+      "save",
+      "file"
+    ]
+  },
+  "cv_create": {
+    "section": "Curves",
+    "signature": "cv_create <curveName> <xDataPath> <yDataPath> ?axis?",
+    "description": "Creates a curve with the given name using the specified x and y datasets without displaying it. The datasets must already be loaded. The data path consists of the project name, optional group name, and dataset name.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Unique name for the new curve."
+      },
+      {
+        "name": "<xDataPath>",
+        "type": "string",
+        "desc": "X-dataset data path (e.g., \"nmos_des time\")."
+      },
+      {
+        "name": "<yDataPath>",
+        "type": "string",
+        "desc": "Y-dataset data path (e.g., \"nmos_des Gate OuterVoltage\")."
+      },
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "Optional. Axis to use: \"y\" (default) or \"y2\"."
+      }
+    ],
+    "example": "cv_create mycurve \"nmos_des time\" \"nmos_des Gate OuterVoltage\"",
+    "keywords": [
+      "curve",
+      "create",
+      "dataset",
+      "plot"
+    ]
+  },
+  "cv_createDS": {
+    "section": "Curves",
+    "signature": "cv_createDS <curveName> <xDataPath> <yDataPath> ?axis?",
+    "description": "Creates a curve with the given name using the specified datasets and immediately displays it. This is the same as cv_create except the curve is shown on the plot.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Unique name for the new curve."
+      },
+      {
+        "name": "<xDataPath>",
+        "type": "string",
+        "desc": "X-dataset data path."
+      },
+      {
+        "name": "<yDataPath>",
+        "type": "string",
+        "desc": "Y-dataset data path."
+      },
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "Optional. Axis to use: \"y\" (default) or \"y2\"."
+      }
+    ],
+    "example": "cv_createDS Id \"nmos_des Gate OuterVoltage\" \"nmos_des Drain TotalCurrent\"",
+    "keywords": [
+      "curve",
+      "create",
+      "display",
+      "dataset"
+    ]
+  },
+  "cv_createFromScript": {
+    "section": "Curves",
+    "signature": "cv_createFromScript <curveName> <xdata> <ydata> ?axis?",
+    "description": "Creates a curve using the given name and explicit data values. If the number of x and y values differ, the curve uses the smaller count. Curves created with this command are stored in AuxProject.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Unique name for the new curve."
+      },
+      {
+        "name": "<xdata>",
+        "type": "string",
+        "desc": "Space-separated list of x-axis data values."
+      },
+      {
+        "name": "<ydata>",
+        "type": "string",
+        "desc": "Space-separated list of y-axis data values."
+      },
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "Optional. Axis to use: \"y\" (default) or \"y2\"."
+      }
+    ],
+    "example": "cv_createFromScript mycurve \"0 1 2 3 4 5 6 7 8 9\" \"1 2 1 2 1 2 1 2 1 2\"",
+    "keywords": [
+      "curve",
+      "create",
+      "script",
+      "data"
+    ]
+  },
+  "cv_createWithFormula": {
+    "section": "Curves",
+    "signature": "cv_createWithFormula <curveName> <formula> <xmin> <xmax> <ymin> <ymax>",
+    "description": "Creates a new curve by applying a formula to the data of argument curves within the specified range. Setting a range bound to a non-numeric value (such as A) applies no limit in that direction.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Unique name for the new curve."
+      },
+      {
+        "name": "<formula>",
+        "type": "string",
+        "desc": "Formula or macro expression referencing argument curves with <curveName> syntax."
+      },
+      {
+        "name": "<xmin>",
+        "type": "string",
+        "desc": "Minimum x-value range, or a non-numeric value (e.g., \"A\") for no limit."
+      },
+      {
+        "name": "<xmax>",
+        "type": "string",
+        "desc": "Maximum x-value range, or a non-numeric value (e.g., \"A\") for no limit."
+      },
+      {
+        "name": "<ymin>",
+        "type": "string",
+        "desc": "Minimum y-value range, or a non-numeric value (e.g., \"A\") for no limit."
+      },
+      {
+        "name": "<ymax>",
+        "type": "string",
+        "desc": "Maximum y-value range, or a non-numeric value (e.g., \"A\") for no limit."
+      }
+    ],
+    "example": "cv_createWithFormula f3 \"<f1>+<f2>+10\" A A A A",
+    "keywords": [
+      "curve",
+      "formula",
+      "compute",
+      "range"
+    ]
+  },
+  "cv_delete": {
+    "section": "Curves",
+    "signature": "cv_delete <curveName>",
+    "description": "Deletes the specified curve from the current Inspect session.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve to delete."
+      }
+    ],
+    "example": "cv_delete mycurve",
+    "keywords": [
+      "delete",
+      "curve",
+      "remove"
+    ]
+  },
+  "cv_display": {
+    "section": "Curves",
+    "signature": "cv_display <curveName> ?axis?",
+    "description": "Displays a previously created curve on the plot using the specified y-axis.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve to display."
+      },
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "Optional. Axis to use: \"y\" (default) or \"y2\"."
+      }
+    ],
+    "example": "cv_display Id",
+    "keywords": [
+      "display",
+      "show",
+      "curve",
+      "plot"
+    ]
+  },
+  "cv_logScale": {
+    "section": "Curves",
+    "signature": "cv_logScale <curveName> <newCurveName> ?axis?",
+    "description": "Creates a new curve where all values on the specified axis are transformed using the natural logarithm (ln).",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve to transform."
+      },
+      {
+        "name": "<newCurveName>",
+        "type": "string",
+        "desc": "Name for the new curve with log-scaled values."
+      },
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "Optional. Axis on which to apply the log scale: \"x\" (default) or \"y\"."
+      }
+    ],
+    "example": "cv_logScale mycurve logcurve x",
+    "keywords": [
+      "log",
+      "scale",
+      "transform",
+      "natural"
+    ]
+  },
+  "cv_log10Scale": {
+    "section": "Curves",
+    "signature": "cv_log10Scale <curveName> <newCurveName> ?axis?",
+    "description": "Creates a new curve where all values on the specified axis are transformed using the base-10 logarithm (log10).",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve to transform."
+      },
+      {
+        "name": "<newCurveName>",
+        "type": "string",
+        "desc": "Name for the new curve with log10-scaled values."
+      },
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "Optional. Axis on which to apply the log10 scale: \"x\" (default) or \"y\"."
+      }
+    ],
+    "example": "cv_log10Scale mycurve log10curve x",
+    "keywords": [
+      "log10",
+      "scale",
+      "transform",
+      "base10"
+    ]
+  },
+  "cv_split": {
+    "section": "Curves",
+    "signature": "cv_split <curveName> <axis> <newCurveList>",
+    "description": "Splits the input curve into multiple curves at points where the x-values are nonmonotonic (x[i+1] < x[i]). The number of names provided must match the actual number of resulting curves. The new curves are mapped onto the specified y-axis.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve to split."
+      },
+      {
+        "name": "<axis>",
+        "type": "string",
+        "desc": "Y-axis to map the new curves onto (e.g., \"y\" or \"y2\")."
+      },
+      {
+        "name": "<newCurveList>",
+        "type": "list",
+        "desc": "List of names for the new curves. The count must match the actual number of split curves."
+      }
+    ],
+    "example": "cv_split Id y {Id_1 Id_2 Id_3}",
+    "keywords": [
+      "split",
+      "nonmonotonic",
+      "backtrace",
+      "suppress"
+    ]
+  },
+  "cv_split_disc": {
+    "section": "Curves",
+    "signature": "cv_split_disc <curveName> <axis> <newCurveList>",
+    "description": "Splits the input curve into multiple curves at points where discontinuities occur (x[i+1] == x[i] and y[i+1] != y[i]). The number of names provided must match the actual number of resulting curves.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve to split."
+      },
+      {
+        "name": "<axis>",
+        "type": "string",
+        "desc": "Y-axis to map the new curves onto (e.g., \"y\" or \"y2\")."
+      },
+      {
+        "name": "<newCurveList>",
+        "type": "list",
+        "desc": "List of names for the new curves. The count must match the actual number of split curves."
+      }
+    ],
+    "example": "cv_split_disc Id y {Id_1 Id_2}",
+    "keywords": [
+      "split",
+      "discontinuity",
+      "break",
+      "segment"
+    ]
+  },
+  "cv_getVals": {
+    "section": "Data Access",
+    "signature": "cv_getVals <curveName>",
+    "description": "Returns a nested list containing both the x-data and y-data of the specified curve. The x-data is the first element and y-data is the second element of the returned list.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve whose data is retrieved."
+      }
+    ],
+    "example": "set xy [cv_getVals \"f1\"] ;# x: [lindex $xy 0], y: [lindex $xy 1]",
+    "keywords": [
+      "data",
+      "values",
+      "access",
+      "dataset"
+    ]
+  },
+  "cv_getValsX": {
+    "section": "Data Access",
+    "signature": "cv_getValsX <curveName>",
+    "description": "Returns a list of the x-data values for the specified curve.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve whose x-data is retrieved."
+      }
+    ],
+    "example": "set xvals [cv_getValsX \"Id_Vd\"]",
+    "keywords": [
+      "data",
+      "values",
+      "x-axis",
+      "access"
+    ]
+  },
+  "cv_getValsY": {
+    "section": "Data Access",
+    "signature": "cv_getValsY <curveName>",
+    "description": "Returns a list of the y-data values for the specified curve.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve whose y-data is retrieved."
+      }
+    ],
+    "example": "set jph($n) [lindex [cv_getValsY tmp] end]",
+    "keywords": [
+      "data",
+      "values",
+      "y-axis",
+      "access"
+    ]
+  },
+  "cv_getXaxis": {
+    "section": "Data Access",
+    "signature": "cv_getXaxis <curveName>",
+    "description": "Returns the project name and dataset ID of the x-dataset for the specified curve. The project name is the first element and the dataset ID is the second element of the returned list.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve to query."
+      }
+    ],
+    "example": "set answer [cv_getXaxis \"myCurve\"]",
+    "keywords": [
+      "axis",
+      "dataset",
+      "project",
+      "metadata"
+    ]
+  },
+  "cv_getYaxis": {
+    "section": "Data Access",
+    "signature": "cv_getYaxis <curveName>",
+    "description": "Returns the project name and dataset ID of the y-dataset for the specified curve, in the same format as cv_getXaxis.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve to query."
+      }
+    ],
+    "example": "set yInfo [cv_getYaxis \"Id_Vg\"]",
+    "keywords": [
+      "axis",
+      "dataset",
+      "project",
+      "metadata"
+    ]
+  },
+  "cv_printVals": {
+    "section": "Data Access",
+    "signature": "cv_printVals <curveName>",
+    "description": "Writes the x-data and y-data of a curve to standard output.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve to print."
+      }
+    ],
+    "example": "cv_printVals \"Id_Vd\"",
+    "keywords": [
+      "print",
+      "data",
+      "values",
+      "output"
+    ]
+  },
+  "cv_abs": {
+    "section": "Transform",
+    "signature": "cv_abs <curveName> <axis>",
+    "description": "Replaces negative values of the x- or y-dataset by their absolute values. The axis argument specifies which dataset is affected.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve to transform."
+      },
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "Axis to apply absolute value to: \"x\" or \"y\"."
+      }
+    ],
+    "example": "cv_abs \"Id_Vd\" y",
+    "keywords": [
+      "absolute",
+      "transform",
+      "negative",
+      "values"
+    ]
+  },
+  "cv_delPts": {
+    "section": "Transform",
+    "signature": "cv_delPts <curveName> <indexList>",
+    "description": "Deletes the specified data points from the displayed set of curve points by their indices.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "<indexList>",
+        "type": "list",
+        "desc": "List of indices of the curve points to delete."
+      }
+    ],
+    "example": "cv_delPts \"Id_Vd\" 5 10",
+    "keywords": [
+      "delete",
+      "points",
+      "remove",
+      "data"
+    ]
+  },
+  "cv_inv": {
+    "section": "Transform",
+    "signature": "cv_inv <curveName> <axis>",
+    "description": "Reflects a curve about the specified axis, effectively negating the values on that axis.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve to reflect."
+      },
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "Axis to reflect about: \"x\" or \"y\"."
+      }
+    ],
+    "example": "cv_inv \"Id_Vd\" y",
+    "keywords": [
+      "inverse",
+      "reflect",
+      "transform",
+      "negate"
+    ]
+  },
+  "cv_reset": {
+    "section": "Transform",
+    "signature": "cv_reset <curveName>",
+    "description": "Restores the original appearance of a curve after a transformation has been applied.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve to restore."
+      }
+    ],
+    "example": "cv_reset \"Id_Vd\"",
+    "keywords": [
+      "reset",
+      "restore",
+      "transform",
+      "undo"
+    ]
+  },
+  "cv_lineColor": {
+    "section": "Attributes",
+    "signature": "cv_lineColor <curveName> <color>",
+    "description": "Sets the line color of the specified curve.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "<color>",
+        "type": "string",
+        "desc": "Line color name: \"red\", \"blue\", \"green\", \"black\", \"white\", \"magenta\", \"cyan\", \"yellow\", \"orange\", \"brown\", \"violet\", \"gray\", or \"defcolor\"."
+      }
+    ],
+    "example": "cv_lineColor \"Id_Vd\" blue",
+    "keywords": [
+      "color",
+      "line",
+      "style",
+      "curve"
+    ]
+  },
+  "cv_lineStyle": {
+    "section": "Attributes",
+    "signature": "cv_lineStyle <curveName> <style>",
+    "description": "Sets the line drawing style of the specified curve.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "<style>",
+        "type": "string",
+        "desc": "Line style: \"solid\", \"dashed\", \"dotted\", \"long dashed\", or \"long dotted\"."
+      }
+    ],
+    "example": "cv_lineStyle \"Id_Vd\" solid",
+    "keywords": [
+      "style",
+      "line",
+      "dashed",
+      "solid"
+    ]
+  },
+  "cv_renameCurve": {
+    "section": "Attributes",
+    "signature": "cv_renameCurve <curveName> <newName>",
+    "description": "Renames a curve to a new name.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Current name of the curve."
+      },
+      {
+        "name": "<newName>",
+        "type": "string",
+        "desc": "New name for the curve."
+      }
+    ],
+    "example": "cv_renameCurve \"Id_Vd\" \"I_ds\"",
+    "keywords": [
+      "rename",
+      "curve",
+      "name",
+      "label"
+    ]
+  },
+  "cv_set_interpol": {
+    "section": "Attributes",
+    "signature": "cv_set_interpol <curveId> <axis> <type>",
+    "description": "Sets the interpolation method applied to each dataset of a curve on the specified axis.",
+    "parameters": [
+      {
+        "name": "<curveId>",
+        "type": "string",
+        "desc": "Name or identification of the curve."
+      },
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "Axis on which interpolation is set: \"X\" or \"Y\"."
+      },
+      {
+        "name": "<type>",
+        "type": "enum",
+        "desc": "Interpolation method: \"AUTO\" (default), \"LIN\" (linear), or \"LOG\" (logarithmic)."
+      }
+    ],
+    "example": "cv_set_interpol \"Id_Vd\" Y LOG",
+    "keywords": [
+      "interpolation",
+      "method",
+      "linear",
+      "logarithmic"
+    ]
+  },
+  "cv_setCurveAttr": {
+    "section": "Attributes",
+    "signature": "cv_setCurveAttr <curveName> <legend> <color> <style> <width> <shape> <size> <outColor> <outWidth> <fillColor>",
+    "description": "Sets all curve-drawing attributes at once, including legend text, line color and style, marker shape and size, and marker outline and fill colors.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "<legend>",
+        "type": "string",
+        "desc": "Legend text displayed for the curve."
+      },
+      {
+        "name": "<color>",
+        "type": "string",
+        "desc": "Line color name (e.g., \"red\", \"black\", \"blue\")."
+      },
+      {
+        "name": "<style>",
+        "type": "string",
+        "desc": "Line style: \"solid\", \"dashed\", \"dotted\", \"long dashed\", or \"long dotted\"."
+      },
+      {
+        "name": "<width>",
+        "type": "int",
+        "desc": "Line width in pixels."
+      },
+      {
+        "name": "<shape>",
+        "type": "string",
+        "desc": "Marker shape: \"none\", \"circle\", \"cross\", \"diamond\", \"plus\", \"scross\", \"splus\", \"square\", or \"triangle\"."
+      },
+      {
+        "name": "<size>",
+        "type": "int",
+        "desc": "Marker size in pixels."
+      },
+      {
+        "name": "<outColor>",
+        "type": "string",
+        "desc": "Marker outline color name."
+      },
+      {
+        "name": "<outWidth>",
+        "type": "int",
+        "desc": "Marker outline width in pixels."
+      },
+      {
+        "name": "<fillColor>",
+        "type": "string",
+        "desc": "Marker fill color name."
+      }
+    ],
+    "example": "cv_setCurveAttr idvd0 \"Vg=0.0\" black solid 1 circle 5 defcolor 1 defcolor",
+    "keywords": [
+      "attribute",
+      "style",
+      "color",
+      "marker",
+      "legend"
+    ]
+  },
+  "gb_setpreferences": {
+    "section": "Attributes",
+    "signature": "gb_setpreferences <type> <val>",
+    "description": "Sets a preference option to a new value. Supported options are \"precision\" (integer, controls the number of decimal places shown in the status line) and \"old_interpolation\" (0 or 1, activates or deactivates the old interpolation method).",
+    "parameters": [
+      {
+        "name": "<type>",
+        "type": "string",
+        "desc": "Preference option name: \"precision\" or \"old_interpolation\"."
+      },
+      {
+        "name": "<val>",
+        "type": "string",
+        "desc": "New value for the preference option."
+      }
+    ],
+    "example": "gb_setpreferences precision 6",
+    "keywords": [
+      "preferences",
+      "settings",
+      "precision",
+      "option"
+    ]
+  },
+  "gr_createLabel": {
+    "section": "Attributes",
+    "signature": "gr_createLabel <label> <coordx> <coordy> <fontStr> <color>",
+    "description": "Creates a text label at the specified coordinates in the plot area.",
+    "parameters": [
+      {
+        "name": "<label>",
+        "type": "string",
+        "desc": "Label text to display."
+      },
+      {
+        "name": "<coordx>",
+        "type": "float",
+        "desc": "X-coordinate of the label in plot coordinates."
+      },
+      {
+        "name": "<coordy>",
+        "type": "float",
+        "desc": "Y-coordinate of the label in plot coordinates."
+      },
+      {
+        "name": "<fontStr>",
+        "type": "string",
+        "desc": "Font specification string."
+      },
+      {
+        "name": "<color>",
+        "type": "string",
+        "desc": "Label text color name."
+      }
+    ],
+    "example": "gr_createLabel \"Gate\" \"Vg = 1.0V\" \"center\"",
+    "keywords": [
+      "label",
+      "annotation",
+      "text",
+      "plot"
+    ]
+  },
+  "gr_deleteLabel": {
+    "section": "Attributes",
+    "signature": "gr_deleteLabel <labelId>",
+    "description": "Deletes a previously created label from the plot area using its label ID.",
+    "parameters": [
+      {
+        "name": "<labelId>",
+        "type": "string",
+        "desc": "ID of the label to delete, as returned by gr_createLabel."
+      }
+    ],
+    "example": "gr_deleteLabel \"Gate\"",
+    "keywords": [
+      "label",
+      "delete",
+      "annotation",
+      "remove"
+    ]
+  },
+  "gr_formatAxis": {
+    "section": "Attributes",
+    "signature": "gr_formatAxis <axis> <format>",
+    "description": "Changes the number format of the displayed axis tick labels.",
+    "parameters": [
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "Axis to format: \"X\", \"Y\", or \"Y2\"."
+      },
+      {
+        "name": "<format>",
+        "type": "enum",
+        "desc": "Number format: \"default\", \"engineering\", \"fixed\", \"scientific\", \"LOG\", or \"LIN\"."
+      }
+    ],
+    "example": "gr_formatAxis \"Y\" scientific",
+    "keywords": [
+      "axis",
+      "format",
+      "scientific",
+      "engineering"
+    ]
+  },
+  "gr_mappedAxis": {
+    "section": "Attributes",
+    "signature": "gr_mappedAxis <axis> <yesno>",
+    "description": "Controls the visibility of the specified y-axis on the plot.",
+    "parameters": [
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "Y-axis to control: \"y\" or \"y2\"."
+      },
+      {
+        "name": "<yesno>",
+        "type": "boolean",
+        "desc": "Axis visibility: \"True\" to show or \"False\" to hide."
+      }
+    ],
+    "example": "gr_mappedAxis \"y2\" True",
+    "keywords": [
+      "axis",
+      "visibility",
+      "y2",
+      "toggle"
+    ]
+  },
+  "gr_precision": {
+    "section": "Attributes",
+    "signature": "gr_precision <axis> <prec>",
+    "description": "Sets the numeric precision (number of decimal places) for the tick labels of the specified axis.",
+    "parameters": [
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "Axis to configure: \"X\", \"Y\", or \"Y2\"."
+      },
+      {
+        "name": "<prec>",
+        "type": "int",
+        "desc": "Number of decimal places for axis tick labels."
+      }
+    ],
+    "example": "gr_precision \"Y\" 6",
+    "keywords": [
+      "precision",
+      "axis",
+      "decimal",
+      "format"
+    ]
+  },
+  "gr_setAxisAttr": {
+    "section": "Attributes",
+    "signature": "gr_setAxisAttr <axis> <title> <tfont> <min> <max> <color> <width> <font> <angle> <div> <scale> <tcolor>",
+    "description": "Sets all axis attributes including title, font, range, color, tick labels, and scale type.",
+    "parameters": [
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "Axis to configure: \"X\", \"Y\", or \"Y2\"."
+      },
+      {
+        "name": "<title>",
+        "type": "string",
+        "desc": "Axis title text."
+      },
+      {
+        "name": "<tfont>",
+        "type": "int",
+        "desc": "Font size of the axis title."
+      },
+      {
+        "name": "<min>",
+        "type": "string",
+        "desc": "Minimum value of the axis range, or empty {} for auto."
+      },
+      {
+        "name": "<max>",
+        "type": "string",
+        "desc": "Maximum value of the axis range, or empty {} for auto."
+      },
+      {
+        "name": "<color>",
+        "type": "string",
+        "desc": "Color of the axis line."
+      },
+      {
+        "name": "<width>",
+        "type": "int",
+        "desc": "Width of the axis line."
+      },
+      {
+        "name": "<font>",
+        "type": "int",
+        "desc": "Font size of the tick labels."
+      },
+      {
+        "name": "<angle>",
+        "type": "int",
+        "desc": "Angle at which tick labels are drawn."
+      },
+      {
+        "name": "<div>",
+        "type": "int",
+        "desc": "Number of secondary ticks between major ticks."
+      },
+      {
+        "name": "<scale>",
+        "type": "enum",
+        "desc": "Scale type: \"lin\" (linear) or \"log\" (logarithmic)."
+      },
+      {
+        "name": "<tcolor>",
+        "type": "string",
+        "desc": "Color of the axis title text."
+      }
+    ],
+    "example": "gr_setAxisAttr X {Drain Voltage (V)} 14 {} {} black 0 12 0 5 0",
+    "keywords": [
+      "axis",
+      "title",
+      "range",
+      "scale",
+      "attribute"
+    ]
+  },
+  "gr_setGeneralAttr": {
+    "section": "Attributes",
+    "signature": "gr_setGeneralAttr ?showFrame? ?axesTight? ?backColor? ?selectColor?",
+    "description": "Sets general plot attributes such as frame visibility, axis tightness, background color, and selected curve color.",
+    "parameters": [
+      {
+        "name": "?showFrame?",
+        "type": "boolean",
+        "desc": "Optional. Show plot frame; default is true."
+      },
+      {
+        "name": "?axesTight?",
+        "type": "boolean",
+        "desc": "Optional. Tighten axes to data range; default is true."
+      },
+      {
+        "name": "?backColor?",
+        "type": "string",
+        "desc": "Optional. Plot background color; default is \"white\"."
+      },
+      {
+        "name": "?selectColor?",
+        "type": "string",
+        "desc": "Optional. Color of the selected curve highlight; default is \"cyan\"."
+      }
+    ],
+    "example": "gr_setGeneralAttr {showFrame true} {axesTight true} {backColor white}",
+    "keywords": [
+      "plot",
+      "frame",
+      "background",
+      "general"
+    ]
+  },
+  "gr_setGridAttr": {
+    "section": "Attributes",
+    "signature": "gr_setGridAttr ?showGrid? ?gridAlign? ?minorTicks? ?gridStyle? ?gridColor? ?gridWidth?",
+    "description": "Sets grid attributes including visibility, alignment, minor ticks, style, color, and line width.",
+    "parameters": [
+      {
+        "name": "?showGrid?",
+        "type": "boolean",
+        "desc": "Optional. Show grid lines; default is false."
+      },
+      {
+        "name": "?gridAlign?",
+        "type": "enum",
+        "desc": "Optional. Grid alignment: \"left\" (default) or \"right\"."
+      },
+      {
+        "name": "?minorTicks?",
+        "type": "boolean",
+        "desc": "Optional. Show minor tick marks; default is false."
+      },
+      {
+        "name": "?gridStyle?",
+        "type": "string",
+        "desc": "Optional. Grid line style: \"dashed\", \"dot-dashed\", \"dotted\", \"long dashed\", \"long dotted\", \"short dashed\" (default), or \"solid\"."
+      },
+      {
+        "name": "?gridColor?",
+        "type": "string",
+        "desc": "Optional. Color of the grid lines; default is \"black\"."
+      },
+      {
+        "name": "?gridWidth?",
+        "type": "int",
+        "desc": "Optional. Thickness of the grid lines; default is 1."
+      }
+    ],
+    "example": "gr_setGridAttr {showGrid true} {gridStyle dashed}",
+    "keywords": [
+      "grid",
+      "style",
+      "ticks",
+      "lines"
+    ]
+  },
+  "gr_setLegendAttr": {
+    "section": "Attributes",
+    "signature": "gr_setLegendAttr ?showFlag? ?fontName? ?fontSize? ?fontStyle? ?backColor? ?foreColor? ?frameColor? ?frameWidth? ?framePos? ?frameAnchor?",
+    "description": "Sets all legend attributes including visibility, font, colors, frame position, and anchor point.",
+    "parameters": [
+      {
+        "name": "?showFlag?",
+        "type": "boolean",
+        "desc": "Optional. Show legend; default is true."
+      },
+      {
+        "name": "?fontName?",
+        "type": "string",
+        "desc": "Optional. Legend font name; default is \"helvetica\"."
+      },
+      {
+        "name": "?fontSize?",
+        "type": "int",
+        "desc": "Optional. Legend font size; default is 10."
+      },
+      {
+        "name": "?fontStyle?",
+        "type": "string",
+        "desc": "Optional. Font style: \"bold\", \"italic\", \"overstrike\", \"underline\", or {} (default)."
+      },
+      {
+        "name": "?backColor?",
+        "type": "string",
+        "desc": "Optional. Legend background color; default is \"white\"."
+      },
+      {
+        "name": "?foreColor?",
+        "type": "string",
+        "desc": "Optional. Legend foreground (text) color; default is \"black\"."
+      },
+      {
+        "name": "?frameColor?",
+        "type": "string",
+        "desc": "Optional. Legend frame border color; default is \"black\"."
+      },
+      {
+        "name": "?frameWidth?",
+        "type": "int",
+        "desc": "Optional. Legend frame border width; default is 1."
+      },
+      {
+        "name": "?framePos?",
+        "type": "enum",
+        "desc": "Optional. Legend frame position: \"left\", \"right\" (default), \"top\", \"bottom\", \"free\", or \"plot\"."
+      },
+      {
+        "name": "?frameAnchor?",
+        "type": "enum",
+        "desc": "Optional. Legend anchor point: \"n\" (default), \"e\", \"s\", \"w\", \"ne\", \"se\", \"sw\", or \"nw\"."
+      }
+    ],
+    "example": "gr_setLegendAttr {showFlag true} {fontSize 10} {framePos right}",
+    "keywords": [
+      "legend",
+      "font",
+      "frame",
+      "style"
+    ]
+  },
+  "gr_setLegendPos": {
+    "section": "Attributes",
+    "signature": "gr_setLegendPos <x> <y>",
+    "description": "Changes the position of the displayed legend by specifying new x and y coordinates in the plot area.",
+    "parameters": [
+      {
+        "name": "<x>",
+        "type": "float",
+        "desc": "New x-coordinate for the legend."
+      },
+      {
+        "name": "<y>",
+        "type": "float",
+        "desc": "New y-coordinate for the legend."
+      }
+    ],
+    "example": "gr_setLegendPos 0.9 0.9",
+    "keywords": [
+      "legend",
+      "position",
+      "coordinates",
+      "move"
+    ]
+  },
+  "gr_setTitleAttr": {
+    "section": "Attributes",
+    "signature": "gr_setTitleAttr <title> ?fontSize? ?just?",
+    "description": "Sets the plot title text and its font size and justification.",
+    "parameters": [
+      {
+        "name": "<title>",
+        "type": "string",
+        "desc": "Title text for the plot."
+      },
+      {
+        "name": "?fontSize?",
+        "type": "int",
+        "desc": "Optional. Font size of the title; default is 14."
+      },
+      {
+        "name": "?just?",
+        "type": "enum",
+        "desc": "Optional. Title justification: \"center\" (default), \"left\", or \"right\"."
+      }
+    ],
+    "example": "gr_setTitleAttr \"Id-Vd Characteristics\"",
+    "keywords": [
+      "title",
+      "font",
+      "plot",
+      "header"
+    ]
+  },
+  "cv_compute": {
+    "section": "Computing",
+    "signature": "cv_compute <formula> <xmin> <xmax> <ymin> <ymax>",
+    "description": "Computes a scalar value by evaluating the given formula within the specified x and y range. Use \"A\" for a range bound to indicate no limit.",
+    "parameters": [
+      {
+        "name": "<formula>",
+        "type": "string",
+        "desc": "Formula string to evaluate, using <curveName> syntax to reference curve data."
+      },
+      {
+        "name": "<xmin>",
+        "type": "string",
+        "desc": "Minimum x-value range, or \"A\" for no limit."
+      },
+      {
+        "name": "<xmax>",
+        "type": "string",
+        "desc": "Maximum x-value range, or \"A\" for no limit."
+      },
+      {
+        "name": "<ymin>",
+        "type": "string",
+        "desc": "Minimum y-value range, or \"A\" for no limit."
+      },
+      {
+        "name": "<ymax>",
+        "type": "string",
+        "desc": "Maximum y-value range, or \"A\" for no limit."
+      }
+    ],
+    "example": "cv_compute \"vecmin(<j($n)>)\" A A A A",
+    "keywords": [
+      "compute",
+      "formula",
+      "scalar",
+      "evaluate"
+    ]
+  },
+  "cv_getZero": {
+    "section": "Computing",
+    "signature": "cv_getZero <curveName> <xmin> <xmax> <ymin> <ymax>",
+    "description": "Computes the x-coordinate where the curve intersects the x-axis (y = 0) within the specified range. Returns an empty string if the curve does not cross the x-axis.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "<xmin>",
+        "type": "string",
+        "desc": "Minimum x-value range, or \"A\" for no limit."
+      },
+      {
+        "name": "<xmax>",
+        "type": "string",
+        "desc": "Maximum x-value range, or \"A\" for no limit."
+      },
+      {
+        "name": "<ymin>",
+        "type": "string",
+        "desc": "Minimum y-value range, or \"A\" for no limit."
+      },
+      {
+        "name": "<ymax>",
+        "type": "string",
+        "desc": "Maximum y-value range, or \"A\" for no limit."
+      }
+    ],
+    "example": "set voc [cv_compute \"veczero(<j($n)>)\" A A A A]",
+    "keywords": [
+      "zero",
+      "crossing",
+      "x-intercept",
+      "root"
+    ]
+  },
+  "macro_define": {
+    "section": "Computing",
+    "signature": "macro_define <macroName> <macroDef>",
+    "description": "Defines a reusable macro that can be used in formula expressions. Use <c n> as placeholders for curve arguments and <s n> for scalar arguments, where n starts at 1.",
+    "parameters": [
+      {
+        "name": "<macroName>",
+        "type": "string",
+        "desc": "Name of the macro to define."
+      },
+      {
+        "name": "<macroDef>",
+        "type": "string",
+        "desc": "Macro definition string using <c n> for curve placeholders and <s n> for scalar placeholders."
+      }
+    ],
+    "example": "macro_define \"Vt2d\" \"<s 2> * vecvalx(diff(diff(<c 1>)), 0.999*vecmax(diff(diff(<c 1>)))\"",
+    "keywords": [
+      "macro",
+      "define",
+      "formula",
+      "reuse"
+    ]
+  },
+  "script_break": {
+    "section": "Script Control",
+    "signature": "script_break",
+    "description": "Suspends the execution of a script and passes control to the user interface. Script execution can be resumed by choosing Script > Continue Script.",
+    "parameters": [],
+    "example": "script_break",
+    "keywords": [
+      "break",
+      "pause",
+      "suspend",
+      "interactive"
+    ]
+  },
+  "script_exit": {
+    "section": "Script Control",
+    "signature": "script_exit",
+    "description": "Stops the execution of a script and exits Inspect.",
+    "parameters": [],
+    "example": "script_exit",
+    "keywords": [
+      "exit",
+      "stop",
+      "quit",
+      "terminate"
+    ]
+  },
+  "script_sleep": {
+    "section": "Script Control",
+    "signature": "script_sleep <sec>",
+    "description": "Pauses the execution of a script for a specified number of seconds.",
+    "parameters": [
+      {
+        "name": "<sec>",
+        "type": "float",
+        "desc": "Time to sleep in seconds."
+      }
+    ],
+    "example": "script_sleep 1",
+    "keywords": [
+      "sleep",
+      "wait",
+      "pause",
+      "delay"
+    ]
+  },
+  "f_Gamma": {
+    "section": "Extraction Functions",
+    "signature": "f_Gamma <VT1> <VT2> <VB1> <VB2> ?const?",
+    "description": "Computes the body-effect parameter Gamma at two different source-substrate voltages using the formula: Gamma = (VT2 - VT1) / (sqrt(const + VB2) - sqrt(const + VB1)).",
+    "parameters": [
+      {
+        "name": "<VT1>",
+        "type": "float",
+        "desc": "First threshold voltage value [V]."
+      },
+      {
+        "name": "<VT2>",
+        "type": "float",
+        "desc": "Second threshold voltage value [V]."
+      },
+      {
+        "name": "<VB1>",
+        "type": "float",
+        "desc": "First source-substrate voltage [V]."
+      },
+      {
+        "name": "<VB2>",
+        "type": "float",
+        "desc": "Second source-substrate voltage [V]."
+      },
+      {
+        "name": "?const?",
+        "type": "float",
+        "desc": "2*phiF where phiF is the Fermi-level potential. Default is 0.8 V."
+      }
+    ],
+    "example": "set gamma [f_Gamma $vt1 $vt2 0.0 1.0]",
+    "keywords": [
+      "body effect",
+      "gamma",
+      "threshold",
+      "substrate",
+      "parameter"
+    ]
+  },
+  "f_gm": {
+    "section": "Extraction Functions",
+    "signature": "f_gm <curveName> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "Computes the maximum transconductance [A/V] for a given Id-Vg curve.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the Id-Vg curve used to calculate gm."
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "Minimum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "Maximum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "Minimum y-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "Maximum y-value for the computation range. Default is the full curve range."
+      }
+    ],
+    "example": "set gm [f_gm idvgs 0.0 1.0]",
+    "keywords": [
+      "transconductance",
+      "gm",
+      "Id-Vg",
+      "MOSFET",
+      "extraction"
+    ]
+  },
+  "f_hideInternalCurves": {
+    "section": "Extraction Functions",
+    "signature": "f_hideInternalCurves",
+    "description": "Hides the internally used curves created by the extraction function commands.",
+    "parameters": [],
+    "example": "f_hideInternalCurves",
+    "keywords": [
+      "hide",
+      "internal",
+      "curves",
+      "display"
+    ]
+  },
+  "f_IDSS": {
+    "section": "Extraction Functions",
+    "signature": "f_IDSS <curveName> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "Computes the saturation current from an Id-Vd curve at a fixed gate-source voltage.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the Id-Vd curve at the fixed gate-source voltage."
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "Minimum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "Maximum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "Minimum y-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "Maximum y-value for the computation range. Default is the full curve range."
+      }
+    ],
+    "example": "set idss [f_IDSS idvd]",
+    "keywords": [
+      "saturation",
+      "current",
+      "IDSS",
+      "drain",
+      "extraction"
+    ]
+  },
+  "f_KP": {
+    "section": "Extraction Functions",
+    "signature": "f_KP <gm> ?VDS?",
+    "description": "Computes the transconductance parameter KP [A/V^2] from a given transconductance value and drain-source voltage.",
+    "parameters": [
+      {
+        "name": "<gm>",
+        "type": "float",
+        "desc": "Transconductance value [A/V]."
+      },
+      {
+        "name": "?VDS?",
+        "type": "float",
+        "desc": "Drain-source voltage [V]. Default is 0.1."
+      }
+    ],
+    "example": "set kp [f_KP $gm 0.1]",
+    "keywords": [
+      "KP",
+      "transconductance",
+      "parameter",
+      "MOSFET",
+      "extraction"
+    ]
+  },
+  "f_Ron": {
+    "section": "Extraction Functions",
+    "signature": "f_Ron <curveName> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "Computes the on-state resistance [kOhm] in the linear region from an Id-Vd curve.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the Id-Vd curve at the fixed gate-source voltage."
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "Minimum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "Maximum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "Minimum y-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "Maximum y-value for the computation range. Default is the full curve range."
+      }
+    ],
+    "example": "set ron [f_Ron idvd 0.0 0.5]",
+    "keywords": [
+      "Ron",
+      "on-state",
+      "resistance",
+      "linear",
+      "extraction"
+    ]
+  },
+  "f_Rout": {
+    "section": "Extraction Functions",
+    "signature": "f_Rout <curveName> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "Computes the output resistance [kOhm] in the saturation region from an Id-Vd curve.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the Id-Vd curve at the fixed gate-source voltage."
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "Minimum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "Maximum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "Minimum y-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "Maximum y-value for the computation range. Default is the full curve range."
+      }
+    ],
+    "example": "set rout [f_Rout idvd 0.5 1.0]",
+    "keywords": [
+      "Rout",
+      "output",
+      "resistance",
+      "saturation",
+      "extraction"
+    ]
+  },
+  "f_showInternalCurves": {
+    "section": "Extraction Functions",
+    "signature": "f_showInternalCurves ?axis?",
+    "description": "Displays the internally used curves created by the extraction function commands on the specified axis.",
+    "parameters": [
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "Axis to display the internal curves on. Default is \"left\"."
+      }
+    ],
+    "example": "f_showInternalCurves left",
+    "keywords": [
+      "show",
+      "internal",
+      "curves",
+      "display",
+      "axis"
+    ]
+  },
+  "f_TetaG": {
+    "section": "Extraction Functions",
+    "signature": "f_TetaG <VT> <gm> <idvgs> <vgsvgs> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "Computes the mobility modulation parameter TetaG [V^-1] using the formula: TetaG = gm(VGSlow)/ID(VGShigh) - 1/(VGShigh - VT).",
+    "parameters": [
+      {
+        "name": "<VT>",
+        "type": "float",
+        "desc": "Threshold voltage value [V]."
+      },
+      {
+        "name": "<gm>",
+        "type": "float",
+        "desc": "Transconductance value [A/V]."
+      },
+      {
+        "name": "<idvgs>",
+        "type": "string",
+        "desc": "Name of the Id-Vg curve."
+      },
+      {
+        "name": "<vgsvgs>",
+        "type": "string",
+        "desc": "Name of the Vg-Vg curve."
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "Minimum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "Maximum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "Minimum y-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "Maximum y-value for the computation range. Default is the full curve range."
+      }
+    ],
+    "example": "set tetag [f_TetaG $vt $gm idvgs vgsvgs 0.0 1.0]",
+    "keywords": [
+      "TetaG",
+      "mobility",
+      "modulation",
+      "parameter",
+      "extraction"
+    ]
+  },
+  "f_VT": {
+    "section": "Extraction Functions",
+    "signature": "f_VT <curveName> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "Computes the threshold voltage [V] of a given curve using the maximum slope intercept method: VT = intercept(maxslope(curve)).",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "Minimum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "Maximum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "Minimum y-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "Maximum y-value for the computation range. Default is the full curve range."
+      }
+    ],
+    "example": "set vt [f_VT idvgs]",
+    "keywords": [
+      "threshold",
+      "voltage",
+      "VT",
+      "maxslope",
+      "extraction"
+    ]
+  },
+  "f_VT1": {
+    "section": "Extraction Functions",
+    "signature": "f_VT1 <curveName> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "Computes the threshold voltage [V] of a given curve, typically extracted at Id = 0.1 uA/um.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "Minimum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "Maximum x-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "Minimum y-value for the computation range. Default is the full curve range."
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "Maximum y-value for the computation range. Default is the full curve range."
+      }
+    ],
+    "example": "set vt1 [f_VT1 idvgs]",
+    "keywords": [
+      "threshold",
+      "voltage",
+      "VT1",
+      "current level",
+      "extraction"
+    ]
+  },
+  "f_VT2": {
+    "section": "Extraction Functions",
+    "signature": "f_VT2 <curveName>",
+    "description": "Computes the threshold voltage [V] of a given curve using the intersection of maxslope and minslope lines in the logarithmic curve.",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "Name of the curve."
+      }
+    ],
+    "example": "set vt2 [f_VT2 idvgs]",
+    "keywords": [
+      "threshold",
+      "voltage",
+      "VT2",
+      "logarithmic",
+      "intersection"
+    ]
+  },
+  "cv_linTransCurve": {
+    "section": "Extraction Library",
+    "signature": "cv_linTransCurve <curve> <Xm> <Xb> <Ym> <Yb> <axis>",
+    "description": "Applies a linear transformation to the X- and Y-values of a curve, replacing them with X = X*Xm + Xb and Y = Y*Ym + Yb.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the curve to transform."
+      },
+      {
+        "name": "<Xm>",
+        "type": "float",
+        "desc": "X-axis multiplication factor."
+      },
+      {
+        "name": "<Xb>",
+        "type": "float",
+        "desc": "X-axis offset (additive shift)."
+      },
+      {
+        "name": "<Ym>",
+        "type": "float",
+        "desc": "Y-axis multiplication factor."
+      },
+      {
+        "name": "<Yb>",
+        "type": "float",
+        "desc": "Y-axis offset (additive shift)."
+      },
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "Y-axis to display the transformed curve on: \"y\" or \"y2\"."
+      }
+    ],
+    "example": "cv_linTransCurve IdVgs 1 0.55 1.0 0.0 y",
+    "keywords": [
+      "linear",
+      "transform",
+      "curve",
+      "shift",
+      "scale"
+    ]
+  },
+  "cv_scaleCurve": {
+    "section": "Extraction Library",
+    "signature": "cv_scaleCurve <curve> <XFactor> <YFactor> <axis>",
+    "description": "Scales the X- and Y-values of a curve by the given factors, multiplying X-values by XFactor and Y-values by YFactor.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the curve to scale."
+      },
+      {
+        "name": "<XFactor>",
+        "type": "float",
+        "desc": "X-axis scaling factor."
+      },
+      {
+        "name": "<YFactor>",
+        "type": "float",
+        "desc": "Y-axis scaling factor."
+      },
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "Y-axis to display the scaled curve on: \"y\" or \"y2\"."
+      }
+    ],
+    "example": "cv_scaleCurve IdVgs 1 1e6 y",
+    "keywords": [
+      "scale",
+      "curve",
+      "factor",
+      "unit",
+      "conversion"
+    ]
+  },
+  "ExtractBVi": {
+    "section": "Extraction Library",
+    "signature": "ExtractBVi <name> <curve> <Ilevel>",
+    "description": "Extracts the breakdown voltage [V] at which the current reaches a specified level from a breakdown curve.",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the extracted parameter."
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the breakdown curve."
+      },
+      {
+        "name": "<Ilevel>",
+        "type": "float",
+        "desc": "Current level [A] at which the breakdown voltage is extracted."
+      }
+    ],
+    "example": "ExtractBVi BVcboi VcIc 1e-12",
+    "keywords": [
+      "breakdown",
+      "voltage",
+      "current",
+      "BVi",
+      "extraction"
+    ]
+  },
+  "ExtractBVv": {
+    "section": "Extraction Library",
+    "signature": "ExtractBVv <name> <curve> <sign>",
+    "description": "Extracts the breakdown voltage [V] defined as the maximum voltage that can be applied to a contact.",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the extracted parameter."
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the breakdown curve."
+      },
+      {
+        "name": "<sign>",
+        "type": "float",
+        "desc": "Transistor type sign: +1 for n-p-n, -1 for p-n-p (use -1 if breakdown occurs at negative bias)."
+      }
+    ],
+    "example": "ExtractBVv BVcbov VcIc 1.0",
+    "keywords": [
+      "breakdown",
+      "voltage",
+      "BVv",
+      "bipolar",
+      "extraction"
+    ]
+  },
+  "ExtractEarlyV": {
+    "section": "Extraction Library",
+    "signature": "ExtractEarlyV <name> <curve> <Vtarget>",
+    "description": "Extracts the Early voltage [V] from an Ic-Vce curve by computing the slope at a specified bias point.",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the extracted parameter."
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the Ic-Vce curve."
+      },
+      {
+        "name": "<Vtarget>",
+        "type": "float",
+        "desc": "Bias point [V] at which the slope is determined for the Early voltage computation."
+      }
+    ],
+    "example": "ExtractEarlyV Va IcVc 1.25",
+    "keywords": [
+      "Early voltage",
+      "output resistance",
+      "bipolar",
+      "extraction"
+    ]
+  },
+  "ExtractGm": {
+    "section": "Extraction Library",
+    "signature": "ExtractGm <name> <curve> ?type?",
+    "description": "Extracts the maximum transconductance [A/V] from an Id-Vgs curve.",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the extracted parameter."
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the Id-Vgs curve."
+      },
+      {
+        "name": "?type?",
+        "type": "enum",
+        "desc": "Transistor type: \"nMOS\", \"nMOSneg\", \"pMOS\", or \"pMOSneg\". If omitted, the type is determined automatically."
+      }
+    ],
+    "example": "set gm [ExtractGm gmLin IdVg]",
+    "keywords": [
+      "transconductance",
+      "gm",
+      "MOSFET",
+      "extraction",
+      "linear"
+    ]
+  },
+  "ExtractGmb": {
+    "section": "Extraction Library",
+    "signature": "ExtractGmb <name> <curve> ?type?",
+    "description": "Extracts the maximum transconductance from an Id-Vgs curve using parabolic interpolation for better accuracy with limited sample points.",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the extracted parameter."
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the Id-Vgs curve."
+      },
+      {
+        "name": "?type?",
+        "type": "enum",
+        "desc": "Transistor type: \"nMOS\", \"nMOSneg\", \"pMOS\", or \"pMOSneg\". If omitted, the type is determined automatically."
+      }
+    ],
+    "example": "set gm [ExtractGmb gmParabolic IdVg]",
+    "keywords": [
+      "transconductance",
+      "parabolic",
+      "interpolation",
+      "MOSFET",
+      "extraction"
+    ]
+  },
+  "ExtractIoff": {
+    "section": "Extraction Library",
+    "signature": "ExtractIoff <name> <curve> <Voff>",
+    "description": "Extracts the drain leakage current [A] from an Id-Vgs curve at a specified gate voltage.",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the extracted parameter."
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the Id-Vgs curve (computed for a high drain bias)."
+      },
+      {
+        "name": "<Voff>",
+        "type": "float",
+        "desc": "Gate voltage [V] at which the drain leakage current is extracted, typically a small nonzero value to avoid noise."
+      }
+    ],
+    "example": "set Ioff [ExtractIoff Ioff $IdVg 1e-4]",
+    "keywords": [
+      "Ioff",
+      "leakage",
+      "current",
+      "drain",
+      "extraction"
+    ]
+  },
+  "ExtractMax": {
+    "section": "Extraction Library",
+    "signature": "ExtractMax <name> <curve>",
+    "description": "Extracts the maximum y-value of a curve.",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the extracted parameter."
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the curve."
+      }
+    ],
+    "example": "set IdSat [ExtractMax IdSat IdVg]",
+    "keywords": [
+      "maximum",
+      "peak",
+      "current",
+      "extraction",
+      "saturation"
+    ]
+  },
+  "ExtractRon": {
+    "section": "Extraction Library",
+    "signature": "ExtractRon <name> <curve> <Von>",
+    "description": "Extracts the on-state resistance [Ohm*um] from an Id-Vds curve at a specified drain voltage.",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the extracted parameter."
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the Id-Vds curve (computed for a high gate bias)."
+      },
+      {
+        "name": "<Von>",
+        "type": "float",
+        "desc": "Drain voltage [V] at which the on-state resistance is extracted, typically well beyond saturation."
+      }
+    ],
+    "example": "set Ron [ExtractRon Ron IdVd 1.1]",
+    "keywords": [
+      "Ron",
+      "on-state",
+      "resistance",
+      "drain",
+      "extraction"
+    ]
+  },
+  "ExtractSS": {
+    "section": "Extraction Library",
+    "signature": "ExtractSS <name> <curve> <Vgo>",
+    "description": "Extracts the subthreshold voltage swing [mV/dec] from an Id-Vgs curve at a specified gate voltage.",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the extracted parameter."
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the Id-Vgs curve."
+      },
+      {
+        "name": "<Vgo>",
+        "type": "float",
+        "desc": "Gate voltage [V] at which the slope is extracted. Should be well below the threshold voltage."
+      }
+    ],
+    "example": "set SS [ExtractSS SSlin IdVg 0.01]",
+    "keywords": [
+      "subthreshold",
+      "swing",
+      "SS",
+      "mV/dec",
+      "extraction"
+    ]
+  },
+  "ExtractValue": {
+    "section": "Extraction Library",
+    "signature": "ExtractValue <name> <curve> <Xo>",
+    "description": "Extracts the y-value of a curve at a given x-point.",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the extracted parameter."
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "<Xo>",
+        "type": "float",
+        "desc": "X-point at which the y-value is extracted."
+      }
+    ],
+    "example": "set CggP [ExtractValue CgP Cgg 1.2]",
+    "keywords": [
+      "value",
+      "extract",
+      "point",
+      "interpolation",
+      "curve"
+    ]
+  },
+  "ExtractVtgm": {
+    "section": "Extraction Library",
+    "signature": "ExtractVtgm <name> <curve> ?type?",
+    "description": "Extracts the threshold voltage [V] from an Id-Vgs curve using the maximum transconductance method.",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the extracted parameter as it appears in Sentaurus Workbench."
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the Id-Vgs curve."
+      },
+      {
+        "name": "?type?",
+        "type": "enum",
+        "desc": "Transistor type: \"nMOS\", \"nMOSneg\", \"pMOS\", or \"pMOSneg\". If omitted, the type is determined automatically by analyzing the curve."
+      }
+    ],
+    "example": "set Vt [ExtractVtgm Vtgm IdVg]",
+    "keywords": [
+      "threshold",
+      "voltage",
+      "transconductance",
+      "method",
+      "extraction"
+    ]
+  },
+  "ExtractVtgmb": {
+    "section": "Extraction Library",
+    "signature": "ExtractVtgmb <name> <curve> ?type?",
+    "description": "Extracts the threshold voltage from an Id-Vgs curve using the maximum transconductance method with parabolic interpolation for better accuracy with limited gate-bias sample points.",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the extracted parameter as it appears in Sentaurus Workbench."
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the Id-Vgs curve."
+      },
+      {
+        "name": "?type?",
+        "type": "enum",
+        "desc": "Transistor type: \"nMOS\", \"nMOSneg\", \"pMOS\", or \"pMOSneg\". If omitted, the type is determined automatically."
+      }
+    ],
+    "example": "set Vt [ExtractVtgmb Vtgmb IdVg]",
+    "keywords": [
+      "threshold",
+      "voltage",
+      "parabolic",
+      "interpolation",
+      "extraction"
+    ]
+  },
+  "ExtractVti": {
+    "section": "Extraction Library",
+    "signature": "ExtractVti <name> <curve> <Ilevel>",
+    "description": "Extracts the gate voltage [V] from an Id-Vgs curve at which the drain current exceeds a given current level.",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the extracted parameter."
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Name of the Id-Vgs curve."
+      },
+      {
+        "name": "<Ilevel>",
+        "type": "float",
+        "desc": "Drain current level [A] at which the gate voltage is extracted."
+      }
+    ],
+    "example": "set Vti [ExtractVti Vti IdVg 1e-7]",
+    "keywords": [
+      "threshold",
+      "voltage",
+      "current level",
+      "Vti",
+      "extraction"
+    ]
+  },
+  "FilterTable": {
+    "section": "Extraction Library",
+    "signature": "FilterTable <XList> <YList> ?conditionTarget1 conditionList1? ?conditionTarget2 conditionList2? ?conditionTarget3 conditionList3?",
+    "description": "Processes Sentaurus Workbench Family Tree data to create a plot of one parameter as a function of another for a subset of experiments matching specified conditions.",
+    "parameters": [
+      {
+        "name": "<XList>",
+        "type": "list",
+        "desc": "Tcl list of Sentaurus Workbench parameter values used as x-values."
+      },
+      {
+        "name": "<YList>",
+        "type": "list",
+        "desc": "Tcl list of Sentaurus Workbench parameter values used as y-values."
+      },
+      {
+        "name": "?conditionTarget1?",
+        "type": "string",
+        "desc": "Target value that experiments must match to be included in the plot."
+      },
+      {
+        "name": "?conditionList1?",
+        "type": "list",
+        "desc": "Tcl list of Sentaurus Workbench parameter values used as filter condition."
+      },
+      {
+        "name": "?conditionTarget2?",
+        "type": "string",
+        "desc": "Second condition target value."
+      },
+      {
+        "name": "?conditionList2?",
+        "type": "list",
+        "desc": "Second condition Tcl list."
+      },
+      {
+        "name": "?conditionTarget3?",
+        "type": "string",
+        "desc": "Third condition target value."
+      },
+      {
+        "name": "?conditionList3?",
+        "type": "list",
+        "desc": "Third condition Tcl list."
+      }
+    ],
+    "example": "set XYLists [FilterTable $Lgs $Vts \"nMOS\" $Types]",
+    "keywords": [
+      "filter",
+      "table",
+      "Family Tree",
+      "Workbench",
+      "plot"
+    ]
+  },
+  "cv_addCurve": {
+    "section": "extend Library",
+    "signature": "cv_addCurve <cname> <cname2>",
+    "description": "Adds the y-values of curve cname2 to the y-values of curve cname.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the target curve."
+      },
+      {
+        "name": "<cname2>",
+        "type": "string",
+        "desc": "Name of the source curve whose y-values are added."
+      }
+    ],
+    "example": "cv_createFromScript c1 {0 1} {1 2}\ncv_createFromScript c2 {0 1} {3 4}\ncv_addCurve c1 c2\nputs \"y: [cv_getValsY c1]\"",
+    "keywords": [
+      "curve",
+      "add",
+      "y-values",
+      "arithmetic",
+      "sum"
+    ]
+  },
+  "cv_addDataset": {
+    "section": "extend Library",
+    "signature": "cv_addDataset <cname> <xdset> <ydset>",
+    "description": "Adds the y-values of a dataset to an existing curve.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve to which the dataset will be added."
+      },
+      {
+        "name": "<xdset>",
+        "type": "string",
+        "desc": "Dataset name for the X-values to be added."
+      },
+      {
+        "name": "<ydset>",
+        "type": "string",
+        "desc": "Dataset name for the Y-values to be added."
+      }
+    ],
+    "example": "cv_addDataset iv \"n4_des pContact OuterVoltage\" \"n4_des nContact TotalCurrent\"",
+    "keywords": [
+      "dataset",
+      "add",
+      "curve",
+      "sum",
+      "current"
+    ]
+  },
+  "cv_angularMap": {
+    "section": "extend Library",
+    "signature": "cv_angularMap <cname> ?astart? ?aend?",
+    "description": "Maps a periodic curve to a fixed angular range, wrapping data points that exceed the range back into the first period.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "?astart?",
+        "type": "float",
+        "desc": "Start of the angular range. Default is 0."
+      },
+      {
+        "name": "?aend?",
+        "type": "float",
+        "desc": "End of the angular range. Default is 360."
+      }
+    ],
+    "example": "cv_createFromScript a {0 1 2 90 91 92} {1 2 3 4 5 6}\ncv_angularMap a\nputs [cv_getVals a]",
+    "keywords": [
+      "angular",
+      "map",
+      "periodic",
+      "degree",
+      "wrap"
+    ]
+  },
+  "cv_linTrans": {
+    "section": "extend Library",
+    "signature": "cv_linTrans <cname> <xm> ?xb? ?ym? ?yb?",
+    "description": "Performs a linear transformation on a curve, replacing x with xm*x+xb and y with ym*y+yb.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "<xm>",
+        "type": "float",
+        "desc": "Slope for the x-values."
+      },
+      {
+        "name": "?xb?",
+        "type": "float",
+        "desc": "Offset for the x-values. Default is 0."
+      },
+      {
+        "name": "?ym?",
+        "type": "float",
+        "desc": "Slope for the y-values. Default is 1."
+      },
+      {
+        "name": "?yb?",
+        "type": "float",
+        "desc": "Offset for the y-values. Default is 0."
+      }
+    ],
+    "example": "# Scale IV curve from A/V to mA/mV, remove 2A offset\ncv_linTrans iv 1e3 0 1e3 -2000",
+    "keywords": [
+      "linear",
+      "transform",
+      "scale",
+      "offset",
+      "slope"
+    ]
+  },
+  "cv_monotonicX": {
+    "section": "extend Library",
+    "signature": "cv_monotonicX <cname>",
+    "description": "Extracts the portion of a curve where x-values increase monotonically to the maximal x-value, removing decreasing segments.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      }
+    ],
+    "example": "cv_createFromScript iv {0 1 2 0 2 4} {1 2 3 4 5 6}\ncv_monotonicX iv\nputs \"values: [cv_getVals iv]\"",
+    "keywords": [
+      "monotonic",
+      "x-values",
+      "extract",
+      "filter",
+      "increasing"
+    ]
+  },
+  "cv_scale": {
+    "section": "extend Library",
+    "signature": "cv_scale <cname> <xm> <ym>",
+    "description": "Scales a curve linearly by multiplying x-values by xm and y-values by ym.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "<xm>",
+        "type": "float",
+        "desc": "Scale factor applied to x-values."
+      },
+      {
+        "name": "<ym>",
+        "type": "float",
+        "desc": "Scale factor applied to y-values."
+      }
+    ],
+    "example": "# Scale current over time from A/s to mA/us\ncv_scale i_t 1e6 1e3",
+    "keywords": [
+      "scale",
+      "curve",
+      "multiply",
+      "unit",
+      "conversion"
+    ]
+  },
+  "cv_sort": {
+    "section": "extend Library",
+    "signature": "cv_sort <cname> ?xdigits?",
+    "description": "Sorts data points of a curve by x-values in ascending order and removes duplicate x-values.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "?xdigits?",
+        "type": "int",
+        "desc": "Number of digits used to determine if two x-values are identical. Default is 20."
+      }
+    ],
+    "example": "cv_createFromScript c {1 2 0.0001 3 0} {2 3 -1 4 1}\ncv_sort c 3\nputs \"[cv_getVals c]\"",
+    "keywords": [
+      "sort",
+      "x-values",
+      "duplicate",
+      "order",
+      "ascending"
+    ]
+  },
+  "cv_autoIncrStyle": {
+    "section": "extend Library",
+    "signature": "cv_autoIncrStyle ?stylelist? ?off?",
+    "description": "Sets the curve attributes to be automatically incremented each time a curve is displayed with cv_disp. The attributes are incremented in the order given by stylelist.",
+    "parameters": [
+      {
+        "name": "?stylelist?",
+        "type": "list",
+        "desc": "List of style attributes to increment: {color fillColor line symbol}. Default is {color fillColor line symbol}."
+      },
+      {
+        "name": "?off?",
+        "type": "string",
+        "desc": "Pass \"off\" to switch off automatic increment."
+      }
+    ],
+    "example": "# Increment color first, then symbol\ncv_autoIncrStyle {color symbol}\ncv_disp c1\ncv_disp c2",
+    "keywords": [
+      "style",
+      "auto",
+      "increment",
+      "color",
+      "symbol"
+    ]
+  },
+  "cv_disp": {
+    "section": "extend Library",
+    "signature": "cv_disp <cname> ?label? ?axis?",
+    "description": "Displays a curve using the specified label and axis. Curve attributes are incremented by default so that each displayed curve can be easily distinguished.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "?label?",
+        "type": "string",
+        "desc": "Label to display in the legend. Default is the curve name."
+      },
+      {
+        "name": "?axis?",
+        "type": "enum",
+        "desc": "Axis to use: \"y\" (default) or \"y2\"."
+      }
+    ],
+    "example": "cv_disp iv \"simulated IV\" y",
+    "keywords": [
+      "display",
+      "curve",
+      "legend",
+      "axis",
+      "show"
+    ]
+  },
+  "cv_nextColor": {
+    "section": "extend Library",
+    "signature": "cv_nextColor ?cindex?",
+    "description": "Advances to the next color from the extend::COLORPALETTE list, or selects a specific color by index.",
+    "parameters": [
+      {
+        "name": "?cindex?",
+        "type": "int",
+        "desc": "If specified, selects the entry at this index from the color palette. Otherwise, the next entry is chosen."
+      }
+    ],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextColor\ncv_disp iv2",
+    "keywords": [
+      "color",
+      "next",
+      "palette",
+      "style",
+      "curve"
+    ]
+  },
+  "cv_nextLine": {
+    "section": "extend Library",
+    "signature": "cv_nextLine ?cindex?",
+    "description": "Advances to the next line style from the extend::LINEPALETTE list, or selects a specific style by index.",
+    "parameters": [
+      {
+        "name": "?cindex?",
+        "type": "int",
+        "desc": "If specified, selects the entry at this index from the line palette. Otherwise, the next entry is chosen."
+      }
+    ],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextLine\ncv_disp iv2",
+    "keywords": [
+      "line",
+      "style",
+      "next",
+      "palette",
+      "dash"
+    ]
+  },
+  "cv_nextSymbol": {
+    "section": "extend Library",
+    "signature": "cv_nextSymbol ?cindex?",
+    "description": "Advances to the next symbol type from the extend::SYMBOLPALETTE list, or selects a specific symbol by index.",
+    "parameters": [
+      {
+        "name": "?cindex?",
+        "type": "int",
+        "desc": "If specified, selects the entry at this index from the symbol palette. Otherwise, the next entry is chosen."
+      }
+    ],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextSymbol\ncv_disp iv2",
+    "keywords": [
+      "symbol",
+      "next",
+      "marker",
+      "palette",
+      "style"
+    ]
+  },
+  "cv_resetColor": {
+    "section": "extend Library",
+    "signature": "cv_resetColor",
+    "description": "Resets the curve color to the default entry (the first entry from the extend::COLORPALETTE list).",
+    "parameters": [],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextColor\ncv_disp iv2\ncv_resetColor\ncv_disp iv3",
+    "keywords": [
+      "color",
+      "reset",
+      "default",
+      "palette",
+      "style"
+    ]
+  },
+  "cv_resetFillColor": {
+    "section": "extend Library",
+    "signature": "cv_resetFillColor",
+    "description": "Resets the fill color of curve symbols to white.",
+    "parameters": [],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextColor\ncv_disp iv2\ncv_resetFillColor\ncv_disp iv3",
+    "keywords": [
+      "fill",
+      "color",
+      "reset",
+      "white",
+      "symbol"
+    ]
+  },
+  "cv_resetLine": {
+    "section": "extend Library",
+    "signature": "cv_resetLine",
+    "description": "Resets the line style to the default entry (the first entry from the extend::LINEPALETTE list).",
+    "parameters": [],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextLine\ncv_disp iv2\ncv_resetLine\ncv_disp iv3",
+    "keywords": [
+      "line",
+      "reset",
+      "default",
+      "palette",
+      "style"
+    ]
+  },
+  "cv_resetStyle": {
+    "section": "extend Library",
+    "signature": "cv_resetStyle",
+    "description": "Resets all curve style attributes (color, fill color, symbol, and line style) to their default values.",
+    "parameters": [],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextSymbol\ncv_nextColor\ncv_disp iv2\ncv_resetStyle\ncv_disp iv3",
+    "keywords": [
+      "style",
+      "reset",
+      "default",
+      "all",
+      "curve"
+    ]
+  },
+  "cv_resetSymbol": {
+    "section": "extend Library",
+    "signature": "cv_resetSymbol",
+    "description": "Resets the symbol to the default entry (the first entry from the extend::SYMBOLPALETTE list).",
+    "parameters": [],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextSymbol\ncv_disp iv2\ncv_resetSymbol\ncv_disp iv3",
+    "keywords": [
+      "symbol",
+      "reset",
+      "default",
+      "palette",
+      "marker"
+    ]
+  },
+  "cv_setFillColor": {
+    "section": "extend Library",
+    "signature": "cv_setFillColor ?mode?",
+    "description": "Switches the fill color of curve symbols on or off.",
+    "parameters": [
+      {
+        "name": "?mode?",
+        "type": "int",
+        "desc": "1 fills the symbol with the curve color (default), 0 sets the fill color to white."
+      }
+    ],
+    "example": "cv_autoIncrStyle off\ncv_setSymbol 1\ncv_disp iv1\ncv_nextColor\ncv_setFillColor 1\ncv_disp iv2",
+    "keywords": [
+      "fill",
+      "color",
+      "symbol",
+      "toggle",
+      "style"
+    ]
+  },
+  "cv_setSymbol": {
+    "section": "extend Library",
+    "signature": "cv_setSymbol ?mode?",
+    "description": "Switches the display of symbols on curve data points on or off.",
+    "parameters": [
+      {
+        "name": "?mode?",
+        "type": "int",
+        "desc": "1 shows symbols (default), 0 hides symbols."
+      }
+    ],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextColor\ncv_setSymbol 1\ncv_disp iv2",
+    "keywords": [
+      "symbol",
+      "toggle",
+      "marker",
+      "display",
+      "curve"
+    ]
+  },
+  "cv_exists": {
+    "section": "extend Library",
+    "signature": "cv_exists <cname>",
+    "description": "Checks whether a curve with the given name exists.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve to check."
+      }
+    ],
+    "example": "if {[cv_exists iv]} { puts \"curve iv exists\" }",
+    "keywords": [
+      "exists",
+      "check",
+      "curve",
+      "validate",
+      "query"
+    ]
+  },
+  "cv_getGlobalExtrema": {
+    "section": "extend Library",
+    "signature": "cv_getGlobalExtrema <cname> ?type?",
+    "description": "Returns the global maximum or minimum of a curve as a list of {x y} values.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "?type?",
+        "type": "enum",
+        "desc": "\"max\" for global maximum (default) or \"min\" for global minimum."
+      }
+    ],
+    "example": "set cmin [cv_getGlobalExtrema iv min]\nputs \"The minimum of the iv-curve is [lindex $cmin 1] at [lindex $cmin 0]\"",
+    "keywords": [
+      "extrema",
+      "maximum",
+      "minimum",
+      "global",
+      "peak"
+    ]
+  },
+  "cv_getLocalExtrema": {
+    "section": "extend Library",
+    "signature": "cv_getLocalExtrema <cname> ?type?",
+    "description": "Returns all local maxima or minima of a curve as a list of {x y} pairs.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "?type?",
+        "type": "enum",
+        "desc": "\"max\" for local maxima (default) or \"min\" for local minima."
+      }
+    ],
+    "example": "set cmax [cv_getLocalExtrema iv \"max\"]\nputs \"All maxima of the iv-curve: $cmax\"",
+    "keywords": [
+      "local",
+      "extrema",
+      "maxima",
+      "minima",
+      "peak"
+    ]
+  },
+  "cv_getNames": {
+    "section": "extend Library",
+    "signature": "cv_getNames",
+    "description": "Returns a list of all existing curve names.",
+    "parameters": [],
+    "example": "puts \"the following curves exist currently: [cv_getNames]\"",
+    "keywords": [
+      "names",
+      "list",
+      "curves",
+      "query",
+      "all"
+    ]
+  },
+  "cv_getRange": {
+    "section": "extend Library",
+    "signature": "cv_getRange <cname>",
+    "description": "Returns the x- and y-range of a curve as a list {xmin xmax ymin ymax}.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      }
+    ],
+    "example": "puts \"{xmin,xmax,ymin,ymax}: [cv_getRange iv]\"",
+    "keywords": [
+      "range",
+      "xmin",
+      "xmax",
+      "ymin",
+      "ymax"
+    ]
+  },
+  "cv_getXmax": {
+    "section": "extend Library",
+    "signature": "cv_getXmax <cname>",
+    "description": "Returns the upper boundary (maximum) of the x-values of a curve.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      }
+    ],
+    "example": "puts \"upper boundary of the x values of iv: [cv_getXmax iv]\"",
+    "keywords": [
+      "xmax",
+      "x-values",
+      "boundary",
+      "maximum",
+      "range"
+    ]
+  },
+  "cv_getXmin": {
+    "section": "extend Library",
+    "signature": "cv_getXmin <cname>",
+    "description": "Returns the lower boundary (minimum) of the x-values of a curve.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      }
+    ],
+    "example": "puts \"lower boundary of the x values of iv: [cv_getXmin iv]\"",
+    "keywords": [
+      "xmin",
+      "x-values",
+      "boundary",
+      "minimum",
+      "range"
+    ]
+  },
+  "cv_getYmax": {
+    "section": "extend Library",
+    "signature": "cv_getYmax <cname>",
+    "description": "Returns the upper boundary (maximum) of the y-values of a curve.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      }
+    ],
+    "example": "puts \"upper boundary of the y values of iv: [cv_getYmax iv]\"",
+    "keywords": [
+      "ymax",
+      "y-values",
+      "boundary",
+      "maximum",
+      "range"
+    ]
+  },
+  "cv_getYmin": {
+    "section": "extend Library",
+    "signature": "cv_getYmin <cname>",
+    "description": "Returns the lower boundary (minimum) of the y-values of a curve.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      }
+    ],
+    "example": "puts \"lower boundary of the y values of iv: [cv_getYmin iv]\"",
+    "keywords": [
+      "ymin",
+      "y-values",
+      "boundary",
+      "minimum",
+      "range"
+    ]
+  },
+  "cv_isVisible": {
+    "section": "extend Library",
+    "signature": "cv_isVisible <cname>",
+    "description": "Checks whether a curve is currently displayed.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      }
+    ],
+    "example": "if {[cv_isVisible iv]} { puts \"curve iv visible\" }",
+    "keywords": [
+      "visible",
+      "display",
+      "check",
+      "curve",
+      "show"
+    ]
+  },
+  "cv_integrate": {
+    "section": "extend Library",
+    "signature": "cv_integrate <formula> ?xstart? ?xend? ?mode? ?xdigits?",
+    "description": "Performs numerical integration of a formula and returns the integration value.",
+    "parameters": [
+      {
+        "name": "<formula>",
+        "type": "string",
+        "desc": "Formula to be integrated, as specified for cv_createWithFormula."
+      },
+      {
+        "name": "?xstart?",
+        "type": "float",
+        "desc": "Start of the integration interval. Default uses the curve start."
+      },
+      {
+        "name": "?xend?",
+        "type": "float",
+        "desc": "End of the integration interval. Default uses the curve end."
+      },
+      {
+        "name": "?mode?",
+        "type": "enum",
+        "desc": "Integration mode: {} (Inspect internal, default), \"sumup\" (sum all y-values), or \"trapez\" (trapezoidal rule)."
+      },
+      {
+        "name": "?xdigits?",
+        "type": "int",
+        "desc": "Number of digits to determine if two x-values are identical."
+      }
+    ],
+    "example": "# P_t is the time-dependent power\nputs \"energy in the first second is: [cv_integrate P_t 0 1 trapez]\"",
+    "keywords": [
+      "integrate",
+      "area",
+      "trapezoidal",
+      "sum",
+      "formula"
+    ]
+  },
+  "cv_linFit": {
+    "section": "extend Library",
+    "signature": "cv_linFit <formula> ?xstart? ?xend?",
+    "description": "Performs a linear fit y = A + B*x to a curve formula and returns fit statistics including intercept, slope, R-squared, and standard errors.",
+    "parameters": [
+      {
+        "name": "<formula>",
+        "type": "string",
+        "desc": "Formula to be fitted, as specified for cv_createWithFormula."
+      },
+      {
+        "name": "?xstart?",
+        "type": "float",
+        "desc": "Start of the fit interval. Default uses the full curve range."
+      },
+      {
+        "name": "?xend?",
+        "type": "float",
+        "desc": "End of the fit interval. Default uses the full curve range."
+      }
+    ],
+    "example": "set res [cv_linFit \"log(<cname>)\"]",
+    "keywords": [
+      "linear",
+      "fit",
+      "regression",
+      "slope",
+      "intercept"
+    ]
+  },
+  "cv_round": {
+    "section": "extend Library",
+    "signature": "cv_round <cname> <xdigits> <ydigits>",
+    "description": "Rounds off the x-data and y-data values of a curve to the specified number of digits.",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve."
+      },
+      {
+        "name": "<xdigits>",
+        "type": "int",
+        "desc": "Number of digits to keep for x-values. -1 means no rounding."
+      },
+      {
+        "name": "<ydigits>",
+        "type": "int",
+        "desc": "Number of digits to keep for y-values. -1 means no rounding."
+      }
+    ],
+    "example": "cv_createFromScript c {1.01 5.05} {9.09 7.07}\ncv_round c 1 1\nputs \"[cv_getVals c]\"",
+    "keywords": [
+      "round",
+      "digits",
+      "precision",
+      "x-values",
+      "y-values"
+    ]
+  },
+  "fi_readTxtFile": {
+    "section": "extend Library",
+    "signature": "fi_readTxtFile <fname> <cname> ?columnIdx?",
+    "description": "Reads data from an ASCII text file where columns are separated by spaces, creating a curve with x-values from the first column and y-values from the specified column.",
+    "parameters": [
+      {
+        "name": "<fname>",
+        "type": "string",
+        "desc": "Name of the ASCII file to read."
+      },
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "Name of the curve to be created."
+      },
+      {
+        "name": "?columnIdx?",
+        "type": "int",
+        "desc": "Column index for y-values (0-based). Default is 1 (second column)."
+      }
+    ],
+    "example": "fi_readTxtFile \"aml5g.txt\" spec",
+    "keywords": [
+      "read",
+      "ASCII",
+      "text",
+      "file",
+      "import"
+    ]
+  },
+  "fi_readTxtFileHeader": {
+    "section": "extend Library",
+    "signature": "fi_readTxtFileHeader <fname>",
+    "description": "Reads and returns the header line from an ASCII file (a single line that is neither data nor comment).",
+    "parameters": [
+      {
+        "name": "<fname>",
+        "type": "string",
+        "desc": "Name of the ASCII file."
+      }
+    ],
+    "example": "puts \"[fi_readTxtFileHeader \"am15g.txt\"]\"",
+    "keywords": [
+      "header",
+      "read",
+      "ASCII",
+      "text",
+      "file"
+    ]
+  },
+  "proj_check": {
+    "section": "extend Library",
+    "signature": "proj_check <proj>",
+    "description": "Checks all datasets in a project to verify whether all entries contain valid numeric data.",
+    "parameters": [
+      {
+        "name": "<proj>",
+        "type": "string",
+        "desc": "Project name of the loaded .plt file."
+      }
+    ],
+    "example": "proj_load n5_des.plt\nproj_check n5_des",
+    "keywords": [
+      "check",
+      "project",
+      "dataset",
+      "valid",
+      "numeric"
+    ]
+  },
+  "proj_datasetExists": {
+    "section": "extend Library",
+    "signature": "proj_datasetExists <proj> <datasetName> ?groupId?",
+    "description": "Checks whether a project contains data with the specified dataset name and optional group name.",
+    "parameters": [
+      {
+        "name": "<proj>",
+        "type": "string",
+        "desc": "Project name of the loaded .plt file."
+      },
+      {
+        "name": "<datasetName>",
+        "type": "string",
+        "desc": "Name of the dataset."
+      },
+      {
+        "name": "?groupId?",
+        "type": "string",
+        "desc": "Group name of the dataset. If omitted and datasetName contains a space, the first word is used as the group name."
+      }
+    ],
+    "example": "proj_load n5_des.plt\nif {[proj_datasetExists n5_des \"anode OuterVoltage\"]} { puts \"anode OuterVoltage exists\" }",
+    "keywords": [
+      "dataset",
+      "exists",
+      "check",
+      "project",
+      "group"
+    ]
+  },
+  "proj_getGroups": {
+    "section": "extend Library",
+    "signature": "proj_getGroups <proj>",
+    "description": "Returns a sorted list of all group names in a project.",
+    "parameters": [
+      {
+        "name": "<proj>",
+        "type": "string",
+        "desc": "Project name of the loaded .plt file."
+      }
+    ],
+    "example": "proj_load n5_des.plt\nputs \"all group names: [proj_getGroups n5_des]\"",
+    "keywords": [
+      "groups",
+      "project",
+      "list",
+      "sorted",
+      "names"
+    ]
+  },
+  "proj_groupExists": {
+    "section": "extend Library",
+    "signature": "proj_groupExists <proj> <groupName>",
+    "description": "Checks whether a project contains a particular group.",
+    "parameters": [
+      {
+        "name": "<proj>",
+        "type": "string",
+        "desc": "Project name of the loaded .plt file."
+      },
+      {
+        "name": "<groupName>",
+        "type": "string",
+        "desc": "Name of the group to check."
+      }
+    ],
+    "example": "proj_load n5_des.plt\nif {[proj_groupExists n5_des \"anode\"]} { puts \"group anode exists\" }",
+    "keywords": [
+      "group",
+      "exists",
+      "check",
+      "project",
+      "node"
+    ]
+  },
+  "proj_loadPlx": {
+    "section": "extend Library",
+    "signature": "proj_loadPlx <fileName> ?curveName? ?appendDatasetName?",
+    "description": "Loads data from a .plx file and creates a curve without displaying it.",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "Name of the .plx file to load."
+      },
+      {
+        "name": "?curveName?",
+        "type": "string",
+        "desc": "Name for the created curve. Default uses the dataset name."
+      },
+      {
+        "name": "?appendDatasetName?",
+        "type": "int",
+        "desc": "If 1, appends the dataset name to the curve name in parentheses."
+      }
+    ],
+    "example": "proj_loadPlx test.plx\nproj_loadPlx test.plx c(1) 1",
+    "keywords": [
+      "plx",
+      "load",
+      "file",
+      "curve",
+      "dataset"
+    ]
+  },
+  "gr_axis": {
+    "section": "extend Library",
+    "signature": "gr_axis <axis> <title> ?xmin? ?xmax? ?scale?",
+    "description": "Sets the attributes of the x-axis, y-axis, or y2-axis including label, range, and scaling.",
+    "parameters": [
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "Axis to modify: \"x\", \"y\", or \"y2\"."
+      },
+      {
+        "name": "<title>",
+        "type": "string",
+        "desc": "Axis label."
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "Lower range bound. {} specifies automatic scaling."
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "Upper range bound. {} specifies automatic scaling."
+      },
+      {
+        "name": "?scale?",
+        "type": "enum",
+        "desc": "Scaling type: \"lin\" (default) or \"log\"."
+      }
+    ],
+    "example": "gr_axis x {voltage [V]}\ngr_axis y {current [A]} {} {} log",
+    "keywords": [
+      "axis",
+      "label",
+      "range",
+      "scale",
+      "log"
+    ]
+  },
+  "gr_resetAxis": {
+    "section": "extend Library",
+    "signature": "gr_resetAxis",
+    "description": "Resets all axis attributes to their defaults and switches off the y2-axis.",
+    "parameters": [],
+    "example": "gr_axis x {voltage [V]}\ngr_axis y {current [A]} {} log\ngr_resetAxis",
+    "keywords": [
+      "axis",
+      "reset",
+      "default",
+      "y2",
+      "clear"
+    ]
+  },
+  "gr_setStyle": {
+    "section": "extend Library",
+    "signature": "gr_setStyle <mode>",
+    "description": "Sets the style of the plot area, controlling font sizes and layout for different use cases.",
+    "parameters": [
+      {
+        "name": "<mode>",
+        "type": "enum",
+        "desc": "Plot style: \"screen\" (default, for interactive use) or \"presentation\" (larger fonts for presentations)."
+      }
+    ],
+    "example": "gr_setStyle \"presentation\"",
+    "keywords": [
+      "style",
+      "plot",
+      "font",
+      "presentation",
+      "screen"
+    ]
+  },
+  "ldiff": {
+    "section": "extend Library",
+    "signature": "ldiff <list1> <list2> ?symmetric?",
+    "description": "Returns all items of list1 that are not in list2. With the symmetric flag, also includes items of list2 not in list1.",
+    "parameters": [
+      {
+        "name": "<list1>",
+        "type": "list",
+        "desc": "First list."
+      },
+      {
+        "name": "<list2>",
+        "type": "list",
+        "desc": "Second list."
+      },
+      {
+        "name": "?symmetric?",
+        "type": "int",
+        "desc": "If specified, also returns items from list2 not in list1."
+      }
+    ],
+    "example": "set l1 {1 2 3 4}\nset l2 {1 2 5}\nputs \"[ldiff $l1 $l2]\"\n# => 3 4\nputs \"[ldiff $l1 $l2 1]\"\n# => 3 4 5",
+    "keywords": [
+      "diff",
+      "list",
+      "set",
+      "difference",
+      "compare"
+    ]
+  },
+  "lintersect": {
+    "section": "extend Library",
+    "signature": "lintersect <list1> <list2>",
+    "description": "Returns all items that are members of both list1 and list2.",
+    "parameters": [
+      {
+        "name": "<list1>",
+        "type": "list",
+        "desc": "First list."
+      },
+      {
+        "name": "<list2>",
+        "type": "list",
+        "desc": "Second list."
+      }
+    ],
+    "example": "set l1 {1 2 3 4}\nset l2 {1 2}\nputs \"[lintersect $l1 $l2]\"\n# => 1 2",
+    "keywords": [
+      "intersect",
+      "list",
+      "common",
+      "set",
+      "intersection"
+    ]
+  },
+  "ltranspose": {
+    "section": "extend Library",
+    "signature": "ltranspose <list>",
+    "description": "Transposes a list of sublists, converting rows to columns.",
+    "parameters": [
+      {
+        "name": "<list>",
+        "type": "list",
+        "desc": "List to transpose."
+      }
+    ],
+    "example": "set l {{1 2} {3 4} {5 6}}\nputs \"[ltranspose $l]\"\n# => {1 3 5} {2 4 6}",
+    "keywords": [
+      "transpose",
+      "list",
+      "matrix",
+      "rows",
+      "columns"
+    ]
+  },
+  "lunion": {
+    "section": "extend Library",
+    "signature": "lunion <list1> <list2>",
+    "description": "Returns a list of unique items that are members of list1 or list2.",
+    "parameters": [
+      {
+        "name": "<list1>",
+        "type": "list",
+        "desc": "First list."
+      },
+      {
+        "name": "<list2>",
+        "type": "list",
+        "desc": "Second list."
+      }
+    ],
+    "example": "set l1 {1 2 3 4}\nset l2 {1 2 5}\nputs \"[lunion $l1 $l2]\"\n# => 1 2 3 4 5",
+    "keywords": [
+      "union",
+      "list",
+      "unique",
+      "set",
+      "merge"
+    ]
+  },
+  "dbputs": {
+    "section": "extend Library",
+    "signature": "dbputs <str> ?dbglevel?",
+    "description": "Outputs a debug string to the log only when the global ::DEBUG variable is greater than or equal to the specified debug level.",
+    "parameters": [
+      {
+        "name": "<str>",
+        "type": "string",
+        "desc": "String to be printed to standard output."
+      },
+      {
+        "name": "?dbglevel?",
+        "type": "int",
+        "desc": "Debug level threshold. Default is 1."
+      }
+    ],
+    "example": "dbputs \"test1\"\nset ::DEBUG 2\ndbputs \"test2\"\ndbputs \"test3\" 2\ndbputs \"test4\" 3\nset ::DEBUG 0\ndbputs \"test5\"",
+    "keywords": [
+      "debug",
+      "print",
+      "log",
+      "level",
+      "output"
+    ]
+  },
+  "ds_getValue": {
+    "section": "extend Library",
+    "signature": "ds_getValue <proj> <datasetName> ?index?",
+    "description": "Returns the value at a specific index of a dataset within a loaded project.",
+    "parameters": [
+      {
+        "name": "<proj>",
+        "type": "string",
+        "desc": "Project name of the loaded .plt file."
+      },
+      {
+        "name": "<datasetName>",
+        "type": "string",
+        "desc": "Name of the dataset."
+      },
+      {
+        "name": "?index?",
+        "type": "string",
+        "desc": "Index of the dataset item to return (0-based). Default is \"end\" (last value)."
+      }
+    ],
+    "example": "proj_load n5_des.plt\nputs \"first value [ds_getValue n5_des \"anode OuterVoltage\" 0]\"\nputs \"last value [ds_getValue n5_des \"anode OuterVoltage\"]\"",
+    "keywords": [
+      "dataset",
+      "value",
+      "index",
+      "project",
+      "get"
+    ]
+  },
+  "vecmax": {
+    "section": "Formula Functions",
+    "signature": "vecmax <curve>",
+    "description": "Returns the maximum y-value of the given curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"vecmax(<IdVg>)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "vector",
+      "maximum",
+      "curve",
+      "scalar"
+    ]
+  },
+  "vecmin": {
+    "section": "Formula Functions",
+    "signature": "vecmin <curve>",
+    "description": "Returns the minimum y-value of the given curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"vecmin(<IdVg>)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "vector",
+      "minimum",
+      "curve",
+      "scalar"
+    ]
+  },
+  "vecvalx": {
+    "section": "Formula Functions",
+    "signature": "vecvalx <curve> <yValue>",
+    "description": "Returns the x-value at a given y-value of the specified curve. For curves with exponential behavior, better results are obtained by transforming the curve to logarithmic scale before applying this operator.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      },
+      {
+        "name": "<yValue>",
+        "type": "float",
+        "desc": "Y-value for which to find the corresponding x-value."
+      }
+    ],
+    "example": "cv_compute \"vecvalx(<IdVg>, 1e-6)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "vector",
+      "x-value",
+      "interpolation",
+      "curve",
+      "scalar"
+    ]
+  },
+  "vecvaly": {
+    "section": "Formula Functions",
+    "signature": "vecvaly <curve> <xValue>",
+    "description": "Returns the y-value at a given x-value of the specified curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      },
+      {
+        "name": "<xValue>",
+        "type": "float",
+        "desc": "X-value for which to find the corresponding y-value."
+      }
+    ],
+    "example": "cv_compute \"vecvaly(<IdVg>, 1.0)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "vector",
+      "y-value",
+      "interpolation",
+      "curve",
+      "scalar"
+    ]
+  },
+  "veczero": {
+    "section": "Formula Functions",
+    "signature": "veczero <curve>",
+    "description": "Returns the x-value at which the curve crosses y = 0 (the x-intercept).",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"veczero(<IdVd>)\" 0.0 5.0 -1e-3 1e-3",
+    "keywords": [
+      "vector",
+      "zero-crossing",
+      "x-intercept",
+      "curve",
+      "scalar"
+    ]
+  },
+  "fftre": {
+    "section": "Formula Functions",
+    "signature": "fftre <curve>",
+    "description": "Returns the real part of the Fast Fourier Transform (FFT) of the given curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve (real-valued)."
+      }
+    ],
+    "example": "cv_compute \"fftre(<signal>)\"",
+    "keywords": [
+      "FFT",
+      "real",
+      "Fourier",
+      "transform",
+      "frequency"
+    ]
+  },
+  "fftim": {
+    "section": "Formula Functions",
+    "signature": "fftim <curve>",
+    "description": "Returns the imaginary part of the Fast Fourier Transform (FFT) of the given curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve (real-valued)."
+      }
+    ],
+    "example": "cv_compute \"fftim(<signal>)\"",
+    "keywords": [
+      "FFT",
+      "imaginary",
+      "Fourier",
+      "transform",
+      "frequency"
+    ]
+  },
+  "fftabs": {
+    "section": "Formula Functions",
+    "signature": "fftabs <curve_real> <curve_imaginary>",
+    "description": "Returns a vector holding the absolute value (magnitude) of the given complex curve, computed from its real and imaginary parts.",
+    "parameters": [
+      {
+        "name": "<curve_real>",
+        "type": "curve",
+        "desc": "Real part of the input curve."
+      },
+      {
+        "name": "<curve_imaginary>",
+        "type": "curve",
+        "desc": "Imaginary part of the input curve."
+      }
+    ],
+    "example": "cv_compute \"fftabs(<signal_re>, <signal_im>)\"",
+    "keywords": [
+      "FFT",
+      "absolute",
+      "magnitude",
+      "Fourier",
+      "frequency"
+    ]
+  },
+  "ifftre": {
+    "section": "Formula Functions",
+    "signature": "ifftre <curve>",
+    "description": "Returns the real part of the inverse Fast Fourier Transform (IFFT) of the given curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve (real-valued)."
+      }
+    ],
+    "example": "cv_compute \"ifftre(<fft_data>)\"",
+    "keywords": [
+      "FFT",
+      "inverse",
+      "real",
+      "IFFT",
+      "Fourier"
+    ]
+  },
+  "ifftim": {
+    "section": "Formula Functions",
+    "signature": "ifftim <curve>",
+    "description": "Returns the imaginary part of the inverse Fast Fourier Transform (IFFT) of the given curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve (real-valued)."
+      }
+    ],
+    "example": "cv_compute \"ifftim(<fft_data>)\"",
+    "keywords": [
+      "FFT",
+      "inverse",
+      "imaginary",
+      "IFFT",
+      "Fourier"
+    ]
+  },
+  "cfftre": {
+    "section": "Formula Functions",
+    "signature": "cfftre <curve_real> <curve_imaginary>",
+    "description": "Returns the real part of the Fast Fourier Transform (FFT) of the given complex curve (specified by its real and imaginary parts).",
+    "parameters": [
+      {
+        "name": "<curve_real>",
+        "type": "curve",
+        "desc": "Real part of the input curve."
+      },
+      {
+        "name": "<curve_imaginary>",
+        "type": "curve",
+        "desc": "Imaginary part of the input curve."
+      }
+    ],
+    "example": "cv_compute \"cfftre(<sig_re>, <sig_im>)\"",
+    "keywords": [
+      "FFT",
+      "complex",
+      "real",
+      "Fourier",
+      "frequency"
+    ]
+  },
+  "cfftim": {
+    "section": "Formula Functions",
+    "signature": "cfftim <curve_real> <curve_imaginary>",
+    "description": "Returns the imaginary part of the Fast Fourier Transform (FFT) of the given complex curve (specified by its real and imaginary parts).",
+    "parameters": [
+      {
+        "name": "<curve_real>",
+        "type": "curve",
+        "desc": "Real part of the input curve."
+      },
+      {
+        "name": "<curve_imaginary>",
+        "type": "curve",
+        "desc": "Imaginary part of the input curve."
+      }
+    ],
+    "example": "cv_compute \"cfftim(<sig_re>, <sig_im>)\"",
+    "keywords": [
+      "FFT",
+      "complex",
+      "imaginary",
+      "Fourier",
+      "frequency"
+    ]
+  },
+  "cifftre": {
+    "section": "Formula Functions",
+    "signature": "cifftre <curve_real> <curve_imaginary>",
+    "description": "Returns the real part of the inverse FFT of the given complex curve (specified by its real and imaginary parts).",
+    "parameters": [
+      {
+        "name": "<curve_real>",
+        "type": "curve",
+        "desc": "Real part of the input curve."
+      },
+      {
+        "name": "<curve_imaginary>",
+        "type": "curve",
+        "desc": "Imaginary part of the input curve."
+      }
+    ],
+    "example": "cv_compute \"cifftre(<fft_re>, <fft_im>)\"",
+    "keywords": [
+      "FFT",
+      "complex",
+      "inverse",
+      "real",
+      "IFFT"
+    ]
+  },
+  "cifftim": {
+    "section": "Formula Functions",
+    "signature": "cifftim <curve_real> <curve_imaginary>",
+    "description": "Returns the imaginary part of the inverse FFT of the given complex curve (specified by its real and imaginary parts).",
+    "parameters": [
+      {
+        "name": "<curve_real>",
+        "type": "curve",
+        "desc": "Real part of the input curve."
+      },
+      {
+        "name": "<curve_imaginary>",
+        "type": "curve",
+        "desc": "Imaginary part of the input curve."
+      }
+    ],
+    "example": "cv_compute \"cifftim(<fft_re>, <fft_im>)\"",
+    "keywords": [
+      "FFT",
+      "complex",
+      "inverse",
+      "imaginary",
+      "IFFT"
+    ]
+  },
+  "j0": {
+    "section": "Formula Functions",
+    "signature": "j0 <curve>",
+    "description": "Returns the Bessel function of the first kind of order 0 for each element of the curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"j0(<xvals>)\"",
+    "keywords": [
+      "Bessel",
+      "first kind",
+      "order 0",
+      "math"
+    ]
+  },
+  "j1": {
+    "section": "Formula Functions",
+    "signature": "j1 <curve>",
+    "description": "Returns the Bessel function of the first kind of order 1 for each element of the curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"j1(<xvals>)\"",
+    "keywords": [
+      "Bessel",
+      "first kind",
+      "order 1",
+      "math"
+    ]
+  },
+  "y0": {
+    "section": "Formula Functions",
+    "signature": "y0 <curve>",
+    "description": "Returns the Bessel function of the second kind of order 0 for each element of the curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"y0(<xvals>)\"",
+    "keywords": [
+      "Bessel",
+      "second kind",
+      "order 0",
+      "math"
+    ]
+  },
+  "y1": {
+    "section": "Formula Functions",
+    "signature": "y1 <curve>",
+    "description": "Returns the Bessel function of the second kind of order 1 for each element of the curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"y1(<xvals>)\"",
+    "keywords": [
+      "Bessel",
+      "second kind",
+      "order 1",
+      "math"
+    ]
+  },
+  "acosh": {
+    "section": "Formula Functions",
+    "signature": "acosh <curve>",
+    "description": "Returns the inverse hyperbolic cosine. Curve values must be greater than or equal to 1.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve (values >= 1)."
+      }
+    ],
+    "example": "cv_compute \"acosh(<vals>)\"",
+    "keywords": [
+      "inverse",
+      "hyperbolic",
+      "cosine",
+      "acosh",
+      "math"
+    ]
+  },
+  "asinh": {
+    "section": "Formula Functions",
+    "signature": "asinh <curve>",
+    "description": "Returns the inverse hyperbolic sine for each element of the curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"asinh(<vals>)\"",
+    "keywords": [
+      "inverse",
+      "hyperbolic",
+      "sine",
+      "asinh",
+      "math"
+    ]
+  },
+  "atanh": {
+    "section": "Formula Functions",
+    "signature": "atanh <curve>",
+    "description": "Returns the inverse hyperbolic tangent. Curve values must be between -1 and 1 (excluding -1 and 1).",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve (values in (-1, 1))."
+      }
+    ],
+    "example": "cv_compute \"atanh(<vals>)\"",
+    "keywords": [
+      "inverse",
+      "hyperbolic",
+      "tangent",
+      "atanh",
+      "math"
+    ]
+  },
+  "cbrt": {
+    "section": "Formula Functions",
+    "signature": "cbrt <curve>",
+    "description": "Returns the cube root for each element of the curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"cbrt(<vals>)\"",
+    "keywords": [
+      "cube root",
+      "cbrt",
+      "math"
+    ]
+  },
+  "diff": {
+    "section": "Formula Functions",
+    "signature": "diff <curve>",
+    "description": "Returns the first derivative of the given curve. Requires a curve-only argument (a curve with more than one point).",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve (must have more than one point)."
+      }
+    ],
+    "example": "cv_compute \"diff(<IdVg>)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "derivative",
+      "differentiation",
+      "slope",
+      "math"
+    ]
+  },
+  "erf": {
+    "section": "Formula Functions",
+    "signature": "erf <curve>",
+    "description": "Returns the error function for each element of the curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"erf(<vals>)\"",
+    "keywords": [
+      "error function",
+      "erf",
+      "math"
+    ]
+  },
+  "fabs": {
+    "section": "Formula Functions",
+    "signature": "fabs <curve>",
+    "description": "Returns the absolute value for each element of the curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"fabs(<vals>)\"",
+    "keywords": [
+      "absolute",
+      "abs",
+      "magnitude",
+      "math"
+    ]
+  },
+  "gamma": {
+    "section": "Formula Functions",
+    "signature": "gamma <curve>",
+    "description": "Returns the Gamma function for each element of the curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"gamma(<vals>)\"",
+    "keywords": [
+      "gamma",
+      "Gamma function",
+      "math"
+    ]
+  },
+  "integr": {
+    "section": "Formula Functions",
+    "signature": "integr <curve>",
+    "description": "Returns the integral of the given curve. Requires a curve-only argument (a curve with more than one point).",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve (must have more than one point)."
+      }
+    ],
+    "example": "cv_compute \"integr(<IdVg>)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "integral",
+      "integration",
+      "area",
+      "math"
+    ]
+  },
+  "intercept": {
+    "section": "Formula Functions",
+    "signature": "intercept <curve>",
+    "description": "Returns the x-intercept of the given curve, that is, the x-value where the curve crosses the x-axis. Commonly used with maxslope() to extract threshold voltage: VT = intercept(maxslope(curve)).",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "set vt [f_VT idvgs]\n# Equivalent formula: VT = intercept(maxslope(curve))",
+    "keywords": [
+      "intercept",
+      "x-intercept",
+      "threshold",
+      "voltage",
+      "math"
+    ]
+  },
+  "lgamma": {
+    "section": "Formula Functions",
+    "signature": "lgamma <curve>",
+    "description": "Returns the natural logarithm of the absolute value of the Gamma function for each element of the curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"lgamma(<vals>)\"",
+    "keywords": [
+      "log",
+      "gamma",
+      "lgamma",
+      "math"
+    ]
+  },
+  "maxslope": {
+    "section": "Formula Functions",
+    "signature": "maxslope <curve>",
+    "description": "Returns a scalar value representing the maximum slope of the given curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"maxslope(<IdVg>)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "slope",
+      "maximum",
+      "derivative",
+      "transconductance",
+      "math"
+    ]
+  },
+  "minslope": {
+    "section": "Formula Functions",
+    "signature": "minslope <curve>",
+    "description": "Returns a scalar value representing the minimum slope of the given curve.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      }
+    ],
+    "example": "cv_compute \"minslope(<IdVg>)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "slope",
+      "minimum",
+      "derivative",
+      "math"
+    ]
+  },
+  "tangent": {
+    "section": "Formula Functions",
+    "signature": "tangent <curve> <xValue>",
+    "description": "Returns a curve that is tangent to the given curve at the specified x-value.",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "Input curve."
+      },
+      {
+        "name": "<xValue>",
+        "type": "float",
+        "desc": "X-value at which to compute the tangent line."
+      }
+    ],
+    "example": "cv_compute \"tangent(<IdVg>, 1.0)\"",
+    "keywords": [
+      "tangent",
+      "tangent line",
+      "slope",
+      "math"
+    ]
+  },
+  "const::AtomicMassConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::AtomicMassConstant",
+    "description": "Atomic mass constant. Value: 1.660540210e-27 kg.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset m [const::AtomicMassConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "atomic",
+      "mass"
+    ]
+  },
+  "const::AvogadroConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::AvogadroConstant",
+    "description": "Avogadro constant. Value: 6.022136736e23 mol-1.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset Na [const::AvogadroConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Avogadro",
+      "mole"
+    ]
+  },
+  "const::BohrMagneton": {
+    "section": "PhysicalConstants",
+    "signature": "const::BohrMagneton",
+    "description": "Bohr magneton. Value: 9.274015431e-24 J/T.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset muB [const::BohrMagneton]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Bohr",
+      "magneton",
+      "magnetic"
+    ]
+  },
+  "const::BoltzmannConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::BoltzmannConstant",
+    "description": "Boltzmann constant. Value: 1.38065812e-23 J/K.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset kB [const::BoltzmannConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Boltzmann",
+      "thermal"
+    ]
+  },
+  "const::ElectronMass": {
+    "section": "PhysicalConstants",
+    "signature": "const::ElectronMass",
+    "description": "Electron rest mass. Value: 9.109389754e-31 kg.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset me [const::ElectronMass]",
+    "keywords": [
+      "constant",
+      "physics",
+      "electron",
+      "mass"
+    ]
+  },
+  "const::ElectronVolt": {
+    "section": "PhysicalConstants",
+    "signature": "const::ElectronVolt",
+    "description": "Electron volt energy unit. Value: 1.6021773349e-19 J.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset eV [const::ElectronVolt]",
+    "keywords": [
+      "constant",
+      "physics",
+      "electron",
+      "volt",
+      "energy"
+    ]
+  },
+  "const::ElementaryCharge": {
+    "section": "PhysicalConstants",
+    "signature": "const::ElementaryCharge",
+    "description": "Elementary charge. Value: 1.6021773349e-19 C.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset q [const::ElementaryCharge]",
+    "keywords": [
+      "constant",
+      "physics",
+      "charge",
+      "elementary"
+    ]
+  },
+  "const::FaradayConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::FaradayConstant",
+    "description": "Faraday constant. Value: 9.648530929e4 C/mol.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset F [const::FaradayConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Faraday",
+      "charge",
+      "mole"
+    ]
+  },
+  "const::FineStructureConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::FineStructureConstant",
+    "description": "Fine-structure constant. Value: 7.2973530833e-3 (dimensionless).",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset alpha [const::FineStructureConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "fine structure",
+      "dimensionless"
+    ]
+  },
+  "const::FreeSpaceImpedance": {
+    "section": "PhysicalConstants",
+    "signature": "const::FreeSpaceImpedance",
+    "description": "Impedance of free space. Value: 376.730313462 Ohm.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset Z0 [const::FreeSpaceImpedance]",
+    "keywords": [
+      "constant",
+      "physics",
+      "impedance",
+      "free space",
+      "EM"
+    ]
+  },
+  "const::GravitationConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::GravitationConstant",
+    "description": "Gravitational constant. Value: 6.6725985e-11 m3/kg/s2.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset G [const::GravitationConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "gravitation",
+      "gravity"
+    ]
+  },
+  "const::MagneticFluxQuantum": {
+    "section": "PhysicalConstants",
+    "signature": "const::MagneticFluxQuantum",
+    "description": "Magnetic flux quantum. Value: 2.0678346161e-15 Wb.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset phi0 [const::MagneticFluxQuantum]",
+    "keywords": [
+      "constant",
+      "physics",
+      "magnetic",
+      "flux",
+      "quantum"
+    ]
+  },
+  "const::MolarVolume": {
+    "section": "PhysicalConstants",
+    "signature": "const::MolarVolume",
+    "description": "Molar volume of an ideal gas at STP. Value: 22.4141019e-3 m3/mol.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset Vm [const::MolarVolume]",
+    "keywords": [
+      "constant",
+      "physics",
+      "molar",
+      "volume",
+      "ideal gas"
+    ]
+  },
+  "const::Permeability": {
+    "section": "PhysicalConstants",
+    "signature": "const::Permeability",
+    "description": "Permeability of free space (magnetic constant). Value: 12.566370614e-7 H/m.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset mu0 [const::Permeability]",
+    "keywords": [
+      "constant",
+      "physics",
+      "permeability",
+      "magnetic",
+      "free space"
+    ]
+  },
+  "const::Permittivity": {
+    "section": "PhysicalConstants",
+    "signature": "const::Permittivity",
+    "description": "Permittivity of free space (electric constant). Value: 8.854187817e-12 F/m.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset eps0 [const::Permittivity]",
+    "keywords": [
+      "constant",
+      "physics",
+      "permittivity",
+      "dielectric",
+      "free space"
+    ]
+  },
+  "const::Pi": {
+    "section": "PhysicalConstants",
+    "signature": "const::Pi",
+    "description": "Mathematical constant Pi. Value: 3.141592653589793 (dimensionless).",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset pi [const::Pi]",
+    "keywords": [
+      "constant",
+      "math",
+      "Pi",
+      "dimensionless"
+    ]
+  },
+  "const::PlanckConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::PlanckConstant",
+    "description": "Planck constant. Value: 6.626075540e-34 Js.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset h [const::PlanckConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Planck",
+      "quantum"
+    ]
+  },
+  "const::ProtonMass": {
+    "section": "PhysicalConstants",
+    "signature": "const::ProtonMass",
+    "description": "Proton rest mass. Value: 1.672623110e-27 kg.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset mp [const::ProtonMass]",
+    "keywords": [
+      "constant",
+      "physics",
+      "proton",
+      "mass"
+    ]
+  },
+  "const::RydbergConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::RydbergConstant",
+    "description": "Rydberg constant. Value: 1.097373153413e7 mol-1.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset Rinf [const::RydbergConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Rydberg",
+      "atomic"
+    ]
+  },
+  "const::SpeedOfLight": {
+    "section": "PhysicalConstants",
+    "signature": "const::SpeedOfLight",
+    "description": "Speed of light in vacuum. Value: 299792458 m/s.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset c [const::SpeedOfLight]",
+    "keywords": [
+      "constant",
+      "physics",
+      "speed",
+      "light",
+      "c"
+    ]
+  },
+  "const::StefanBoltzmannConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::StefanBoltzmannConstant",
+    "description": "Stefan-Boltzmann constant. Value: 5.6705119e-8 W/m2/K4.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset sigma [const::StefanBoltzmannConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Stefan-Boltzmann",
+      "radiation",
+      "thermal"
+    ]
+  },
+  "const::getVarNames": {
+    "section": "PhysicalConstants",
+    "signature": "const::getVarNames",
+    "description": "Returns a list of all variable names defined in the PhysicalConstants library.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset varlist [const::getVarNames]\nputs \"Variables: $varlist\"",
+    "keywords": [
+      "PhysicalConstants",
+      "list",
+      "variables",
+      "names"
+    ]
+  },
+  "const::printVarNames": {
+    "section": "PhysicalConstants",
+    "signature": "const::printVarNames",
+    "description": "Prints the names of all available variables in the PhysicalConstants library to the standard output.",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nconst::printVarNames",
+    "keywords": [
+      "PhysicalConstants",
+      "print",
+      "variables",
+      "names"
+    ]
+  },
+  "iccap_Write": {
+    "section": "IC-CAP Library",
+    "signature": "iccap_Write <fileName> <headerInfo> <data>",
+    "description": "Exports data to a file using the IC-CAP data management file format. The headerInfo is a list formed by the sublists userInput, iccapInput, and output. The data is an array of curve data indexed by input variable values.",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "Output file name."
+      },
+      {
+        "name": "<headerInfo>",
+        "type": "list",
+        "desc": "Header information list containing userInput, iccapInput, and output sublists."
+      },
+      {
+        "name": "<data>",
+        "type": "list",
+        "desc": "Array of curve data (see Array Data in the documentation)."
+      }
+    ],
+    "example": "load_library ise2iccap\niccap_Write \"output.dmp\" $header $data",
+    "keywords": [
+      "IC-CAP",
+      "export",
+      "data",
+      "file",
+      "model"
+    ]
+  },
+  "cvcmp_CompareTwoCurves": {
+    "section": "Curve Comparison Library",
+    "signature": "cvcmp_CompareTwoCurves <curve1> <curve2> <windowX> <use_log> <n>",
+    "description": "Computes the square difference between two curves within a given domain (window) using either linear scale or logarithmic scale.",
+    "parameters": [
+      {
+        "name": "<curve1>",
+        "type": "string",
+        "desc": "First curve name."
+      },
+      {
+        "name": "<curve2>",
+        "type": "string",
+        "desc": "Second curve name."
+      },
+      {
+        "name": "<windowX>",
+        "type": "float",
+        "desc": "Window size in the x-axis for comparison."
+      },
+      {
+        "name": "<use_log>",
+        "type": "boolean",
+        "desc": "True to use logarithmic scale, false for linear."
+      },
+      {
+        "name": "<n>",
+        "type": "string",
+        "desc": "Base name for the internal curves."
+      }
+    ],
+    "example": "load_library curvecomp\ncvcmp_CompareTwoCurves curve1 curve2 1.0 0 comp",
+    "keywords": [
+      "curve",
+      "comparison",
+      "square difference",
+      "domain"
+    ]
+  },
+  "cvcmp_DeltaTwoCurves": {
+    "section": "Curve Comparison Library",
+    "signature": "cvcmp_DeltaTwoCurves <exp_file> <sim_file> <minX> <maxX> <use_log> <name>",
+    "description": "Writes the square difference between two curves within a given domain (window) to the standard output. Both curves are read from files. Uses the ft_scale command to export the computed difference to the Family Tree of Sentaurus Workbench.",
+    "parameters": [
+      {
+        "name": "<exp_file>",
+        "type": "string",
+        "desc": "File containing the experimental curve."
+      },
+      {
+        "name": "<sim_file>",
+        "type": "string",
+        "desc": "File containing the simulation curve."
+      },
+      {
+        "name": "<minX>",
+        "type": "float",
+        "desc": "Minimum x-value of the comparison window."
+      },
+      {
+        "name": "<maxX>",
+        "type": "float",
+        "desc": "Maximum x-value of the comparison window."
+      },
+      {
+        "name": "<use_log>",
+        "type": "boolean",
+        "desc": "True to use logarithmic scale, false for linear."
+      },
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Name of the column in the Family Tree of Sentaurus Workbench where the result is stored."
+      }
+    ],
+    "example": "load_library curvecomp\ncvcmp_DeltaTwoCurves exp.dat sim.dat 0.0 5.0 0 delta",
+    "keywords": [
+      "curve",
+      "comparison",
+      "delta",
+      "file",
+      "Workbench"
+    ]
+  },
+  "load_library": {
+    "section": "General",
+    "signature": "load_library <libraryName>",
+    "description": "Loads a script library and makes all its functionality available. All commands of a particular library share a common prefix. Available libraries include: PhysicalConstants, ise2iccap, curvecomp, EXTRACT, extend, and user-defined site libraries.",
+    "parameters": [
+      {
+        "name": "<libraryName>",
+        "type": "string",
+        "desc": "Name of the library to load."
+      }
+    ],
+    "example": "load_library PhysicalConstants\nload_library curvecomp",
+    "keywords": [
+      "library",
+      "load",
+      "extension",
+      "module"
+    ]
+  }
+}
