@@ -11,9 +11,7 @@ const ppUtils = require('./lsp/pp-utils');
 const { decodeHtml, stripTclVarPrefix } = ppUtils;
 const vectorKW = require('./lsp/providers/sdevice-vector-keywords');
 const { KIND_MAP, SORT_PREFIX, DETAIL_LABEL, formatDoc } = require('./docs-loader');
-
-const TCL_SUBCMD_COMPLETION_RE = /\b(string|file|info|array|dict)\s+$/;
-const TCL_SUBCMD_HOVER_RE = /\b(string|file|info|array|dict)\s+(\w+)$/;
+const tclSubcommands = require('./lsp/tcl-subcommand-registry');
 
 /**
  * Load a JSON file from the syntaxes directory.
@@ -248,14 +246,14 @@ function registerCompletionProviders(context, deps) {
 
                         if (langId !== 'sde') {
                             const linePrefix = document.lineAt(position.line).text.substring(0, position.character);
-                            const subcmdContext = TCL_SUBCMD_COMPLETION_RE.exec(linePrefix);
+                            const subcmdContext = tclSubcommands.matchCompletionContext(linePrefix);
                             if (subcmdContext) {
-                                const parentCmd = subcmdContext[1];
+                                const parentCmd = subcmdContext.parentCmd;
                                 const subDocs = _docsCache.tclSub;
                                 if (subDocs && subDocs[parentCmd]) {
                                     return Object.entries(subDocs[parentCmd]).map(([name, doc]) => {
                                         const item = new vscode.CompletionItem(name, vscode.CompletionItemKind.Method);
-                                        item.detail = 'Tcl 子命令';
+                                        item.detail = useZh ? 'Tcl 子命令' : 'Tcl Subcommand';
                                         item.documentation = new vscode.MarkdownString(doc.description);
                                         return item;
                                     });
@@ -401,18 +399,20 @@ function registerCompletionProviders(context, deps) {
                     const docs = getDocs(langId) || {};
 
                     const linePrefix = document.lineAt(position.line).text.substring(0, range.end.character);
-                    const subcmdMatch = TCL_SUBCMD_HOVER_RE.exec(linePrefix);
+                    const subcmdMatch = tclSubcommands.matchHoverContext(linePrefix);
                     if (subcmdMatch) {
-                        const [, parentCmd, subcmd] = subcmdMatch;
+                        const { parentCmd, subcmd } = subcmdMatch;
                         const subDocs = _docsCache.tclSub;
                         if (subDocs && subDocs[parentCmd] && subDocs[parentCmd][subcmd]) {
                             const subDoc = subDocs[parentCmd][subcmd];
                             const md = new vscode.MarkdownString();
-                            md.appendMarkdown(`**${parentCmd} ${subcmd}** \`（Tcl 子命令）\`\n\n`);
+                            const subcommandLabel = useZh ? 'Tcl 子命令' : 'Tcl Subcommand';
+                            const exampleLabel = useZh ? '示例：' : 'Example:';
+                            md.appendMarkdown(`**${parentCmd} ${subcmd}** \`(${subcommandLabel})\`\n\n`);
                             md.appendCodeblock(subDoc.signature, 'tcl');
                             md.appendMarkdown(`\n\n${subDoc.description}`);
                             if (subDoc.example) {
-                                md.appendMarkdown('\n\n**示例：**\n');
+                                md.appendMarkdown(`\n\n**${exampleLabel}**\n`);
                                 md.appendCodeblock(subDoc.example, 'tcl');
                             }
                             return new vscode.Hover(md, range);

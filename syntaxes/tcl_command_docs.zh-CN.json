@@ -899,37 +899,79 @@
     "signature": "after ms ?script?",
     "description": "延迟指定毫秒后执行脚本。返回可用于 after cancel 的事件标识符。无 script 参数时睡眠 ms 毫秒（在支持事件循环的环境中）。子命令：after cancel（取消待执行事件）、after idle（空闲时执行）、after info（查询待执行事件）。",
     "parameters": [
-      {"name": "ms", "type": "int", "desc": "延迟毫秒数。使用 'idle' 表示空闲时执行。"},
-      {"name": "script", "type": "script", "desc": "可选。延迟后执行的脚本。省略时阻塞等待指定时间。"}
+      {
+        "name": "ms",
+        "type": "int",
+        "desc": "延迟毫秒数。使用 'idle' 表示空闲时执行。"
+      },
+      {
+        "name": "script",
+        "type": "script",
+        "desc": "可选。延迟后执行的脚本。省略时阻塞等待指定时间。"
+      }
     ],
     "example": "after 1000 {puts \"One second later\"}\nset id [after 500 {update_status}]\nafter cancel $id"
   },
   "concat": {
     "signature": "concat ?arg ...?",
     "description": "将多个列表参数拼接为单个列表，每个参数剥离一层列表分组。用于合并列表或将列表结构展平一层。",
-    "parameters": [{"name": "arg", "type": "list", "desc": "一个或多个待拼接的列表。每个列表展平一层。"}],
+    "parameters": [
+      {
+        "name": "arg",
+        "type": "list",
+        "desc": "一个或多个待拼接的列表。每个列表展平一层。"
+      }
+    ],
     "example": "set a {1 2 3}\nset b {4 5}\nset result [concat $a $b]  ;# returns 1 2 3 4 5\nset nested [concat {{a b} {c d}}] ;# returns a b c d"
   },
   "eval": {
     "signature": "eval arg ?arg ...?",
     "description": "将所有参数拼接为单个字符串并作为 Tcl 脚本求值。这是比直接调用命令更底层的命令。注意不要对不可信输入使用 eval。",
-    "parameters": [{"name": "arg", "type": "script", "desc": "一个或多个脚本片段，拼接后求值。"}],
+    "parameters": [
+      {
+        "name": "arg",
+        "type": "script",
+        "desc": "一个或多个脚本片段，拼接后求值。"
+      }
+    ],
     "example": "set cmd \"puts\"\nset msg \"Hello\"\neval $cmd $msg  ;# 等价于: puts Hello\neval {set x 1; set y 2; expr {$x + $y}}  ;# returns 3"
   },
   "vwait": {
     "signature": "vwait varName",
     "description": "进入 Tcl 事件循环并阻塞，直到指定变量 varName 被写入。适用于等待异步事件。写入变量的命令必须通过事件循环执行。",
-    "parameters": [{"name": "varName", "type": "string", "desc": "全局变量名。命令阻塞直到此变量被设置。"}],
+    "parameters": [
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "全局变量名。命令阻塞直到此变量被设置。"
+      }
+    ],
     "example": "set done 0\nafter 2000 {set done 1}\nvwait done  ;# 阻塞直到 done 被设置（2 秒后）\nputs \"Finished waiting\""
   },
   "for": {
     "signature": "for start test next body",
     "description": "C 风格循环。start 为初始化循环变量的脚本；test 为每次迭代前求值的表达式；next 为每次迭代后执行的脚本；body 为循环体。",
     "parameters": [
-      {"name": "start", "type": "script", "desc": "循环开始前执行一次的初始化脚本。"},
-      {"name": "test", "type": "expression", "desc": "每次迭代前求值的布尔表达式。为 false 时退出循环。"},
-      {"name": "next", "type": "script", "desc": "每次迭代后执行的脚本（通常递增循环变量）。"},
-      {"name": "body", "type": "script", "desc": "每次迭代中执行的脚本。"}
+      {
+        "name": "start",
+        "type": "script",
+        "desc": "循环开始前执行一次的初始化脚本。"
+      },
+      {
+        "name": "test",
+        "type": "expression",
+        "desc": "每次迭代前求值的布尔表达式。为 false 时退出循环。"
+      },
+      {
+        "name": "next",
+        "type": "script",
+        "desc": "每次迭代后执行的脚本（通常递增循环变量）。"
+      },
+      {
+        "name": "body",
+        "type": "script",
+        "desc": "每次迭代中执行的脚本。"
+      }
     ],
     "example": "for {set i 0} {$i < 5} {incr i} {\n  puts \"Iteration $i\"\n}\n# 输出: Iteration 0 到 Iteration 4"
   },
@@ -937,9 +979,21 @@
     "signature": "foreach varname list body ?varlist2 list2 ...? body",
     "description": "遍历一个或多个列表，将元素赋值给变量并为每组元素执行循环体。可并行遍历多个列表；循环在所有列表耗尽时结束。",
     "parameters": [
-      {"name": "varname", "type": "string", "desc": "接收当前列表元素的变量。"},
-      {"name": "list", "type": "list", "desc": "要遍历的列表。"},
-      {"name": "body", "type": "script", "desc": "为每个元素执行的脚本。"}
+      {
+        "name": "varname",
+        "type": "string",
+        "desc": "接收当前列表元素的变量。"
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "要遍历的列表。"
+      },
+      {
+        "name": "body",
+        "type": "script",
+        "desc": "为每个元素执行的脚本。"
+      }
     ],
     "example": "set voltages {0.0 0.5 1.0 2.0}\nforeach v $voltages {\n  puts \"Bias: $v V\"\n}\nforeach v $voltages i {1 2 3 4} {\n  puts \"Step $i: $v V\"\n}"
   },
@@ -947,8 +1001,16 @@
     "signature": "while test body",
     "description": "While 循环。将 test 作为表达式求值；若为 true 则执行 body 并重复。每次迭代前重新求值 test。",
     "parameters": [
-      {"name": "test", "type": "expression", "desc": "每次迭代前求值的布尔表达式。"},
-      {"name": "body", "type": "script", "desc": "test 为 true 时每次迭代执行的脚本。"}
+      {
+        "name": "test",
+        "type": "expression",
+        "desc": "每次迭代前求值的布尔表达式。"
+      },
+      {
+        "name": "body",
+        "type": "script",
+        "desc": "test 为 true 时每次迭代执行的脚本。"
+      }
     ],
     "example": "set x 1\nwhile {$x < 10} {\n  puts \"x = $x\"\n  set x [expr {$x * 2}]\n}\n# 输出: x = 1, x = 2, x = 4, x = 8"
   },
@@ -956,10 +1018,26 @@
     "signature": "if expr1 ?then? body1 ?elseif expr2 body2 ...? ?else? ?bodyN?",
     "description": "条件执行。按顺序求值每个表达式；执行第一个为 true 的表达式对应的 body。else 子句捕获所有剩余情况。'then' 关键字可选，通常省略。",
     "parameters": [
-      {"name": "expr1", "type": "expression", "desc": "第一个要计算的布尔表达式。"},
-      {"name": "body1", "type": "script", "desc": "expr1 为 true 时执行的脚本。"},
-      {"name": "expr2", "type": "expression", "desc": "可选。elseif 子句的布尔表达式。"},
-      {"name": "bodyN", "type": "script", "desc": "可选。else 子句的脚本（无表达式）。"}
+      {
+        "name": "expr1",
+        "type": "expression",
+        "desc": "第一个要计算的布尔表达式。"
+      },
+      {
+        "name": "body1",
+        "type": "script",
+        "desc": "expr1 为 true 时执行的脚本。"
+      },
+      {
+        "name": "expr2",
+        "type": "expression",
+        "desc": "可选。elseif 子句的布尔表达式。"
+      },
+      {
+        "name": "bodyN",
+        "type": "script",
+        "desc": "可选。else 子句的脚本（无表达式）。"
+      }
     ],
     "example": "set temp 350\nif {$temp > 400} {\n  puts \"High temperature warning\"\n} elseif {$temp > 300} {\n  puts \"Normal operating range\"\n} else {\n  puts \"Below ambient\"\n}"
   },
@@ -967,9 +1045,21 @@
     "signature": "switch ?options? string pattern body ?pattern body ...?",
     "description": "基于模式匹配的多路分支。string 按顺序与每个 pattern 比较；执行第一个匹配 pattern 的 body。选项：-exact（字面匹配，默认）、-glob（通配符模式）、-regexp（正则表达式）。使用 -- 标记选项结束。",
     "parameters": [
-      {"name": "-exact|-glob|-regexp", "type": "flag", "desc": "可选。匹配模式：exact（默认精确匹配）、glob（通配符）或 regexp（正则表达式）。"},
-      {"name": "string", "type": "string", "desc": "要与模式匹配的值。"},
-      {"name": "pattern body", "type": "script", "desc": "模式-脚本对。使用 'default' 作为兜底匹配。"}
+      {
+        "name": "-exact|-glob|-regexp",
+        "type": "flag",
+        "desc": "可选。匹配模式：exact（默认精确匹配）、glob（通配符）或 regexp（正则表达式）。"
+      },
+      {
+        "name": "string",
+        "type": "string",
+        "desc": "要与模式匹配的值。"
+      },
+      {
+        "name": "pattern body",
+        "type": "script",
+        "desc": "模式-脚本对。使用 'default' 作为兜底匹配。"
+      }
     ],
     "example": "set solver \"Newton\"\nswitch $solver {\n  \"Newton\"   { puts \"Using Newton method\" }\n  \"Explicit\" { puts \"Using explicit scheme\" }\n  default    { puts \"Unknown solver: $solver\" }\n}"
   },
@@ -977,9 +1067,21 @@
     "signature": "return ?-options opts? ?-code code? ?value?",
     "description": "从过程中返回，可选指定返回码和选项字典。默认返回 TCL_OK（码 0）。使用 -code error 可模拟错误返回，使用 -code break/continue 可从过程内部控制循环。",
     "parameters": [
-      {"name": "-options opts", "type": "dict", "desc": "可选。返回选项字典（-code、-errorcode、-errorinfo、-level）。"},
-      {"name": "-code code", "type": "string", "desc": "可选。返回码：ok、error、return、break、continue 或整数值。"},
-      {"name": "value", "type": "any", "desc": "可选。返回值。省略时返回空字符串。"}
+      {
+        "name": "-options opts",
+        "type": "dict",
+        "desc": "可选。返回选项字典（-code、-errorcode、-errorinfo、-level）。"
+      },
+      {
+        "name": "-code code",
+        "type": "string",
+        "desc": "可选。返回码：ok、error、return、break、continue 或整数值。"
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "可选。返回值。省略时返回空字符串。"
+      }
     ],
     "example": "proc compute {x} {\n  if {$x < 0} { return -code error \"Negative input\" }\n  return [expr {$x * 2}]\n}"
   },
@@ -998,13 +1100,25 @@
   "update": {
     "signature": "update ?idletasks?",
     "description": "处理所有待处理的事件和空闲回调。使用 idletasks 标志时仅处理空闲回调（无 I/O 或定时器事件）。在长时间计算中用于保持 UI 响应。",
-    "parameters": [{"name": "idletasks", "type": "flag", "desc": "可选。指定时仅处理空闲回调。"}],
+    "parameters": [
+      {
+        "name": "idletasks",
+        "type": "flag",
+        "desc": "可选。指定时仅处理空闲回调。"
+      }
+    ],
     "example": "set step 0\nwhile {$step < 1000} {\n  incr step\n  if {$step % 100 == 0} { update }\n}"
   },
   "cd": {
     "signature": "cd ?dirName?",
     "description": "将当前工作目录更改为 dirName。省略 dirName 时切换到 home 目录（Unix）或无操作（Windows）。返回新工作目录。",
-    "parameters": [{"name": "dirName", "type": "string", "desc": "可选。要切换到的目录。默认为 home 目录。"}],
+    "parameters": [
+      {
+        "name": "dirName",
+        "type": "string",
+        "desc": "可选。要切换到的目录。默认为 home 目录。"
+      }
+    ],
     "example": "cd \"/home/user/simulations\"\nset cwd [pwd]  ;# 返回 /home/user/simulations"
   },
   "pwd": {
@@ -1017,24 +1131,50 @@
     "signature": "exec ?switches? arg ?arg ...?",
     "description": "执行外部程序并返回其标准输出。支持 I/O 重定向（>、<、2>、>&、| 管道）。若命令返回非零退出码则报错（除非使用 -ignorestderr）。",
     "parameters": [
-      {"name": "-keepnewline", "type": "flag", "desc": "可选。保留输出末尾的换行符。"},
-      {"name": "--", "type": "flag", "desc": "可选。标记选项结束。"},
-      {"name": "arg", "type": "string", "desc": "程序名及其参数。可按需使用管道和重定向。"}
+      {
+        "name": "-keepnewline",
+        "type": "flag",
+        "desc": "可选。保留输出末尾的换行符。"
+      },
+      {
+        "name": "--",
+        "type": "flag",
+        "desc": "可选。标记选项结束。"
+      },
+      {
+        "name": "arg",
+        "type": "string",
+        "desc": "程序名及其参数。可按需使用管道和重定向。"
+      }
     ],
     "example": "set files [exec ls *.cmd]\nset version [exec sdevice --version]\nexec grep \"error\" $logfile > errors.txt"
   },
   "exit": {
     "signature": "exit ?returnCode?",
     "description": "以指定返回码终止当前进程。省略 returnCode 时使用 0（成功）。终止前调用已注册的退出处理器（通过 'trace'）。",
-    "parameters": [{"name": "returnCode", "type": "int", "desc": "可选。退出码（0 表示成功，非零表示错误）。默认 0。"}],
+    "parameters": [
+      {
+        "name": "returnCode",
+        "type": "int",
+        "desc": "可选。退出码（0 表示成功，非零表示错误）。默认 0。"
+      }
+    ],
     "example": "if {$converged} {\n  exit 0\n} else {\n  puts \"Simulation failed\"\n  exit 1\n}"
   },
   "time": {
     "signature": "time script ?count?",
     "description": "将 script 执行 count 次（默认 1 次），返回人类可读的字符串，显示每次迭代的平均执行时间（微秒）。用于性能测量。",
     "parameters": [
-      {"name": "script", "type": "script", "desc": "要计时的脚本。"},
-      {"name": "count", "type": "int", "desc": "可选。迭代次数。值越高测量精度越高。默认：1。"}
+      {
+        "name": "script",
+        "type": "script",
+        "desc": "要计时的脚本。"
+      },
+      {
+        "name": "count",
+        "type": "int",
+        "desc": "可选。迭代次数。值越高测量精度越高。默认：1。"
+      }
     ],
     "example": "puts [time {source \"mesh.tcl\"} 10]\n;# 输出: 1234.5 microseconds per iteration"
   },
@@ -1042,23 +1182,45 @@
     "signature": "lrepeat count value ?value ...?",
     "description": "通过将给定值重复 count 次来创建列表。结果是 count 份值列表的拼接。Tcl 8.5+。",
     "parameters": [
-      {"name": "count", "type": "int", "desc": "重复值的次数。"},
-      {"name": "value", "type": "any", "desc": "一个或多个要重复的值。"}
+      {
+        "name": "count",
+        "type": "int",
+        "desc": "重复值的次数。"
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "一个或多个要重复的值。"
+      }
     ],
     "example": "set coords [lrepeat 3 0.0]    ;# returns {0.0 0.0 0.0}\nset pattern [lrepeat 2 a b]    ;# returns {a b a b}"
   },
   "lreverse": {
     "signature": "lreverse list",
     "description": "返回元素顺序反转后的新列表。原列表不被修改。Tcl 8.5+。",
-    "parameters": [{"name": "list", "type": "list", "desc": "要反转的列表。"}],
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "要反转的列表。"
+      }
+    ],
     "example": "set vals {0.0 0.5 1.0}\nset reversed [lreverse $vals]  ;# returns {1.0 0.5 0.0}"
   },
   "lassign": {
     "signature": "lassign list ?varName ...?",
     "description": "将列表元素按顺序赋值给指定变量。返回剩余（未赋值）的元素。这是将列表解包到命名变量的便捷方式。Tcl 8.5+。",
     "parameters": [
-      {"name": "list", "type": "list", "desc": "要赋值的列表。"},
-      {"name": "varName", "type": "string", "desc": "按顺序接收列表元素的变量名。"}
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "要赋值的列表。"
+      },
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "按顺序接收列表元素的变量名。"
+      }
     ],
     "example": "set pair {1.2 0.8}\nlassign $pair vg vd\nputs \"Vg=$vg, Vd=$vd\"  ;# 输出: Vg=1.2, Vd=0.8"
   },
@@ -1066,9 +1228,21 @@
     "signature": "lset varName ?index ...? newValue",
     "description": "就地修改变量中的列表元素。支持嵌套列表的多级索引。这是唯一直接修改变量的列表命令（其他命令返回新列表）。Tcl 8.5+。",
     "parameters": [
-      {"name": "varName", "type": "string", "desc": "包含待修改列表的变量名。"},
-      {"name": "index", "type": "int", "desc": "一个或多个指向（可能嵌套的）列表的索引。"},
-      {"name": "newValue", "type": "any", "desc": "要在索引位置设置的新值。"}
+      {
+        "name": "varName",
+        "type": "string",
+        "desc": "包含待修改列表的变量名。"
+      },
+      {
+        "name": "index",
+        "type": "int",
+        "desc": "一个或多个指向（可能嵌套的）列表的索引。"
+      },
+      {
+        "name": "newValue",
+        "type": "any",
+        "desc": "要在索引位置设置的新值。"
+      }
     ],
     "example": "set matrix {{0 0} {0 0}}\nlset matrix 0 1 5\nputs $matrix  ;# 输出: {0 5} {0 0}"
   },
@@ -1076,10 +1250,469 @@
     "signature": "lmap varname list body ?varlist2 list2 ...? body",
     "description": "对列表元素执行脚本并将结果收集为新列表。类似 foreach，但返回收集的结果。支持多列表遍历。Tcl 8.6+。",
     "parameters": [
-      {"name": "varname", "type": "string", "desc": "接收当前元素的变量。"},
-      {"name": "list", "type": "list", "desc": "要映射的列表。"},
-      {"name": "body", "type": "script", "desc": "其结果作为输出列表对应元素的脚本。"}
+      {
+        "name": "varname",
+        "type": "string",
+        "desc": "接收当前元素的变量。"
+      },
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "要映射的列表。"
+      },
+      {
+        "name": "body",
+        "type": "script",
+        "desc": "其结果作为输出列表对应元素的脚本。"
+      }
     ],
     "example": "set doubled [lmap v {1 2 3} {expr {$v * 2}}]  ;# returns {2 4 6}\nset squares [lmap x {0 1 2 3 4} {expr {$x * $x}}]  ;# returns {0 1 4 9 16}"
+  },
+  "namespace": {
+    "signature": "namespace subcommand ?arg ...?",
+    "description": "创建、查询、导入、导出并在 Tcl 命名空间中执行命令。常用子命令包括 eval、current、children、import、export、ensemble 和 which。",
+    "parameters": [
+      {
+        "name": "subcommand",
+        "type": "subcommand",
+        "desc": "要执行的命名空间操作。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "根据所选 namespace 子命令提供的参数。"
+      }
+    ],
+    "example": "namespace eval Device {\n  variable width 1.0\n  proc area {height} { variable width; expr {$width * $height} }\n}\nputs [Device::area 2.0]"
+  },
+  "dict": {
+    "signature": "dict subcommand ?arg ...?",
+    "description": "创建、查询、转换并更新 Tcl 字典值和字典变量。常用子命令包括 create、get、set、exists、keys、values、merge、update 和 with。",
+    "parameters": [
+      {
+        "name": "subcommand",
+        "type": "subcommand",
+        "desc": "要执行的字典操作。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "根据所选 dict 子命令提供的参数。"
+      }
+    ],
+    "example": "set opts [dict create voltage 1.2 model NMOS]\nputs [dict get $opts voltage]\ndict set opts temperature 300"
+  },
+  "clock": {
+    "signature": "clock subcommand ?arg ...?",
+    "description": "获取、格式化、解析并计算日期和时间。常用子命令包括 seconds、format、scan、add、milliseconds、microseconds 和 clicks。",
+    "parameters": [
+      {
+        "name": "subcommand",
+        "type": "subcommand",
+        "desc": "要执行的时间操作。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "根据所选 clock 子命令提供的参数。"
+      }
+    ],
+    "example": "set now [clock seconds]\nputs [clock format $now -format \"%Y-%m-%d\"]"
+  },
+  "binary": {
+    "signature": "binary subcommand ?arg ...?",
+    "description": "格式化、扫描、编码和解码二进制数据。适用于 Tcl 字符串需要表示字节值或外部二进制格式的场景。",
+    "parameters": [
+      {
+        "name": "subcommand",
+        "type": "subcommand",
+        "desc": "要执行的二进制操作。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "根据所选 binary 子命令提供的参数。"
+      }
+    ],
+    "example": "set bytes [binary format H* 48656c6c6f]\nbinary scan $bytes H* hex\nputs $hex"
+  },
+  "encoding": {
+    "signature": "encoding subcommand ?arg ...?",
+    "description": "在 Tcl Unicode 字符串和指定外部编码之间转换文本，并管理系统编码和编码搜索目录。",
+    "parameters": [
+      {
+        "name": "subcommand",
+        "type": "subcommand",
+        "desc": "要执行的编码操作。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "根据所选 encoding 子命令提供的参数。"
+      }
+    ],
+    "example": "set bytes [encoding convertto utf-8 $text]\nset text2 [encoding convertfrom utf-8 $bytes]"
+  },
+  "package": {
+    "signature": "package subcommand ?arg ...?",
+    "description": "提供、要求、比较并定位 Tcl 包及其版本。常用子命令包括 require、provide、ifneeded、names、versions、present 和 vcompare。",
+    "parameters": [
+      {
+        "name": "subcommand",
+        "type": "subcommand",
+        "desc": "要执行的包管理操作。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "根据所选 package 子命令提供的参数。"
+      }
+    ],
+    "example": "package require Tcl 8.6\npackage provide MyTools 1.0"
+  },
+  "chan": {
+    "signature": "chan subcommand ?arg ...?",
+    "description": "提供 Tcl 通道 I/O 子命令，包括读取、写入、配置、复制、定位、刷新和监听通道事件。",
+    "parameters": [
+      {
+        "name": "subcommand",
+        "type": "subcommand",
+        "desc": "要执行的通道操作。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "根据所选 chan 子命令提供的参数。"
+      }
+    ],
+    "example": "set in [open input.txt r]\nset out [open output.txt w]\nchan copy $in $out\nchan close $in\nchan close $out"
+  },
+  "fconfigure": {
+    "signature": "fconfigure channelId ?optionName? ?value? ?optionName value ...?",
+    "description": "查询或设置打开通道的配置选项，例如缓冲、阻塞模式、编码、换行转换和 EOF 字符处理。",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "channel",
+        "desc": "要配置的打开通道。"
+      },
+      {
+        "name": "optionName",
+        "type": "string",
+        "desc": "通道选项名，如 -blocking、-buffering、-encoding 或 -translation。"
+      },
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "设置通道选项时使用的新值。"
+      }
+    ],
+    "example": "set fid [open result.log w]\nfconfigure $fid -encoding utf-8 -buffering line\nputs $fid \"ready\"\nclose $fid"
+  },
+  "fblocked": {
+    "signature": "fblocked channelId",
+    "description": "如果上一次输入操作因会阻塞而未能读取全部请求数据，则返回 1；否则返回 0。",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "channel",
+        "desc": "要查询的打开通道。"
+      }
+    ],
+    "example": "set chunk [read $sock 1024]\nif {[fblocked $sock]} { puts \"waiting for more data\" }"
+  },
+  "eof": {
+    "signature": "eof channelId",
+    "description": "判断通道是否已经出现文件结束条件，是则返回 1，否则返回 0。",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "channel",
+        "desc": "要查询的打开通道。"
+      }
+    ],
+    "example": "while {![eof $fid]} {\n  puts [gets $fid]\n}"
+  },
+  "tell": {
+    "signature": "tell channelId",
+    "description": "返回可定位通道的当前字节偏移位置。",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "channel",
+        "desc": "要查询当前位置的打开通道。"
+      }
+    ],
+    "example": "set pos [tell $fid]\nputs \"current offset: $pos\""
+  },
+  "seek": {
+    "signature": "seek channelId offset ?origin?",
+    "description": "改变可定位通道的当前访问位置。origin 可为 start、current 或 end。",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "channel",
+        "desc": "打开的可定位通道。"
+      },
+      {
+        "name": "offset",
+        "type": "int",
+        "desc": "相对于 origin 的字节偏移。"
+      },
+      {
+        "name": "origin",
+        "type": "string",
+        "desc": "可选。start、current 或 end 之一，默认为 start。"
+      }
+    ],
+    "example": "seek $fid 0 start\nset header [read $fid 16]"
+  },
+  "fileevent": {
+    "signature": "fileevent channelId readable|writable ?script?",
+    "description": "获取、设置或清除通道在 Tcl 事件循环中变为可读或可写时执行的脚本。",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "channel",
+        "desc": "要监听的打开通道。"
+      },
+      {
+        "name": "readable|writable",
+        "type": "event",
+        "desc": "要监听的通道事件方向。"
+      },
+      {
+        "name": "script",
+        "type": "script",
+        "desc": "可选。事件发生时执行的脚本；省略表示查询，空字符串表示清除。"
+      }
+    ],
+    "example": "fileevent $sock readable [list handleReadable $sock]\nvwait done"
+  },
+  "socket": {
+    "signature": "socket ?-async? ?-myaddr addr? ?-myport myport? host port | socket -server command ?-myaddr addr? port",
+    "description": "打开 TCP 客户端套接字，或创建通过回调命令接受连接的服务器套接字。",
+    "parameters": [
+      {
+        "name": "host",
+        "type": "string",
+        "desc": "客户端套接字连接的远程主机名或地址。"
+      },
+      {
+        "name": "port",
+        "type": "int",
+        "desc": "TCP 端口号。"
+      },
+      {
+        "name": "command",
+        "type": "command",
+        "desc": "每次接受连接时调用的服务器回调命令。"
+      }
+    ],
+    "example": "set sock [socket example.com 80]\nputs $sock \"GET / HTTP/1.0\r\n\r\"\nflush $sock"
+  },
+  "fcopy": {
+    "signature": "fcopy input output ?-size size? ?-command callback?",
+    "description": "将字节从一个通道复制到另一个通道，可选限制复制字节数或使用完成回调异步执行。",
+    "parameters": [
+      {
+        "name": "input",
+        "type": "channel",
+        "desc": "源通道。"
+      },
+      {
+        "name": "output",
+        "type": "channel",
+        "desc": "目标通道。"
+      },
+      {
+        "name": "-size size",
+        "type": "int",
+        "desc": "可选。最多复制的字节数。"
+      },
+      {
+        "name": "-command callback",
+        "type": "command",
+        "desc": "可选。异步复制完成时调用的回调。"
+      }
+    ],
+    "example": "set in [open input.dat r]\nset out [open output.dat w]\nfcopy $in $out\nclose $in\nclose $out"
+  },
+  "apply": {
+    "signature": "apply func ?arg ...?",
+    "description": "将匿名函数值应用到参数。函数值是包含参数列表、函数体和可选命名空间的列表。",
+    "parameters": [
+      {
+        "name": "func",
+        "type": "list",
+        "desc": "匿名函数：{args body ?namespace?}。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "传递给匿名函数的参数。"
+      }
+    ],
+    "example": "set square {x {expr {$x * $x}}}\nputs [apply $square 5]"
+  },
+  "coroutine": {
+    "signature": "coroutine name command ?arg ...?",
+    "description": "创建协程命令，并通过调用 command 启动它。协程可以 yield 暂停，之后再恢复执行。",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "要创建的协程命令名。"
+      },
+      {
+        "name": "command",
+        "type": "command",
+        "desc": "作为协程体入口的命令。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "传递给 command 的附加参数。"
+      }
+    ],
+    "example": "proc counter {} { yield 1; yield 2; return done }\ncoroutine c counter\nputs [c]\nputs [c]"
+  },
+  "yield": {
+    "signature": "yield ?value?",
+    "description": "暂停当前协程，并向调用者返回 value。再次调用该协程命令时会恢复执行。",
+    "parameters": [
+      {
+        "name": "value",
+        "type": "any",
+        "desc": "可选。返回给协程调用者的值。"
+      }
+    ],
+    "example": "proc steps {} { yield first; yield second; return done }\ncoroutine s steps\nputs [s]"
+  },
+  "yieldto": {
+    "signature": "yieldto command ?arg ...?",
+    "description": "暂停当前协程，并安排在控制权返回调用者时改为调用另一个命令。",
+    "parameters": [
+      {
+        "name": "command",
+        "type": "command",
+        "desc": "yield 后要调用的命令。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "传递给 command 的参数。"
+      }
+    ],
+    "example": "proc co {} { yieldto puts \"from coroutine\" }\ncoroutine c co"
+  },
+  "tailcall": {
+    "signature": "tailcall command ?arg ...?",
+    "description": "用 command 替换当前过程调用，实现不增加额外栈帧的尾调用式委派。",
+    "parameters": [
+      {
+        "name": "command",
+        "type": "command",
+        "desc": "作为尾调用执行的命令。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "传递给 command 的参数。"
+      }
+    ],
+    "example": "proc aliasPuts {args} { tailcall puts {*}$args }\naliasPuts \"hello\""
+  },
+  "history": {
+    "signature": "history option ?arg ...?",
+    "description": "查询和操作交互式命令历史。常用选项包括 add、change、clear、event、info、keep、nextid 和 redo。",
+    "parameters": [
+      {
+        "name": "option",
+        "type": "subcommand",
+        "desc": "要执行的历史操作。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "根据所选 history 选项提供的参数。"
+      }
+    ],
+    "example": "history add {puts hello}\nputs [history info]"
+  },
+  "parray": {
+    "signature": "parray arrayName ?pattern?",
+    "description": "打印数组变量中元素的名称和值，可选用模式过滤元素名。",
+    "parameters": [
+      {
+        "name": "arrayName",
+        "type": "array",
+        "desc": "要打印的 Tcl 数组变量名。"
+      },
+      {
+        "name": "pattern",
+        "type": "string",
+        "desc": "可选。用于数组元素名的 glob 风格模式。"
+      }
+    ],
+    "example": "array set opts {voltage 1.2 current 0.5}\nparray opts"
+  },
+  "pid": {
+    "signature": "pid ?channelId?",
+    "description": "返回当前进程的进程 ID，或返回与管道通道关联的进程 ID。",
+    "parameters": [
+      {
+        "name": "channelId",
+        "type": "channel",
+        "desc": "可选。打开在进程管道上的通道。"
+      }
+    ],
+    "example": "puts \"current pid: [pid]\""
+  },
+  "interp": {
+    "signature": "interp subcommand ?arg ...?",
+    "description": "创建、删除、查询并配置 Tcl 解释器，包括子解释器和解释器之间的别名。",
+    "parameters": [
+      {
+        "name": "subcommand",
+        "type": "subcommand",
+        "desc": "要执行的解释器操作。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "根据所选 interp 子命令提供的参数。"
+      }
+    ],
+    "example": "interp create child\nchild eval {set x 42}\nputs [child eval {set x}]\ninterp delete child"
+  },
+  "trace": {
+    "signature": "trace option ?arg ...?",
+    "description": "添加、移除和查询变量、命令及执行跟踪，在被监视操作发生时运行回调。",
+    "parameters": [
+      {
+        "name": "option",
+        "type": "subcommand",
+        "desc": "要执行的跟踪操作，如 add、remove、info 或 variable。"
+      },
+      {
+        "name": "arg",
+        "type": "any",
+        "desc": "根据所选 trace 选项提供的参数。"
+      }
+    ],
+    "example": "proc onWrite {name1 name2 op} { puts \"$name1 changed\" }\ntrace add variable voltage write onWrite\nset voltage 1.2"
+  },
+  "bgerror": {
+    "signature": "bgerror message",
+    "description": "处理后台执行中发生的错误，通常向用户报告错误消息和错误信息。",
+    "parameters": [
+      {
+        "name": "message",
+        "type": "string",
+        "desc": "后台错误的错误消息。"
+      }
+    ],
+    "example": "proc bgerror {message} {\n  puts stderr \"Background error: $message\"\n  puts stderr $::errorInfo\n}"
   }
 }

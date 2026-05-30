@@ -24,6 +24,7 @@ sentaurus-syntax-highlight/
 │   ├── test-tcl-var-refs.js                    ← Tcl 变量引用
 │   ├── test-parse-cache.js                     ← 解析缓存层测试
 │   ├── test-tcl-scope-index.js                 ← ScopeIndex 作用域查询测试
+│   ├── test-tcl-complex-subcommands.js         ← Tcl 复杂命令族 registry/文档/语法/补全覆盖测试
 │   ├── test-variable-reference.js              ← 用户变量引用查找（Scheme + Tcl）
 │   ├── test-undef-var-integration.js           ← 未定义变量诊断集成测试
 │   ├── test-tcl-preprocessor.js                ← Tcl 预处理器分支分析（pp-utils）

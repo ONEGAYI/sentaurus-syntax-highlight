@@ -5,36 +5,122 @@
     {
       "match": "\\b(string)\\s+(length|match|range|first|last|index|trim|trimleft|trimright|tolower|toupper|totitle|equal|compare|is|map|repeat|replace|reverse|cat|wordstart|wordend|bytelength)\\b",
       "captures": {
-        "1": { "name": "support.function.sprocess" },
-        "2": { "name": "support.type.tcl-subcommand" }
+        "1": {
+          "name": "support.function.sprocess"
+        },
+        "2": {
+          "name": "support.type.tcl-subcommand"
+        }
       }
     },
     {
       "match": "\\b(file)\\s+(join|dirname|tail|extension|rootname|exists|isfile|isdirectory|mkdir|copy|delete|rename|nativename|normalize|stat|size|readable|writable|executable|mtime|atime|type)\\b",
       "captures": {
-        "1": { "name": "support.function.sprocess" },
-        "2": { "name": "support.type.tcl-subcommand" }
+        "1": {
+          "name": "support.function.sprocess"
+        },
+        "2": {
+          "name": "support.type.tcl-subcommand"
+        }
       }
     },
     {
       "match": "\\b(info)\\s+(exists|commands|procs|args|body|level|script|hostname|patchlevel|tclversion|globals|locals|vars|default)\\b",
       "captures": {
-        "1": { "name": "support.function.sprocess" },
-        "2": { "name": "support.type.tcl-subcommand" }
+        "1": {
+          "name": "support.function.sprocess"
+        },
+        "2": {
+          "name": "support.type.tcl-subcommand"
+        }
       }
     },
     {
       "match": "\\b(array)\\s+(exists|get|set|names|size|unset|statistics)\\b",
       "captures": {
-        "1": { "name": "support.function.sprocess" },
-        "2": { "name": "support.type.tcl-subcommand" }
+        "1": {
+          "name": "support.function.sprocess"
+        },
+        "2": {
+          "name": "support.type.tcl-subcommand"
+        }
       }
     },
     {
-      "match": "\\b(dict)\\s+(create|get|set|exists|unset|remove|replace|merge|keys|values|size|for|map|filter|info|update|with)\\b",
+      "match": "\\b(dict)\\s+(append|create|exists|filter|for|get|incr|info|keys|lappend|map|merge|remove|replace|set|size|unset|update|values|with)\\b",
       "captures": {
-        "1": { "name": "support.function.sprocess" },
-        "2": { "name": "support.type.tcl-subcommand" }
+        "1": {
+          "name": "support.function.sprocess"
+        },
+        "2": {
+          "name": "support.type.tcl-subcommand"
+        }
+      }
+    },
+    {
+      "match": "\\b(namespace)\\s+(children|code|current|delete|ensemble|eval|exists|export|forget|import|inscope|origin|parent|path|qualifiers|tail|upvar|unknown|which)\\b",
+      "captures": {
+        "1": {
+          "name": "support.function.sprocess"
+        },
+        "2": {
+          "name": "support.type.tcl-subcommand"
+        }
+      }
+    },
+    {
+      "match": "\\b(clock)\\s+(add|clicks|format|microseconds|milliseconds|scan|seconds)\\b",
+      "captures": {
+        "1": {
+          "name": "support.function.sprocess"
+        },
+        "2": {
+          "name": "support.type.tcl-subcommand"
+        }
+      }
+    },
+    {
+      "match": "\\b(binary)\\s+(decode|encode|format|scan)\\b",
+      "captures": {
+        "1": {
+          "name": "support.function.sprocess"
+        },
+        "2": {
+          "name": "support.type.tcl-subcommand"
+        }
+      }
+    },
+    {
+      "match": "\\b(encoding)\\s+(convertfrom|convertto|dirs|names|system)\\b",
+      "captures": {
+        "1": {
+          "name": "support.function.sprocess"
+        },
+        "2": {
+          "name": "support.type.tcl-subcommand"
+        }
+      }
+    },
+    {
+      "match": "\\b(package)\\s+(forget|ifneeded|names|present|provide|require|unknown|vcompare|versions|vsatisfies|prefer)\\b",
+      "captures": {
+        "1": {
+          "name": "support.function.sprocess"
+        },
+        "2": {
+          "name": "support.type.tcl-subcommand"
+        }
+      }
+    },
+    {
+      "match": "\\b(chan)\\s+(blocked|close|configure|copy|create|eof|event|flush|gets|names|pending|pipe|pop|postevent|push|puts|read|seek|tell|truncate)\\b",
+      "captures": {
+        "1": {
+          "name": "support.function.sprocess"
+        },
+        "2": {
+          "name": "support.type.tcl-subcommand"
+        }
       }
     },
     {
@@ -345,15 +431,33 @@
       "name": "meta.preprocessor.define.tcl",
       "match": "^\\s*(#define)\\b\\s+(\\w+)(\\s+.*)?$",
       "captures": {
-        "1": { "name": "keyword.control.preprocessor.tcl" },
-        "2": { "name": "entity.name.type.tcl" },
+        "1": {
+          "name": "keyword.control.preprocessor.tcl"
+        },
+        "2": {
+          "name": "entity.name.type.tcl"
+        },
         "3": {
           "patterns": [
-            { "match": "\\b(defined|TRUE|FALSE)\\b", "name": "keyword.control.preprocessor.tcl" },
-            { "begin": "\"", "end": "\"", "name": "string.quoted.double.tcl", "patterns": [
-                { "match": "@[a-zA-Z_<][^@]*@", "name": "constant.character.format.placeholder" }
-            ]},
-            { "match": "@[a-zA-Z_<][^@]*@", "name": "constant.character.format.placeholder" }
+            {
+              "match": "\\b(defined|TRUE|FALSE)\\b",
+              "name": "keyword.control.preprocessor.tcl"
+            },
+            {
+              "begin": "\"",
+              "end": "\"",
+              "name": "string.quoted.double.tcl",
+              "patterns": [
+                {
+                  "match": "@[a-zA-Z_<][^@]*@",
+                  "name": "constant.character.format.placeholder"
+                }
+              ]
+            },
+            {
+              "match": "@[a-zA-Z_<][^@]*@",
+              "name": "constant.character.format.placeholder"
+            }
           ]
         }
       }
@@ -362,30 +466,54 @@
       "name": "meta.preprocessor.undef.tcl",
       "match": "^\\s*(#undef)\\b\\s+(\\w+)",
       "captures": {
-        "1": { "name": "keyword.control.preprocessor.tcl" },
-        "2": { "name": "entity.name.type.tcl" }
+        "1": {
+          "name": "keyword.control.preprocessor.tcl"
+        },
+        "2": {
+          "name": "entity.name.type.tcl"
+        }
       }
     },
     {
       "name": "meta.preprocessor.ifdef.tcl",
       "match": "^\\s*(#(?:ifdef|ifndef))\\b\\s+(\\w+)",
       "captures": {
-        "1": { "name": "keyword.control.preprocessor.tcl" },
-        "2": { "name": "entity.name.type.tcl" }
+        "1": {
+          "name": "keyword.control.preprocessor.tcl"
+        },
+        "2": {
+          "name": "entity.name.type.tcl"
+        }
       }
     },
     {
       "name": "meta.preprocessor.other.tcl",
       "match": "^\\s*(#(?:if|elif|else|endif|include|error|set))\\b(.*$)",
       "captures": {
-        "1": { "name": "keyword.control.preprocessor.tcl" },
+        "1": {
+          "name": "keyword.control.preprocessor.tcl"
+        },
         "2": {
           "patterns": [
-            { "match": "\\b(defined|TRUE|FALSE)\\b", "name": "keyword.control.preprocessor.tcl" },
-            { "begin": "\"", "end": "\"", "name": "string.quoted.double.tcl", "patterns": [
-                { "match": "@[a-zA-Z_<][^@]*@", "name": "constant.character.format.placeholder" }
-            ]},
-            { "match": "@[a-zA-Z_<][^@]*@", "name": "constant.character.format.placeholder" }
+            {
+              "match": "\\b(defined|TRUE|FALSE)\\b",
+              "name": "keyword.control.preprocessor.tcl"
+            },
+            {
+              "begin": "\"",
+              "end": "\"",
+              "name": "string.quoted.double.tcl",
+              "patterns": [
+                {
+                  "match": "@[a-zA-Z_<][^@]*@",
+                  "name": "constant.character.format.placeholder"
+                }
+              ]
+            },
+            {
+              "match": "@[a-zA-Z_<][^@]*@",
+              "name": "constant.character.format.placeholder"
+            }
           ]
         }
       }
@@ -416,10 +544,14 @@
           "begin": "\\[",
           "end": "\\]",
           "captures": {
-            "0": { "name": "punctuation.section.interpolation.tcl" }
+            "0": {
+              "name": "punctuation.section.interpolation.tcl"
+            }
           },
           "patterns": [
-            { "include": "$self" }
+            {
+              "include": "$self"
+            }
           ]
         },
         {
@@ -451,15 +583,18 @@
     {
       "match": "\\b(proc)\\s+([A-Za-z_][A-Za-z0-9_\\-]*)",
       "captures": {
-        "1": { "name": "keyword.other.sprocess" },
-        "2": { "name": "entity.name.function.sprocess" }
+        "1": {
+          "name": "keyword.other.sprocess"
+        },
+        "2": {
+          "name": "entity.name.function.sprocess"
+        }
       }
     },
     {
       "match": "\\b(proc|try|throw)\\b",
       "name": "keyword.other.sprocess"
     },
-
     {
       "match": "\\b(after|append|array|break|catch|cd|close|concat|continue|error|eval|exec|exit|expr|file|flush|for|foreach|format|gets|glob|global|if|incr|info|join|lappend|lassign|lindex|linsert|list|llength|lmap|lrange|lrepeat|lreplace|lreverse|lsearch|lset|lsort|open|proc|puts|pwd|read|regexp|regsub|rename|return|scan|set|source|split|string|subst|switch|throw|time|try|unset|update|uplevel|upvar|variable|vwait|while)\\b",
       "name": "support.function.sprocess"
