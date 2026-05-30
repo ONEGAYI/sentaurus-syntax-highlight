@@ -1,0 +1,4771 @@
+{
+  "ft_scalar": {
+    "section": "General",
+    "signature": "ft_scalar <variableName> <variableValue>",
+    "description": "输出一行 DOE 提取信息，用于创建 Sentaurus Workbench 提取变量。仅当当前 Inspect 脚本属于 Sentaurus Workbench 项目时才有效。",
+    "parameters": [
+      {
+        "name": "<variableName>",
+        "type": "string",
+        "desc": "要提取的 Sentaurus Workbench 变量名。"
+      },
+      {
+        "name": "<variableValue>",
+        "type": "string",
+        "desc": "该变量的值。"
+      }
+    ],
+    "example": "ft_scalar Vth 0.45",
+    "keywords": [
+      "DOE",
+      "extract",
+      "Workbench",
+      "variable"
+    ]
+  },
+  "cv_write": {
+    "section": "File I/O",
+    "signature": "cv_write <type> <fileName> <curveList>",
+    "description": "将指定曲线的数据以指定格式导出到文件。支持的输出格式包括 plt、xgraph 和 xmgr。",
+    "parameters": [
+      {
+        "name": "<type>",
+        "type": "string",
+        "desc": "输出格式：\"plt\"、\"xgraph\" 或 \"xmgr\"。"
+      },
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "要写入的文件名。"
+      },
+      {
+        "name": "<curveList>",
+        "type": "list",
+        "desc": "要导出的曲线名称列表。"
+      }
+    ],
+    "example": "cv_write plt output.plt {curve1 curve2}",
+    "keywords": [
+      "export",
+      "write",
+      "file",
+      "plot"
+    ]
+  },
+  "fi_writeBitmap": {
+    "section": "File I/O",
+    "signature": "fi_writeBitmap <fileName>",
+    "description": "将当前绘图区域导出为 PNG 位图文件。",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "要写入的 PNG 文件名。"
+      }
+    ],
+    "example": "fi_writeBitmap plot.png",
+    "keywords": [
+      "bitmap",
+      "image",
+      "PNG",
+      "export"
+    ]
+  },
+  "fi_writeEps": {
+    "section": "File I/O",
+    "signature": "fi_writeEps <fileName> ?orientation? ?height? ?width?",
+    "description": "将当前绘图区域导出为 EPS（封装 PostScript）文件。若未指定高度或宽度，则使用实际绘图尺寸。",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "要写入的 EPS 文件名。"
+      },
+      {
+        "name": "?orientation?",
+        "type": "string",
+        "desc": "可选。图像方向：\"portrait\"（默认）或 \"landscape\"。"
+      },
+      {
+        "name": "?height?",
+        "type": "string",
+        "desc": "可选。保存图像的高度（像素）。"
+      },
+      {
+        "name": "?width?",
+        "type": "string",
+        "desc": "可选。保存图像的宽度（像素）。"
+      }
+    ],
+    "example": "fi_writeEps test.eps landscape 200 100",
+    "keywords": [
+      "EPS",
+      "export",
+      "image",
+      "PostScript"
+    ]
+  },
+  "fi_writePs": {
+    "section": "File I/O",
+    "signature": "fi_writePs <fileName> ?orientation? ?printSize? ?height? ?width? ?offsetHeight? ?offsetWidth? ?sizeUnit?",
+    "description": "将当前绘图区域导出为 PostScript 文件，可配置页面大小、图像尺寸和页面偏移量。若未指定高度或宽度，则使用实际绘图尺寸。",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "要写入的 PostScript 文件名。"
+      },
+      {
+        "name": "?orientation?",
+        "type": "string",
+        "desc": "可选。图像方向：\"portrait\"（默认）或 \"landscape\"。"
+      },
+      {
+        "name": "?printSize?",
+        "type": "string",
+        "desc": "可选。页面大小：\"US LETTER\"（默认）、\"DIN_A3\" 或 \"DIN_A4\"。"
+      },
+      {
+        "name": "?height?",
+        "type": "string",
+        "desc": "可选。保存图像的高度（以 sizeUnit 为单位）。"
+      },
+      {
+        "name": "?width?",
+        "type": "string",
+        "desc": "可选。保存图像的宽度（以 sizeUnit 为单位）。"
+      },
+      {
+        "name": "?offsetHeight?",
+        "type": "string",
+        "desc": "可选。垂直页面偏移量（以 sizeUnit 为单位）。"
+      },
+      {
+        "name": "?offsetWidth?",
+        "type": "string",
+        "desc": "可选。水平页面偏移量（以 sizeUnit 为单位）。"
+      },
+      {
+        "name": "?sizeUnit?",
+        "type": "string",
+        "desc": "可选。高度、宽度和偏移量的单位：\"i\"（英寸，默认）、\"m\"（毫米）或 \"c\"（厘米）。"
+      }
+    ],
+    "example": "fi_writePs test.ps landscape DIN_A4 450 300 5 5 m",
+    "keywords": [
+      "PostScript",
+      "export",
+      "print",
+      "page"
+    ]
+  },
+  "graph_load": {
+    "section": "File I/O",
+    "signature": "graph_load <fileName>",
+    "description": "加载之前保存的 Inspect 保存文件。加载新文件前会删除所有当前已加载的项目。",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "要加载的保存文件名。"
+      }
+    ],
+    "example": "graph_load session.ins",
+    "keywords": [
+      "load",
+      "save",
+      "session",
+      "file"
+    ]
+  },
+  "graph_write": {
+    "section": "File I/O",
+    "signature": "graph_write <fileName>",
+    "description": "将当前 Inspect 状态（包括所有已加载的项目、曲线和设置）保存到文件。",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "要保存的文件名。"
+      }
+    ],
+    "example": "graph_write session.ins",
+    "keywords": [
+      "save",
+      "session",
+      "file",
+      "state"
+    ]
+  },
+  "param_load": {
+    "section": "File I/O",
+    "signature": "param_load <fileName>",
+    "description": "加载参数文件。参数文件存储提取值和设置，便于跨会话复用。",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "要加载的参数文件名。"
+      }
+    ],
+    "example": "param_load parameters.par",
+    "keywords": [
+      "parameter",
+      "load",
+      "file",
+      "settings"
+    ]
+  },
+  "param_write": {
+    "section": "File I/O",
+    "signature": "param_write <fileName>",
+    "description": "将当前参数保存到参数文件，以便后续复用。",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "要写入的参数文件名。"
+      }
+    ],
+    "example": "param_write parameters.par",
+    "keywords": [
+      "parameter",
+      "save",
+      "file",
+      "settings"
+    ]
+  },
+  "proj_getDataSet": {
+    "section": "File I/O",
+    "signature": "proj_getDataSet <projectName> <dataSetId>",
+    "description": "返回指定项目中数据集的所有值列表。若未找到数据集，则返回空列表。",
+    "parameters": [
+      {
+        "name": "<projectName>",
+        "type": "string",
+        "desc": "包含该数据集的项目名。"
+      },
+      {
+        "name": "<dataSetId>",
+        "type": "string",
+        "desc": "数据集名称，如属于组则需包含组名（例如 \"node_A data_1\"）。"
+      }
+    ],
+    "example": "set y_data [proj_getDataSet \"tutorial_ins\" \"node_A data_1\"]",
+    "keywords": [
+      "dataset",
+      "data",
+      "values",
+      "project"
+    ]
+  },
+  "proj_getList": {
+    "section": "File I/O",
+    "signature": "proj_getList",
+    "description": "返回所有当前已加载的项目名称列表。若没有已加载的项目，则返回空列表。",
+    "parameters": [],
+    "example": "set projects [proj_getList]",
+    "keywords": [
+      "project",
+      "list",
+      "names",
+      "loaded"
+    ]
+  },
+  "proj_getNodeList": {
+    "section": "File I/O",
+    "signature": "proj_getNodeList <projectName>",
+    "description": "返回指定项目中所有组（节点）的名称列表。若未找到任何组，则返回空列表。",
+    "parameters": [
+      {
+        "name": "<projectName>",
+        "type": "string",
+        "desc": "项目名称。"
+      }
+    ],
+    "example": "set groups [proj_getNodeList \"nmos_des\"]",
+    "keywords": [
+      "group",
+      "node",
+      "project",
+      "list"
+    ]
+  },
+  "proj_load": {
+    "section": "File I/O",
+    "signature": "proj_load <fileName>",
+    "description": "加载数据文件并创建新项目。文件的基础名将用作项目名。",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "要加载的数据文件名。"
+      }
+    ],
+    "example": "proj_load nmos_des_des.tdr",
+    "keywords": [
+      "load",
+      "project",
+      "data",
+      "file"
+    ]
+  },
+  "proj_unload": {
+    "section": "File I/O",
+    "signature": "proj_unload <projectName>",
+    "description": "删除指定项目及其关联的所有曲线。",
+    "parameters": [
+      {
+        "name": "<projectName>",
+        "type": "string",
+        "desc": "要卸载的项目名称。"
+      }
+    ],
+    "example": "proj_unload nmos_des",
+    "keywords": [
+      "unload",
+      "delete",
+      "project",
+      "remove"
+    ]
+  },
+  "proj_write": {
+    "section": "File I/O",
+    "signature": "proj_write <projectName> <fileName>",
+    "description": "将项目及其数据集写入指定文件。",
+    "parameters": [
+      {
+        "name": "<projectName>",
+        "type": "string",
+        "desc": "要写入的项目名称。"
+      },
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "输出文件名。"
+      }
+    ],
+    "example": "proj_write nmos_des output_des.plt",
+    "keywords": [
+      "write",
+      "project",
+      "save",
+      "file"
+    ]
+  },
+  "cv_create": {
+    "section": "Curves",
+    "signature": "cv_create <curveName> <xDataPath> <yDataPath> ?axis?",
+    "description": "使用指定的 x 和 y 数据集创建曲线，但不显示。数据集必须已加载。数据路径由项目名、可选的组名和数据集名组成。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "新曲线的唯一名称。"
+      },
+      {
+        "name": "<xDataPath>",
+        "type": "string",
+        "desc": "X 数据集的数据路径（例如 \"nmos_des time\"）。"
+      },
+      {
+        "name": "<yDataPath>",
+        "type": "string",
+        "desc": "Y 数据集的数据路径（例如 \"nmos_des Gate OuterVoltage\"）。"
+      },
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "可选。使用的轴：\"y\"（默认）或 \"y2\"。"
+      }
+    ],
+    "example": "cv_create mycurve \"nmos_des time\" \"nmos_des Gate OuterVoltage\"",
+    "keywords": [
+      "curve",
+      "create",
+      "dataset",
+      "plot"
+    ]
+  },
+  "cv_createDS": {
+    "section": "Curves",
+    "signature": "cv_createDS <curveName> <xDataPath> <yDataPath> ?axis?",
+    "description": "使用指定的数据集创建曲线并立即显示。与 cv_create 功能相同，但创建后曲线会显示在绘图区域中。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "新曲线的唯一名称。"
+      },
+      {
+        "name": "<xDataPath>",
+        "type": "string",
+        "desc": "X 数据集的数据路径。"
+      },
+      {
+        "name": "<yDataPath>",
+        "type": "string",
+        "desc": "Y 数据集的数据路径。"
+      },
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "可选。使用的轴：\"y\"（默认）或 \"y2\"。"
+      }
+    ],
+    "example": "cv_createDS Id \"nmos_des Gate OuterVoltage\" \"nmos_des Drain TotalCurrent\"",
+    "keywords": [
+      "curve",
+      "create",
+      "display",
+      "dataset"
+    ]
+  },
+  "cv_createFromScript": {
+    "section": "Curves",
+    "signature": "cv_createFromScript <curveName> <xdata> <ydata> ?axis?",
+    "description": "使用给定名称和显式数据值创建曲线。若 x 和 y 值的数量不同，曲线点数以较小者为准。使用此命令创建的曲线存储在 AuxProject 中。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "新曲线的唯一名称。"
+      },
+      {
+        "name": "<xdata>",
+        "type": "string",
+        "desc": "以空格分隔的 X 轴数据值列表。"
+      },
+      {
+        "name": "<ydata>",
+        "type": "string",
+        "desc": "以空格分隔的 Y 轴数据值列表。"
+      },
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "可选。使用的轴：\"y\"（默认）或 \"y2\"。"
+      }
+    ],
+    "example": "cv_createFromScript mycurve \"0 1 2 3 4 5 6 7 8 9\" \"1 2 1 2 1 2 1 2 1 2\"",
+    "keywords": [
+      "curve",
+      "create",
+      "script",
+      "data"
+    ]
+  },
+  "cv_createWithFormula": {
+    "section": "Curves",
+    "signature": "cv_createWithFormula <curveName> <formula> <xmin> <xmax> <ymin> <ymax>",
+    "description": "通过在指定范围内对参数曲线数据应用公式来创建新曲线。将范围边界设为非数值（如 A）表示该方向不设限制。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "新曲线的唯一名称。"
+      },
+      {
+        "name": "<formula>",
+        "type": "string",
+        "desc": "公式或宏表达式，使用 <曲线名> 语法引用参数曲线。"
+      },
+      {
+        "name": "<xmin>",
+        "type": "string",
+        "desc": "X 轴最小值范围，或非数值（如 \"A\"）表示无限制。"
+      },
+      {
+        "name": "<xmax>",
+        "type": "string",
+        "desc": "X 轴最大值范围，或非数值（如 \"A\"）表示无限制。"
+      },
+      {
+        "name": "<ymin>",
+        "type": "string",
+        "desc": "Y 轴最小值范围，或非数值（如 \"A\"）表示无限制。"
+      },
+      {
+        "name": "<ymax>",
+        "type": "string",
+        "desc": "Y 轴最大值范围，或非数值（如 \"A\"）表示无限制。"
+      }
+    ],
+    "example": "cv_createWithFormula f3 \"<f1>+<f2>+10\" A A A A",
+    "keywords": [
+      "curve",
+      "formula",
+      "compute",
+      "range"
+    ]
+  },
+  "cv_delete": {
+    "section": "Curves",
+    "signature": "cv_delete <curveName>",
+    "description": "从当前 Inspect 会话中删除指定曲线。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要删除的曲线名称。"
+      }
+    ],
+    "example": "cv_delete mycurve",
+    "keywords": [
+      "delete",
+      "curve",
+      "remove"
+    ]
+  },
+  "cv_display": {
+    "section": "Curves",
+    "signature": "cv_display <curveName> ?axis?",
+    "description": "在绘图区域中显示已创建的曲线，可指定使用的 Y 轴。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要显示的曲线名称。"
+      },
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "可选。使用的轴：\"y\"（默认）或 \"y2\"。"
+      }
+    ],
+    "example": "cv_display Id",
+    "keywords": [
+      "display",
+      "show",
+      "curve",
+      "plot"
+    ]
+  },
+  "cv_logScale": {
+    "section": "Curves",
+    "signature": "cv_logScale <curveName> <newCurveName> ?axis?",
+    "description": "创建一条新曲线，其中指定轴上的所有值经过自然对数（ln）变换。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要变换的曲线名称。"
+      },
+      {
+        "name": "<newCurveName>",
+        "type": "string",
+        "desc": "对数变换后新曲线的名称。"
+      },
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "可选。应用对数变换的轴：\"x\"（默认）或 \"y\"。"
+      }
+    ],
+    "example": "cv_logScale mycurve logcurve x",
+    "keywords": [
+      "log",
+      "scale",
+      "transform",
+      "natural"
+    ]
+  },
+  "cv_log10Scale": {
+    "section": "Curves",
+    "signature": "cv_log10Scale <curveName> <newCurveName> ?axis?",
+    "description": "创建一条新曲线，其中指定轴上的所有值经过以 10 为底的对数（log10）变换。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要变换的曲线名称。"
+      },
+      {
+        "name": "<newCurveName>",
+        "type": "string",
+        "desc": "log10 变换后新曲线的名称。"
+      },
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "可选。应用 log10 变换的轴：\"x\"（默认）或 \"y\"。"
+      }
+    ],
+    "example": "cv_log10Scale mycurve log10curve x",
+    "keywords": [
+      "log10",
+      "scale",
+      "transform",
+      "base10"
+    ]
+  },
+  "cv_split": {
+    "section": "Curves",
+    "signature": "cv_split <curveName> <axis> <newCurveList>",
+    "description": "在 x 值非单调的位置（x[i+1] < x[i]）将输入曲线分割为多条曲线。提供的新曲线名称数量必须与实际分割结果数量匹配。新曲线映射到指定的 Y 轴上。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要分割的曲线名称。"
+      },
+      {
+        "name": "<axis>",
+        "type": "string",
+        "desc": "新曲线映射到的 Y 轴（例如 \"y\" 或 \"y2\"）。"
+      },
+      {
+        "name": "<newCurveList>",
+        "type": "list",
+        "desc": "新曲线名称列表，数量必须与实际分割曲线数匹配。"
+      }
+    ],
+    "example": "cv_split Id y {Id_1 Id_2 Id_3}",
+    "keywords": [
+      "split",
+      "nonmonotonic",
+      "backtrace",
+      "suppress"
+    ]
+  },
+  "cv_split_disc": {
+    "section": "Curves",
+    "signature": "cv_split_disc <curveName> <axis> <newCurveList>",
+    "description": "在不连续点（x[i+1] == x[i] 且 y[i+1] != y[i]）处将输入曲线分割为多条曲线。提供的新曲线名称数量必须与实际分割结果数量匹配。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要分割的曲线名称。"
+      },
+      {
+        "name": "<axis>",
+        "type": "string",
+        "desc": "新曲线映射到的 Y 轴（例如 \"y\" 或 \"y2\"）。"
+      },
+      {
+        "name": "<newCurveList>",
+        "type": "list",
+        "desc": "新曲线名称列表，数量必须与实际分割曲线数匹配。"
+      }
+    ],
+    "example": "cv_split_disc Id y {Id_1 Id_2}",
+    "keywords": [
+      "split",
+      "discontinuity",
+      "break",
+      "segment"
+    ]
+  },
+  "cv_getVals": {
+    "section": "Data Access",
+    "signature": "cv_getVals <curveName>",
+    "description": "返回包含指定曲线 x 数据和 y 数据的嵌套列表。x 数据为列表第一个元素，y 数据为第二个元素。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要获取数据的曲线名称。"
+      }
+    ],
+    "example": "set xy [cv_getVals \"f1\"] ;# x: [lindex $xy 0], y: [lindex $xy 1]",
+    "keywords": [
+      "data",
+      "values",
+      "access",
+      "dataset"
+    ]
+  },
+  "cv_getValsX": {
+    "section": "Data Access",
+    "signature": "cv_getValsX <curveName>",
+    "description": "返回指定曲线的 x 数据值列表。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要获取 x 数据的曲线名称。"
+      }
+    ],
+    "example": "set xvals [cv_getValsX \"Id_Vd\"]",
+    "keywords": [
+      "data",
+      "values",
+      "x-axis",
+      "access"
+    ]
+  },
+  "cv_getValsY": {
+    "section": "Data Access",
+    "signature": "cv_getValsY <curveName>",
+    "description": "返回指定曲线的 y 数据值列表。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要获取 y 数据的曲线名称。"
+      }
+    ],
+    "example": "set jph($n) [lindex [cv_getValsY tmp] end]",
+    "keywords": [
+      "data",
+      "values",
+      "y-axis",
+      "access"
+    ]
+  },
+  "cv_getXaxis": {
+    "section": "Data Access",
+    "signature": "cv_getXaxis <curveName>",
+    "description": "返回指定曲线 x 数据集的项目名和数据集 ID。项目名为返回列表的第一个元素，数据集 ID 为第二个元素。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要查询的曲线名称。"
+      }
+    ],
+    "example": "set answer [cv_getXaxis \"myCurve\"]",
+    "keywords": [
+      "axis",
+      "dataset",
+      "project",
+      "metadata"
+    ]
+  },
+  "cv_getYaxis": {
+    "section": "Data Access",
+    "signature": "cv_getYaxis <curveName>",
+    "description": "返回指定曲线 y 数据集的项目名和数据集 ID，格式与 cv_getXaxis 相同。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要查询的曲线名称。"
+      }
+    ],
+    "example": "set yInfo [cv_getYaxis \"Id_Vg\"]",
+    "keywords": [
+      "axis",
+      "dataset",
+      "project",
+      "metadata"
+    ]
+  },
+  "cv_printVals": {
+    "section": "Data Access",
+    "signature": "cv_printVals <curveName>",
+    "description": "将曲线的 x 数据和 y 数据输出到标准输出。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要打印数据的曲线名称。"
+      }
+    ],
+    "example": "cv_printVals \"Id_Vd\"",
+    "keywords": [
+      "print",
+      "data",
+      "values",
+      "output"
+    ]
+  },
+  "cv_abs": {
+    "section": "Transform",
+    "signature": "cv_abs <curveName> <axis>",
+    "description": "将 x 或 y 数据集中的负值替换为绝对值。axis 参数指定对哪个数据集生效。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要变换的曲线名称。"
+      },
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "应用绝对值的轴：\"x\" 或 \"y\"。"
+      }
+    ],
+    "example": "cv_abs \"Id_Vd\" y",
+    "keywords": [
+      "absolute",
+      "transform",
+      "negative",
+      "values"
+    ]
+  },
+  "cv_delPts": {
+    "section": "Transform",
+    "signature": "cv_delPts <curveName> <indexList>",
+    "description": "按索引删除曲线中指定的数据点。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "<indexList>",
+        "type": "list",
+        "desc": "要删除的曲线数据点索引列表。"
+      }
+    ],
+    "example": "cv_delPts \"Id_Vd\" 5 10",
+    "keywords": [
+      "delete",
+      "points",
+      "remove",
+      "data"
+    ]
+  },
+  "cv_inv": {
+    "section": "Transform",
+    "signature": "cv_inv <curveName> <axis>",
+    "description": "沿指定轴反转曲线，等效于对该轴的数据取反。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要反转的曲线名称。"
+      },
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "反转所围绕的轴：\"x\" 或 \"y\"。"
+      }
+    ],
+    "example": "cv_inv \"Id_Vd\" y",
+    "keywords": [
+      "inverse",
+      "reflect",
+      "transform",
+      "negate"
+    ]
+  },
+  "cv_reset": {
+    "section": "Transform",
+    "signature": "cv_reset <curveName>",
+    "description": "在变换操作后恢复曲线的原始显示状态。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "要恢复的曲线名称。"
+      }
+    ],
+    "example": "cv_reset \"Id_Vd\"",
+    "keywords": [
+      "reset",
+      "restore",
+      "transform",
+      "undo"
+    ]
+  },
+  "cv_lineColor": {
+    "section": "Attributes",
+    "signature": "cv_lineColor <curveName> <color>",
+    "description": "设置指定曲线的线条颜色。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "<color>",
+        "type": "string",
+        "desc": "线条颜色名：\"red\"、\"blue\"、\"green\"、\"black\"、\"white\"、\"magenta\"、\"cyan\"、\"yellow\"、\"orange\"、\"brown\"、\"violet\"、\"gray\" 或 \"defcolor\"。"
+      }
+    ],
+    "example": "cv_lineColor \"Id_Vd\" blue",
+    "keywords": [
+      "color",
+      "line",
+      "style",
+      "curve"
+    ]
+  },
+  "cv_lineStyle": {
+    "section": "Attributes",
+    "signature": "cv_lineStyle <curveName> <style>",
+    "description": "设置指定曲线的线条样式。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "<style>",
+        "type": "string",
+        "desc": "线条样式：\"solid\"、\"dashed\"、\"dotted\"、\"long dashed\" 或 \"long dotted\"。"
+      }
+    ],
+    "example": "cv_lineStyle \"Id_Vd\" solid",
+    "keywords": [
+      "style",
+      "line",
+      "dashed",
+      "solid"
+    ]
+  },
+  "cv_renameCurve": {
+    "section": "Attributes",
+    "signature": "cv_renameCurve <curveName> <newName>",
+    "description": "将曲线重命名为新名称。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "曲线的当前名称。"
+      },
+      {
+        "name": "<newName>",
+        "type": "string",
+        "desc": "曲线的新名称。"
+      }
+    ],
+    "example": "cv_renameCurve \"Id_Vd\" \"I_ds\"",
+    "keywords": [
+      "rename",
+      "curve",
+      "name",
+      "label"
+    ]
+  },
+  "cv_set_interpol": {
+    "section": "Attributes",
+    "signature": "cv_set_interpol <curveId> <axis> <type>",
+    "description": "设置曲线在指定轴上的插值方法。",
+    "parameters": [
+      {
+        "name": "<curveId>",
+        "type": "string",
+        "desc": "曲线名称或标识。"
+      },
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "设置插值的轴：\"X\" 或 \"Y\"。"
+      },
+      {
+        "name": "<type>",
+        "type": "enum",
+        "desc": "插值方法：\"AUTO\"（默认，自动）、\"LIN\"（线性插值）或 \"LOG\"（对数插值）。"
+      }
+    ],
+    "example": "cv_set_interpol \"Id_Vd\" Y LOG",
+    "keywords": [
+      "interpolation",
+      "method",
+      "linear",
+      "logarithmic"
+    ]
+  },
+  "cv_setCurveAttr": {
+    "section": "Attributes",
+    "signature": "cv_setCurveAttr <curveName> <legend> <color> <style> <width> <shape> <size> <outColor> <outWidth> <fillColor>",
+    "description": "一次性设置曲线的所有绘制属性，包括图例文本、线条颜色和样式、标记形状和大小、标记轮廓和填充颜色。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "<legend>",
+        "type": "string",
+        "desc": "曲线的图例文本。"
+      },
+      {
+        "name": "<color>",
+        "type": "string",
+        "desc": "线条颜色名（如 \"red\"、\"black\"、\"blue\"）。"
+      },
+      {
+        "name": "<style>",
+        "type": "string",
+        "desc": "线条样式：\"solid\"、\"dashed\"、\"dotted\"、\"long dashed\" 或 \"long dotted\"。"
+      },
+      {
+        "name": "<width>",
+        "type": "int",
+        "desc": "线宽（像素）。"
+      },
+      {
+        "name": "<shape>",
+        "type": "string",
+        "desc": "标记形状：\"none\"、\"circle\"、\"cross\"、\"diamond\"、\"plus\"、\"scross\"、\"splus\"、\"square\" 或 \"triangle\"。"
+      },
+      {
+        "name": "<size>",
+        "type": "int",
+        "desc": "标记大小（像素）。"
+      },
+      {
+        "name": "<outColor>",
+        "type": "string",
+        "desc": "标记轮廓颜色名。"
+      },
+      {
+        "name": "<outWidth>",
+        "type": "int",
+        "desc": "标记轮廓宽度（像素）。"
+      },
+      {
+        "name": "<fillColor>",
+        "type": "string",
+        "desc": "标记填充颜色名。"
+      }
+    ],
+    "example": "cv_setCurveAttr idvd0 \"Vg=0.0\" black solid 1 circle 5 defcolor 1 defcolor",
+    "keywords": [
+      "attribute",
+      "style",
+      "color",
+      "marker",
+      "legend"
+    ]
+  },
+  "gb_setpreferences": {
+    "section": "Attributes",
+    "signature": "gb_setpreferences <type> <val>",
+    "description": "设置首选项的值。支持的选项有 \"precision\"（整数，控制状态栏坐标值的小数位数）和 \"old_interpolation\"（0 或 1，启用或禁用旧插值方法）。",
+    "parameters": [
+      {
+        "name": "<type>",
+        "type": "string",
+        "desc": "首选项名称：\"precision\" 或 \"old_interpolation\"。"
+      },
+      {
+        "name": "<val>",
+        "type": "string",
+        "desc": "首选项的新值。"
+      }
+    ],
+    "example": "gb_setpreferences precision 6",
+    "keywords": [
+      "preferences",
+      "settings",
+      "precision",
+      "option"
+    ]
+  },
+  "gr_createLabel": {
+    "section": "Attributes",
+    "signature": "gr_createLabel <label> <coordx> <coordy> <fontStr> <color>",
+    "description": "在绘图区域的指定坐标处创建文本标签。",
+    "parameters": [
+      {
+        "name": "<label>",
+        "type": "string",
+        "desc": "要显示的标签文本。"
+      },
+      {
+        "name": "<coordx>",
+        "type": "float",
+        "desc": "标签的 X 坐标（绘图坐标系）。"
+      },
+      {
+        "name": "<coordy>",
+        "type": "float",
+        "desc": "标签的 Y 坐标（绘图坐标系）。"
+      },
+      {
+        "name": "<fontStr>",
+        "type": "string",
+        "desc": "字体规格字符串。"
+      },
+      {
+        "name": "<color>",
+        "type": "string",
+        "desc": "标签文本颜色名。"
+      }
+    ],
+    "example": "gr_createLabel \"Gate\" \"Vg = 1.0V\" \"center\"",
+    "keywords": [
+      "label",
+      "annotation",
+      "text",
+      "plot"
+    ]
+  },
+  "gr_deleteLabel": {
+    "section": "Attributes",
+    "signature": "gr_deleteLabel <labelId>",
+    "description": "使用标签 ID 删除之前创建的标签。",
+    "parameters": [
+      {
+        "name": "<labelId>",
+        "type": "string",
+        "desc": "要删除的标签 ID，即 gr_createLabel 返回的值。"
+      }
+    ],
+    "example": "gr_deleteLabel \"Gate\"",
+    "keywords": [
+      "label",
+      "delete",
+      "annotation",
+      "remove"
+    ]
+  },
+  "gr_formatAxis": {
+    "section": "Attributes",
+    "signature": "gr_formatAxis <axis> <format>",
+    "description": "更改坐标轴刻度标签的数字显示格式。",
+    "parameters": [
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "要格式化的轴：\"X\"、\"Y\" 或 \"Y2\"。"
+      },
+      {
+        "name": "<format>",
+        "type": "enum",
+        "desc": "数字格式：\"default\"、\"engineering\"、\"fixed\"、\"scientific\"、\"LOG\" 或 \"LIN\"。"
+      }
+    ],
+    "example": "gr_formatAxis \"Y\" scientific",
+    "keywords": [
+      "axis",
+      "format",
+      "scientific",
+      "engineering"
+    ]
+  },
+  "gr_mappedAxis": {
+    "section": "Attributes",
+    "signature": "gr_mappedAxis <axis> <yesno>",
+    "description": "控制指定 Y 轴在绘图区域的显示或隐藏。",
+    "parameters": [
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "要控制的 Y 轴：\"y\" 或 \"y2\"。"
+      },
+      {
+        "name": "<yesno>",
+        "type": "boolean",
+        "desc": "轴可见性：\"True\" 显示或 \"False\" 隐藏。"
+      }
+    ],
+    "example": "gr_mappedAxis \"y2\" True",
+    "keywords": [
+      "axis",
+      "visibility",
+      "y2",
+      "toggle"
+    ]
+  },
+  "gr_precision": {
+    "section": "Attributes",
+    "signature": "gr_precision <axis> <prec>",
+    "description": "设置指定坐标轴刻度标签的数字精度（小数位数）。",
+    "parameters": [
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "要配置的轴：\"X\"、\"Y\" 或 \"Y2\"。"
+      },
+      {
+        "name": "<prec>",
+        "type": "int",
+        "desc": "刻度标签的小数位数。"
+      }
+    ],
+    "example": "gr_precision \"Y\" 6",
+    "keywords": [
+      "precision",
+      "axis",
+      "decimal",
+      "format"
+    ]
+  },
+  "gr_setAxisAttr": {
+    "section": "Attributes",
+    "signature": "gr_setAxisAttr <axis> <title> <tfont> <min> <max> <color> <width> <font> <angle> <div> <scale> <tcolor>",
+    "description": "设置坐标轴的所有属性，包括标题、字体、范围、颜色、刻度标签和刻度类型。",
+    "parameters": [
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "要配置的轴：\"X\"、\"Y\" 或 \"Y2\"。"
+      },
+      {
+        "name": "<title>",
+        "type": "string",
+        "desc": "轴标题文本。"
+      },
+      {
+        "name": "<tfont>",
+        "type": "int",
+        "desc": "轴标题的字号。"
+      },
+      {
+        "name": "<min>",
+        "type": "string",
+        "desc": "轴范围最小值，空 {} 表示自动。"
+      },
+      {
+        "name": "<max>",
+        "type": "string",
+        "desc": "轴范围最大值，空 {} 表示自动。"
+      },
+      {
+        "name": "<color>",
+        "type": "string",
+        "desc": "轴线颜色。"
+      },
+      {
+        "name": "<width>",
+        "type": "int",
+        "desc": "轴线宽度。"
+      },
+      {
+        "name": "<font>",
+        "type": "int",
+        "desc": "刻度标签字号。"
+      },
+      {
+        "name": "<angle>",
+        "type": "int",
+        "desc": "刻度标签绘制角度。"
+      },
+      {
+        "name": "<div>",
+        "type": "int",
+        "desc": "主刻度之间的次刻度数。"
+      },
+      {
+        "name": "<scale>",
+        "type": "enum",
+        "desc": "刻度类型：\"lin\"（线性）或 \"log\"（对数）。"
+      },
+      {
+        "name": "<tcolor>",
+        "type": "string",
+        "desc": "轴标题文字颜色。"
+      }
+    ],
+    "example": "gr_setAxisAttr X {Drain Voltage (V)} 14 {} {} black 0 12 0 5 0",
+    "keywords": [
+      "axis",
+      "title",
+      "range",
+      "scale",
+      "attribute"
+    ]
+  },
+  "gr_setGeneralAttr": {
+    "section": "Attributes",
+    "signature": "gr_setGeneralAttr ?showFrame? ?axesTight? ?backColor? ?selectColor?",
+    "description": "设置绘图通用属性，包括边框显示、轴紧缩、背景颜色和选中曲线颜色。",
+    "parameters": [
+      {
+        "name": "?showFrame?",
+        "type": "boolean",
+        "desc": "可选。显示绘图边框；默认为 true。"
+      },
+      {
+        "name": "?axesTight?",
+        "type": "boolean",
+        "desc": "可选。轴紧缩至数据范围；默认为 true。"
+      },
+      {
+        "name": "?backColor?",
+        "type": "string",
+        "desc": "可选。绘图背景颜色；默认为 \"white\"。"
+      },
+      {
+        "name": "?selectColor?",
+        "type": "string",
+        "desc": "可选。选中曲线的高亮颜色；默认为 \"cyan\"。"
+      }
+    ],
+    "example": "gr_setGeneralAttr {showFrame true} {axesTight true} {backColor white}",
+    "keywords": [
+      "plot",
+      "frame",
+      "background",
+      "general"
+    ]
+  },
+  "gr_setGridAttr": {
+    "section": "Attributes",
+    "signature": "gr_setGridAttr ?showGrid? ?gridAlign? ?minorTicks? ?gridStyle? ?gridColor? ?gridWidth?",
+    "description": "设置网格属性，包括可见性、对齐方式、次刻度、样式、颜色和线宽。",
+    "parameters": [
+      {
+        "name": "?showGrid?",
+        "type": "boolean",
+        "desc": "可选。显示网格线；默认为 false。"
+      },
+      {
+        "name": "?gridAlign?",
+        "type": "enum",
+        "desc": "可选。网格对齐：\"left\"（默认）或 \"right\"。"
+      },
+      {
+        "name": "?minorTicks?",
+        "type": "boolean",
+        "desc": "可选。显示次刻度；默认为 false。"
+      },
+      {
+        "name": "?gridStyle?",
+        "type": "string",
+        "desc": "可选。网格线样式：\"dashed\"、\"dot-dashed\"、\"dotted\"、\"long dashed\"、\"long dotted\"、\"short dashed\"（默认）或 \"solid\"。"
+      },
+      {
+        "name": "?gridColor?",
+        "type": "string",
+        "desc": "可选。网格线颜色；默认为 \"black\"。"
+      },
+      {
+        "name": "?gridWidth?",
+        "type": "int",
+        "desc": "可选。网格线粗细；默认为 1。"
+      }
+    ],
+    "example": "gr_setGridAttr {showGrid true} {gridStyle dashed}",
+    "keywords": [
+      "grid",
+      "style",
+      "ticks",
+      "lines"
+    ]
+  },
+  "gr_setLegendAttr": {
+    "section": "Attributes",
+    "signature": "gr_setLegendAttr ?showFlag? ?fontName? ?fontSize? ?fontStyle? ?backColor? ?foreColor? ?frameColor? ?frameWidth? ?framePos? ?frameAnchor?",
+    "description": "设置图例的所有属性，包括可见性、字体、颜色、边框位置和锚点。",
+    "parameters": [
+      {
+        "name": "?showFlag?",
+        "type": "boolean",
+        "desc": "可选。显示图例；默认为 true。"
+      },
+      {
+        "name": "?fontName?",
+        "type": "string",
+        "desc": "可选。图例字体名；默认为 \"helvetica\"。"
+      },
+      {
+        "name": "?fontSize?",
+        "type": "int",
+        "desc": "可选。图例字号；默认为 10。"
+      },
+      {
+        "name": "?fontStyle?",
+        "type": "string",
+        "desc": "可选。字体样式：\"bold\"、\"italic\"、\"overstrike\"、\"underline\" 或 {}（默认）。"
+      },
+      {
+        "name": "?backColor?",
+        "type": "string",
+        "desc": "可选。图例背景颜色；默认为 \"white\"。"
+      },
+      {
+        "name": "?foreColor?",
+        "type": "string",
+        "desc": "可选。图例前景（文字）颜色；默认为 \"black\"。"
+      },
+      {
+        "name": "?frameColor?",
+        "type": "string",
+        "desc": "可选。图例边框颜色；默认为 \"black\"。"
+      },
+      {
+        "name": "?frameWidth?",
+        "type": "int",
+        "desc": "可选。图例边框宽度；默认为 1。"
+      },
+      {
+        "name": "?framePos?",
+        "type": "enum",
+        "desc": "可选。图例位置：\"left\"、\"right\"（默认）、\"top\"、\"bottom\"、\"free\" 或 \"plot\"。"
+      },
+      {
+        "name": "?frameAnchor?",
+        "type": "enum",
+        "desc": "可选。图例锚点：\"n\"（默认）、\"e\"、\"s\"、\"w\"、\"ne\"、\"se\"、\"sw\" 或 \"nw\"。"
+      }
+    ],
+    "example": "gr_setLegendAttr {showFlag true} {fontSize 10} {framePos right}",
+    "keywords": [
+      "legend",
+      "font",
+      "frame",
+      "style"
+    ]
+  },
+  "gr_setLegendPos": {
+    "section": "Attributes",
+    "signature": "gr_setLegendPos <x> <y>",
+    "description": "通过指定新的 x 和 y 坐标来更改图例在绘图区域中的位置。",
+    "parameters": [
+      {
+        "name": "<x>",
+        "type": "float",
+        "desc": "图例的新 x 坐标。"
+      },
+      {
+        "name": "<y>",
+        "type": "float",
+        "desc": "图例的新 y 坐标。"
+      }
+    ],
+    "example": "gr_setLegendPos 0.9 0.9",
+    "keywords": [
+      "legend",
+      "position",
+      "coordinates",
+      "move"
+    ]
+  },
+  "gr_setTitleAttr": {
+    "section": "Attributes",
+    "signature": "gr_setTitleAttr <title> ?fontSize? ?just?",
+    "description": "设置绘图标题文本及其字号和对齐方式。",
+    "parameters": [
+      {
+        "name": "<title>",
+        "type": "string",
+        "desc": "绘图标题文本。"
+      },
+      {
+        "name": "?fontSize?",
+        "type": "int",
+        "desc": "可选。标题字号；默认为 14。"
+      },
+      {
+        "name": "?just?",
+        "type": "enum",
+        "desc": "可选。标题对齐方式：\"center\"（默认）、\"left\" 或 \"right\"。"
+      }
+    ],
+    "example": "gr_setTitleAttr \"Id-Vd Characteristics\"",
+    "keywords": [
+      "title",
+      "font",
+      "plot",
+      "header"
+    ]
+  },
+  "cv_compute": {
+    "section": "Computing",
+    "signature": "cv_compute <formula> <xmin> <xmax> <ymin> <ymax>",
+    "description": "在指定的 x 和 y 范围内对公式求值，返回标量计算结果。范围边界使用 \"A\" 表示不设限制。",
+    "parameters": [
+      {
+        "name": "<formula>",
+        "type": "string",
+        "desc": "要求值的公式字符串，使用 <曲线名> 语法引用曲线数据。"
+      },
+      {
+        "name": "<xmin>",
+        "type": "string",
+        "desc": "X 轴最小值范围，或 \"A\" 表示无限制。"
+      },
+      {
+        "name": "<xmax>",
+        "type": "string",
+        "desc": "X 轴最大值范围，或 \"A\" 表示无限制。"
+      },
+      {
+        "name": "<ymin>",
+        "type": "string",
+        "desc": "Y 轴最小值范围，或 \"A\" 表示无限制。"
+      },
+      {
+        "name": "<ymax>",
+        "type": "string",
+        "desc": "Y 轴最大值范围，或 \"A\" 表示无限制。"
+      }
+    ],
+    "example": "cv_compute \"vecmin(<j($n)>)\" A A A A",
+    "keywords": [
+      "compute",
+      "formula",
+      "scalar",
+      "evaluate"
+    ]
+  },
+  "cv_getZero": {
+    "section": "Computing",
+    "signature": "cv_getZero <curveName> <xmin> <xmax> <ymin> <ymax>",
+    "description": "计算曲线与 x 轴（y = 0）交叉点的 x 坐标。若曲线不与 x 轴相交，则返回空字符串。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "<xmin>",
+        "type": "string",
+        "desc": "X 轴最小值范围，或 \"A\" 表示无限制。"
+      },
+      {
+        "name": "<xmax>",
+        "type": "string",
+        "desc": "X 轴最大值范围，或 \"A\" 表示无限制。"
+      },
+      {
+        "name": "<ymin>",
+        "type": "string",
+        "desc": "Y 轴最小值范围，或 \"A\" 表示无限制。"
+      },
+      {
+        "name": "<ymax>",
+        "type": "string",
+        "desc": "Y 轴最大值范围，或 \"A\" 表示无限制。"
+      }
+    ],
+    "example": "set voc [cv_compute \"veczero(<j($n)>)\" A A A A]",
+    "keywords": [
+      "zero",
+      "crossing",
+      "x-intercept",
+      "root"
+    ]
+  },
+  "macro_define": {
+    "section": "Computing",
+    "signature": "macro_define <macroName> <macroDef>",
+    "description": "定义可在公式表达式中复用的宏。使用 <c n> 作为曲线参数占位符，<s n> 作为标量参数占位符，其中 n 从 1 开始。",
+    "parameters": [
+      {
+        "name": "<macroName>",
+        "type": "string",
+        "desc": "宏的名称。"
+      },
+      {
+        "name": "<macroDef>",
+        "type": "string",
+        "desc": "宏定义字符串，使用 <c n> 表示曲线占位符，<s n> 表示标量占位符。"
+      }
+    ],
+    "example": "macro_define \"Vt2d\" \"<s 2> * vecvalx(diff(diff(<c 1>)), 0.999*vecmax(diff(diff(<c 1>)))\"",
+    "keywords": [
+      "macro",
+      "define",
+      "formula",
+      "reuse"
+    ]
+  },
+  "script_break": {
+    "section": "Script Control",
+    "signature": "script_break",
+    "description": "暂停脚本执行并将控制权交给用户界面。可通过 Script > Continue Script 恢复脚本执行。",
+    "parameters": [],
+    "example": "script_break",
+    "keywords": [
+      "break",
+      "pause",
+      "suspend",
+      "interactive"
+    ]
+  },
+  "script_exit": {
+    "section": "Script Control",
+    "signature": "script_exit",
+    "description": "停止脚本执行并退出 Inspect。",
+    "parameters": [],
+    "example": "script_exit",
+    "keywords": [
+      "exit",
+      "stop",
+      "quit",
+      "terminate"
+    ]
+  },
+  "script_sleep": {
+    "section": "Script Control",
+    "signature": "script_sleep <sec>",
+    "description": "暂停脚本执行指定的秒数。",
+    "parameters": [
+      {
+        "name": "<sec>",
+        "type": "float",
+        "desc": "休眠时间（秒）。"
+      }
+    ],
+    "example": "script_sleep 1",
+    "keywords": [
+      "sleep",
+      "wait",
+      "pause",
+      "delay"
+    ]
+  },
+  "f_Gamma": {
+    "section": "Extraction Functions",
+    "signature": "f_Gamma <VT1> <VT2> <VB1> <VB2> ?const?",
+    "description": "计算两个不同源-衬底电压下的体效应参数 Gamma，公式为：Gamma = (VT2 - VT1) / (sqrt(const + VB2) - sqrt(const + VB1))。",
+    "parameters": [
+      {
+        "name": "<VT1>",
+        "type": "float",
+        "desc": "第一个阈值电压值 [V]。"
+      },
+      {
+        "name": "<VT2>",
+        "type": "float",
+        "desc": "第二个阈值电压值 [V]。"
+      },
+      {
+        "name": "<VB1>",
+        "type": "float",
+        "desc": "第一个源-衬底电压 [V]。"
+      },
+      {
+        "name": "<VB2>",
+        "type": "float",
+        "desc": "第二个源-衬底电压 [V]。"
+      },
+      {
+        "name": "?const?",
+        "type": "float",
+        "desc": "2*phiF，其中 phiF 为费米能级势。默认为 0.8 V。"
+      }
+    ],
+    "example": "set gamma [f_Gamma $vt1 $vt2 0.0 1.0]",
+    "keywords": [
+      "body effect",
+      "gamma",
+      "threshold",
+      "substrate",
+      "parameter"
+    ]
+  },
+  "f_gm": {
+    "section": "Extraction Functions",
+    "signature": "f_gm <curveName> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "计算给定 Id-Vg 曲线的最大跨导 [A/V]。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "用于计算跨导的 Id-Vg 曲线名称。"
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "计算范围的最小 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "计算范围的最大 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "计算范围的最小 y 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "计算范围的最大 y 值。默认为完整曲线范围。"
+      }
+    ],
+    "example": "set gm [f_gm idvgs 0.0 1.0]",
+    "keywords": [
+      "transconductance",
+      "gm",
+      "Id-Vg",
+      "MOSFET",
+      "extraction"
+    ]
+  },
+  "f_hideInternalCurves": {
+    "section": "Extraction Functions",
+    "signature": "f_hideInternalCurves",
+    "description": "隐藏提取函数命令创建的内部曲线。",
+    "parameters": [],
+    "example": "f_hideInternalCurves",
+    "keywords": [
+      "hide",
+      "internal",
+      "curves",
+      "display"
+    ]
+  },
+  "f_IDSS": {
+    "section": "Extraction Functions",
+    "signature": "f_IDSS <curveName> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "计算固定栅-源电压下 Id-Vd 曲线的饱和电流。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "固定栅-源电压下的 Id-Vd 曲线名称。"
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "计算范围的最小 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "计算范围的最大 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "计算范围的最小 y 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "计算范围的最大 y 值。默认为完整曲线范围。"
+      }
+    ],
+    "example": "set idss [f_IDSS idvd]",
+    "keywords": [
+      "saturation",
+      "current",
+      "IDSS",
+      "drain",
+      "extraction"
+    ]
+  },
+  "f_KP": {
+    "section": "Extraction Functions",
+    "signature": "f_KP <gm> ?VDS?",
+    "description": "根据给定的跨导值和漏-源电压计算跨导参数 KP [A/V^2]。",
+    "parameters": [
+      {
+        "name": "<gm>",
+        "type": "float",
+        "desc": "跨导值 [A/V]。"
+      },
+      {
+        "name": "?VDS?",
+        "type": "float",
+        "desc": "漏-源电压 [V]。默认为 0.1。"
+      }
+    ],
+    "example": "set kp [f_KP $gm 0.1]",
+    "keywords": [
+      "KP",
+      "transconductance",
+      "parameter",
+      "MOSFET",
+      "extraction"
+    ]
+  },
+  "f_Ron": {
+    "section": "Extraction Functions",
+    "signature": "f_Ron <curveName> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "计算 Id-Vd 曲线在线性区的导通电阻 [kOhm]。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "固定栅-源电压下的 Id-Vd 曲线名称。"
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "计算范围的最小 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "计算范围的最大 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "计算范围的最小 y 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "计算范围的最大 y 值。默认为完整曲线范围。"
+      }
+    ],
+    "example": "set ron [f_Ron idvd 0.0 0.5]",
+    "keywords": [
+      "Ron",
+      "on-state",
+      "resistance",
+      "linear",
+      "extraction"
+    ]
+  },
+  "f_Rout": {
+    "section": "Extraction Functions",
+    "signature": "f_Rout <curveName> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "计算 Id-Vd 曲线在饱和区的输出电阻 [kOhm]。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "固定栅-源电压下的 Id-Vd 曲线名称。"
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "计算范围的最小 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "计算范围的最大 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "计算范围的最小 y 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "计算范围的最大 y 值。默认为完整曲线范围。"
+      }
+    ],
+    "example": "set rout [f_Rout idvd 0.5 1.0]",
+    "keywords": [
+      "Rout",
+      "output",
+      "resistance",
+      "saturation",
+      "extraction"
+    ]
+  },
+  "f_showInternalCurves": {
+    "section": "Extraction Functions",
+    "signature": "f_showInternalCurves ?axis?",
+    "description": "在指定轴上显示提取函数命令创建的内部曲线。",
+    "parameters": [
+      {
+        "name": "?axis?",
+        "type": "string",
+        "desc": "显示内部曲线的坐标轴。默认为 \"left\"。"
+      }
+    ],
+    "example": "f_showInternalCurves left",
+    "keywords": [
+      "show",
+      "internal",
+      "curves",
+      "display",
+      "axis"
+    ]
+  },
+  "f_TetaG": {
+    "section": "Extraction Functions",
+    "signature": "f_TetaG <VT> <gm> <idvgs> <vgsvgs> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "计算迁移率调制参数 TetaG [V^-1]，公式为：TetaG = gm(VGSlow)/ID(VGShigh) - 1/(VGShigh - VT)。",
+    "parameters": [
+      {
+        "name": "<VT>",
+        "type": "float",
+        "desc": "阈值电压值 [V]。"
+      },
+      {
+        "name": "<gm>",
+        "type": "float",
+        "desc": "跨导值 [A/V]。"
+      },
+      {
+        "name": "<idvgs>",
+        "type": "string",
+        "desc": "Id-Vg 曲线名称。"
+      },
+      {
+        "name": "<vgsvgs>",
+        "type": "string",
+        "desc": "Vg-Vg 曲线名称。"
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "计算范围的最小 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "计算范围的最大 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "计算范围的最小 y 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "计算范围的最大 y 值。默认为完整曲线范围。"
+      }
+    ],
+    "example": "set tetag [f_TetaG $vt $gm idvgs vgsvgs 0.0 1.0]",
+    "keywords": [
+      "TetaG",
+      "mobility",
+      "modulation",
+      "parameter",
+      "extraction"
+    ]
+  },
+  "f_VT": {
+    "section": "Extraction Functions",
+    "signature": "f_VT <curveName> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "使用最大斜率截距法计算给定曲线的阈值电压 [V]：VT = intercept(maxslope(curve))。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "计算范围的最小 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "计算范围的最大 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "计算范围的最小 y 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "计算范围的最大 y 值。默认为完整曲线范围。"
+      }
+    ],
+    "example": "set vt [f_VT idvgs]",
+    "keywords": [
+      "threshold",
+      "voltage",
+      "VT",
+      "maxslope",
+      "extraction"
+    ]
+  },
+  "f_VT1": {
+    "section": "Extraction Functions",
+    "signature": "f_VT1 <curveName> ?xmin? ?xmax? ?ymin? ?ymax?",
+    "description": "计算给定曲线的阈值电压 [V]，通常在 Id = 0.1 uA/um 处提取。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "计算范围的最小 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "计算范围的最大 x 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymin?",
+        "type": "float",
+        "desc": "计算范围的最小 y 值。默认为完整曲线范围。"
+      },
+      {
+        "name": "?ymax?",
+        "type": "float",
+        "desc": "计算范围的最大 y 值。默认为完整曲线范围。"
+      }
+    ],
+    "example": "set vt1 [f_VT1 idvgs]",
+    "keywords": [
+      "threshold",
+      "voltage",
+      "VT1",
+      "current level",
+      "extraction"
+    ]
+  },
+  "f_VT2": {
+    "section": "Extraction Functions",
+    "signature": "f_VT2 <curveName>",
+    "description": "使用对数曲线中最大斜率线与最小斜率线交点法计算给定曲线的阈值电压 [V]。",
+    "parameters": [
+      {
+        "name": "<curveName>",
+        "type": "string",
+        "desc": "曲线名称。"
+      }
+    ],
+    "example": "set vt2 [f_VT2 idvgs]",
+    "keywords": [
+      "threshold",
+      "voltage",
+      "VT2",
+      "logarithmic",
+      "intersection"
+    ]
+  },
+  "cv_linTransCurve": {
+    "section": "Extraction Library",
+    "signature": "cv_linTransCurve <curve> <Xm> <Xb> <Ym> <Yb> <axis>",
+    "description": "对曲线的 X、Y 值进行线性变换，替换为 X = X*Xm + Xb 和 Y = Y*Ym + Yb。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "待变换的曲线名称。"
+      },
+      {
+        "name": "<Xm>",
+        "type": "float",
+        "desc": "X 轴乘法因子。"
+      },
+      {
+        "name": "<Xb>",
+        "type": "float",
+        "desc": "X 轴偏移量（加法位移）。"
+      },
+      {
+        "name": "<Ym>",
+        "type": "float",
+        "desc": "Y 轴乘法因子。"
+      },
+      {
+        "name": "<Yb>",
+        "type": "float",
+        "desc": "Y 轴偏移量（加法位移）。"
+      },
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "显示变换后曲线的 Y 轴：\"y\" 或 \"y2\"。"
+      }
+    ],
+    "example": "cv_linTransCurve IdVgs 1 0.55 1.0 0.0 y",
+    "keywords": [
+      "linear",
+      "transform",
+      "curve",
+      "shift",
+      "scale"
+    ]
+  },
+  "cv_scaleCurve": {
+    "section": "Extraction Library",
+    "signature": "cv_scaleCurve <curve> <XFactor> <YFactor> <axis>",
+    "description": "按给定因子缩放曲线的 X、Y 值，X 值乘以 XFactor，Y 值乘以 YFactor。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "待缩放的曲线名称。"
+      },
+      {
+        "name": "<XFactor>",
+        "type": "float",
+        "desc": "X 轴缩放因子。"
+      },
+      {
+        "name": "<YFactor>",
+        "type": "float",
+        "desc": "Y 轴缩放因子。"
+      },
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "显示缩放后曲线的 Y 轴：\"y\" 或 \"y2\"。"
+      }
+    ],
+    "example": "cv_scaleCurve IdVgs 1 1e6 y",
+    "keywords": [
+      "scale",
+      "curve",
+      "factor",
+      "unit",
+      "conversion"
+    ]
+  },
+  "ExtractBVi": {
+    "section": "Extraction Library",
+    "signature": "ExtractBVi <name> <curve> <Ilevel>",
+    "description": "从击穿曲线中提取电流达到指定水平时的击穿电压 [V]。",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "提取参数的名称。"
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "击穿曲线名称。"
+      },
+      {
+        "name": "<Ilevel>",
+        "type": "float",
+        "desc": "提取击穿电压时的电流水平 [A]。"
+      }
+    ],
+    "example": "ExtractBVi BVcboi VcIc 1e-12",
+    "keywords": [
+      "breakdown",
+      "voltage",
+      "current",
+      "BVi",
+      "extraction"
+    ]
+  },
+  "ExtractBVv": {
+    "section": "Extraction Library",
+    "signature": "ExtractBVv <name> <curve> <sign>",
+    "description": "提取可施加到接触端的最大电压（击穿电压）[V]。",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "提取参数的名称。"
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "击穿曲线名称。"
+      },
+      {
+        "name": "<sign>",
+        "type": "float",
+        "desc": "晶体管类型符号：+1 表示 n-p-n，-1 表示 p-n-p（击穿发生在负偏压时使用 -1）。"
+      }
+    ],
+    "example": "ExtractBVv BVcbov VcIc 1.0",
+    "keywords": [
+      "breakdown",
+      "voltage",
+      "BVv",
+      "bipolar",
+      "extraction"
+    ]
+  },
+  "ExtractEarlyV": {
+    "section": "Extraction Library",
+    "signature": "ExtractEarlyV <name> <curve> <Vtarget>",
+    "description": "从 Ic-Vce 曲线中提取厄尔利电压(Early voltage) [V]，通过在指定偏置点计算斜率得到。",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "提取参数的名称。"
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Ic-Vce 曲线名称。"
+      },
+      {
+        "name": "<Vtarget>",
+        "type": "float",
+        "desc": "用于计算厄尔利电压时确定斜率的偏置点 [V]。"
+      }
+    ],
+    "example": "ExtractEarlyV Va IcVc 1.25",
+    "keywords": [
+      "Early voltage",
+      "output resistance",
+      "bipolar",
+      "extraction"
+    ]
+  },
+  "ExtractGm": {
+    "section": "Extraction Library",
+    "signature": "ExtractGm <name> <curve> ?type?",
+    "description": "从 Id-Vgs 曲线中提取最大跨导 [A/V]。",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "提取参数的名称。"
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Id-Vgs 曲线名称。"
+      },
+      {
+        "name": "?type?",
+        "type": "enum",
+        "desc": "晶体管类型：\"nMOS\"、\"nMOSneg\"、\"pMOS\" 或 \"pMOSneg\"。省略时自动判断类型。"
+      }
+    ],
+    "example": "set gm [ExtractGm gmLin IdVg]",
+    "keywords": [
+      "transconductance",
+      "gm",
+      "MOSFET",
+      "extraction",
+      "linear"
+    ]
+  },
+  "ExtractGmb": {
+    "section": "Extraction Library",
+    "signature": "ExtractGmb <name> <curve> ?type?",
+    "description": "使用抛物线插值法从 Id-Vgs 曲线中提取最大跨导，适用于栅偏压采样点有限的情况，精度更高。",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "提取参数的名称。"
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Id-Vgs 曲线名称。"
+      },
+      {
+        "name": "?type?",
+        "type": "enum",
+        "desc": "晶体管类型：\"nMOS\"、\"nMOSneg\"、\"pMOS\" 或 \"pMOSneg\"。省略时自动判断类型。"
+      }
+    ],
+    "example": "set gm [ExtractGmb gmParabolic IdVg]",
+    "keywords": [
+      "transconductance",
+      "parabolic",
+      "interpolation",
+      "MOSFET",
+      "extraction"
+    ]
+  },
+  "ExtractIoff": {
+    "section": "Extraction Library",
+    "signature": "ExtractIoff <name> <curve> <Voff>",
+    "description": "从 Id-Vgs 曲线中提取指定栅电压处的漏极泄漏电流 [A]。",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "提取参数的名称。"
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Id-Vgs 曲线名称（高漏偏压下计算）。"
+      },
+      {
+        "name": "<Voff>",
+        "type": "float",
+        "desc": "提取漏极泄漏电流时的栅电压 [V]，通常取一个小的非零值以避免噪声。"
+      }
+    ],
+    "example": "set Ioff [ExtractIoff Ioff $IdVg 1e-4]",
+    "keywords": [
+      "Ioff",
+      "leakage",
+      "current",
+      "drain",
+      "extraction"
+    ]
+  },
+  "ExtractMax": {
+    "section": "Extraction Library",
+    "signature": "ExtractMax <name> <curve>",
+    "description": "提取曲线的最大 y 值。",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "提取参数的名称。"
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "曲线名称。"
+      }
+    ],
+    "example": "set IdSat [ExtractMax IdSat IdVg]",
+    "keywords": [
+      "maximum",
+      "peak",
+      "current",
+      "extraction",
+      "saturation"
+    ]
+  },
+  "ExtractRon": {
+    "section": "Extraction Library",
+    "signature": "ExtractRon <name> <curve> <Von>",
+    "description": "从 Id-Vds 曲线中提取指定漏电压处的导通电阻 [Ohm*um]。",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "提取参数的名称。"
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Id-Vds 曲线名称（高栅偏压下计算）。"
+      },
+      {
+        "name": "<Von>",
+        "type": "float",
+        "desc": "提取导通电阻时的漏电压 [V]，通常选在充分进入饱和区之后。"
+      }
+    ],
+    "example": "set Ron [ExtractRon Ron IdVd 1.1]",
+    "keywords": [
+      "Ron",
+      "on-state",
+      "resistance",
+      "drain",
+      "extraction"
+    ]
+  },
+  "ExtractSS": {
+    "section": "Extraction Library",
+    "signature": "ExtractSS <name> <curve> <Vgo>",
+    "description": "从 Id-Vgs 曲线中提取指定栅电压处的亚阈值摆幅 [mV/dec]。",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "提取参数的名称。"
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Id-Vgs 曲线名称。"
+      },
+      {
+        "name": "<Vgo>",
+        "type": "float",
+        "desc": "提取斜率时的栅电压 [V]。应远低于阈值电压。"
+      }
+    ],
+    "example": "set SS [ExtractSS SSlin IdVg 0.01]",
+    "keywords": [
+      "subthreshold",
+      "swing",
+      "SS",
+      "mV/dec",
+      "extraction"
+    ]
+  },
+  "ExtractValue": {
+    "section": "Extraction Library",
+    "signature": "ExtractValue <name> <curve> <Xo>",
+    "description": "提取曲线在给定 x 点处的 y 值。",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "提取参数的名称。"
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "<Xo>",
+        "type": "float",
+        "desc": "提取 y 值的 x 坐标点。"
+      }
+    ],
+    "example": "set CggP [ExtractValue CgP Cgg 1.2]",
+    "keywords": [
+      "value",
+      "extract",
+      "point",
+      "interpolation",
+      "curve"
+    ]
+  },
+  "ExtractVtgm": {
+    "section": "Extraction Library",
+    "signature": "ExtractVtgm <name> <curve> ?type?",
+    "description": "使用最大跨导法从 Id-Vgs 曲线中提取阈值电压 [V]。",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "提取参数在 Sentaurus Workbench 中显示的名称。"
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Id-Vgs 曲线名称。"
+      },
+      {
+        "name": "?type?",
+        "type": "enum",
+        "desc": "晶体管类型：\"nMOS\"、\"nMOSneg\"、\"pMOS\" 或 \"pMOSneg\"。省略时通过分析曲线自动判断类型。"
+      }
+    ],
+    "example": "set Vt [ExtractVtgm Vtgm IdVg]",
+    "keywords": [
+      "threshold",
+      "voltage",
+      "transconductance",
+      "method",
+      "extraction"
+    ]
+  },
+  "ExtractVtgmb": {
+    "section": "Extraction Library",
+    "signature": "ExtractVtgmb <name> <curve> ?type?",
+    "description": "使用最大跨导法结合抛物线插值从 Id-Vgs 曲线中提取阈值电压，适用于栅偏压采样点有限的情况，精度更高。",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "提取参数在 Sentaurus Workbench 中显示的名称。"
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Id-Vgs 曲线名称。"
+      },
+      {
+        "name": "?type?",
+        "type": "enum",
+        "desc": "晶体管类型：\"nMOS\"、\"nMOSneg\"、\"pMOS\" 或 \"pMOSneg\"。省略时自动判断类型。"
+      }
+    ],
+    "example": "set Vt [ExtractVtgmb Vtgmb IdVg]",
+    "keywords": [
+      "threshold",
+      "voltage",
+      "parabolic",
+      "interpolation",
+      "extraction"
+    ]
+  },
+  "ExtractVti": {
+    "section": "Extraction Library",
+    "signature": "ExtractVti <name> <curve> <Ilevel>",
+    "description": "从 Id-Vgs 曲线中提取漏电流超过指定水平时的栅电压 [V]。",
+    "parameters": [
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "提取参数的名称。"
+      },
+      {
+        "name": "<curve>",
+        "type": "string",
+        "desc": "Id-Vgs 曲线名称。"
+      },
+      {
+        "name": "<Ilevel>",
+        "type": "float",
+        "desc": "提取栅电压时的漏电流水平 [A]。"
+      }
+    ],
+    "example": "set Vti [ExtractVti Vti IdVg 1e-7]",
+    "keywords": [
+      "threshold",
+      "voltage",
+      "current level",
+      "Vti",
+      "extraction"
+    ]
+  },
+  "FilterTable": {
+    "section": "Extraction Library",
+    "signature": "FilterTable <XList> <YList> ?conditionTarget1 conditionList1? ?conditionTarget2 conditionList2? ?conditionTarget3 conditionList3?",
+    "description": "处理 Sentaurus Workbench Family Tree 数据，根据指定条件筛选实验子集，创建一个参数随另一个参数变化的图表。",
+    "parameters": [
+      {
+        "name": "<XList>",
+        "type": "list",
+        "desc": "作为 x 值的 Sentaurus Workbench 参数值 Tcl 列表。"
+      },
+      {
+        "name": "<YList>",
+        "type": "list",
+        "desc": "作为 y 值的 Sentaurus Workbench 参数值 Tcl 列表。"
+      },
+      {
+        "name": "?conditionTarget1?",
+        "type": "string",
+        "desc": "实验必须匹配的目标值才可包含在图表中。"
+      },
+      {
+        "name": "?conditionList1?",
+        "type": "list",
+        "desc": "用作筛选条件的 Sentaurus Workbench 参数值 Tcl 列表。"
+      },
+      {
+        "name": "?conditionTarget2?",
+        "type": "string",
+        "desc": "第二个条件的目标值。"
+      },
+      {
+        "name": "?conditionList2?",
+        "type": "list",
+        "desc": "第二个条件的 Tcl 列表。"
+      },
+      {
+        "name": "?conditionTarget3?",
+        "type": "string",
+        "desc": "第三个条件的目标值。"
+      },
+      {
+        "name": "?conditionList3?",
+        "type": "list",
+        "desc": "第三个条件的 Tcl 列表。"
+      }
+    ],
+    "example": "set XYLists [FilterTable $Lgs $Vts \"nMOS\" $Types]",
+    "keywords": [
+      "filter",
+      "table",
+      "Family Tree",
+      "Workbench",
+      "plot"
+    ]
+  },
+  "cv_addCurve": {
+    "section": "extend Library",
+    "signature": "cv_addCurve <cname> <cname2>",
+    "description": "将曲线 cname2 的 y 值累加到曲线 cname 的 y 值上。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "目标曲线名称。"
+      },
+      {
+        "name": "<cname2>",
+        "type": "string",
+        "desc": "源曲线名称，其 y 值将被累加。"
+      }
+    ],
+    "example": "cv_createFromScript c1 {0 1} {1 2}\ncv_createFromScript c2 {0 1} {3 4}\ncv_addCurve c1 c2\nputs \"y: [cv_getValsY c1]\"",
+    "keywords": [
+      "curve",
+      "add",
+      "y-values",
+      "arithmetic",
+      "sum"
+    ]
+  },
+  "cv_addDataset": {
+    "section": "extend Library",
+    "signature": "cv_addDataset <cname> <xdset> <ydset>",
+    "description": "将数据集的 y 值累加到已有曲线上。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "要添加数据集的曲线名称。"
+      },
+      {
+        "name": "<xdset>",
+        "type": "string",
+        "desc": "X 值数据集名称。"
+      },
+      {
+        "name": "<ydset>",
+        "type": "string",
+        "desc": "Y 值数据集名称。"
+      }
+    ],
+    "example": "cv_addDataset iv \"n4_des pContact OuterVoltage\" \"n4_des nContact TotalCurrent\"",
+    "keywords": [
+      "dataset",
+      "add",
+      "curve",
+      "sum",
+      "current"
+    ]
+  },
+  "cv_angularMap": {
+    "section": "extend Library",
+    "signature": "cv_angularMap <cname> ?astart? ?aend?",
+    "description": "将周期性曲线映射到固定角度范围，将超出范围的数据点折回第一个周期。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "?astart?",
+        "type": "float",
+        "desc": "角度范围起始值，默认为 0。"
+      },
+      {
+        "name": "?aend?",
+        "type": "float",
+        "desc": "角度范围终止值，默认为 360。"
+      }
+    ],
+    "example": "cv_createFromScript a {0 1 2 90 91 92} {1 2 3 4 5 6}\ncv_angularMap a\nputs [cv_getVals a]",
+    "keywords": [
+      "angular",
+      "map",
+      "periodic",
+      "degree",
+      "wrap"
+    ]
+  },
+  "cv_linTrans": {
+    "section": "extend Library",
+    "signature": "cv_linTrans <cname> <xm> ?xb? ?ym? ?yb?",
+    "description": "对曲线执行线性变换，将 x 替换为 xm*x+xb，将 y 替换为 ym*y+yb。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "<xm>",
+        "type": "float",
+        "desc": "x 值的斜率。"
+      },
+      {
+        "name": "?xb?",
+        "type": "float",
+        "desc": "x 值的偏移量，默认为 0。"
+      },
+      {
+        "name": "?ym?",
+        "type": "float",
+        "desc": "y 值的斜率，默认为 1。"
+      },
+      {
+        "name": "?yb?",
+        "type": "float",
+        "desc": "y 值的偏移量，默认为 0。"
+      }
+    ],
+    "example": "# Scale IV curve from A/V to mA/mV, remove 2A offset\ncv_linTrans iv 1e3 0 1e3 -2000",
+    "keywords": [
+      "linear",
+      "transform",
+      "scale",
+      "offset",
+      "slope"
+    ]
+  },
+  "cv_monotonicX": {
+    "section": "extend Library",
+    "signature": "cv_monotonicX <cname>",
+    "description": "提取曲线中 x 值单调递增到最大值的部分，移除递减段。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      }
+    ],
+    "example": "cv_createFromScript iv {0 1 2 0 2 4} {1 2 3 4 5 6}\ncv_monotonicX iv\nputs \"values: [cv_getVals iv]\"",
+    "keywords": [
+      "monotonic",
+      "x-values",
+      "extract",
+      "filter",
+      "increasing"
+    ]
+  },
+  "cv_scale": {
+    "section": "extend Library",
+    "signature": "cv_scale <cname> <xm> <ym>",
+    "description": "对曲线进行线性缩放，x 值乘以 xm，y 值乘以 ym。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "<xm>",
+        "type": "float",
+        "desc": "x 值缩放因子。"
+      },
+      {
+        "name": "<ym>",
+        "type": "float",
+        "desc": "y 值缩放因子。"
+      }
+    ],
+    "example": "# Scale current over time from A/s to mA/us\ncv_scale i_t 1e6 1e3",
+    "keywords": [
+      "scale",
+      "curve",
+      "multiply",
+      "unit",
+      "conversion"
+    ]
+  },
+  "cv_sort": {
+    "section": "extend Library",
+    "signature": "cv_sort <cname> ?xdigits?",
+    "description": "按 x 值升序排列曲线的数据点，并移除重复的 x 值。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "?xdigits?",
+        "type": "int",
+        "desc": "用于判断两个 x 值是否相同的有效位数，默认为 20。"
+      }
+    ],
+    "example": "cv_createFromScript c {1 2 0.0001 3 0} {2 3 -1 4 1}\ncv_sort c 3\nputs \"[cv_getVals c]\"",
+    "keywords": [
+      "sort",
+      "x-values",
+      "duplicate",
+      "order",
+      "ascending"
+    ]
+  },
+  "cv_autoIncrStyle": {
+    "section": "extend Library",
+    "signature": "cv_autoIncrStyle ?stylelist? ?off?",
+    "description": "设置每次使用 cv_disp 显示曲线时自动递增的样式属性，按 stylelist 给出的顺序依次递增。",
+    "parameters": [
+      {
+        "name": "?stylelist?",
+        "type": "list",
+        "desc": "要递增的样式属性列表：{color fillColor line symbol}，默认为 {color fillColor line symbol}。"
+      },
+      {
+        "name": "?off?",
+        "type": "string",
+        "desc": "传入 \"off\" 关闭自动递增功能。"
+      }
+    ],
+    "example": "# Increment color first, then symbol\ncv_autoIncrStyle {color symbol}\ncv_disp c1\ncv_disp c2",
+    "keywords": [
+      "style",
+      "auto",
+      "increment",
+      "color",
+      "symbol"
+    ]
+  },
+  "cv_disp": {
+    "section": "extend Library",
+    "signature": "cv_disp <cname> ?label? ?axis?",
+    "description": "使用指定标签和坐标轴显示曲线。默认自动递增样式属性以区分每条曲线。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "?label?",
+        "type": "string",
+        "desc": "图例中显示的标签，默认为曲线名称。"
+      },
+      {
+        "name": "?axis?",
+        "type": "enum",
+        "desc": "使用的坐标轴：\"y\"（默认）或 \"y2\"。"
+      }
+    ],
+    "example": "cv_disp iv \"simulated IV\" y",
+    "keywords": [
+      "display",
+      "curve",
+      "legend",
+      "axis",
+      "show"
+    ]
+  },
+  "cv_nextColor": {
+    "section": "extend Library",
+    "signature": "cv_nextColor ?cindex?",
+    "description": "从 extend::COLORPALETTE 列表中切换到下一个颜色，或按索引选择指定颜色。",
+    "parameters": [
+      {
+        "name": "?cindex?",
+        "type": "int",
+        "desc": "若指定，则选取调色板中该索引的颜色；否则选取下一个。"
+      }
+    ],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextColor\ncv_disp iv2",
+    "keywords": [
+      "color",
+      "next",
+      "palette",
+      "style",
+      "curve"
+    ]
+  },
+  "cv_nextLine": {
+    "section": "extend Library",
+    "signature": "cv_nextLine ?cindex?",
+    "description": "从 extend::LINEPALETTE 列表中切换到下一个线型，或按索引选择指定线型。",
+    "parameters": [
+      {
+        "name": "?cindex?",
+        "type": "int",
+        "desc": "若指定，则选取线型调色板中该索引的样式；否则选取下一个。"
+      }
+    ],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextLine\ncv_disp iv2",
+    "keywords": [
+      "line",
+      "style",
+      "next",
+      "palette",
+      "dash"
+    ]
+  },
+  "cv_nextSymbol": {
+    "section": "extend Library",
+    "signature": "cv_nextSymbol ?cindex?",
+    "description": "从 extend::SYMBOLPALETTE 列表中切换到下一个符号类型，或按索引选择指定符号。",
+    "parameters": [
+      {
+        "name": "?cindex?",
+        "type": "int",
+        "desc": "若指定，则选取符号调色板中该索引的类型；否则选取下一个。"
+      }
+    ],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextSymbol\ncv_disp iv2",
+    "keywords": [
+      "symbol",
+      "next",
+      "marker",
+      "palette",
+      "style"
+    ]
+  },
+  "cv_resetColor": {
+    "section": "extend Library",
+    "signature": "cv_resetColor",
+    "description": "将曲线颜色重置为默认值（extend::COLORPALETTE 列表的第一项）。",
+    "parameters": [],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextColor\ncv_disp iv2\ncv_resetColor\ncv_disp iv3",
+    "keywords": [
+      "color",
+      "reset",
+      "default",
+      "palette",
+      "style"
+    ]
+  },
+  "cv_resetFillColor": {
+    "section": "extend Library",
+    "signature": "cv_resetFillColor",
+    "description": "将曲线符号的填充颜色重置为白色。",
+    "parameters": [],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextColor\ncv_disp iv2\ncv_resetFillColor\ncv_disp iv3",
+    "keywords": [
+      "fill",
+      "color",
+      "reset",
+      "white",
+      "symbol"
+    ]
+  },
+  "cv_resetLine": {
+    "section": "extend Library",
+    "signature": "cv_resetLine",
+    "description": "将线型重置为默认值（extend::LINEPALETTE 列表的第一项）。",
+    "parameters": [],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextLine\ncv_disp iv2\ncv_resetLine\ncv_disp iv3",
+    "keywords": [
+      "line",
+      "reset",
+      "default",
+      "palette",
+      "style"
+    ]
+  },
+  "cv_resetStyle": {
+    "section": "extend Library",
+    "signature": "cv_resetStyle",
+    "description": "将所有曲线样式属性（颜色、填充色、符号、线型）重置为默认值。",
+    "parameters": [],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextSymbol\ncv_nextColor\ncv_disp iv2\ncv_resetStyle\ncv_disp iv3",
+    "keywords": [
+      "style",
+      "reset",
+      "default",
+      "all",
+      "curve"
+    ]
+  },
+  "cv_resetSymbol": {
+    "section": "extend Library",
+    "signature": "cv_resetSymbol",
+    "description": "将符号类型重置为默认值（extend::SYMBOLPALETTE 列表的第一项）。",
+    "parameters": [],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextSymbol\ncv_disp iv2\ncv_resetSymbol\ncv_disp iv3",
+    "keywords": [
+      "symbol",
+      "reset",
+      "default",
+      "palette",
+      "marker"
+    ]
+  },
+  "cv_setFillColor": {
+    "section": "extend Library",
+    "signature": "cv_setFillColor ?mode?",
+    "description": "开启或关闭曲线符号的填充颜色。",
+    "parameters": [
+      {
+        "name": "?mode?",
+        "type": "int",
+        "desc": "1 表示用曲线颜色填充符号（默认），0 表示填充色为白色。"
+      }
+    ],
+    "example": "cv_autoIncrStyle off\ncv_setSymbol 1\ncv_disp iv1\ncv_nextColor\ncv_setFillColor 1\ncv_disp iv2",
+    "keywords": [
+      "fill",
+      "color",
+      "symbol",
+      "toggle",
+      "style"
+    ]
+  },
+  "cv_setSymbol": {
+    "section": "extend Library",
+    "signature": "cv_setSymbol ?mode?",
+    "description": "开启或关闭曲线上数据点符号的显示。",
+    "parameters": [
+      {
+        "name": "?mode?",
+        "type": "int",
+        "desc": "1 表示显示符号（默认），0 表示隐藏符号。"
+      }
+    ],
+    "example": "cv_autoIncrStyle off\ncv_disp iv1\ncv_nextColor\ncv_setSymbol 1\ncv_disp iv2",
+    "keywords": [
+      "symbol",
+      "toggle",
+      "marker",
+      "display",
+      "curve"
+    ]
+  },
+  "cv_exists": {
+    "section": "extend Library",
+    "signature": "cv_exists <cname>",
+    "description": "检查指定名称的曲线是否存在。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "要检查的曲线名称。"
+      }
+    ],
+    "example": "if {[cv_exists iv]} { puts \"curve iv exists\" }",
+    "keywords": [
+      "exists",
+      "check",
+      "curve",
+      "validate",
+      "query"
+    ]
+  },
+  "cv_getGlobalExtrema": {
+    "section": "extend Library",
+    "signature": "cv_getGlobalExtrema <cname> ?type?",
+    "description": "返回曲线的全局最大值或最小值，以 {x y} 列表形式返回。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "?type?",
+        "type": "enum",
+        "desc": "\"max\" 表示全局最大值（默认），\"min\" 表示全局最小值。"
+      }
+    ],
+    "example": "set cmin [cv_getGlobalExtrema iv min]\nputs \"The minimum of the iv-curve is [lindex $cmin 1] at [lindex $cmin 0]\"",
+    "keywords": [
+      "extrema",
+      "maximum",
+      "minimum",
+      "global",
+      "peak"
+    ]
+  },
+  "cv_getLocalExtrema": {
+    "section": "extend Library",
+    "signature": "cv_getLocalExtrema <cname> ?type?",
+    "description": "返回曲线所有局部极大值或极小值，以 {x y} 对列表形式返回。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "?type?",
+        "type": "enum",
+        "desc": "\"max\" 表示局部极大值（默认），\"min\" 表示局部极小值。"
+      }
+    ],
+    "example": "set cmax [cv_getLocalExtrema iv \"max\"]\nputs \"All maxima of the iv-curve: $cmax\"",
+    "keywords": [
+      "local",
+      "extrema",
+      "maxima",
+      "minima",
+      "peak"
+    ]
+  },
+  "cv_getNames": {
+    "section": "extend Library",
+    "signature": "cv_getNames",
+    "description": "返回所有现有曲线名称的列表。",
+    "parameters": [],
+    "example": "puts \"the following curves exist currently: [cv_getNames]\"",
+    "keywords": [
+      "names",
+      "list",
+      "curves",
+      "query",
+      "all"
+    ]
+  },
+  "cv_getRange": {
+    "section": "extend Library",
+    "signature": "cv_getRange <cname>",
+    "description": "返回曲线的 x 和 y 范围，以 {xmin xmax ymin ymax} 列表形式返回。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      }
+    ],
+    "example": "puts \"{xmin,xmax,ymin,ymax}: [cv_getRange iv]\"",
+    "keywords": [
+      "range",
+      "xmin",
+      "xmax",
+      "ymin",
+      "ymax"
+    ]
+  },
+  "cv_getXmax": {
+    "section": "extend Library",
+    "signature": "cv_getXmax <cname>",
+    "description": "返回曲线 x 值的上界（最大值）。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      }
+    ],
+    "example": "puts \"upper boundary of the x values of iv: [cv_getXmax iv]\"",
+    "keywords": [
+      "xmax",
+      "x-values",
+      "boundary",
+      "maximum",
+      "range"
+    ]
+  },
+  "cv_getXmin": {
+    "section": "extend Library",
+    "signature": "cv_getXmin <cname>",
+    "description": "返回曲线 x 值的下界（最小值）。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      }
+    ],
+    "example": "puts \"lower boundary of the x values of iv: [cv_getXmin iv]\"",
+    "keywords": [
+      "xmin",
+      "x-values",
+      "boundary",
+      "minimum",
+      "range"
+    ]
+  },
+  "cv_getYmax": {
+    "section": "extend Library",
+    "signature": "cv_getYmax <cname>",
+    "description": "返回曲线 y 值的上界（最大值）。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      }
+    ],
+    "example": "puts \"upper boundary of the y values of iv: [cv_getYmax iv]\"",
+    "keywords": [
+      "ymax",
+      "y-values",
+      "boundary",
+      "maximum",
+      "range"
+    ]
+  },
+  "cv_getYmin": {
+    "section": "extend Library",
+    "signature": "cv_getYmin <cname>",
+    "description": "返回曲线 y 值的下界（最小值）。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      }
+    ],
+    "example": "puts \"lower boundary of the y values of iv: [cv_getYmin iv]\"",
+    "keywords": [
+      "ymin",
+      "y-values",
+      "boundary",
+      "minimum",
+      "range"
+    ]
+  },
+  "cv_isVisible": {
+    "section": "extend Library",
+    "signature": "cv_isVisible <cname>",
+    "description": "检查曲线当前是否已显示。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      }
+    ],
+    "example": "if {[cv_isVisible iv]} { puts \"curve iv visible\" }",
+    "keywords": [
+      "visible",
+      "display",
+      "check",
+      "curve",
+      "show"
+    ]
+  },
+  "cv_integrate": {
+    "section": "extend Library",
+    "signature": "cv_integrate <formula> ?xstart? ?xend? ?mode? ?xdigits?",
+    "description": "对公式执行数值积分并返回积分值。",
+    "parameters": [
+      {
+        "name": "<formula>",
+        "type": "string",
+        "desc": "要积分的公式，格式同 cv_createWithFormula。"
+      },
+      {
+        "name": "?xstart?",
+        "type": "float",
+        "desc": "积分区间起始值，默认使用曲线起点。"
+      },
+      {
+        "name": "?xend?",
+        "type": "float",
+        "desc": "积分区间终止值，默认使用曲线终点。"
+      },
+      {
+        "name": "?mode?",
+        "type": "enum",
+        "desc": "积分模式：{}（Inspect 内部方法，默认）、\"sumup\"（累加所有 y 值）或 \"trapez\"（梯形法）。"
+      },
+      {
+        "name": "?xdigits?",
+        "type": "int",
+        "desc": "用于判断两个 x 值是否相同的有效位数。"
+      }
+    ],
+    "example": "# P_t is the time-dependent power\nputs \"energy in the first second is: [cv_integrate P_t 0 1 trapez]\"",
+    "keywords": [
+      "integrate",
+      "area",
+      "trapezoidal",
+      "sum",
+      "formula"
+    ]
+  },
+  "cv_linFit": {
+    "section": "extend Library",
+    "signature": "cv_linFit <formula> ?xstart? ?xend?",
+    "description": "对曲线公式执行线性拟合 y = A + B*x，返回拟合统计量，包括截距、斜率、R 平方和标准误差。",
+    "parameters": [
+      {
+        "name": "<formula>",
+        "type": "string",
+        "desc": "要拟合的公式，格式同 cv_createWithFormula。"
+      },
+      {
+        "name": "?xstart?",
+        "type": "float",
+        "desc": "拟合区间起始值，默认使用完整曲线范围。"
+      },
+      {
+        "name": "?xend?",
+        "type": "float",
+        "desc": "拟合区间终止值，默认使用完整曲线范围。"
+      }
+    ],
+    "example": "set res [cv_linFit \"log(<cname>)\"]",
+    "keywords": [
+      "linear",
+      "fit",
+      "regression",
+      "slope",
+      "intercept"
+    ]
+  },
+  "cv_round": {
+    "section": "extend Library",
+    "signature": "cv_round <cname> <xdigits> <ydigits>",
+    "description": "将曲线的 x 和 y 数据值四舍五入到指定位数。",
+    "parameters": [
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "曲线名称。"
+      },
+      {
+        "name": "<xdigits>",
+        "type": "int",
+        "desc": "x 值保留位数，-1 表示不四舍五入。"
+      },
+      {
+        "name": "<ydigits>",
+        "type": "int",
+        "desc": "y 值保留位数，-1 表示不四舍五入。"
+      }
+    ],
+    "example": "cv_createFromScript c {1.01 5.05} {9.09 7.07}\ncv_round c 1 1\nputs \"[cv_getVals c]\"",
+    "keywords": [
+      "round",
+      "digits",
+      "precision",
+      "x-values",
+      "y-values"
+    ]
+  },
+  "fi_readTxtFile": {
+    "section": "extend Library",
+    "signature": "fi_readTxtFile <fname> <cname> ?columnIdx?",
+    "description": "从以空格分隔列的 ASCII 文本文件中读取数据，用第一列作为 x 值，指定列作为 y 值创建曲线。",
+    "parameters": [
+      {
+        "name": "<fname>",
+        "type": "string",
+        "desc": "ASCII 文件名。"
+      },
+      {
+        "name": "<cname>",
+        "type": "string",
+        "desc": "要创建的曲线名称。"
+      },
+      {
+        "name": "?columnIdx?",
+        "type": "int",
+        "desc": "y 值列索引（从 0 开始），默认为 1（第二列）。"
+      }
+    ],
+    "example": "fi_readTxtFile \"aml5g.txt\" spec",
+    "keywords": [
+      "read",
+      "ASCII",
+      "text",
+      "file",
+      "import"
+    ]
+  },
+  "fi_readTxtFileHeader": {
+    "section": "extend Library",
+    "signature": "fi_readTxtFileHeader <fname>",
+    "description": "读取并返回 ASCII 文件中的标题行（既不是数据也不是注释的单行）。",
+    "parameters": [
+      {
+        "name": "<fname>",
+        "type": "string",
+        "desc": "ASCII 文件名。"
+      }
+    ],
+    "example": "puts \"[fi_readTxtFileHeader \"am15g.txt\"]\"",
+    "keywords": [
+      "header",
+      "read",
+      "ASCII",
+      "text",
+      "file"
+    ]
+  },
+  "proj_check": {
+    "section": "extend Library",
+    "signature": "proj_check <proj>",
+    "description": "检查项目中所有数据集的条目是否均为有效数值。",
+    "parameters": [
+      {
+        "name": "<proj>",
+        "type": "string",
+        "desc": "已加载 .plt 文件的项目名称。"
+      }
+    ],
+    "example": "proj_load n5_des.plt\nproj_check n5_des",
+    "keywords": [
+      "check",
+      "project",
+      "dataset",
+      "valid",
+      "numeric"
+    ]
+  },
+  "proj_datasetExists": {
+    "section": "extend Library",
+    "signature": "proj_datasetExists <proj> <datasetName> ?groupId?",
+    "description": "检查项目是否包含指定数据集名称和可选组名的数据。",
+    "parameters": [
+      {
+        "name": "<proj>",
+        "type": "string",
+        "desc": "已加载 .plt 文件的项目名称。"
+      },
+      {
+        "name": "<datasetName>",
+        "type": "string",
+        "desc": "数据集名称。"
+      },
+      {
+        "name": "?groupId?",
+        "type": "string",
+        "desc": "数据集组名。若省略且 datasetName 包含空格，则第一个词作为组名。"
+      }
+    ],
+    "example": "proj_load n5_des.plt\nif {[proj_datasetExists n5_des \"anode OuterVoltage\"]} { puts \"anode OuterVoltage exists\" }",
+    "keywords": [
+      "dataset",
+      "exists",
+      "check",
+      "project",
+      "group"
+    ]
+  },
+  "proj_getGroups": {
+    "section": "extend Library",
+    "signature": "proj_getGroups <proj>",
+    "description": "返回项目中所有组名的排序列表。",
+    "parameters": [
+      {
+        "name": "<proj>",
+        "type": "string",
+        "desc": "已加载 .plt 文件的项目名称。"
+      }
+    ],
+    "example": "proj_load n5_des.plt\nputs \"all group names: [proj_getGroups n5_des]\"",
+    "keywords": [
+      "groups",
+      "project",
+      "list",
+      "sorted",
+      "names"
+    ]
+  },
+  "proj_groupExists": {
+    "section": "extend Library",
+    "signature": "proj_groupExists <proj> <groupName>",
+    "description": "检查项目是否包含指定组。",
+    "parameters": [
+      {
+        "name": "<proj>",
+        "type": "string",
+        "desc": "已加载 .plt 文件的项目名称。"
+      },
+      {
+        "name": "<groupName>",
+        "type": "string",
+        "desc": "要检查的组名。"
+      }
+    ],
+    "example": "proj_load n5_des.plt\nif {[proj_groupExists n5_des \"anode\"]} { puts \"group anode exists\" }",
+    "keywords": [
+      "group",
+      "exists",
+      "check",
+      "project",
+      "node"
+    ]
+  },
+  "proj_loadPlx": {
+    "section": "extend Library",
+    "signature": "proj_loadPlx <fileName> ?curveName? ?appendDatasetName?",
+    "description": "从 .plx 文件加载数据并创建曲线（不自动显示）。",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "要加载的 .plx 文件名。"
+      },
+      {
+        "name": "?curveName?",
+        "type": "string",
+        "desc": "创建的曲线名称，默认使用数据集名称。"
+      },
+      {
+        "name": "?appendDatasetName?",
+        "type": "int",
+        "desc": "若为 1，将数据集名称追加到曲线名的括号中。"
+      }
+    ],
+    "example": "proj_loadPlx test.plx\nproj_loadPlx test.plx c(1) 1",
+    "keywords": [
+      "plx",
+      "load",
+      "file",
+      "curve",
+      "dataset"
+    ]
+  },
+  "gr_axis": {
+    "section": "extend Library",
+    "signature": "gr_axis <axis> <title> ?xmin? ?xmax? ?scale?",
+    "description": "设置 x 轴、y 轴或 y2 轴的属性，包括标签、范围和缩放方式。",
+    "parameters": [
+      {
+        "name": "<axis>",
+        "type": "enum",
+        "desc": "要修改的坐标轴：\"x\"、\"y\" 或 \"y2\"。"
+      },
+      {
+        "name": "<title>",
+        "type": "string",
+        "desc": "轴标签。"
+      },
+      {
+        "name": "?xmin?",
+        "type": "float",
+        "desc": "范围下界，{} 表示自动缩放。"
+      },
+      {
+        "name": "?xmax?",
+        "type": "float",
+        "desc": "范围上界，{} 表示自动缩放。"
+      },
+      {
+        "name": "?scale?",
+        "type": "enum",
+        "desc": "缩放类型：\"lin\"（默认）或 \"log\"。"
+      }
+    ],
+    "example": "gr_axis x {voltage [V]}\ngr_axis y {current [A]} {} {} log",
+    "keywords": [
+      "axis",
+      "label",
+      "range",
+      "scale",
+      "log"
+    ]
+  },
+  "gr_resetAxis": {
+    "section": "extend Library",
+    "signature": "gr_resetAxis",
+    "description": "重置所有坐标轴属性为默认值，并关闭 y2 轴。",
+    "parameters": [],
+    "example": "gr_axis x {voltage [V]}\ngr_axis y {current [A]} {} log\ngr_resetAxis",
+    "keywords": [
+      "axis",
+      "reset",
+      "default",
+      "y2",
+      "clear"
+    ]
+  },
+  "gr_setStyle": {
+    "section": "extend Library",
+    "signature": "gr_setStyle <mode>",
+    "description": "设置绘图区域的样式，控制字体大小和布局以适配不同使用场景。",
+    "parameters": [
+      {
+        "name": "<mode>",
+        "type": "enum",
+        "desc": "绘图样式：\"screen\"（默认，交互使用）或 \"presentation\"（更大字体，适合演示文稿）。"
+      }
+    ],
+    "example": "gr_setStyle \"presentation\"",
+    "keywords": [
+      "style",
+      "plot",
+      "font",
+      "presentation",
+      "screen"
+    ]
+  },
+  "ldiff": {
+    "section": "extend Library",
+    "signature": "ldiff <list1> <list2> ?symmetric?",
+    "description": "返回 list1 中不在 list2 中的元素。启用 symmetric 标志后，同时包含 list2 中不在 list1 中的元素。",
+    "parameters": [
+      {
+        "name": "<list1>",
+        "type": "list",
+        "desc": "第一个列表。"
+      },
+      {
+        "name": "<list2>",
+        "type": "list",
+        "desc": "第二个列表。"
+      },
+      {
+        "name": "?symmetric?",
+        "type": "int",
+        "desc": "若指定，同时返回 list2 中不在 list1 的元素。"
+      }
+    ],
+    "example": "set l1 {1 2 3 4}\nset l2 {1 2 5}\nputs \"[ldiff $l1 $l2]\"\n# => 3 4\nputs \"[ldiff $l1 $l2 1]\"\n# => 3 4 5",
+    "keywords": [
+      "diff",
+      "list",
+      "set",
+      "difference",
+      "compare"
+    ]
+  },
+  "lintersect": {
+    "section": "extend Library",
+    "signature": "lintersect <list1> <list2>",
+    "description": "返回两个列表的交集元素。",
+    "parameters": [
+      {
+        "name": "<list1>",
+        "type": "list",
+        "desc": "第一个列表。"
+      },
+      {
+        "name": "<list2>",
+        "type": "list",
+        "desc": "第二个列表。"
+      }
+    ],
+    "example": "set l1 {1 2 3 4}\nset l2 {1 2}\nputs \"[lintersect $l1 $l2]\"\n# => 1 2",
+    "keywords": [
+      "intersect",
+      "list",
+      "common",
+      "set",
+      "intersection"
+    ]
+  },
+  "ltranspose": {
+    "section": "extend Library",
+    "signature": "ltranspose <list>",
+    "description": "转置列表的子列表，将行转换为列。",
+    "parameters": [
+      {
+        "name": "<list>",
+        "type": "list",
+        "desc": "要转置的列表。"
+      }
+    ],
+    "example": "set l {{1 2} {3 4} {5 6}}\nputs \"[ltranspose $l]\"\n# => {1 3 5} {2 4 6}",
+    "keywords": [
+      "transpose",
+      "list",
+      "matrix",
+      "rows",
+      "columns"
+    ]
+  },
+  "lunion": {
+    "section": "extend Library",
+    "signature": "lunion <list1> <list2>",
+    "description": "返回两个列表的并集，去重后合并。",
+    "parameters": [
+      {
+        "name": "<list1>",
+        "type": "list",
+        "desc": "第一个列表。"
+      },
+      {
+        "name": "<list2>",
+        "type": "list",
+        "desc": "第二个列表。"
+      }
+    ],
+    "example": "set l1 {1 2 3 4}\nset l2 {1 2 5}\nputs \"[lunion $l1 $l2]\"\n# => 1 2 3 4 5",
+    "keywords": [
+      "union",
+      "list",
+      "unique",
+      "set",
+      "merge"
+    ]
+  },
+  "dbputs": {
+    "section": "extend Library",
+    "signature": "dbputs <str> ?dbglevel?",
+    "description": "当全局变量 ::DEBUG 的值大于等于指定调试级别时，将字符串输出到日志。",
+    "parameters": [
+      {
+        "name": "<str>",
+        "type": "string",
+        "desc": "要输出的字符串。"
+      },
+      {
+        "name": "?dbglevel?",
+        "type": "int",
+        "desc": "调试级别阈值，默认为 1。"
+      }
+    ],
+    "example": "dbputs \"test1\"\nset ::DEBUG 2\ndbputs \"test2\"\ndbputs \"test3\" 2\ndbputs \"test4\" 3\nset ::DEBUG 0\ndbputs \"test5\"",
+    "keywords": [
+      "debug",
+      "print",
+      "log",
+      "level",
+      "output"
+    ]
+  },
+  "ds_getValue": {
+    "section": "extend Library",
+    "signature": "ds_getValue <proj> <datasetName> ?index?",
+    "description": "返回已加载项目中数据集指定索引处的值。",
+    "parameters": [
+      {
+        "name": "<proj>",
+        "type": "string",
+        "desc": "已加载 .plt 文件的项目名称。"
+      },
+      {
+        "name": "<datasetName>",
+        "type": "string",
+        "desc": "数据集名称。"
+      },
+      {
+        "name": "?index?",
+        "type": "string",
+        "desc": "要返回的数据项索引（从 0 开始），默认为 \"end\"（最后一个值）。"
+      }
+    ],
+    "example": "proj_load n5_des.plt\nputs \"first value [ds_getValue n5_des \"anode OuterVoltage\" 0]\"\nputs \"last value [ds_getValue n5_des \"anode OuterVoltage\"]\"",
+    "keywords": [
+      "dataset",
+      "value",
+      "index",
+      "project",
+      "get"
+    ]
+  },
+  "vecmax": {
+    "section": "Formula Functions",
+    "signature": "vecmax <curve>",
+    "description": "返回给定曲线的最大 y 值。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"vecmax(<IdVg>)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "vector",
+      "maximum",
+      "curve",
+      "scalar"
+    ]
+  },
+  "vecmin": {
+    "section": "Formula Functions",
+    "signature": "vecmin <curve>",
+    "description": "返回给定曲线的最小 y 值。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"vecmin(<IdVg>)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "vector",
+      "minimum",
+      "curve",
+      "scalar"
+    ]
+  },
+  "vecvalx": {
+    "section": "Formula Functions",
+    "signature": "vecvalx <curve> <yValue>",
+    "description": "返回指定曲线在给定 y 值处对应的 x 值。对于具有指数行为的曲线，建议先将曲线转换为对数尺度再使用此算子，以获得更好的结果。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      },
+      {
+        "name": "<yValue>",
+        "type": "float",
+        "desc": "要查找对应 x 值的 y 值。"
+      }
+    ],
+    "example": "cv_compute \"vecvalx(<IdVg>, 1e-6)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "vector",
+      "x-value",
+      "interpolation",
+      "curve",
+      "scalar"
+    ]
+  },
+  "vecvaly": {
+    "section": "Formula Functions",
+    "signature": "vecvaly <curve> <xValue>",
+    "description": "返回指定曲线在给定 x 值处对应的 y 值。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      },
+      {
+        "name": "<xValue>",
+        "type": "float",
+        "desc": "要查找对应 y 值的 x 值。"
+      }
+    ],
+    "example": "cv_compute \"vecvaly(<IdVg>, 1.0)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "vector",
+      "y-value",
+      "interpolation",
+      "curve",
+      "scalar"
+    ]
+  },
+  "veczero": {
+    "section": "Formula Functions",
+    "signature": "veczero <curve>",
+    "description": "返回曲线与 y = 0 的交叉点的 x 值（x 轴截距）。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"veczero(<IdVd>)\" 0.0 5.0 -1e-3 1e-3",
+    "keywords": [
+      "vector",
+      "zero-crossing",
+      "x-intercept",
+      "curve",
+      "scalar"
+    ]
+  },
+  "fftre": {
+    "section": "Formula Functions",
+    "signature": "fftre <curve>",
+    "description": "返回给定曲线快速傅里叶变换（FFT）的实部。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线（实值）。"
+      }
+    ],
+    "example": "cv_compute \"fftre(<signal>)\"",
+    "keywords": [
+      "FFT",
+      "real",
+      "Fourier",
+      "transform",
+      "frequency"
+    ]
+  },
+  "fftim": {
+    "section": "Formula Functions",
+    "signature": "fftim <curve>",
+    "description": "返回给定曲线快速傅里叶变换（FFT）的虚部。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线（实值）。"
+      }
+    ],
+    "example": "cv_compute \"fftim(<signal>)\"",
+    "keywords": [
+      "FFT",
+      "imaginary",
+      "Fourier",
+      "transform",
+      "frequency"
+    ]
+  },
+  "fftabs": {
+    "section": "Formula Functions",
+    "signature": "fftabs <curve_real> <curve_imaginary>",
+    "description": "返回给定复数曲线的绝对值（幅度）向量，由其实部和虚部计算得到。",
+    "parameters": [
+      {
+        "name": "<curve_real>",
+        "type": "curve",
+        "desc": "输入曲线的实部。"
+      },
+      {
+        "name": "<curve_imaginary>",
+        "type": "curve",
+        "desc": "输入曲线的虚部。"
+      }
+    ],
+    "example": "cv_compute \"fftabs(<signal_re>, <signal_im>)\"",
+    "keywords": [
+      "FFT",
+      "absolute",
+      "magnitude",
+      "Fourier",
+      "frequency"
+    ]
+  },
+  "ifftre": {
+    "section": "Formula Functions",
+    "signature": "ifftre <curve>",
+    "description": "返回给定曲线逆快速傅里叶变换（IFFT）的实部。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线（实值）。"
+      }
+    ],
+    "example": "cv_compute \"ifftre(<fft_data>)\"",
+    "keywords": [
+      "FFT",
+      "inverse",
+      "real",
+      "IFFT",
+      "Fourier"
+    ]
+  },
+  "ifftim": {
+    "section": "Formula Functions",
+    "signature": "ifftim <curve>",
+    "description": "返回给定曲线逆快速傅里叶变换（IFFT）的虚部。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线（实值）。"
+      }
+    ],
+    "example": "cv_compute \"ifftim(<fft_data>)\"",
+    "keywords": [
+      "FFT",
+      "inverse",
+      "imaginary",
+      "IFFT",
+      "Fourier"
+    ]
+  },
+  "cfftre": {
+    "section": "Formula Functions",
+    "signature": "cfftre <curve_real> <curve_imaginary>",
+    "description": "返回给定复数曲线（由实部和虚部指定）快速傅里叶变换（FFT）的实部。",
+    "parameters": [
+      {
+        "name": "<curve_real>",
+        "type": "curve",
+        "desc": "输入曲线的实部。"
+      },
+      {
+        "name": "<curve_imaginary>",
+        "type": "curve",
+        "desc": "输入曲线的虚部。"
+      }
+    ],
+    "example": "cv_compute \"cfftre(<sig_re>, <sig_im>)\"",
+    "keywords": [
+      "FFT",
+      "complex",
+      "real",
+      "Fourier",
+      "frequency"
+    ]
+  },
+  "cfftim": {
+    "section": "Formula Functions",
+    "signature": "cfftim <curve_real> <curve_imaginary>",
+    "description": "返回给定复数曲线（由实部和虚部指定）快速傅里叶变换（FFT）的虚部。",
+    "parameters": [
+      {
+        "name": "<curve_real>",
+        "type": "curve",
+        "desc": "输入曲线的实部。"
+      },
+      {
+        "name": "<curve_imaginary>",
+        "type": "curve",
+        "desc": "输入曲线的虚部。"
+      }
+    ],
+    "example": "cv_compute \"cfftim(<sig_re>, <sig_im>)\"",
+    "keywords": [
+      "FFT",
+      "complex",
+      "imaginary",
+      "Fourier",
+      "frequency"
+    ]
+  },
+  "cifftre": {
+    "section": "Formula Functions",
+    "signature": "cifftre <curve_real> <curve_imaginary>",
+    "description": "返回给定复数曲线（由实部和虚部指定）逆 FFT 的实部。",
+    "parameters": [
+      {
+        "name": "<curve_real>",
+        "type": "curve",
+        "desc": "输入曲线的实部。"
+      },
+      {
+        "name": "<curve_imaginary>",
+        "type": "curve",
+        "desc": "输入曲线的虚部。"
+      }
+    ],
+    "example": "cv_compute \"cifftre(<fft_re>, <fft_im>)\"",
+    "keywords": [
+      "FFT",
+      "complex",
+      "inverse",
+      "real",
+      "IFFT"
+    ]
+  },
+  "cifftim": {
+    "section": "Formula Functions",
+    "signature": "cifftim <curve_real> <curve_imaginary>",
+    "description": "返回给定复数曲线（由实部和虚部指定）逆 FFT 的虚部。",
+    "parameters": [
+      {
+        "name": "<curve_real>",
+        "type": "curve",
+        "desc": "输入曲线的实部。"
+      },
+      {
+        "name": "<curve_imaginary>",
+        "type": "curve",
+        "desc": "输入曲线的虚部。"
+      }
+    ],
+    "example": "cv_compute \"cifftim(<fft_re>, <fft_im>)\"",
+    "keywords": [
+      "FFT",
+      "complex",
+      "inverse",
+      "imaginary",
+      "IFFT"
+    ]
+  },
+  "j0": {
+    "section": "Formula Functions",
+    "signature": "j0 <curve>",
+    "description": "返回曲线每个元素的第一类零阶贝塞尔函数值。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"j0(<xvals>)\"",
+    "keywords": [
+      "Bessel",
+      "first kind",
+      "order 0",
+      "math"
+    ]
+  },
+  "j1": {
+    "section": "Formula Functions",
+    "signature": "j1 <curve>",
+    "description": "返回曲线每个元素的第一类一阶贝塞尔函数值。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"j1(<xvals>)\"",
+    "keywords": [
+      "Bessel",
+      "first kind",
+      "order 1",
+      "math"
+    ]
+  },
+  "y0": {
+    "section": "Formula Functions",
+    "signature": "y0 <curve>",
+    "description": "返回曲线每个元素的第二类零阶贝塞尔函数值。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"y0(<xvals>)\"",
+    "keywords": [
+      "Bessel",
+      "second kind",
+      "order 0",
+      "math"
+    ]
+  },
+  "y1": {
+    "section": "Formula Functions",
+    "signature": "y1 <curve>",
+    "description": "返回曲线每个元素的第二类一阶贝塞尔函数值。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"y1(<xvals>)\"",
+    "keywords": [
+      "Bessel",
+      "second kind",
+      "order 1",
+      "math"
+    ]
+  },
+  "acosh": {
+    "section": "Formula Functions",
+    "signature": "acosh <curve>",
+    "description": "返回反双曲余弦值。曲线值必须大于或等于 1。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线（值 >= 1）。"
+      }
+    ],
+    "example": "cv_compute \"acosh(<vals>)\"",
+    "keywords": [
+      "inverse",
+      "hyperbolic",
+      "cosine",
+      "acosh",
+      "math"
+    ]
+  },
+  "asinh": {
+    "section": "Formula Functions",
+    "signature": "asinh <curve>",
+    "description": "返回曲线每个元素的反双曲正弦值。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"asinh(<vals>)\"",
+    "keywords": [
+      "inverse",
+      "hyperbolic",
+      "sine",
+      "asinh",
+      "math"
+    ]
+  },
+  "atanh": {
+    "section": "Formula Functions",
+    "signature": "atanh <curve>",
+    "description": "返回反双曲正切值。曲线值必须在 -1 和 1 之间（不含 -1 和 1）。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线（值在 (-1, 1) 范围内）。"
+      }
+    ],
+    "example": "cv_compute \"atanh(<vals>)\"",
+    "keywords": [
+      "inverse",
+      "hyperbolic",
+      "tangent",
+      "atanh",
+      "math"
+    ]
+  },
+  "cbrt": {
+    "section": "Formula Functions",
+    "signature": "cbrt <curve>",
+    "description": "返回曲线每个元素的立方根。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"cbrt(<vals>)\"",
+    "keywords": [
+      "cube root",
+      "cbrt",
+      "math"
+    ]
+  },
+  "diff": {
+    "section": "Formula Functions",
+    "signature": "diff <curve>",
+    "description": "返回给定曲线的一阶导数。要求输入为纯曲线参数（包含多于一个点的曲线）。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线（必须包含多于一个点）。"
+      }
+    ],
+    "example": "cv_compute \"diff(<IdVg>)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "derivative",
+      "differentiation",
+      "slope",
+      "math"
+    ]
+  },
+  "erf": {
+    "section": "Formula Functions",
+    "signature": "erf <curve>",
+    "description": "返回曲线每个元素的误差函数值。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"erf(<vals>)\"",
+    "keywords": [
+      "error function",
+      "erf",
+      "math"
+    ]
+  },
+  "fabs": {
+    "section": "Formula Functions",
+    "signature": "fabs <curve>",
+    "description": "返回曲线每个元素的绝对值。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"fabs(<vals>)\"",
+    "keywords": [
+      "absolute",
+      "abs",
+      "magnitude",
+      "math"
+    ]
+  },
+  "gamma": {
+    "section": "Formula Functions",
+    "signature": "gamma <curve>",
+    "description": "返回曲线每个元素的 Gamma 函数值。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"gamma(<vals>)\"",
+    "keywords": [
+      "gamma",
+      "Gamma function",
+      "math"
+    ]
+  },
+  "integr": {
+    "section": "Formula Functions",
+    "signature": "integr <curve>",
+    "description": "返回给定曲线的积分。要求输入为纯曲线参数（包含多于一个点的曲线）。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线（必须包含多于一个点）。"
+      }
+    ],
+    "example": "cv_compute \"integr(<IdVg>)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "integral",
+      "integration",
+      "area",
+      "math"
+    ]
+  },
+  "intercept": {
+    "section": "Formula Functions",
+    "signature": "intercept <curve>",
+    "description": "返回给定曲线的 x 轴截距，即曲线与 x 轴交叉点的 x 值。常与 maxslope() 组合用于提取阈值电压：VT = intercept(maxslope(curve))。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "set vt [f_VT idvgs]\n# Equivalent formula: VT = intercept(maxslope(curve))",
+    "keywords": [
+      "intercept",
+      "x-intercept",
+      "threshold",
+      "voltage",
+      "math"
+    ]
+  },
+  "lgamma": {
+    "section": "Formula Functions",
+    "signature": "lgamma <curve>",
+    "description": "返回曲线每个元素的 Gamma 函数绝对值的自然对数。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"lgamma(<vals>)\"",
+    "keywords": [
+      "log",
+      "gamma",
+      "lgamma",
+      "math"
+    ]
+  },
+  "maxslope": {
+    "section": "Formula Functions",
+    "signature": "maxslope <curve>",
+    "description": "返回表示给定曲线最大斜率的标量值。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"maxslope(<IdVg>)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "slope",
+      "maximum",
+      "derivative",
+      "transconductance",
+      "math"
+    ]
+  },
+  "minslope": {
+    "section": "Formula Functions",
+    "signature": "minslope <curve>",
+    "description": "返回表示给定曲线最小斜率的标量值。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      }
+    ],
+    "example": "cv_compute \"minslope(<IdVg>)\" 0.0 5.0 1e-10 5e-6",
+    "keywords": [
+      "slope",
+      "minimum",
+      "derivative",
+      "math"
+    ]
+  },
+  "tangent": {
+    "section": "Formula Functions",
+    "signature": "tangent <curve> <xValue>",
+    "description": "返回在指定 x 值处与给定曲线相切的切线曲线。",
+    "parameters": [
+      {
+        "name": "<curve>",
+        "type": "curve",
+        "desc": "输入曲线。"
+      },
+      {
+        "name": "<xValue>",
+        "type": "float",
+        "desc": "计算切线的 x 值位置。"
+      }
+    ],
+    "example": "cv_compute \"tangent(<IdVg>, 1.0)\"",
+    "keywords": [
+      "tangent",
+      "tangent line",
+      "slope",
+      "math"
+    ]
+  },
+  "const::AtomicMassConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::AtomicMassConstant",
+    "description": "原子质量常数，值为 1.660540210e-27 kg。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset m [const::AtomicMassConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "atomic",
+      "mass"
+    ]
+  },
+  "const::AvogadroConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::AvogadroConstant",
+    "description": "阿伏伽德罗常数，值为 6.022136736e23 mol-1。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset Na [const::AvogadroConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Avogadro",
+      "mole"
+    ]
+  },
+  "const::BohrMagneton": {
+    "section": "PhysicalConstants",
+    "signature": "const::BohrMagneton",
+    "description": "玻尔磁子，值为 9.274015431e-24 J/T。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset muB [const::BohrMagneton]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Bohr",
+      "magneton",
+      "magnetic"
+    ]
+  },
+  "const::BoltzmannConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::BoltzmannConstant",
+    "description": "玻尔兹曼常数，值为 1.38065812e-23 J/K。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset kB [const::BoltzmannConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Boltzmann",
+      "thermal"
+    ]
+  },
+  "const::ElectronMass": {
+    "section": "PhysicalConstants",
+    "signature": "const::ElectronMass",
+    "description": "电子静止质量，值为 9.109389754e-31 kg。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset me [const::ElectronMass]",
+    "keywords": [
+      "constant",
+      "physics",
+      "electron",
+      "mass"
+    ]
+  },
+  "const::ElectronVolt": {
+    "section": "PhysicalConstants",
+    "signature": "const::ElectronVolt",
+    "description": "电子伏特能量单位，值为 1.6021773349e-19 J。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset eV [const::ElectronVolt]",
+    "keywords": [
+      "constant",
+      "physics",
+      "electron",
+      "volt",
+      "energy"
+    ]
+  },
+  "const::ElementaryCharge": {
+    "section": "PhysicalConstants",
+    "signature": "const::ElementaryCharge",
+    "description": "元电荷，值为 1.6021773349e-19 C。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset q [const::ElementaryCharge]",
+    "keywords": [
+      "constant",
+      "physics",
+      "charge",
+      "elementary"
+    ]
+  },
+  "const::FaradayConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::FaradayConstant",
+    "description": "法拉第常数，值为 9.648530929e4 C/mol。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset F [const::FaradayConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Faraday",
+      "charge",
+      "mole"
+    ]
+  },
+  "const::FineStructureConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::FineStructureConstant",
+    "description": "精细结构常数，值为 7.2973530833e-3（无量纲）。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset alpha [const::FineStructureConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "fine structure",
+      "dimensionless"
+    ]
+  },
+  "const::FreeSpaceImpedance": {
+    "section": "PhysicalConstants",
+    "signature": "const::FreeSpaceImpedance",
+    "description": "自由空间阻抗，值为 376.730313462 Ohm。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset Z0 [const::FreeSpaceImpedance]",
+    "keywords": [
+      "constant",
+      "physics",
+      "impedance",
+      "free space",
+      "EM"
+    ]
+  },
+  "const::GravitationConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::GravitationConstant",
+    "description": "万有引力常数，值为 6.6725985e-11 m3/kg/s2。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset G [const::GravitationConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "gravitation",
+      "gravity"
+    ]
+  },
+  "const::MagneticFluxQuantum": {
+    "section": "PhysicalConstants",
+    "signature": "const::MagneticFluxQuantum",
+    "description": "磁通量子，值为 2.0678346161e-15 Wb。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset phi0 [const::MagneticFluxQuantum]",
+    "keywords": [
+      "constant",
+      "physics",
+      "magnetic",
+      "flux",
+      "quantum"
+    ]
+  },
+  "const::MolarVolume": {
+    "section": "PhysicalConstants",
+    "signature": "const::MolarVolume",
+    "description": "标准状况下理想气体的摩尔体积，值为 22.4141019e-3 m3/mol。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset Vm [const::MolarVolume]",
+    "keywords": [
+      "constant",
+      "physics",
+      "molar",
+      "volume",
+      "ideal gas"
+    ]
+  },
+  "const::Permeability": {
+    "section": "PhysicalConstants",
+    "signature": "const::Permeability",
+    "description": "真空磁导率（磁常数），值为 12.566370614e-7 H/m。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset mu0 [const::Permeability]",
+    "keywords": [
+      "constant",
+      "physics",
+      "permeability",
+      "magnetic",
+      "free space"
+    ]
+  },
+  "const::Permittivity": {
+    "section": "PhysicalConstants",
+    "signature": "const::Permittivity",
+    "description": "真空介电常数（电常数），值为 8.854187817e-12 F/m。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset eps0 [const::Permittivity]",
+    "keywords": [
+      "constant",
+      "physics",
+      "permittivity",
+      "dielectric",
+      "free space"
+    ]
+  },
+  "const::Pi": {
+    "section": "PhysicalConstants",
+    "signature": "const::Pi",
+    "description": "数学常数圆周率 Pi，值为 3.141592653589793（无量纲）。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset pi [const::Pi]",
+    "keywords": [
+      "constant",
+      "math",
+      "Pi",
+      "dimensionless"
+    ]
+  },
+  "const::PlanckConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::PlanckConstant",
+    "description": "普朗克常数，值为 6.626075540e-34 Js。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset h [const::PlanckConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Planck",
+      "quantum"
+    ]
+  },
+  "const::ProtonMass": {
+    "section": "PhysicalConstants",
+    "signature": "const::ProtonMass",
+    "description": "质子静止质量，值为 1.672623110e-27 kg。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset mp [const::ProtonMass]",
+    "keywords": [
+      "constant",
+      "physics",
+      "proton",
+      "mass"
+    ]
+  },
+  "const::RydbergConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::RydbergConstant",
+    "description": "里德伯常数，值为 1.097373153413e7 mol-1。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset Rinf [const::RydbergConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Rydberg",
+      "atomic"
+    ]
+  },
+  "const::SpeedOfLight": {
+    "section": "PhysicalConstants",
+    "signature": "const::SpeedOfLight",
+    "description": "真空中的光速，值为 299792458 m/s。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset c [const::SpeedOfLight]",
+    "keywords": [
+      "constant",
+      "physics",
+      "speed",
+      "light",
+      "c"
+    ]
+  },
+  "const::StefanBoltzmannConstant": {
+    "section": "PhysicalConstants",
+    "signature": "const::StefanBoltzmannConstant",
+    "description": "斯特藩-玻尔兹曼常数，值为 5.6705119e-8 W/m2/K4。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset sigma [const::StefanBoltzmannConstant]",
+    "keywords": [
+      "constant",
+      "physics",
+      "Stefan-Boltzmann",
+      "radiation",
+      "thermal"
+    ]
+  },
+  "const::getVarNames": {
+    "section": "PhysicalConstants",
+    "signature": "const::getVarNames",
+    "description": "返回 PhysicalConstants 库中定义的所有变量名称列表。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nset varlist [const::getVarNames]\nputs \"Variables: $varlist\"",
+    "keywords": [
+      "PhysicalConstants",
+      "list",
+      "variables",
+      "names"
+    ]
+  },
+  "const::printVarNames": {
+    "section": "PhysicalConstants",
+    "signature": "const::printVarNames",
+    "description": "将 PhysicalConstants 库中所有可用变量的名称打印到标准输出。",
+    "parameters": [],
+    "example": "load_library PhysicalConstants\nconst::printVarNames",
+    "keywords": [
+      "PhysicalConstants",
+      "print",
+      "variables",
+      "names"
+    ]
+  },
+  "iccap_Write": {
+    "section": "IC-CAP Library",
+    "signature": "iccap_Write <fileName> <headerInfo> <data>",
+    "description": "使用 IC-CAP 数据管理文件格式将数据导出到文件。headerInfo 是由 userInput、iccapInput 和 output 三个子列表构成的列表。data 是按输入变量值索引的曲线数据数组。",
+    "parameters": [
+      {
+        "name": "<fileName>",
+        "type": "string",
+        "desc": "输出文件名。"
+      },
+      {
+        "name": "<headerInfo>",
+        "type": "list",
+        "desc": "头部信息列表，包含 userInput、iccapInput 和 output 子列表。"
+      },
+      {
+        "name": "<data>",
+        "type": "list",
+        "desc": "曲线数据数组（详见文档中的 Array Data 说明）。"
+      }
+    ],
+    "example": "load_library ise2iccap\niccap_Write \"output.dmp\" $header $data",
+    "keywords": [
+      "IC-CAP",
+      "export",
+      "data",
+      "file",
+      "model"
+    ]
+  },
+  "cvcmp_CompareTwoCurves": {
+    "section": "Curve Comparison Library",
+    "signature": "cvcmp_CompareTwoCurves <curve1> <curve2> <windowX> <use_log> <n>",
+    "description": "在给定域（窗口）内使用线性尺度或对数尺度计算两条曲线之间的平方差。",
+    "parameters": [
+      {
+        "name": "<curve1>",
+        "type": "string",
+        "desc": "第一条曲线名称。"
+      },
+      {
+        "name": "<curve2>",
+        "type": "string",
+        "desc": "第二条曲线名称。"
+      },
+      {
+        "name": "<windowX>",
+        "type": "float",
+        "desc": "x 轴方向的比较窗口大小。"
+      },
+      {
+        "name": "<use_log>",
+        "type": "boolean",
+        "desc": "为 true 时使用对数尺度，为 false 时使用线性尺度。"
+      },
+      {
+        "name": "<n>",
+        "type": "string",
+        "desc": "内部曲线的基础名称。"
+      }
+    ],
+    "example": "load_library curvecomp\ncvcmp_CompareTwoCurves curve1 curve2 1.0 0 comp",
+    "keywords": [
+      "curve",
+      "comparison",
+      "square difference",
+      "domain"
+    ]
+  },
+  "cvcmp_DeltaTwoCurves": {
+    "section": "Curve Comparison Library",
+    "signature": "cvcmp_DeltaTwoCurves <exp_file> <sim_file> <minX> <maxX> <use_log> <name>",
+    "description": "将两条曲线在给定域（窗口）内的平方差写入标准输出。两条曲线均从文件读取。使用 ft_scale 命令将计算结果导出到 Sentaurus Workbench 的 Family Tree。",
+    "parameters": [
+      {
+        "name": "<exp_file>",
+        "type": "string",
+        "desc": "包含实验曲线的文件。"
+      },
+      {
+        "name": "<sim_file>",
+        "type": "string",
+        "desc": "包含仿真曲线的文件。"
+      },
+      {
+        "name": "<minX>",
+        "type": "float",
+        "desc": "比较窗口的最小 x 值。"
+      },
+      {
+        "name": "<maxX>",
+        "type": "float",
+        "desc": "比较窗口的最大 x 值。"
+      },
+      {
+        "name": "<use_log>",
+        "type": "boolean",
+        "desc": "为 true 时使用对数尺度，为 false 时使用线性尺度。"
+      },
+      {
+        "name": "<name>",
+        "type": "string",
+        "desc": "Sentaurus Workbench Family Tree 中存储结果的列名。"
+      }
+    ],
+    "example": "load_library curvecomp\ncvcmp_DeltaTwoCurves exp.dat sim.dat 0.0 5.0 0 delta",
+    "keywords": [
+      "curve",
+      "comparison",
+      "delta",
+      "file",
+      "Workbench"
+    ]
+  },
+  "load_library": {
+    "section": "General",
+    "signature": "load_library <libraryName>",
+    "description": "加载脚本库并使其所有功能可用。特定库的所有命令共享一个公共前缀。可用的库包括：PhysicalConstants、ise2iccap、curvecomp、EXTRACT、extend 以及用户自定义的站点库。",
+    "parameters": [
+      {
+        "name": "<libraryName>",
+        "type": "string",
+        "desc": "要加载的库名称。"
+      }
+    ],
+    "example": "load_library PhysicalConstants\nload_library curvecomp",
+    "keywords": [
+      "library",
+      "load",
+      "extension",
+      "module"
+    ]
+  }
+}
