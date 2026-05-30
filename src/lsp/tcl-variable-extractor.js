@@ -12,6 +12,10 @@ const {
     _extractBracedWordVars,
     _extractCommandVarDefs,
     _extractErrorVarDefs,
+    _isSetLikeCommand,
+    _extractSetLikeVarDef,
+    _isProcLikeCommand,
+    _extractProcLikeParams,
     _extractUpvarLocalNames,
     _isSvisualVarDefCommand,
     _extractSvisualOutVars,
@@ -363,6 +367,40 @@ function _handleWhile(node, results, sourceText, lines) {
     }
 }
 
+function _handleProcLikeCommand(node, results, sourceText, lines) {
+    const words = _getCommandWords(node);
+    const nameNode = words[1];
+    const argsNode = words[2];
+    const bodyNode = words[3];
+    if (!nameNode || !nameNode.text || nameNode.text.startsWith('$')) return;
+
+    const defText = lines
+        ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
+        : node.text;
+
+    results.push({
+        name: nameNode.text,
+        line: nameNode.startPosition.row + 1,
+        endLine: nameNode.endPosition.row + 1,
+        definitionText: defText,
+        kind: 'function',
+    });
+
+    for (const p of _extractProcLikeParams(argsNode)) {
+        results.push({
+            name: p.name,
+            line: p.line,
+            endLine: p.line,
+            definitionText: defText,
+            kind: 'parameter',
+        });
+    }
+
+    if (bodyNode && bodyNode.type === 'braced_word') {
+        _collectVariables(bodyNode, results, sourceText, lines);
+    }
+}
+
 /**
  * 处理普通 command 节点。
  * 检查第一个 simple_word 是否为特殊命令（如 "for"），若是则特殊处理。
@@ -378,6 +416,29 @@ function _handleCommand(node, results, sourceText, lines) {
     }
 
     const cmdName = firstChild.text;
+
+    if (_isSetLikeCommand(cmdName)) {
+        const words = _getCommandWords(node);
+        const def = _extractSetLikeVarDef(words);
+        if (def) {
+            const defText = lines
+                ? _extendNodeTextToLineEnd(node.text, node.endPosition.row, lines)
+                : node.text;
+            results.push({
+                name: def.name,
+                line: def.line,
+                endLine: def.line,
+                definitionText: defText,
+                kind: 'variable',
+            });
+        }
+        return;
+    }
+
+    if (_isProcLikeCommand(cmdName)) {
+        _handleProcLikeCommand(node, results, sourceText, lines);
+        return;
+    }
 
     if (cmdName === 'for') {
         _handleFor(node, results, sourceText, lines);
