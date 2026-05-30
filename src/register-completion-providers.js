@@ -124,6 +124,7 @@ function registerCompletionProviders(context, deps) {
                     if (langId === 'svisual') return loadDocsJson('svisual_command_docs.json', useZh) || {};
                     if (langId === 'inspect') return loadDocsJson('inspect_command_docs.json', useZh) || {};
                     if (langId === 'sprocess') return loadDocsJson('sprocess_command_docs.json', useZh) || {};
+                    if (langId === 'emw') return loadDocsJson('emw_command_docs.json', useZh) || {};
                     return {};
                 })();
                 _docsCache[langId] = { ..._docsCache.tcl, ..._docsCache.tclMath, ...langSpecificDocs };

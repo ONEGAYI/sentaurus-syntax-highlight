@@ -1,0 +1,1744 @@
+{
+  "Globals": {
+    "section": "Simulation Setup",
+    "signature": "Globals { GridFile=<string> ParameterFile=<string> ResultFile=<string> LogFile=<string> NumberOfThreads=<int> TotalTimeSteps=<int> }",
+    "description": "定义全局仿真参数，包括张量网格文件、材料参数文件、输出文件名、并行化设置和时间步控制。此 section 为必需项，且只能出现一次。",
+    "parameters": [
+      { "name": "GridFile", "type": "string", "desc": "仿真的张量网格文件。" },
+      { "name": "ParameterFile", "type": "string", "desc": "指定材料参数文件。" },
+      { "name": "ResultFile", "type": "string", "desc": "结果文件名。默认为 result_eml.plt。" },
+      { "name": "LogFile", "type": "string", "desc": "日志文件名。默认使用命令文件名并替换扩展名为 .log。若文件名以 .z 或 .gz 结尾，将写入压缩日志文件。" },
+      { "name": "NumberOfThreads", "type": "int", "desc": "共享内存并行化使用的线程数。取大于零的整数或 'maximum'。" },
+      { "name": "OutputFilePrefix", "type": "string", "desc": "可选。附加到所有输出文件名（包括日志文件）前的前缀字符串。" },
+      { "name": "CompressTDR", "type": "enum", "desc": "可选。控制输出 TDR 文件是否在基本压缩级别之上进一步压缩。选项：Yes, No。" },
+      { "name": "CRIMIPath", "type": "string", "desc": "可选。复折射率模型接口所用共享对象的搜索路径。默认为 '.'。" },
+      { "name": "DomainDecomposition", "type": "enum", "desc": "可选。覆盖自动 MPI 域分解。用于强制仅在一个笛卡尔方向上进行域分解。选项：Automatic, X, Y, Z。" },
+      { "name": "FieldDataFile", "type": "string", "desc": "可选。包含数据集的数据文件（如空间温度分布），复折射率依赖于该数据集。" },
+      { "name": "LoadFile", "type": "string", "desc": "可选。用于后处理的结果文件名。" },
+      { "name": "OverSampling", "type": "float", "desc": "可选。以 OverSampling 因子缩小计算得到的最大稳定时间步。默认为 1。" },
+      { "name": "ParallelLicenses", "type": "list", "desc": "可选。EMW 并行运行时允许使用的许可证列表。选项：MPI, SMP。默认为 {MPI SMP}。" },
+      { "name": "TdrNativeTensorGridUnit", "type": "enum", "desc": "可选。覆盖输入张量网格中长度单位的自动检测。选项：Automatic, m, um。" },
+      { "name": "Temperature", "type": "float", "desc": "可选。全局器件温度，单位为开尔文。默认为 300。" },
+      { "name": "TimeStep", "type": "float", "desc": "可选。覆盖计算得到的仿真时间步。" },
+      { "name": "TotalSimulationTime", "type": "float", "desc": "可选。仿真终止前的最大仿真时间。" },
+      { "name": "TotalTimeSteps", "type": "int", "desc": "可选。最大执行时间步数。" },
+      { "name": "UnavailableLicenseAction", "type": "enum", "desc": "可选。当请求的许可证不可用时采取的操作。选项：serial, reduce, wait, abort。" }
+    ],
+    "example": "Globals {\n  GridFile        = \"@tdr@\"\n  ParameterFile   = \"@parameter@\"\n  ResultFile      = \"@plot@\"\n  LogFile         = \"@log@\"\n  NumberOfThreads = 1\n  TotalTimeSteps  = 50000\n  OverSampling    = 3.6\n}",
+    "keywords": ["GridFile", "ParameterFile", "ResultFile", "LogFile", "NumberOfThreads", "OutputFilePrefix", "CompressTDR", "CRIMIPath", "DomainDecomposition", "FieldDataFile", "LoadFile", "OverSampling", "ParallelLicenses", "TdrNativeTensorGridUnit", "Temperature", "TimeStep", "TotalSimulationTime", "TotalTimeSteps", "UnavailableLicenseAction"]
+  },
+  "ComplexRefractiveIndex": {
+    "section": "Material",
+    "signature": "ComplexRefractiveIndex { Material=<string> Region=<string> Type=<enum> WavelengthDep=<list> }",
+    "description": "指定仿真域中材料或区域的复折射率分布。支持均匀、非均匀和基于文件的分布，可选波长、温度、载流子和增益依赖。",
+    "parameters": [
+      { "name": "Material", "type": "string", "desc": "复折射率规范所适用的材料名称。" },
+      { "name": "Region", "type": "string", "desc": "复折射率规范所适用的区域名称。" },
+      { "name": "Type", "type": "enum", "desc": "可选。控制复折射率分布类型。选项：Homogeneous, Inhomogeneous, FromFile。默认为 Homogeneous。" },
+      { "name": "WavelengthDep", "type": "list", "desc": "可选。控制实部和虚部的波长依赖性。选项：Real, Imag。" },
+      { "name": "TemperatureDep", "type": "list", "desc": "可选。控制温度依赖性。选项：Real, Imag。" },
+      { "name": "CarrierDep", "type": "list", "desc": "可选。控制实部和虚部的载流子依赖性。选项：Real, Imag。" },
+      { "name": "GainDep", "type": "list", "desc": "可选。控制实部的增益依赖性。选项：RealLin, RealLog。" },
+      { "name": "Extrapolate", "type": "enum", "desc": "可选。控制 FieldDataFile 中数据集插值时的外推行为。选项：Yes, No。默认为 No。" },
+      { "name": "IgnoreMaterials", "type": "enum", "desc": "可选。控制加载数据集时是否允许不同材料顶点之间的插值。选项：Yes, No。默认为 No。" },
+      { "name": "CRIModel", "type": "string", "desc": "可选。用户提供的复折射率模型名称。" }
+    ],
+    "example": "ComplexRefractiveIndex {\n  WavelengthDep = {Real, Imag}\n}",
+    "keywords": ["Material", "Region", "Type", "WavelengthDep", "TemperatureDep", "CarrierDep", "GainDep", "Extrapolate", "IgnoreMaterials", "CRIModel"]
+  },
+  "DispersiveMedia": {
+    "section": "Material",
+    "signature": "DispersiveMedia { Material=<string> Model=<enum> ModelParameters=<enum> }",
+    "description": "为具有频率相关介电常数的材料指定色散媒质模型。支持 Debye、Drude、Lorentz 和调制 Lorentz 模型，参数可从复折射率计算或用户自定义。",
+    "parameters": [
+      { "name": "Material", "type": "string", "desc": "色散媒质规范所适用的材料名称。" },
+      { "name": "Region", "type": "string", "desc": "色散媒质规范所适用的区域名称。" },
+      { "name": "Model", "type": "enum", "desc": "选择色散模型。选项：Debye, Drude, DrudeLorentz, DrudeModLorentz, Lorentz, ModLorentz, SingleDipoleDebye, SingleDipoleDrude。" },
+      { "name": "ModelParameters", "type": "enum", "desc": "可选。指定色散模型参数的确定方式。选项：ComputeFromComplexRefractiveIndex, UserDefined。默认为 ComputeFromComplexRefractiveIndex。" },
+      { "name": "DeltaK", "type": "float", "desc": "可选。当 k + DeltaK >= n 时激活色散模型。默认为 0。" },
+      { "name": "ExcludeMaterial", "type": "string", "desc": "色散媒质规范不适用的材料名称。" },
+      { "name": "ExcludeRegion", "type": "string", "desc": "色散媒质规范不适用的区域名称。" },
+      { "name": "InterfaceAveraging", "type": "enum", "desc": "可选。控制是否对色散区域或材料启用界面平均。选项：Yes, No。默认为 No。" }
+    ],
+    "example": "DispersiveMedia {\n  Material = {\"Silver\"}\n  Model = SingleDipoleDrude\n  ModelParameters = ComputeFromComplexRefractiveIndex\n  InterfaceAveraging = yes\n}",
+    "keywords": ["Material", "Region", "Model", "ModelParameters", "DeltaK", "ExcludeMaterial", "ExcludeRegion", "InterfaceAveraging"]
+  },
+  "PECMedia": {
+    "section": "Material",
+    "signature": "PECMedia { Material=<string> Region=<string> }",
+    "description": "将完美电导体 (PEC) 属性分配给指定材料或区域。PEC 媒质完美反射电磁波，表面切向电场为零。",
+    "parameters": [
+      { "name": "Material", "type": "string", "desc": "PEC 媒质规范所适用的材料名称。" },
+      { "name": "Region", "type": "string", "desc": "PEC 媒质规范所适用的区域名称。" },
+      { "name": "ExcludeMaterial", "type": "string", "desc": "PEC 媒质规范不适用的材料名称。" },
+      { "name": "ExcludeRegion", "type": "string", "desc": "PEC 媒质规范不适用的区域名称。" }
+    ],
+    "example": "PECMedia {\n  Material = \"Copper\"\n}",
+    "keywords": ["Material", "Region", "ExcludeMaterial", "ExcludeRegion"]
+  },
+  "PMCMedia": {
+    "section": "Material",
+    "signature": "PMCMedia { Material=<string> Region=<string> }",
+    "description": "将完美磁导体 (PMC) 属性分配给指定材料或区域。PMC 媒质反射电磁波，表面切向磁场为零。",
+    "parameters": [
+      { "name": "Material", "type": "string", "desc": "PMC 媒质规范所适用的材料名称。" },
+      { "name": "Region", "type": "string", "desc": "PMC 媒质规范所适用的区域名称。" },
+      { "name": "ExcludeMaterial", "type": "string", "desc": "PMC 媒质规范不适用的材料名称。" },
+      { "name": "ExcludeRegion", "type": "string", "desc": "PMC 媒质规范不适用的区域名称。" }
+    ],
+    "example": "PMCMedia {\n  Region = \"waveguide_wall\"\n}",
+    "keywords": ["Material", "Region", "ExcludeMaterial", "ExcludeRegion"]
+  },
+  "Boundary": {
+    "section": "Boundary",
+    "signature": "Boundary { Type=<enum> Sides=<list> Thickness=<int> }",
+    "description": "定义仿真域的边界条件。支持 CPML、Higdon、Mur、PEC、Periodic、PeriodicOblique 和 PMC 边界类型。此 section 为必需项，最多可出现六次以指定不同侧面的条件。",
+    "parameters": [
+      { "name": "Type", "type": "enum", "desc": "边界条件类型。选项：CPML, Higdon, Mur, PEC, Periodic, PeriodicOblique, PMC。默认为 PeriodicOblique。" },
+      { "name": "Sides", "type": "list", "desc": "边界规范所适用的侧面。选项：All, X, Xmin, Xmax, Y, Ymin, Ymax, Z, Zmin, Zmax。默认为 {All}。" },
+      { "name": "Thickness", "type": "int", "desc": "可选。PML 边界的厚度，以张量网格单元数表示。默认为 15。" },
+      { "name": "SigmaMax", "type": "float", "desc": "可选。PML 参数 sigma 的最大值。默认值自动计算。" },
+      { "name": "SigmaProfile", "type": "list", "desc": "可选。PML 张量系数分级中使用的 PML 参数 sigma 的轮廓。" },
+      { "name": "OrderSigma", "type": "int", "desc": "可选。PML 参数 sigma 的多项式分级阶数。默认为 3。" },
+      { "name": "AlphaMax", "type": "float", "desc": "可选。PML 参数 alpha 的最大值。默认为 0.2。" },
+      { "name": "AlphaProfile", "type": "list", "desc": "可选。PML 张量系数分级中使用的 PML 参数 alpha 的轮廓。" },
+      { "name": "OrderAlpha", "type": "int", "desc": "可选。PML 参数 alpha 的多项式分级阶数。默认为 1。" },
+      { "name": "KappaMax", "type": "float", "desc": "可选。PML 参数 kappa 的最大值。默认为 15。" },
+      { "name": "KappaProfile", "type": "list", "desc": "可选。PML 张量系数分级中使用的 PML 参数 kappa 的轮廓。" },
+      { "name": "OrderKappa", "type": "int", "desc": "可选。PML 参数 kappa 的多项式分级阶数。默认为 3。" }
+    ],
+    "example": "Boundary {\n  Type  = PeriodicOblique\n  Sides = {X}\n}\n\nBoundary {\n  Type  = CPML\n  Sides = {Y}\n}",
+    "keywords": ["Type", "Sides", "Thickness", "SigmaMax", "SigmaProfile", "OrderSigma", "AlphaMax", "AlphaProfile", "OrderAlpha", "KappaMax", "KappaProfile", "OrderKappa"]
+  },
+  "PlaneWaveExcitation": {
+    "section": "Excitation",
+    "signature": "PlaneWaveExcitation { Wavelength=<float> Intensity=<float> Direction=<enum> Theta=<float> Phi=<float> Psi=<float> }",
+    "description": "定义平面波激励源。支持从顶部或底部照射、任意入射角，以及谐波和高斯瞬态信号形式，带偏振控制。",
+    "parameters": [
+      { "name": "Wavelength", "type": "float", "desc": "信号波长，单位为 nm。" },
+      { "name": "Frequency", "type": "float", "desc": "信号频率，单位为 s-1。" },
+      { "name": "Amplitude", "type": "float", "desc": "可选。信号振幅，单位为 V/m。默认为 1。" },
+      { "name": "Intensity", "type": "float", "desc": "可选。信号强度，单位为 W/cm^2。默认为 1.32721e-07。" },
+      { "name": "Direction", "type": "enum", "desc": "可选。照射方向。自动设置 Theta、Phi、Psi 和激励平面。选项：fromTop, fromBottom。" },
+      { "name": "Theta", "type": "float", "desc": "可选。入射极角，单位为度。默认为 180。" },
+      { "name": "Phi", "type": "float", "desc": "可选。入射方位角，单位为度。默认为 0。" },
+      { "name": "Psi", "type": "float", "desc": "可选。偏振角，单位为度。默认为 45。" },
+      { "name": "Polarization", "type": "float", "desc": "可选。偏振状态，TE (0) 或 TM (1)，或 0 到 1 之间的值。默认为 0.5。" },
+      { "name": "PolarizationAngle", "type": "float", "desc": "可选。偏振角，单位为度。默认为 45。" },
+      { "name": "EllipticalPolarizationMagnitude", "type": "float", "desc": "可选。偏振比幅值。默认为 0。" },
+      { "name": "EllipticalPolarizationPhase", "type": "float", "desc": "可选。偏振比相位，单位为度。默认为 0。" },
+      { "name": "Signal", "type": "enum", "desc": "可选。设置信号的瞬态形式。选项：Gauss, Harmonic。默认为 Harmonic。" },
+      { "name": "Sigma", "type": "float", "desc": "可选。瞬态高斯脉冲的宽度，以信号周期数表示。默认为 1。" },
+      { "name": "NRise", "type": "float", "desc": "可选。达到满振幅前的信号周期数。默认为 2。" },
+      { "name": "Delay", "type": "float", "desc": "可选。信号开始前的信号周期数。默认为 0。" },
+      { "name": "NumberOfPlaneWaves", "type": "int", "desc": "可选。激励平面波数量。默认为 1。" },
+      { "name": "NumericalAperture", "type": "float", "desc": "可选。数值孔径。默认为 0。" },
+      { "name": "PartialCoherenceFactor", "type": "float", "desc": "可选。部分相干因子。默认为 1。" },
+      { "name": "BoxCorner1", "type": "list", "desc": "可选。指定激励平面的包围盒的两个角点之一。" },
+      { "name": "BoxCorner2", "type": "list", "desc": "可选。指定激励平面的包围盒的两个角点之一。" },
+      { "name": "Region", "type": "string", "desc": "可选。指定激励平面的包围盒。" },
+      { "name": "PlaneX", "type": "float", "desc": "可选。垂直于 x 轴的激励线或激励面。" },
+      { "name": "PlaneY", "type": "float", "desc": "可选。垂直于 y 轴的激励线或激励面。" },
+      { "name": "PlaneZ", "type": "float", "desc": "可选。垂直于 z 轴的激励面。" }
+    ],
+    "example": "PlaneWaveExcitation {\n  PlaneY     = -0.5\n  Theta      = 0\n  Psi        = 0\n  Wavelength = 550\n  Intensity  = 0.1 * W/cm2\n  Nrise      = 4\n}",
+    "keywords": ["Wavelength", "Frequency", "Amplitude", "Intensity", "Direction", "Theta", "Phi", "Psi", "Polarization", "PolarizationAngle", "EllipticalPolarizationMagnitude", "EllipticalPolarizationPhase", "Signal", "Sigma", "NRise", "Delay", "NumberOfPlaneWaves", "NumericalAperture", "PartialCoherenceFactor", "BoxCorner1", "BoxCorner2", "Region", "PlaneX", "PlaneY", "PlaneZ"]
+  },
+  "CodeVExcitation": {
+    "section": "Excitation",
+    "signature": "CodeVExcitation { InputDataFile=<list> AnchorPoint1=<list> AnchorPoint2=<list> Wavelength=<float> }",
+    "description": "从 CODE V 光学设计软件的数据文件定义激励源。需要两个输入数据文件及其锚点来重建激励场分布。",
+    "parameters": [
+      { "name": "InputDataFile", "type": "list", "desc": "来自 CODE V 的两个输入数据文件名。" },
+      { "name": "AnchorPoint1", "type": "list", "desc": "第一个数据文件的锚点（最小坐标），单位为 um。" },
+      { "name": "AnchorPoint2", "type": "list", "desc": "第二个数据文件的锚点（最小坐标），单位为 um。" },
+      { "name": "Wavelength", "type": "float", "desc": "信号波长，单位为 nm。" },
+      { "name": "Frequency", "type": "float", "desc": "信号频率，单位为 s-1。" },
+      { "name": "Signal", "type": "enum", "desc": "可选。设置信号的瞬态形式。选项：Gauss, Harmonic。默认为 Harmonic。" },
+      { "name": "AmplitudeScaling", "type": "float", "desc": "可选。电场振幅的缩放因子。默认为 1。" },
+      { "name": "Delay", "type": "float", "desc": "可选。信号开始前的信号周期数。默认为 0。" },
+      { "name": "NRise", "type": "float", "desc": "可选。达到满振幅前的信号周期数。默认为 2。" },
+      { "name": "PhaseShift", "type": "float", "desc": "可选。电场的线性相移，单位为度。默认为 0。" }
+    ],
+    "example": "CodeVExcitation {\n  InputDataFile = {\"data_z1.dat\", \"data_z2.dat\"}\n  AnchorPoint1  = {-0.5, -0.5, -0.3125}\n  AnchorPoint2  = {-0.5, -0.5, -0.25}\n  Wavelength    = 550\n  Nrise         = 5\n}",
+    "keywords": ["InputDataFile", "AnchorPoint1", "AnchorPoint2", "Wavelength", "Frequency", "Signal", "AmplitudeScaling", "Delay", "NRise", "PhaseShift"]
+  },
+  "GaussianBeamExcitation": {
+    "section": "Excitation",
+    "signature": "GaussianBeamExcitation { Wavelength=<float> BeamRadius=<float> BeamCenter=<list> Direction=<enum> }",
+    "description": "定义高斯光束激励源，可控制束腰、中心位置和照射方向。支持谐波和高斯瞬态信号形式。",
+    "parameters": [
+      { "name": "Wavelength", "type": "float", "desc": "信号波长，单位为 nm。" },
+      { "name": "Frequency", "type": "float", "desc": "信号频率，单位为 s-1。" },
+      { "name": "BeamRadius", "type": "float", "desc": "高斯光束的半径（束腰），单位为 um。" },
+      { "name": "BeamCenter", "type": "list", "desc": "高斯光束中心（焦点）的坐标，单位为 um。" },
+      { "name": "BeamPower", "type": "float", "desc": "可选。高斯光束的信号功率，单位为 W。默认为 2.08478e-15。" },
+      { "name": "Amplitude", "type": "float", "desc": "可选。信号振幅，单位为 V/m。默认为 1。" },
+      { "name": "Intensity", "type": "float", "desc": "可选。信号强度，单位为 W/cm^2。默认为 1.32721e-07。" },
+      { "name": "Direction", "type": "enum", "desc": "可选。照射方向。选项：fromTop, fromBottom。" },
+      { "name": "Theta", "type": "float", "desc": "可选。入射极角，单位为度。默认为 180。" },
+      { "name": "Phi", "type": "float", "desc": "可选。入射方位角，单位为度。默认为 0。" },
+      { "name": "Psi", "type": "float", "desc": "可选。偏振角，单位为度。默认为 45。" },
+      { "name": "Polarization", "type": "float", "desc": "可选。偏振状态，TE 或 TM，或 0 到 1 之间的值。默认为 0.5。" },
+      { "name": "PolarizationAngle", "type": "float", "desc": "可选。偏振角，单位为度。默认为 45。" },
+      { "name": "EllipticalPolarizationMagnitude", "type": "float", "desc": "可选。偏振比幅值。默认为 0。" },
+      { "name": "EllipticalPolarizationPhase", "type": "float", "desc": "可选。偏振比相位，单位为度。默认为 0。" },
+      { "name": "Signal", "type": "enum", "desc": "可选。设置信号的瞬态形式。选项：Gauss, Harmonic。默认为 Harmonic。" },
+      { "name": "Sigma", "type": "float", "desc": "可选。瞬态高斯脉冲的宽度，以信号周期数表示。默认为 1。" },
+      { "name": "NRise", "type": "float", "desc": "可选。达到满振幅前的信号周期数。默认为 2。" },
+      { "name": "Delay", "type": "float", "desc": "可选。信号开始前的信号周期数。默认为 0。" },
+      { "name": "BoxCorner1", "type": "list", "desc": "可选。指定激励平面的包围盒的两个角点之一。" },
+      { "name": "BoxCorner2", "type": "list", "desc": "可选。指定激励平面的包围盒的两个角点之一。" },
+      { "name": "Region", "type": "string", "desc": "可选。指定激励平面的包围盒。" },
+      { "name": "PlaneX", "type": "float", "desc": "可选。垂直于 x 轴的激励线或激励面。" },
+      { "name": "PlaneY", "type": "float", "desc": "可选。垂直于 y 轴的激励线或激励面。" },
+      { "name": "PlaneZ", "type": "float", "desc": "可选。垂直于 z 轴的激励面。" }
+    ],
+    "example": "GaussianBeamExcitation {\n  Direction   = fromTop\n  Wavelength  = 550\n  BeamRadius  = 2.0\n  BeamCenter  = {0.0, 0.0, 5.0}\n  Intensity   = 0.1 * W/cm2\n  Nrise       = 4\n}",
+    "keywords": ["Wavelength", "Frequency", "BeamRadius", "BeamCenter", "BeamPower", "Amplitude", "Intensity", "Direction", "Theta", "Phi", "Psi", "Polarization", "PolarizationAngle", "EllipticalPolarizationMagnitude", "EllipticalPolarizationPhase", "Signal", "Sigma", "NRise", "Delay", "BoxCorner1", "BoxCorner2", "Region", "PlaneX", "PlaneY", "PlaneZ"]
+  },
+  "TruncatedPlaneWaveExcitation": {
+    "section": "Excitation",
+    "signature": "TruncatedPlaneWaveExcitation { Wavelength=<float> Intensity=<float> BoxCorner1=<list> BoxCorner2=<list> Direction=<enum> }",
+    "description": "定义截断平面波激励，具有由包围盒角点指定的有限空间范围。支持部分相干和多个平面波，偏振和角度控制与 PlaneWaveExcitation 相同。",
+    "parameters": [
+      { "name": "Wavelength", "type": "float", "desc": "信号波长，单位为 nm。" },
+      { "name": "Frequency", "type": "float", "desc": "信号频率，单位为 s-1。" },
+      { "name": "Amplitude", "type": "float", "desc": "可选。信号振幅，单位为 V/m。默认为 1。" },
+      { "name": "Intensity", "type": "float", "desc": "可选。信号强度，单位为 W/cm^2。默认为 1.32721e-07。" },
+      { "name": "BoxCorner1", "type": "list", "desc": "指定激励平面的包围盒的两个角点之一。" },
+      { "name": "BoxCorner2", "type": "list", "desc": "指定激励平面的包围盒的两个角点之一。" },
+      { "name": "Direction", "type": "enum", "desc": "可选。照射方向。选项：fromTop, fromBottom。" },
+      { "name": "Theta", "type": "float", "desc": "可选。入射极角，单位为度。默认为 180。" },
+      { "name": "Phi", "type": "float", "desc": "可选。入射方位角，单位为度。默认为 0。" },
+      { "name": "Psi", "type": "float", "desc": "可选。偏振角，单位为度。默认为 45。" },
+      { "name": "Polarization", "type": "float", "desc": "可选。偏振状态，TE 或 TM，或 0 到 1 之间的值。默认为 0.5。" },
+      { "name": "PolarizationAngle", "type": "float", "desc": "可选。偏振角，单位为度。默认为 45。" },
+      { "name": "EllipticalPolarizationMagnitude", "type": "float", "desc": "可选。偏振比幅值。默认为 0。" },
+      { "name": "EllipticalPolarizationPhase", "type": "float", "desc": "可选。偏振比相位，单位为度。默认为 0。" },
+      { "name": "Signal", "type": "enum", "desc": "可选。设置信号的瞬态形式。选项：Gauss, Harmonic。默认为 Harmonic。" },
+      { "name": "Sigma", "type": "float", "desc": "可选。瞬态高斯脉冲的宽度，以信号周期数表示。默认为 1。" },
+      { "name": "NRise", "type": "float", "desc": "可选。达到满振幅前的信号周期数。默认为 2。" },
+      { "name": "Delay", "type": "float", "desc": "可选。信号开始前的信号周期数。默认为 0。" },
+      { "name": "NumberOfPlaneWaves", "type": "int", "desc": "可选。激励平面波数量。默认为 1。" },
+      { "name": "NumericalAperture", "type": "float", "desc": "可选。数值孔径。默认为 0。" },
+      { "name": "PartialCoherenceFactor", "type": "float", "desc": "可选。部分相干因子。默认为 1。" },
+      { "name": "Region", "type": "string", "desc": "可选。指定激励平面的包围盒。" },
+      { "name": "PlaneX", "type": "float", "desc": "可选。垂直于 x 轴的激励线或激励面。" },
+      { "name": "PlaneY", "type": "float", "desc": "可选。垂直于 y 轴的激励线或激励面。" },
+      { "name": "PlaneZ", "type": "float", "desc": "可选。垂直于 z 轴的激励面。" }
+    ],
+    "example": "TruncatedPlaneWaveExcitation {\n  BoxCorner1 = {0.0, -0.5, 0.0}\n  BoxCorner2 = {0.1, -0.5, 0.0}\n  Theta      = 0\n  Psi        = 0\n  Wavelength = 550\n  Intensity  = 0.1 * W/cm2\n  Nrise      = 4\n}",
+    "keywords": ["Wavelength", "Frequency", "Amplitude", "Intensity", "BoxCorner1", "BoxCorner2", "Direction", "Theta", "Phi", "Psi", "Polarization", "PolarizationAngle", "EllipticalPolarizationMagnitude", "EllipticalPolarizationPhase", "Signal", "Sigma", "NRise", "Delay", "NumberOfPlaneWaves", "NumericalAperture", "PartialCoherenceFactor", "Region", "PlaneX", "PlaneY", "PlaneZ"]
+  },
+  "Detector": {
+    "section": "Termination",
+    "signature": "Detector { Tolerance=<float> Type=<enum> }",
+    "description": "监测电磁场仿真的收敛性，当场达到稳态时终止时间步进。当最大偏差小于指定容差时仿真停止。",
+    "parameters": [
+      { "name": "Tolerance", "type": "float", "desc": "当最大偏差小于此值时仿真终止。默认为 0.001。" },
+      { "name": "Type", "type": "enum", "desc": "可选。检测器类型。选项：Periodic, Decayed。默认为 Periodic。" },
+      { "name": "Frequency", "type": "float", "desc": "可选。检测器频率，单位为 s-1。默认值由激励波长计算。" },
+      { "name": "Region", "type": "string", "desc": "张量网格中用于评估检测器的有效包围盒或区域名称。" },
+      { "name": "BoxCorner1", "type": "list", "desc": "可选。指定检测器域的包围盒的两个角点之一。" },
+      { "name": "BoxCorner2", "type": "list", "desc": "可选。指定检测器域的包围盒的两个角点之一。" },
+      { "name": "StartTick", "type": "int", "desc": "可选。开始检测器评估的 tick 步数。默认为 0。" },
+      { "name": "StartTime", "type": "float", "desc": "可选。开始检测器评估的仿真时间。默认为 0。" },
+      { "name": "StepX", "type": "int", "desc": "可选。在 x 方向上每隔 N 个网格点执行一次检测。默认为 10。" },
+      { "name": "StepY", "type": "int", "desc": "可选。在 y 方向上每隔 N 个网格点执行一次检测。默认为 10。" },
+      { "name": "StepZ", "type": "int", "desc": "可选。在 z 方向上每隔 N 个网格点执行一次检测。默认为 10。" },
+      { "name": "BreakOnError", "type": "enum", "desc": "可选。指定遇到错误时是否停止仿真。选项：Yes, No。默认为 Yes。" },
+      { "name": "FailureOnUnreachedTolerance", "type": "enum", "desc": "可选。指定当未达到容差时退出码是否为非零。选项：Yes, No。默认为 Yes。" }
+    ],
+    "example": "Detector {\n  Tolerance = 1e-3\n}",
+    "keywords": ["Tolerance", "Type", "Frequency", "Region", "BoxCorner1", "BoxCorner2", "StartTick", "StartTime", "StepX", "StepY", "StepZ", "BreakOnError", "FailureOnUnreachedTolerance"]
+  },
+  "Plot": {
+    "section": "Output",
+    "signature": "Plot { Name=<string> Quantity=<list> BoxCorner1=<list> BoxCorner2=<list> }",
+    "description": "将场数据输出到 TDR 文件用于可视化。支持电磁场量、复折射率以及吸收光子密度等导出量的体积和表面绘图。",
+    "parameters": [
+      { "name": "Name", "type": "string", "desc": "定义绘图名称，同时作为输出文件名（附加 _eml.tdr）。" },
+      { "name": "Quantity", "type": "list", "desc": "设置要绘制的量列表。选项包括：AbsElectricField, RealElectricField(X/Y/Z), ImagElectricField(X/Y/Z), AbsMagneticField, RealMagneticField(X/Y/Z), ImagMagneticField(X/Y/Z), CplxRefIndex, CplxExtCoeff, AbsorbedPhotonDensity, PowerFluxDensity, OpticalGeneration, Region 等。默认为 {AbsElectricField}。" },
+      { "name": "BoxCorner1", "type": "list", "desc": "可选。要绘制数据的包围盒的两个角点之一。" },
+      { "name": "BoxCorner2", "type": "list", "desc": "可选。要绘制数据的包围盒的两个角点之一。" },
+      { "name": "Region", "type": "string", "desc": "可选。要绘制数据的区域。" },
+      { "name": "PlaneX", "type": "float", "desc": "可选。绘图域指定为垂直于 x 轴的线或面。" },
+      { "name": "PlaneY", "type": "float", "desc": "可选。绘图域指定为垂直于 y 轴的线或面。" },
+      { "name": "PlaneZ", "type": "float", "desc": "可选。绘图域指定为垂直于 z 轴的面。" },
+      { "name": "Domain", "type": "enum", "desc": "可选。指定绘制体积值还是表面值。选项：Surface, Volume。默认为 Volume。" },
+      { "name": "Sides", "type": "list", "desc": "可选。当 Domain=Surface 时，定义执行绘图的侧壁。选项：All, X, Xmin, Xmax, Y, Ymin, Ymax, Z, Zmin, Zmax。默认为 {All}。" },
+      { "name": "GridFile", "type": "string", "desc": "可选。输出数据的混合单元网格文件名。" },
+      { "name": "Interpolation", "type": "enum", "desc": "可选。从张量网格到混合单元网格的绘图数据插值方法。选项：Standard, Simple, Conservative。默认为 Standard。" },
+      { "name": "StartTick", "type": "int", "desc": "可选。活跃 tick 步间隔的起始。" },
+      { "name": "EndTick", "type": "int", "desc": "可选。活跃 tick 步间隔的结束。" },
+      { "name": "StartTime", "type": "float", "desc": "可选。活跃时间间隔的起始。" },
+      { "name": "EndTime", "type": "float", "desc": "可选。活跃时间间隔的结束。" },
+      { "name": "TickStep", "type": "int", "desc": "可选。每隔 N 个 tick 步执行一次绘图。默认为 100。" },
+      { "name": "FinalPlot", "type": "enum", "desc": "可选。控制仿真结束时是否创建最终绘图。选项：Yes, No。默认为 Yes。" },
+      { "name": "ScatteredFieldOnly", "type": "enum", "desc": "可选。指定绘图是否仅涉及散射场。选项：Yes, No。默认为 No。" },
+      { "name": "WriteBehavior", "type": "enum", "desc": "可选。控制连续绘图实例的写入方式。选项：Numbered, Overwrite, OverwriteAndNumbered。默认为 Numbered。" },
+      { "name": "WavelengthList", "type": "list", "desc": "可选。DFT 类型仿真的波长列表。" },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "可选。波长匹配精度。默认为 0。" },
+      { "name": "WavelengthRange", "type": "list", "desc": "可选。DFT 类型仿真的波长范围，格式为 {min, max}。" }
+    ],
+    "example": "Plot {\n  Name      = \"n@node@_Eabs\"\n  Quantity  = {AbsElectricField, Region}\n  TickStep  = 300\n  StartTick = 100\n  EndTick   = 800\n  FinalPlot = yes\n}",
+    "keywords": ["Name", "Quantity", "BoxCorner1", "BoxCorner2", "Region", "PlaneX", "PlaneY", "PlaneZ", "Domain", "Sides", "GridFile", "Interpolation", "StartTick", "EndTick", "StartTime", "EndTime", "TickStep", "FinalPlot", "ScatteredFieldOnly", "WriteBehavior", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "Extractor": {
+    "section": "Output",
+    "signature": "Extractor { Name=<string> Quantity=<list> BoxCorner1=<list> BoxCorner2=<list> }",
+    "description": "从张量网格提取场量到 TDR 文件，可选将数据映射到混合单元网格。支持提取吸收光子密度、功率通量密度、光学生成和电磁场分量。",
+    "parameters": [
+      { "name": "Name", "type": "string", "desc": "定义提取器名称，同时作为输出文件名（附加 _eml.tdr）。" },
+      { "name": "Quantity", "type": "list", "desc": "指定要提取的量。选项：AbsorbedPhotonDensity, AbsorbedPowerDensity, OpticalGeneration, PowerFluxDensity, AbsElectricField, RealElectricField(X/Y/Z), ImagElectricField(X/Y/Z), RealMagneticField(X/Y/Z), ImagMagneticField(X/Y/Z), Region。" },
+      { "name": "BoxCorner1", "type": "list", "desc": "可选。要提取数据的包围盒的两个角点之一。" },
+      { "name": "BoxCorner2", "type": "list", "desc": "可选。要提取数据的包围盒的两个角点之一。" },
+      { "name": "Region", "type": "string", "desc": "可选。要提取数据的区域。" },
+      { "name": "PlaneX", "type": "float", "desc": "可选。提取器域指定为垂直于 x 轴的线或面。" },
+      { "name": "PlaneY", "type": "float", "desc": "可选。提取器域指定为垂直于 y 轴的线或面。" },
+      { "name": "PlaneZ", "type": "float", "desc": "可选。提取器域指定为垂直于 z 轴的面。" },
+      { "name": "GridFile", "type": "string", "desc": "可选。输出数据的混合单元网格文件名。" },
+      { "name": "Interpolation", "type": "enum", "desc": "可选。从张量网格到混合单元网格的提取数据插值方法。选项：Standard, Simple, Conservative。默认为 Standard。" },
+      { "name": "ScatteredFieldOnly", "type": "enum", "desc": "可选。指定提取器是否仅涉及散射场。选项：Yes, No。默认为 No。" },
+      { "name": "WavelengthList", "type": "list", "desc": "可选。DFT 类型仿真的波长列表。" },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "可选。波长匹配精度。默认为 0。" },
+      { "name": "WavelengthRange", "type": "list", "desc": "可选。DFT 类型仿真的波长范围，格式为 {min, max}。" }
+    ],
+    "example": "Extractor {\n  Name     = \"n@node@_g\"\n  Quantity = {AbsorbedPhotonDensity, PowerFluxDensity}\n  PlaneX   = 0.05\n}",
+    "keywords": ["Name", "Quantity", "BoxCorner1", "BoxCorner2", "Region", "PlaneX", "PlaneY", "PlaneZ", "GridFile", "Interpolation", "ScatteredFieldOnly", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "Sensor": {
+    "section": "Output",
+    "signature": "Sensor { Name=<string> Quantity=<enum> Mode=<list> BoxCorner1=<list> BoxCorner2=<list> }",
+    "description": "在指定体积、表面或平面上对场量进行积分或平均。通常通过在适当位置放置传感器来计算反射、透射和吸收系数。",
+    "parameters": [
+      { "name": "Name", "type": "string", "desc": "定义传感器名称，同时用于结果文件中的数据集名称。" },
+      { "name": "Quantity", "type": "enum", "desc": "指定积分量。通量在表面上积分，其余在体积上积分。选项：AbsorbedPhotonDensity, AbsorbedPowerDensity, OpticalGeneration, PowerFluxDensity, PhotonFluxDensity, IncoherentAbsorbedPhotonDensity, IncoherentOpticalGeneration。" },
+      { "name": "Mode", "type": "list", "desc": "可选。Integrate 在表面或体积上积分量。Average 将积分值除以体积或面积。选项：Integrate, Average。默认为 {Integrate Average}。" },
+      { "name": "BoxCorner1", "type": "list", "desc": "可选。指定传感器域的包围盒的两个角点之一。" },
+      { "name": "BoxCorner2", "type": "list", "desc": "可选。指定传感器域的包围盒的两个角点之一。" },
+      { "name": "BoxCenter", "type": "list", "desc": "可选。非轴对齐包围盒的中心，单位为 um。" },
+      { "name": "BoxDimensions", "type": "list", "desc": "可选。非轴对齐包围盒的尺寸，单位为 um。" },
+      { "name": "RotationAngles", "type": "list", "desc": "可选。非轴对齐包围盒的旋转角度 (theta, phi, psi)，单位为度。默认为 {0 90 0}。" },
+      { "name": "Region", "type": "string", "desc": "可选。传感器适用的区域。" },
+      { "name": "Material", "type": "string", "desc": "可选。传感器适用的材料。" },
+      { "name": "Domains", "type": "enum", "desc": "可选。对由区域和包围盒角点定义的体积进行集合运算。选项：United, Intersecting, Separate。默认为 Separate。" },
+      { "name": "PlaneX", "type": "float", "desc": "可选。传感器域指定为垂直于 x 轴的线或面。" },
+      { "name": "PlaneY", "type": "float", "desc": "可选。传感器域指定为垂直于 y 轴的线或面。" },
+      { "name": "PlaneZ", "type": "float", "desc": "可选。传感器域指定为垂直于 z 轴的面。" },
+      { "name": "Sides", "type": "list", "desc": "可选。若量为通量，指定用于积分的侧面。选项：All, X, Xmin, Xmax, Y, Ymin, Ymax, Z, Zmin, Zmax。默认为 {All}。" },
+      { "name": "CoordinateTransformation", "type": "enum", "desc": "可选。坐标变换类型。选项：Standard, Unified。默认为 Unified。" },
+      { "name": "ScatteredFieldOnly", "type": "enum", "desc": "可选。指定传感器是否仅涉及散射场。选项：Yes, No。默认为 No。" },
+      { "name": "Frequency", "type": "float", "desc": "可选。传感器频率，单位为 s-1。默认值由激励波长计算。" },
+      { "name": "StartTick", "type": "int", "desc": "可选。活跃 tick 步间隔的起始。" },
+      { "name": "EndTick", "type": "int", "desc": "可选。活跃 tick 步间隔的结束。" },
+      { "name": "StartTime", "type": "float", "desc": "可选。活跃时间间隔的起始。" },
+      { "name": "EndTime", "type": "float", "desc": "可选。活跃时间间隔的结束。" },
+      { "name": "TickStep", "type": "int", "desc": "可选。每隔 N 个 tick 步执行一次传感。默认为 100。" },
+      { "name": "WavelengthList", "type": "list", "desc": "可选。DFT 类型仿真的波长列表。" },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "可选。波长匹配精度。默认为 0。" },
+      { "name": "WavelengthRange", "type": "list", "desc": "可选。DFT 类型仿真的波长范围，格式为 {min, max}。" }
+    ],
+    "example": "Sensor {\n  Name       = \"total\"\n  Quantity   = PhotonFluxDensity\n  PlaneY     = -0.2\n  Mode       = {Integrate}\n}",
+    "keywords": ["Name", "Quantity", "Mode", "BoxCorner1", "BoxCorner2", "BoxCenter", "BoxDimensions", "RotationAngles", "Region", "Material", "Domains", "PlaneX", "PlaneY", "PlaneZ", "Sides", "CoordinateTransformation", "ScatteredFieldOnly", "Frequency", "StartTick", "EndTick", "StartTime", "EndTime", "TickStep", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "RTA": {
+    "section": "Output",
+    "signature": "RTA { Log=<list> Sensors=<list> StartTick=<int> TickStep=<int> }",
+    "description": "通过在仿真域边界上积分 Poynting 矢量通量来计算反射 (R)、透射 (T) 和吸收 (A) 系数。结果作为 DOE 参数写入日志文件。",
+    "parameters": [
+      { "name": "Log", "type": "list", "desc": "可选。指定作为 DOE 参数写入日志文件的量。选项：R, T, A, RTA, Rnorm, Tnorm, Anorm, all, none。默认为 {all}。" },
+      { "name": "Sensors", "type": "list", "desc": "可选。要激活的传感器类型。选项：R, T, A, all。默认为 {all}。" },
+      { "name": "LogPrecision", "type": "int", "desc": "可选。DOE 参数小数点后的位数。默认为 3。" },
+      { "name": "StartTick", "type": "int", "desc": "可选。活跃 tick 步间隔的起始。" },
+      { "name": "EndTick", "type": "int", "desc": "可选。活跃 tick 步间隔的结束。" },
+      { "name": "StartTime", "type": "float", "desc": "可选。活跃时间间隔的起始。" },
+      { "name": "EndTime", "type": "float", "desc": "可选。活跃时间间隔的结束。" },
+      { "name": "TickStep", "type": "int", "desc": "可选。每隔 N 个 tick 步执行一次传感。默认为 100。" },
+      { "name": "WavelengthList", "type": "list", "desc": "可选。DFT 类型仿真的波长列表。" },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "可选。波长匹配精度。默认为 0。" },
+      { "name": "WavelengthRange", "type": "list", "desc": "可选。DFT 类型仿真的波长范围，格式为 {min, max}。" }
+    ],
+    "example": "RTA {\n  Log = {R, T, A, RTA}\n  StartTick = 0\n  LogPrecision = 4\n}",
+    "keywords": ["Log", "Sensors", "LogPrecision", "StartTick", "EndTick", "StartTime", "EndTime", "TickStep", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "DFT": {
+    "section": "Output",
+    "signature": "DFT { MinWavelength=<float> MaxWavelength=<float> NumberOfWavelengths=<int> }",
+    "description": "配置多波长仿真的离散傅里叶变换 (DFT) 设置。定义 DFT 计算的波长表，实现从单次时域仿真进行宽带光谱分析。",
+    "parameters": [
+      { "name": "MinWavelength", "type": "float", "desc": "DFT 波长表的起始波长。" },
+      { "name": "MaxWavelength", "type": "float", "desc": "DFT 波长表的终止波长。" },
+      { "name": "NumberOfWavelengths", "type": "int", "desc": "DFT 波长表中的元素数量。" },
+      { "name": "DownSampling", "type": "int", "desc": "可选。DFT 的降采样率。" }
+    ],
+    "example": "DFT {\n  MinWavelength      = 400\n  MaxWavelength      = 700\n  NumberOfWavelengths = 10\n}",
+    "keywords": ["MinWavelength", "MaxWavelength", "NumberOfWavelengths", "DownSampling"]
+  },
+  "Farfield": {
+    "section": "Output",
+    "signature": "Farfield { Name=<string> BoxCorner1=<list> BoxCorner2=<list> WavelengthList=<list> }",
+    "description": "从仿真域中的近场表面计算远场辐射方向图。支持极角和方位角方向的角离散化、阵列因子建模以及角度范围内的功率积分。",
+    "parameters": [
+      { "name": "Name", "type": "string", "desc": "定义远场名称，同时作为输出文件名（附加 _eml.tdr）。" },
+      { "name": "BoxCorner1", "type": "list", "desc": "定义近场面用于远场计算的包围盒的两个角点之一。" },
+      { "name": "BoxCorner2", "type": "list", "desc": "定义近场面用于远场计算的包围盒的两个角点之一。" },
+      { "name": "Region", "type": "string", "desc": "用于远场计算的近场区域。在 3D 域中必须是一个平面。" },
+      { "name": "Radius", "type": "float", "desc": "可选。计算远场的半径（距离），单位为 um。默认为 1000。" },
+      { "name": "ArraySize", "type": "list", "desc": "可选。近场域在每个坐标方向上复制的次数。默认为 {1 1}。" },
+      { "name": "PolarRange", "type": "list", "desc": "可选。极角的范围和离散化 {Min, Max, Step}，单位为度。默认为 {0 90 1}。" },
+      { "name": "AzimuthalRange", "type": "list", "desc": "可选。方位角的范围和离散化 {Min, Max, Step}，单位为度。默认为 {0 360 1}。" },
+      { "name": "PolarCutList", "type": "list", "desc": "可选。用于等极角绘图的极角显式列表。" },
+      { "name": "PolarCutRange", "type": "list", "desc": "可选。用于等极角绘图的极角范围 {Min, Max, Step}。" },
+      { "name": "AzimuthalCutList", "type": "list", "desc": "可选。用于等方位角绘图的方位角显式列表。" },
+      { "name": "AzimuthalCutRange", "type": "list", "desc": "可选。用于等方位角绘图的方位角范围 {Min, Max, Step}。" },
+      { "name": "IntegrationRange", "type": "list", "desc": "可选。功率计算的积分范围，格式为 {MinAzi, MaxAzi, AziStep, MinPol, MaxPol, PolStep}。" },
+      { "name": "WavelengthList", "type": "list", "desc": "可选。DFT 类型仿真的波长列表。" },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "可选。波长匹配精度。默认为 0。" },
+      { "name": "WavelengthRange", "type": "list", "desc": "可选。DFT 类型仿真的波长范围，格式为 {min, max}。" }
+    ],
+    "example": "Farfield {\n  Name        = \"n@node@_ff\"\n  Region      = \"nearfield_plane\"\n  Radius      = 500\n  PolarRange  = {0, 90, 1}\n  AzimuthalRange = {0, 360, 1}\n}",
+    "keywords": ["Name", "BoxCorner1", "BoxCorner2", "Region", "Radius", "ArraySize", "PolarRange", "AzimuthalRange", "PolarCutList", "PolarCutRange", "AzimuthalCutList", "AzimuthalCutRange", "IntegrationRange", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "Monitor": {
+    "section": "Output",
+    "signature": "Monitor { Name=<string> Location=<list> Quantity=<list> StartTick=<int> EndTick=<int> }",
+    "description": "在特定点位置随时间监测电磁场量。适用于跟踪关注点处场的时间演化和调试仿真行为。",
+    "parameters": [
+      { "name": "Name", "type": "string", "desc": "定义监测器名称，同时用于结果文件中的数据集名称。" },
+      { "name": "Location", "type": "list", "desc": "要监测的位置，以坐标三元组表示，单位为 um。" },
+      { "name": "Quantity", "type": "list", "desc": "可选。指定要监测的量。选项包括 AbsElectricField, CplxEMField, CplxElectricField, RealElectricField(X/Y/Z), ImagElectricField(X/Y/Z), AbsMagneticField, CplxMagneticField, RealMagneticField(X/Y/Z), ImagMagneticField(X/Y/Z)。默认为 {AbsElectricField}。" },
+      { "name": "Frequency", "type": "float", "desc": "可选。监测器频率，单位为 s-1。默认值由激励波长计算。" },
+      { "name": "StartTick", "type": "int", "desc": "可选。活跃 tick 步间隔的起始。默认为 0。" },
+      { "name": "EndTick", "type": "int", "desc": "可选。活跃 tick 步间隔的结束。" },
+      { "name": "StartTime", "type": "float", "desc": "可选。活跃时间间隔的起始。默认为 0。" },
+      { "name": "EndTime", "type": "float", "desc": "可选。活跃时间间隔的结束。" },
+      { "name": "TickStep", "type": "int", "desc": "可选。每隔 N 个 tick 步执行一次监测。" },
+      { "name": "WavelengthList", "type": "list", "desc": "可选。DFT 类型仿真的波长列表。" },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "可选。波长匹配精度。默认为 0。" },
+      { "name": "WavelengthRange", "type": "list", "desc": "可选。DFT 类型仿真的波长范围，格式为 {min, max}。" }
+    ],
+    "example": "Monitor {\n  Name     = \"point1\"\n  Location = {0.0, 0.0, 0.0}\n  Quantity = {AbsElectricField, AbsMagneticField}\n  StartTick = 100\n}",
+    "keywords": ["Name", "Location", "Quantity", "Frequency", "StartTick", "EndTick", "StartTime", "EndTime", "TickStep", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "Save": {
+    "section": "Output",
+    "signature": "Save { Name=<string> Quantity=<list> BoxCorner1=<list> BoxCorner2=<list> }",
+    "description": "将原始电磁场数据保存到 TDR 文件用于后处理或重启仿真。与 Extractor 不同，Save 保留在原生张量网格上的数据，不插值到混合单元网格。",
+    "parameters": [
+      { "name": "Name", "type": "string", "desc": "定义 Save section 的名称，同时作为输出文件名（附加 _eml.tdr）。" },
+      { "name": "Quantity", "type": "list", "desc": "指定要保存的量。选项：AbsorbedPhotonDensity, IncoherentAbsorbedPhotonDensity, PowerFluxDensity, CplxEMField, CplxElectricField, RealElectricField(X/Y/Z), ImagElectricField(X/Y/Z), CplxMagneticField, RealMagneticField(X/Y/Z), ImagMagneticField(X/Y/Z)。" },
+      { "name": "BoxCorner1", "type": "list", "desc": "可选。要保存数据的包围盒的两个角点之一。" },
+      { "name": "BoxCorner2", "type": "list", "desc": "可选。要保存数据的包围盒的两个角点之一。" },
+      { "name": "Region", "type": "string", "desc": "可选。要保存数据的区域。" },
+      { "name": "WavelengthList", "type": "list", "desc": "可选。DFT 类型仿真的波长列表。" },
+      { "name": "WavelengthPrecision", "type": "int", "desc": "可选。波长匹配精度。默认为 0。" },
+      { "name": "WavelengthRange", "type": "list", "desc": "可选。DFT 类型仿真的波长范围，格式为 {min, max}。" }
+    ],
+    "example": "Save {\n  Name = \"@save@\"\n  Quantity = {AbsorbedPhotonDensity, PowerFluxDensity}\n}",
+    "keywords": ["Name", "Quantity", "BoxCorner1", "BoxCorner2", "Region", "WavelengthList", "WavelengthPrecision", "WavelengthRange"]
+  },
+  "Acceleware": {
+    "section": "Parallelization",
+    "signature": "Acceleware { LibraryPath=<string> LogFilePrefix=<string> LogLevel=<enum> }",
+    "description": "配置使用 Acceleware 框架的 GPU 硬件加速用于 FDTD 仿真。支持在 NVIDIA GPU 加速器上执行，相比纯 CPU 运行显著提升仿真性能。",
+    "parameters": [
+      { "name": "LibraryPath", "type": "string", "desc": "可选。Acceleware 库目录的路径。" },
+      { "name": "LogFilePrefix", "type": "string", "desc": "可选。GPU 加速日志文件的前缀。" },
+      { "name": "LogLevel", "type": "enum", "desc": "可选。GPU 加速日志的详细程度级别。" }
+    ],
+    "example": "Acceleware {\n  LibraryPath   = \"/opt/acceleware/lib\"\n  LogFilePrefix = \"gpu\"\n  LogLevel      = Default\n}",
+    "keywords": ["LibraryPath", "LogFilePrefix", "LogLevel"]
+  },
+  "AlphaMax": {
+    "section": "Boundary",
+    "signature": "AlphaMax = <float>",
+    "description": "设置 PML 参数 alpha 在 PML 张量系数多项式分级中的最大值。默认为 0.2。",
+    "parameters": [],
+    "example": "AlphaMax = 0.2",
+    "keywords": []
+  },
+  "AlphaProfile": {
+    "section": "Boundary",
+    "signature": "AlphaProfile = <float> | { <float>, ... }",
+    "description": "指定 PML 张量系数分级中使用的 PML 参数 alpha 的轮廓。轮廓点数必须是 Thickness 参数值的两倍。",
+    "parameters": [],
+    "example": "AlphaProfile = {0.0, 0.05, 0.1, 0.2}",
+    "keywords": []
+  },
+  "Amplitude": {
+    "section": "Excitation",
+    "signature": "Amplitude = <float>",
+    "description": "设置信号振幅，单位为 V/m。默认为 1。",
+    "parameters": [],
+    "example": "Amplitude = 2.0",
+    "keywords": []
+  },
+  "AmplitudeScaling": {
+    "section": "Excitation",
+    "signature": "AmplitudeScaling = <float>",
+    "description": "指定 CodeVExcitation 中电场振幅的缩放因子。默认为 1。",
+    "parameters": [],
+    "example": "AmplitudeScaling = 0.5",
+    "keywords": []
+  },
+  "AnchorPoint1": {
+    "section": "Excitation",
+    "signature": "AnchorPoint1 = { <float>, <float>, <float> }",
+    "description": "指定第一个 CODE V 数据文件的锚点（最小坐标），单位为 um。",
+    "parameters": [],
+    "example": "AnchorPoint1 = {-0.5, -0.5, -0.3125}",
+    "keywords": []
+  },
+  "AnchorPoint2": {
+    "section": "Excitation",
+    "signature": "AnchorPoint2 = { <float>, <float>, <float> }",
+    "description": "指定第二个 CODE V 数据文件的锚点（最小坐标），单位为 um。",
+    "parameters": [],
+    "example": "AnchorPoint2 = {-0.5, -0.5, -0.25}",
+    "keywords": []
+  },
+  "ArraySize": {
+    "section": "Output",
+    "signature": "ArraySize = { <int>, <int> }",
+    "description": "指定远场计算中近场域在每个坐标方向上复制的次数。默认为 {1 1}。",
+    "parameters": [],
+    "example": "ArraySize = {3 3}",
+    "keywords": []
+  },
+  "Axis": {
+    "section": "Simulation Setup",
+    "signature": "Axis = <enum>",
+    "description": "指定仿真域使用的坐标轴约定。用于控制坐标系方向。",
+    "parameters": [],
+    "example": "Axis = Z",
+    "keywords": []
+  },
+  "AzimuthalCutList": {
+    "section": "Output",
+    "signature": "AzimuthalCutList = <float> | { <float>, ... }",
+    "description": "定义等方位角远场绘图的方位角显式列表，单位为度。",
+    "parameters": [],
+    "example": "AzimuthalCutList = {0, 45, 90, 135}",
+    "keywords": []
+  },
+  "AzimuthalCutRange": {
+    "section": "Output",
+    "signature": "AzimuthalCutRange = { <float>, <float>, <float> }",
+    "description": "定义等方位角远场绘图的方位角范围 {Min, Max, Step}，单位为度。",
+    "parameters": [],
+    "example": "AzimuthalCutRange = {0, 360, 15}",
+    "keywords": []
+  },
+  "AzimuthalRange": {
+    "section": "Output",
+    "signature": "AzimuthalRange = { <float>, <float>, <float> }",
+    "description": "指定远场计算的方位角范围和离散化 {Min, Max, Step}，单位为度。默认为 {0 360 1}。",
+    "parameters": [],
+    "example": "AzimuthalRange = {0, 180, 2}",
+    "keywords": []
+  },
+  "BeamCenter": {
+    "section": "Excitation",
+    "signature": "BeamCenter = { <float>, <float>, <float> }",
+    "description": "指定高斯光束中心（焦点）的坐标，单位为 um。",
+    "parameters": [],
+    "example": "BeamCenter = {0.0, 0.0, 5.0}",
+    "keywords": []
+  },
+  "BeamPower": {
+    "section": "Excitation",
+    "signature": "BeamPower = <float>",
+    "description": "设置高斯光束的信号功率，单位为 W。默认为 2.08478e-15。",
+    "parameters": [],
+    "example": "BeamPower = 1e-12",
+    "keywords": []
+  },
+  "BeamRadius": {
+    "section": "Excitation",
+    "signature": "BeamRadius = <float>",
+    "description": "指定高斯光束的半径（束腰），单位为 um。",
+    "parameters": [],
+    "example": "BeamRadius = 2.0",
+    "keywords": []
+  },
+  "BoxCenter": {
+    "section": "Output",
+    "signature": "BoxCenter = { <float>, <float>, <float> }",
+    "description": "指定传感器域定义中非轴对齐包围盒的中心，单位为 um。",
+    "parameters": [],
+    "example": "BoxCenter = {0.0, 0.0, 0.0}",
+    "keywords": []
+  },
+  "BoxCorner1": {
+    "section": "Output",
+    "signature": "BoxCorner1 = { <float>, <float>, <float> }",
+    "description": "指定定义空间域的包围盒的两个角点之一。支持 min/max 关键字表示器件范围。",
+    "parameters": [],
+    "example": "BoxCorner1 = {0.0, -0.5, 0.0}",
+    "keywords": [],
+    "contexts": {
+      "Plot": "要绘制数据的包围盒的两个角点之一。",
+      "Extractor": "要提取数据的包围盒的两个角点之一。",
+      "Sensor": "指定传感器域的包围盒的两个角点之一。",
+      "Farfield": "定义近场面用于远场计算的包围盒的两个角点之一。",
+      "Save": "要保存数据的包围盒的两个角点之一。",
+      "Detector": "指定检测器域的包围盒的两个角点之一。",
+      "PlaneWaveExcitation": "指定激励平面的包围盒的两个角点之一。",
+      "TruncatedPlaneWaveExcitation": "指定激励平面的包围盒的两个角点之一。",
+      "GaussianBeamExcitation": "指定激励平面的包围盒的两个角点之一。"
+    }
+  },
+  "BoxCorner2": {
+    "section": "Output",
+    "signature": "BoxCorner2 = { <float>, <float>, <float> }",
+    "description": "指定定义空间域的包围盒的第二个角点。支持 min/max 关键字表示器件范围。",
+    "parameters": [],
+    "example": "BoxCorner2 = {0.1, 0.5, 0.0}",
+    "keywords": [],
+    "contexts": {
+      "Plot": "要绘制数据的包围盒的两个角点之一。",
+      "Extractor": "要提取数据的包围盒的两个角点之一。",
+      "Sensor": "指定传感器域的包围盒的两个角点之一。",
+      "Farfield": "定义近场面用于远场计算的包围盒的两个角点之一。",
+      "Save": "要保存数据的包围盒的两个角点之一。",
+      "Detector": "指定检测器域的包围盒的两个角点之一。",
+      "PlaneWaveExcitation": "指定激励平面的包围盒的两个角点之一。",
+      "TruncatedPlaneWaveExcitation": "指定激励平面的包围盒的两个角点之一。",
+      "GaussianBeamExcitation": "指定激励平面的包围盒的两个角点之一。"
+    }
+  },
+  "BoxDimensions": {
+    "section": "Output",
+    "signature": "BoxDimensions = { <float>, <float>, <float> }",
+    "description": "指定传感器域定义中非轴对齐包围盒的尺寸，单位为 um。",
+    "parameters": [],
+    "example": "BoxDimensions = {1.0, 2.0, 0.5}",
+    "keywords": []
+  },
+  "BreakOnError": {
+    "section": "Termination",
+    "signature": "BreakOnError = <enum>",
+    "description": "控制仿真过程中遇到错误时是否停止仿真。选项：Yes, No。默认为 Yes。",
+    "parameters": [],
+    "example": "BreakOnError = No",
+    "keywords": []
+  },
+  "CRIMIPath": {
+    "section": "Simulation Setup",
+    "signature": "CRIMIPath = <string>",
+    "description": "指定复折射率模型接口所用共享对象的搜索路径。默认为 '.'。",
+    "parameters": [],
+    "example": "CRIMIPath = \"/opt/emw/models\"",
+    "keywords": []
+  },
+  "CRIModel": {
+    "section": "Material",
+    "signature": "CRIModel = <string>",
+    "description": "指定用户提供的复折射率模型名称。",
+    "parameters": [],
+    "example": "CRIModel = \"MyCustomCRI\"",
+    "keywords": []
+  },
+  "CarrierDep": {
+    "section": "Material",
+    "signature": "CarrierDep = <enum> | { <enum>, ... }",
+    "description": "控制复折射率实部和虚部的载流子依赖性。选项：Real, Imag。",
+    "parameters": [],
+    "example": "CarrierDep = {Real, Imag}",
+    "keywords": []
+  },
+  "CompressTDR": {
+    "section": "Simulation Setup",
+    "signature": "CompressTDR = <enum>",
+    "description": "控制输出 TDR 文件是否在基本压缩级别之上进一步压缩。选项：Yes, No。默认为 No。",
+    "parameters": [],
+    "example": "CompressTDR = Yes",
+    "keywords": []
+  },
+  "CoordinateTransformation": {
+    "section": "Output",
+    "signature": "CoordinateTransformation = <enum>",
+    "description": "指定传感器积分的坐标变换类型。选项：Standard, Unified。默认为 Unified。",
+    "parameters": [],
+    "example": "CoordinateTransformation = Standard",
+    "keywords": []
+  },
+  "Delay": {
+    "section": "Excitation",
+    "signature": "Delay = <float>",
+    "description": "指定激励信号开始前的信号周期数。默认为 0。",
+    "parameters": [],
+    "example": "Delay = 2.0",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波信号开始前的信号周期数。",
+      "CodeVExcitation": "CODE V 激励信号开始前的信号周期数。",
+      "GaussianBeamExcitation": "高斯光束信号开始前的信号周期数。",
+      "TruncatedPlaneWaveExcitation": "截断平面波信号开始前的信号周期数。"
+    }
+  },
+  "DeltaK": {
+    "section": "Material",
+    "signature": "DeltaK = <float>",
+    "description": "当 k + DeltaK >= n 时激活色散模型。默认为 0。",
+    "parameters": [],
+    "example": "DeltaK = 0.1",
+    "keywords": []
+  },
+  "Direction": {
+    "section": "Excitation",
+    "signature": "Direction = <enum>",
+    "description": "设置相对于输入张量网格坐标系的照射方向。自动设置 Theta、Phi、Psi 和激励平面。选项：fromTop, fromBottom。",
+    "parameters": [],
+    "example": "Direction = fromTop",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的照射方向。",
+      "GaussianBeamExcitation": "高斯光束激励的照射方向。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的照射方向。"
+    }
+  },
+  "Domain": {
+    "section": "Output",
+    "signature": "Domain = <enum>",
+    "description": "指定绘制体积值还是表面值。选项：Surface, Volume。默认为 Volume。",
+    "parameters": [],
+    "example": "Domain = Surface",
+    "keywords": []
+  },
+  "DomainDecomposition": {
+    "section": "Simulation Setup",
+    "signature": "DomainDecomposition = <enum>",
+    "description": "覆盖自动 MPI 域分解，强制仅在一个笛卡尔方向上进行域分解。选项：Automatic, X, Y, Z。默认为 Automatic。",
+    "parameters": [],
+    "example": "DomainDecomposition = Z",
+    "keywords": []
+  },
+  "Domains": {
+    "section": "Output",
+    "signature": "Domains = <enum>",
+    "description": "指定传感器吸收和光学生成中对由区域和包围盒角点定义的体积进行集合运算。选项：United, Intersecting, Separate。默认为 Separate。",
+    "parameters": [],
+    "example": "Domains = United",
+    "keywords": []
+  },
+  "DownSampling": {
+    "section": "Output",
+    "signature": "DownSampling = <int>",
+    "description": "指定 DFT 计算的降采样率。",
+    "parameters": [],
+    "example": "DownSampling = 2",
+    "keywords": []
+  },
+  "EllipticalPolarizationMagnitude": {
+    "section": "Excitation",
+    "signature": "EllipticalPolarizationMagnitude = <float>",
+    "description": "设置椭圆偏振的偏振比幅值。默认为 0。",
+    "parameters": [],
+    "example": "EllipticalPolarizationMagnitude = 0.5",
+    "keywords": []
+  },
+  "EllipticalPolarizationPhase": {
+    "section": "Excitation",
+    "signature": "EllipticalPolarizationPhase = <float>",
+    "description": "设置椭圆偏振的偏振比相位，单位为度。默认为 0。",
+    "parameters": [],
+    "example": "EllipticalPolarizationPhase = 90.0",
+    "keywords": []
+  },
+  "EndTick": {
+    "section": "Output",
+    "signature": "EndTick = <int>",
+    "description": "指定活跃 tick 步间隔的结束。默认为 +inf。",
+    "parameters": [],
+    "example": "EndTick = 10000",
+    "keywords": [],
+    "contexts": {
+      "Plot": "绘图的活跃 tick 步间隔的结束。",
+      "Sensor": "传感的活跃 tick 步间隔的结束。",
+      "RTA": "RTA 计算的活跃 tick 步间隔的结束。",
+      "Monitor": "监测的活跃 tick 步间隔的结束。",
+      "Detector": "检测的活跃 tick 步间隔的结束。"
+    }
+  },
+  "EndTime": {
+    "section": "Output",
+    "signature": "EndTime = <float>",
+    "description": "指定活跃时间间隔的结束，单位为秒。默认为 +inf。",
+    "parameters": [],
+    "example": "EndTime = 1e-12",
+    "keywords": [],
+    "contexts": {
+      "Plot": "绘图的活跃时间间隔的结束。",
+      "Sensor": "传感的活跃时间间隔的结束。",
+      "RTA": "RTA 计算的活跃时间间隔的结束。",
+      "Monitor": "监测的活跃时间间隔的结束。",
+      "Detector": "检测的活跃时间间隔的结束。"
+    }
+  },
+  "ExcludeMaterial": {
+    "section": "Material",
+    "signature": "ExcludeMaterial = <string> | { <string>, ... }",
+    "description": "指定当前 section 规范不适用的材料名称。",
+    "parameters": [],
+    "example": "ExcludeMaterial = {\"Air\"}",
+    "keywords": [],
+    "contexts": {
+      "PECMedia": "PEC 媒质规范排除的材料。",
+      "PMCMedia": "PMC 媒质规范排除的材料。",
+      "DispersiveMedia": "色散媒质规范排除的材料。"
+    }
+  },
+  "ExcludeRegion": {
+    "section": "Material",
+    "signature": "ExcludeRegion = <string> | { <string>, ... }",
+    "description": "指定当前 section 规范不适用的区域名称。",
+    "parameters": [],
+    "example": "ExcludeRegion = {\"substrate\"}",
+    "keywords": [],
+    "contexts": {
+      "PECMedia": "PEC 媒质规范排除的区域。",
+      "PMCMedia": "PMC 媒质规范排除的区域。",
+      "DispersiveMedia": "色散媒质规范排除的区域。"
+    }
+  },
+  "Extrapolate": {
+    "section": "Material",
+    "signature": "Extrapolate = <enum>",
+    "description": "控制 FieldDataFile 中数据集插值时的外推行为。选项：Yes, No。默认为 No。",
+    "parameters": [],
+    "example": "Extrapolate = Yes",
+    "keywords": []
+  },
+  "FailureOnUnreachedTolerance": {
+    "section": "Termination",
+    "signature": "FailureOnUnreachedTolerance = <enum>",
+    "description": "指定当仿真未达到指定容差时退出码是否设为非零。选项：Yes, No。默认为 Yes。",
+    "parameters": [],
+    "example": "FailureOnUnreachedTolerance = No",
+    "keywords": []
+  },
+  "Field": {
+    "section": "Simulation Setup",
+    "signature": "Field = <enum>",
+    "description": "指定用于输出或激励的电磁场分量类型。",
+    "parameters": [],
+    "example": "Field = Electric",
+    "keywords": []
+  },
+  "FieldDataFile": {
+    "section": "Simulation Setup",
+    "signature": "FieldDataFile = <string>",
+    "description": "指定包含数据集（如空间温度分布）的数据文件，复折射率依赖于该数据集。",
+    "parameters": [],
+    "example": "FieldDataFile = \"temperature_profile.tdr\"",
+    "keywords": []
+  },
+  "FinalPlot": {
+    "section": "Output",
+    "signature": "FinalPlot = <enum>",
+    "description": "控制仿真结束时是否创建最终绘图。选项：Yes, No。默认为 Yes。",
+    "parameters": [],
+    "example": "FinalPlot = Yes",
+    "keywords": []
+  },
+  "Frequency": {
+    "section": "Excitation",
+    "signature": "Frequency = <float>",
+    "description": "指定信号频率，单位为 s-1。作为 Wavelength 的替代方式定义激励。",
+    "parameters": [],
+    "example": "Frequency = 5.45e14",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的信号频率。",
+      "CodeVExcitation": "CODE V 激励的信号频率。",
+      "GaussianBeamExcitation": "高斯光束激励的信号频率。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的信号频率。",
+      "Detector": "检测器频率。默认值由激励波长计算。",
+      "Sensor": "传感器频率。默认值由激励波长计算。",
+      "Monitor": "监测器频率。默认值由激励波长计算。"
+    }
+  },
+  "GainDep": {
+    "section": "Material",
+    "signature": "GainDep = <enum> | { <enum>, ... }",
+    "description": "控制复折射率实部的增益依赖性。选项：RealLin, RealLog。",
+    "parameters": [],
+    "example": "GainDep = RealLin",
+    "keywords": []
+  },
+  "GridFile": {
+    "section": "Simulation Setup",
+    "signature": "GridFile = <string>",
+    "description": "指定仿真的张量网格文件或输出数据的混合单元网格文件。",
+    "parameters": [],
+    "example": "GridFile = \"@tdr@\"",
+    "keywords": [],
+    "contexts": {
+      "Globals": "仿真的张量网格文件。",
+      "Plot": "输出数据的混合单元网格文件名。",
+      "Extractor": "输出数据的混合单元网格文件名。"
+    }
+  },
+  "IgnoreMaterials": {
+    "section": "Material",
+    "signature": "IgnoreMaterials = <enum>",
+    "description": "控制从 FieldDataFile 加载数据集时是否允许不同材料顶点之间的插值。选项：Yes, No。默认为 No。",
+    "parameters": [],
+    "example": "IgnoreMaterials = Yes",
+    "keywords": []
+  },
+  "InputDataFile": {
+    "section": "Excitation",
+    "signature": "InputDataFile = <string> | { <string>, ... }",
+    "description": "指定来自 CODE V 光学设计软件的两个输入数据文件名。",
+    "parameters": [],
+    "example": "InputDataFile = {\"data_z1.dat\", \"data_z2.dat\"}",
+    "keywords": []
+  },
+  "IntegrationRange": {
+    "section": "Output",
+    "signature": "IntegrationRange = { <float>, <float>, <float>, <float>, <float>, <float> }",
+    "description": "指定远场功率计算的积分范围和离散化，格式为 {MinAzi, MaxAzi, AziStep, MinPol, MaxPol, PolStep}。",
+    "parameters": [],
+    "example": "IntegrationRange = {0, 360, 10, 0, 90, 5}",
+    "keywords": []
+  },
+  "Intensity": {
+    "section": "Excitation",
+    "signature": "Intensity = <float>",
+    "description": "设置信号强度，单位为 W/cm^2。默认为 1.32721e-07。",
+    "parameters": [],
+    "example": "Intensity = 0.1 * W/cm2",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的信号强度。",
+      "GaussianBeamExcitation": "高斯光束激励的信号强度。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的信号强度。"
+    }
+  },
+  "InterfaceAveraging": {
+    "section": "Material",
+    "signature": "InterfaceAveraging = <enum>",
+    "description": "控制是否对色散区域或材料启用界面平均。选项：Yes, No。默认为 No。",
+    "parameters": [],
+    "example": "InterfaceAveraging = Yes",
+    "keywords": []
+  },
+  "Interpolation": {
+    "section": "Output",
+    "signature": "Interpolation = <enum>",
+    "description": "指定从张量网格到混合单元网格的数据插值方法。选项：Standard, Simple, Conservative。默认为 Standard。",
+    "parameters": [],
+    "example": "Interpolation = Conservative",
+    "keywords": [],
+    "contexts": {
+      "Plot": "从张量网格到混合单元网格的绘图数据插值方法。",
+      "Extractor": "从张量网格到混合单元网格的提取数据插值方法。"
+    }
+  },
+  "KappaMax": {
+    "section": "Boundary",
+    "signature": "KappaMax = <float>",
+    "description": "设置 PML 参数 kappa 在 PML 张量系数多项式分级中的最大值。默认为 15。",
+    "parameters": [],
+    "example": "KappaMax = 20.0",
+    "keywords": []
+  },
+  "KappaProfile": {
+    "section": "Boundary",
+    "signature": "KappaProfile = <float> | { <float>, ... }",
+    "description": "指定 PML 张量系数分级中使用的 PML 参数 kappa 的轮廓。轮廓点数必须是 Thickness 参数值的两倍。",
+    "parameters": [],
+    "example": "KappaProfile = {1.0, 5.0, 10.0, 15.0}",
+    "keywords": []
+  },
+  "LibraryPath": {
+    "section": "Parallelization",
+    "signature": "LibraryPath = <string>",
+    "description": "指定 GPU 加速的 Acceleware 库目录路径。",
+    "parameters": [],
+    "example": "LibraryPath = \"/opt/acceleware/lib\"",
+    "keywords": []
+  },
+  "LoadFile": {
+    "section": "Simulation Setup",
+    "signature": "LoadFile = <string>",
+    "description": "指定用于后处理的结果文件名。",
+    "parameters": [],
+    "example": "LoadFile = \"previous_result_eml.tdr\"",
+    "keywords": []
+  },
+  "Location": {
+    "section": "Output",
+    "signature": "Location = { <float>, <float>, <float> } | { { <float>, <float>, <float> }, ... }",
+    "description": "指定要监测的点位置，以坐标三元组表示，单位为 um。",
+    "parameters": [],
+    "example": "Location = {0.0, 0.0, 0.0}",
+    "keywords": []
+  },
+  "Log": {
+    "section": "Output",
+    "signature": "Log = <enum> | { <enum>, ... }",
+    "description": "指定作为 DOE 参数写入日志文件的量。选项：R, T, A, RTA, Rnorm, Tnorm, Anorm, all, none。默认为 {all}。",
+    "parameters": [],
+    "example": "Log = {R, T, A, RTA}",
+    "keywords": []
+  },
+  "LogFile": {
+    "section": "Simulation Setup",
+    "signature": "LogFile = <string>",
+    "description": "指定日志文件名。若文件名以 .z 或 .gz 结尾，将写入压缩日志文件。",
+    "parameters": [],
+    "example": "LogFile = \"@log@\"",
+    "keywords": []
+  },
+  "LogFilePrefix": {
+    "section": "Parallelization",
+    "signature": "LogFilePrefix = <string>",
+    "description": "指定 GPU 加速日志文件的前缀。",
+    "parameters": [],
+    "example": "LogFilePrefix = \"gpu\"",
+    "keywords": []
+  },
+  "LogLevel": {
+    "section": "Parallelization",
+    "signature": "LogLevel = <enum>",
+    "description": "控制 GPU 加速日志的详细程度级别。",
+    "parameters": [],
+    "example": "LogLevel = Default",
+    "keywords": []
+  },
+  "LogPrecision": {
+    "section": "Output",
+    "signature": "LogPrecision = <int>",
+    "description": "指定写入日志文件的 DOE 参数小数点后的位数。默认为 3。",
+    "parameters": [],
+    "example": "LogPrecision = 4",
+    "keywords": []
+  },
+  "Material": {
+    "section": "Material",
+    "signature": "Material = <string> | { <string>, ... }",
+    "description": "指定当前 section 所适用的材料名称。",
+    "parameters": [],
+    "example": "Material = {\"Silver\", \"Gold\"}",
+    "keywords": [],
+    "contexts": {
+      "ComplexRefractiveIndex": "复折射率规范所适用的材料。",
+      "DispersiveMedia": "色散媒质规范所适用的材料。",
+      "PECMedia": "PEC 媒质规范所适用的材料。",
+      "PMCMedia": "PMC 媒质规范所适用的材料。",
+      "Sensor": "传感器所适用的材料。"
+    }
+  },
+  "MaxWavelength": {
+    "section": "Output",
+    "signature": "MaxWavelength = <float>",
+    "description": "指定 DFT 波长表的终止波长。",
+    "parameters": [],
+    "example": "MaxWavelength = 700",
+    "keywords": []
+  },
+  "MinWavelength": {
+    "section": "Output",
+    "signature": "MinWavelength = <float>",
+    "description": "指定 DFT 波长表的起始波长。",
+    "parameters": [],
+    "example": "MinWavelength = 400",
+    "keywords": []
+  },
+  "Mode": {
+    "section": "Output",
+    "signature": "Mode = <enum> | { <enum>, ... }",
+    "description": "指定传感器的积分模式。Integrate 在表面或体积上积分；Average 除以面积或体积。选项：Integrate, Average。默认为 {Integrate Average}。",
+    "parameters": [],
+    "example": "Mode = {Integrate}",
+    "keywords": []
+  },
+  "Model": {
+    "section": "Material",
+    "signature": "Model = <enum>",
+    "description": "选择材料的色散模型。选项：Debye, Drude, DrudeLorentz, DrudeModLorentz, Lorentz, ModLorentz, SingleDipoleDebye, SingleDipoleDrude。",
+    "parameters": [],
+    "example": "Model = SingleDipoleDrude",
+    "keywords": []
+  },
+  "ModelParameters": {
+    "section": "Material",
+    "signature": "ModelParameters = <enum>",
+    "description": "指定色散模型参数的确定方式。选项：ComputeFromComplexRefractiveIndex, UserDefined。默认为 ComputeFromComplexRefractiveIndex。",
+    "parameters": [],
+    "example": "ModelParameters = UserDefined",
+    "keywords": []
+  },
+  "NRise": {
+    "section": "Excitation",
+    "signature": "NRise = <float>",
+    "description": "指定达到满振幅前的信号周期数。默认为 2。",
+    "parameters": [],
+    "example": "NRise = 4",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励达到满振幅前的信号周期数。",
+      "CodeVExcitation": "CODE V 激励达到满振幅前的信号周期数。",
+      "GaussianBeamExcitation": "高斯光束激励达到满振幅前的信号周期数。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励达到满振幅前的信号周期数。"
+    }
+  },
+  "Name": {
+    "section": "Output",
+    "signature": "Name = <string>",
+    "description": "定义 section 的名称，用于输出文件命名或数据集标识。",
+    "parameters": [],
+    "example": "Name = \"n@node@_Eabs\"",
+    "keywords": [],
+    "contexts": {
+      "Plot": "定义绘图名称，用于输出文件名（附加 _eml.tdr）。",
+      "Extractor": "定义提取器名称，用于输出文件名（附加 _eml.tdr）。",
+      "Sensor": "定义传感器名称，用于结果文件中的数据集名称。",
+      "Farfield": "定义远场名称，用于输出文件名（附加 _eml.tdr）。",
+      "Monitor": "定义监测器名称，用于结果文件中的数据集名称。",
+      "Save": "定义 Save section 的名称，用于输出文件名（附加 _eml.tdr）。"
+    }
+  },
+  "NumberOfPlaneWaves": {
+    "section": "Excitation",
+    "signature": "NumberOfPlaneWaves = <int>",
+    "description": "指定平面波和截断平面波激励的平面波数量。默认为 1。",
+    "parameters": [],
+    "example": "NumberOfPlaneWaves = 10",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的平面波数量。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的平面波数量。"
+    }
+  },
+  "NumberOfThreads": {
+    "section": "Simulation Setup",
+    "signature": "NumberOfThreads = <int> | maximum",
+    "description": "指定共享内存并行化的线程数。取大于零的整数或 'maximum'。默认为 1。",
+    "parameters": [],
+    "example": "NumberOfThreads = 4",
+    "keywords": []
+  },
+  "NumberOfWavelengths": {
+    "section": "Output",
+    "signature": "NumberOfWavelengths = <int>",
+    "description": "指定 DFT 波长表中的元素数量。",
+    "parameters": [],
+    "example": "NumberOfWavelengths = 10",
+    "keywords": []
+  },
+  "NumericalAperture": {
+    "section": "Excitation",
+    "signature": "NumericalAperture = <float>",
+    "description": "指定激励的数值孔径。默认为 0。",
+    "parameters": [],
+    "example": "NumericalAperture = 0.5",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的数值孔径。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的数值孔径。"
+    }
+  },
+  "OrderAlpha": {
+    "section": "Boundary",
+    "signature": "OrderAlpha = <int>",
+    "description": "指定 PML 参数 alpha 的多项式分级阶数。默认为 1。",
+    "parameters": [],
+    "example": "OrderAlpha = 2",
+    "keywords": []
+  },
+  "OrderKappa": {
+    "section": "Boundary",
+    "signature": "OrderKappa = <int>",
+    "description": "指定 PML 参数 kappa 的多项式分级阶数。默认为 3。",
+    "parameters": [],
+    "example": "OrderKappa = 3",
+    "keywords": []
+  },
+  "OrderSigma": {
+    "section": "Boundary",
+    "signature": "OrderSigma = <int>",
+    "description": "指定 PML 参数 sigma 的多项式分级阶数。默认为 3。",
+    "parameters": [],
+    "example": "OrderSigma = 4",
+    "keywords": []
+  },
+  "OutputFilePrefix": {
+    "section": "Simulation Setup",
+    "signature": "OutputFilePrefix = <string>",
+    "description": "指定附加到所有输出文件名（包括日志文件）前的前缀字符串。默认为空。",
+    "parameters": [],
+    "example": "OutputFilePrefix = \"run1_\"",
+    "keywords": []
+  },
+  "OverSampling": {
+    "section": "Simulation Setup",
+    "signature": "OverSampling = <float>",
+    "description": "以 OverSampling 因子缩小计算得到的最大稳定时间步。默认为 1。",
+    "parameters": [],
+    "example": "OverSampling = 3.6",
+    "keywords": []
+  },
+  "ParallelLicenses": {
+    "section": "Simulation Setup",
+    "signature": "ParallelLicenses = <enum> | { <enum>, ... }",
+    "description": "指定 EMW 并行运行时允许使用的许可证列表。选项：MPI, SMP。默认为 {MPI SMP}。",
+    "parameters": [],
+    "example": "ParallelLicenses = {MPI}",
+    "keywords": []
+  },
+  "ParameterFile": {
+    "section": "Simulation Setup",
+    "signature": "ParameterFile = <string>",
+    "description": "指定仿真的材料参数文件。",
+    "parameters": [],
+    "example": "ParameterFile = \"@parameter@\"",
+    "keywords": []
+  },
+  "PartialCoherenceFactor": {
+    "section": "Excitation",
+    "signature": "PartialCoherenceFactor = <float>",
+    "description": "指定激励的部分相干因子。默认为 1。",
+    "parameters": [],
+    "example": "PartialCoherenceFactor = 0.5",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的部分相干因子。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的部分相干因子。"
+    }
+  },
+  "Phase": {
+    "section": "Excitation",
+    "signature": "Phase = <float>",
+    "description": "指定电磁场的相位，单位为度。",
+    "parameters": [],
+    "example": "Phase = 45.0",
+    "keywords": []
+  },
+  "PhaseShift": {
+    "section": "Excitation",
+    "signature": "PhaseShift = <float>",
+    "description": "指定电场的线性相移，单位为度。默认为 0。",
+    "parameters": [],
+    "example": "PhaseShift = 90.0",
+    "keywords": []
+  },
+  "Phi": {
+    "section": "Excitation",
+    "signature": "Phi = <float>",
+    "description": "指定入射方位角，单位为度。默认为 0。",
+    "parameters": [],
+    "example": "Phi = 90",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的方位角。",
+      "GaussianBeamExcitation": "高斯光束激励的方位角。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的方位角。"
+    }
+  },
+  "PlaneX": {
+    "section": "Output",
+    "signature": "PlaneX = <float> | min | max",
+    "description": "指定垂直于 x 轴的线（2D）或面（3D）用于空间域选择。",
+    "parameters": [],
+    "example": "PlaneX = 0.05",
+    "keywords": [],
+    "contexts": {
+      "Plot": "绘图域指定为垂直于 x 轴的线或面。",
+      "Extractor": "提取器域指定为垂直于 x 轴的线或面。",
+      "Sensor": "传感器域指定为垂直于 x 轴的线或面。",
+      "Detector": "检测器域指定为垂直于 x 轴的线或面。",
+      "PlaneWaveExcitation": "垂直于 x 轴的激励线或激励面。",
+      "GaussianBeamExcitation": "垂直于 x 轴的激励线或激励面。",
+      "TruncatedPlaneWaveExcitation": "垂直于 x 轴的激励线或激励面。"
+    }
+  },
+  "PlaneY": {
+    "section": "Output",
+    "signature": "PlaneY = <float> | min | max",
+    "description": "指定垂直于 y 轴的线（2D）或面（3D）用于空间域选择。",
+    "parameters": [],
+    "example": "PlaneY = -0.5",
+    "keywords": [],
+    "contexts": {
+      "Plot": "绘图域指定为垂直于 y 轴的线或面。",
+      "Extractor": "提取器域指定为垂直于 y 轴的线或面。",
+      "Sensor": "传感器域指定为垂直于 y 轴的线或面。",
+      "Detector": "检测器域指定为垂直于 y 轴的线或面。",
+      "PlaneWaveExcitation": "垂直于 y 轴的激励线或激励面。",
+      "GaussianBeamExcitation": "垂直于 y 轴的激励线或激励面。",
+      "TruncatedPlaneWaveExcitation": "垂直于 y 轴的激励线或激励面。"
+    }
+  },
+  "PlaneZ": {
+    "section": "Output",
+    "signature": "PlaneZ = <float> | min | max",
+    "description": "指定垂直于 z 轴的面用于空间域选择。",
+    "parameters": [],
+    "example": "PlaneZ = 0.0",
+    "keywords": [],
+    "contexts": {
+      "Plot": "绘图域指定为垂直于 z 轴的面。",
+      "Extractor": "提取器域指定为垂直于 z 轴的面。",
+      "Sensor": "传感器域指定为垂直于 z 轴的面。",
+      "Detector": "检测器域指定为垂直于 z 轴的面。",
+      "PlaneWaveExcitation": "垂直于 z 轴的激励面。",
+      "GaussianBeamExcitation": "垂直于 z 轴的激励面。",
+      "TruncatedPlaneWaveExcitation": "垂直于 z 轴的激励面。"
+    }
+  },
+  "PolarCutList": {
+    "section": "Output",
+    "signature": "PolarCutList = <float> | { <float>, ... }",
+    "description": "定义等极角远场绘图的极角显式列表，单位为度。",
+    "parameters": [],
+    "example": "PolarCutList = {0, 30, 60, 90}",
+    "keywords": []
+  },
+  "PolarCutRange": {
+    "section": "Output",
+    "signature": "PolarCutRange = { <float>, <float>, <float> }",
+    "description": "定义等极角远场绘图的极角范围 {Min, Max, Step}，单位为度。",
+    "parameters": [],
+    "example": "PolarCutRange = {0, 90, 10}",
+    "keywords": []
+  },
+  "PolarRange": {
+    "section": "Output",
+    "signature": "PolarRange = { <float>, <float>, <float> }",
+    "description": "指定远场计算的极角范围和离散化 {Min, Max, Step}，单位为度。默认为 {0 90 1}。",
+    "parameters": [],
+    "example": "PolarRange = {0, 90, 1}",
+    "keywords": []
+  },
+  "Polarization": {
+    "section": "Excitation",
+    "signature": "Polarization = <float> | TE | TM",
+    "description": "指定偏振状态，TE (0) 或 TM (1)，或 0 到 1 之间的值。默认为 0.5。",
+    "parameters": [],
+    "example": "Polarization = TE",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的偏振状态。",
+      "GaussianBeamExcitation": "高斯光束激励的偏振状态。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的偏振状态。"
+    }
+  },
+  "PolarizationAngle": {
+    "section": "Excitation",
+    "signature": "PolarizationAngle = <float>",
+    "description": "指定偏振角，单位为度。默认为 45。",
+    "parameters": [],
+    "example": "PolarizationAngle = 0",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的偏振角。",
+      "GaussianBeamExcitation": "高斯光束激励的偏振角。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的偏振角。"
+    }
+  },
+  "Psi": {
+    "section": "Excitation",
+    "signature": "Psi = <float>",
+    "description": "指定偏振角，单位为度。默认为 45。",
+    "parameters": [],
+    "example": "Psi = 0",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的偏振角。",
+      "GaussianBeamExcitation": "高斯光束激励的偏振角。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的偏振角。"
+    }
+  },
+  "Quantity": {
+    "section": "Output",
+    "signature": "Quantity = <enum> | { <enum>, ... }",
+    "description": "指定要绘制、提取、监测或保存的场量。",
+    "parameters": [],
+    "example": "Quantity = {AbsElectricField, Region}",
+    "keywords": [],
+    "contexts": {
+      "Plot": "要绘制的量。选项包括 AbsElectricField, CplxRefIndex, AbsorbedPhotonDensity, Region 等。",
+      "Extractor": "要提取的量。选项：AbsorbedPhotonDensity, PowerFluxDensity, OpticalGeneration 及场分量。",
+      "Sensor": "积分量。选项：AbsorbedPhotonDensity, PowerFluxDensity, PhotonFluxDensity, OpticalGeneration。",
+      "Monitor": "在点位置监测的量。选项：AbsElectricField, CplxEMField 及场分量。",
+      "Save": "要保存的量。选项：AbsorbedPhotonDensity, PowerFluxDensity, CplxEMField 及场分量。"
+    }
+  },
+  "Radius": {
+    "section": "Output",
+    "signature": "Radius = <float>",
+    "description": "指定计算远场的半径（距离），单位为 um。默认为 1000。",
+    "parameters": [],
+    "example": "Radius = 500",
+    "keywords": []
+  },
+  "Region": {
+    "section": "Material",
+    "signature": "Region = <string> | { <string>, ... }",
+    "description": "指定当前 section 所适用的区域名称，或基于区域的空间域。",
+    "parameters": [],
+    "example": "Region = \"waveguide\"",
+    "keywords": [],
+    "contexts": {
+      "ComplexRefractiveIndex": "复折射率规范所适用的区域。",
+      "DispersiveMedia": "色散媒质规范所适用的区域。",
+      "PECMedia": "PEC 媒质规范所适用的区域。",
+      "PMCMedia": "PMC 媒质规范所适用的区域。",
+      "Sensor": "传感器所适用的区域。",
+      "Detector": "张量网格中用于评估检测器的有效包围盒或区域名称。",
+      "Farfield": "用于远场计算的近场区域。",
+      "Plot": "要绘制数据的区域。",
+      "Extractor": "要提取数据的区域。",
+      "Save": "要保存数据的区域。",
+      "PlaneWaveExcitation": "指定激励平面的包围盒。",
+      "GaussianBeamExcitation": "指定激励平面的包围盒。",
+      "TruncatedPlaneWaveExcitation": "指定激励平面的包围盒。"
+    }
+  },
+  "ResultFile": {
+    "section": "Simulation Setup",
+    "signature": "ResultFile = <string>",
+    "description": "指定结果文件名。默认为 result_eml.plt。",
+    "parameters": [],
+    "example": "ResultFile = \"@plot@\"",
+    "keywords": []
+  },
+  "RotationAngles": {
+    "section": "Output",
+    "signature": "RotationAngles = { <float>, <float>, <float> }",
+    "description": "指定非轴对齐包围盒的旋转角度 (theta, phi, psi)，单位为度。默认为 {0 90 0}。",
+    "parameters": [],
+    "example": "RotationAngles = {0, 45, 0}",
+    "keywords": []
+  },
+  "ScatteredFieldOnly": {
+    "section": "Output",
+    "signature": "ScatteredFieldOnly = <enum>",
+    "description": "指定是否仅涉及散射场。选项：Yes, No。默认为 No。",
+    "parameters": [],
+    "example": "ScatteredFieldOnly = Yes",
+    "keywords": [],
+    "contexts": {
+      "Plot": "指定绘图是否仅涉及散射场。",
+      "Extractor": "指定提取器是否仅涉及散射场。",
+      "Sensor": "指定传感器是否仅涉及散射场。"
+    }
+  },
+  "Sensors": {
+    "section": "Output",
+    "signature": "Sensors = <enum> | { <enum>, ... }",
+    "description": "指定 RTA 计算中要激活的传感器类型。选项：R, T, A, all。默认为 {all}。",
+    "parameters": [],
+    "example": "Sensors = {R, T}",
+    "keywords": []
+  },
+  "Sides": {
+    "section": "Boundary",
+    "signature": "Sides = <enum> | { <enum>, ... }",
+    "description": "指定边界或表面绘图所适用的侧面。选项：All, X, Xmin, Xmax, Y, Ymin, Ymax, Z, Zmin, Zmax。默认为 {All}。",
+    "parameters": [],
+    "example": "Sides = {X, Y}",
+    "keywords": [],
+    "contexts": {
+      "Boundary": "边界规范所适用的侧面。",
+      "Plot": "当 Domain=Surface 时，定义执行绘图的侧壁。",
+      "Sensor": "若量为通量，指定用于积分的侧面。"
+    }
+  },
+  "Sigma": {
+    "section": "Excitation",
+    "signature": "Sigma = <float>",
+    "description": "指定瞬态高斯脉冲的宽度，以信号周期数表示。默认为 1。",
+    "parameters": [],
+    "example": "Sigma = 2.0",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的瞬态高斯脉冲宽度。",
+      "GaussianBeamExcitation": "高斯光束激励的瞬态高斯脉冲宽度。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的瞬态高斯脉冲宽度。"
+    }
+  },
+  "SigmaMax": {
+    "section": "Boundary",
+    "signature": "SigmaMax = <float>",
+    "description": "设置 PML 参数 sigma 在 PML 张量系数多项式分级中的最大值。默认值由网格间距和折射率自动计算。",
+    "parameters": [],
+    "example": "SigmaMax = 1.5",
+    "keywords": []
+  },
+  "SigmaProfile": {
+    "section": "Boundary",
+    "signature": "SigmaProfile = <float> | { <float>, ... }",
+    "description": "指定 PML 张量系数分级中使用的 PML 参数 sigma 的轮廓。轮廓点数必须是 Thickness 参数值的两倍。",
+    "parameters": [],
+    "example": "SigmaProfile = {0.0, 0.2, 0.5, 1.0}",
+    "keywords": []
+  },
+  "Signal": {
+    "section": "Excitation",
+    "signature": "Signal = <enum>",
+    "description": "设置激励信号的瞬态形式。选项：Gauss, Harmonic。默认为 Harmonic。",
+    "parameters": [],
+    "example": "Signal = Gauss",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的瞬态信号形式。",
+      "CodeVExcitation": "CODE V 激励的瞬态信号形式。",
+      "GaussianBeamExcitation": "高斯光束激励的瞬态信号形式。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的瞬态信号形式。"
+    }
+  },
+  "StartTick": {
+    "section": "Output",
+    "signature": "StartTick = <int>",
+    "description": "指定活跃 tick 步间隔的起始。默认为 0。",
+    "parameters": [],
+    "example": "StartTick = 100",
+    "keywords": [],
+    "contexts": {
+      "Plot": "绘图的活跃 tick 步间隔的起始。",
+      "Sensor": "传感的活跃 tick 步间隔的起始。",
+      "RTA": "RTA 计算的活跃 tick 步间隔的起始。",
+      "Monitor": "监测的活跃 tick 步间隔的起始。",
+      "Detector": "开始检测器评估的 tick 步数。"
+    }
+  },
+  "StartTime": {
+    "section": "Output",
+    "signature": "StartTime = <float>",
+    "description": "指定活跃时间间隔的起始，单位为秒。默认为 0。",
+    "parameters": [],
+    "example": "StartTime = 0",
+    "keywords": [],
+    "contexts": {
+      "Plot": "绘图的活跃时间间隔的起始。",
+      "Sensor": "传感的活跃时间间隔的起始。",
+      "RTA": "RTA 计算的活跃时间间隔的起始。",
+      "Monitor": "监测的活跃时间间隔的起始。",
+      "Detector": "开始检测器评估的仿真时间。"
+    }
+  },
+  "StepX": {
+    "section": "Termination",
+    "signature": "StepX = <int>",
+    "description": "在 x 方向上每隔 N 个网格点执行一次检测。默认为 10。",
+    "parameters": [],
+    "example": "StepX = 5",
+    "keywords": []
+  },
+  "StepY": {
+    "section": "Termination",
+    "signature": "StepY = <int>",
+    "description": "在 y 方向上每隔 N 个网格点执行一次检测。默认为 10。",
+    "parameters": [],
+    "example": "StepY = 5",
+    "keywords": []
+  },
+  "StepZ": {
+    "section": "Termination",
+    "signature": "StepZ = <int>",
+    "description": "在 z 方向上每隔 N 个网格点执行一次检测。默认为 10。",
+    "parameters": [],
+    "example": "StepZ = 5",
+    "keywords": []
+  },
+  "TdrNativeTensorGridUnit": {
+    "section": "Simulation Setup",
+    "signature": "TdrNativeTensorGridUnit = <enum>",
+    "description": "覆盖输入张量网格中长度单位的自动检测。选项：Automatic, m, um。默认为 Automatic。",
+    "parameters": [],
+    "example": "TdrNativeTensorGridUnit = um",
+    "keywords": []
+  },
+  "Temperature": {
+    "section": "Simulation Setup",
+    "signature": "Temperature = <float>",
+    "description": "指定全局器件温度，单位为开尔文。默认为 300。",
+    "parameters": [],
+    "example": "Temperature = 350",
+    "keywords": []
+  },
+  "TemperatureDep": {
+    "section": "Material",
+    "signature": "TemperatureDep = <enum> | { <enum>, ... }",
+    "description": "控制复折射率实部和虚部的温度依赖性。选项：Real, Imag。",
+    "parameters": [],
+    "example": "TemperatureDep = {Real, Imag}",
+    "keywords": []
+  },
+  "Theta": {
+    "section": "Excitation",
+    "signature": "Theta = <float>",
+    "description": "指定入射极角，单位为度。默认为 180。",
+    "parameters": [],
+    "example": "Theta = 0",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的极角。",
+      "GaussianBeamExcitation": "高斯光束激励的极角。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的极角。"
+    }
+  },
+  "Thickness": {
+    "section": "Boundary",
+    "signature": "Thickness = <int>",
+    "description": "指定 PML 边界的厚度，以张量网格单元数表示。默认为 15。",
+    "parameters": [],
+    "example": "Thickness = 20",
+    "keywords": []
+  },
+  "TickStep": {
+    "section": "Output",
+    "signature": "TickStep = <int>",
+    "description": "指定每隔 N 个 tick 步执行一次操作。默认为 100。",
+    "parameters": [],
+    "example": "TickStep = 300",
+    "keywords": [],
+    "contexts": {
+      "Plot": "每隔 N 个 tick 步执行一次绘图。",
+      "Sensor": "每隔 N 个 tick 步执行一次传感。",
+      "RTA": "RTA 计算中每隔 N 个 tick 步执行一次传感。",
+      "Monitor": "每隔 N 个 tick 步执行一次监测。"
+    }
+  },
+  "TimeStep": {
+    "section": "Simulation Setup",
+    "signature": "TimeStep = <float>",
+    "description": "覆盖计算得到的仿真时间步，单位为秒。",
+    "parameters": [],
+    "example": "TimeStep = 3.0e-17",
+    "keywords": []
+  },
+  "Tolerance": {
+    "section": "Termination",
+    "signature": "Tolerance = <float>",
+    "description": "当最大偏差小于此值时仿真终止。默认为 0.001。",
+    "parameters": [],
+    "example": "Tolerance = 1e-3",
+    "keywords": []
+  },
+  "TotalSimulationTime": {
+    "section": "Simulation Setup",
+    "signature": "TotalSimulationTime = <float>",
+    "description": "指定仿真终止前的最大仿真时间，单位为秒。默认为 +inf。",
+    "parameters": [],
+    "example": "TotalSimulationTime = 1e-12",
+    "keywords": []
+  },
+  "TotalTimeSteps": {
+    "section": "Simulation Setup",
+    "signature": "TotalTimeSteps = <int>",
+    "description": "指定最大执行时间步数。默认为 +inf。",
+    "parameters": [],
+    "example": "TotalTimeSteps = 50000",
+    "keywords": []
+  },
+  "Type": {
+    "section": "Boundary",
+    "signature": "Type = <enum>",
+    "description": "指定边界条件、检测器或复折射率分布的类型。",
+    "parameters": [],
+    "example": "Type = CPML",
+    "keywords": [],
+    "contexts": {
+      "Boundary": "边界条件类型。选项：CPML, Higdon, Mur, PEC, Periodic, PeriodicOblique, PMC。默认为 PeriodicOblique。",
+      "Detector": "检测器类型。选项：Periodic, Decayed。默认为 Periodic。",
+      "ComplexRefractiveIndex": "复折射率分布类型。选项：Homogeneous, Inhomogeneous, FromFile。默认为 Homogeneous。"
+    }
+  },
+  "UnavailableLicenseAction": {
+    "section": "Simulation Setup",
+    "signature": "UnavailableLicenseAction = <enum>",
+    "description": "指定当请求的许可证不可用时采取的操作。选项：serial, reduce, wait, abort。默认为 serial。",
+    "parameters": [],
+    "example": "UnavailableLicenseAction = wait",
+    "keywords": []
+  },
+  "Wavelength": {
+    "section": "Excitation",
+    "signature": "Wavelength = <float>",
+    "description": "指定信号波长，单位为 nm。作为 Frequency 的替代方式定义激励。",
+    "parameters": [],
+    "example": "Wavelength = 550",
+    "keywords": [],
+    "contexts": {
+      "PlaneWaveExcitation": "平面波激励的信号波长。",
+      "CodeVExcitation": "CODE V 激励的信号波长。",
+      "GaussianBeamExcitation": "高斯光束激励的信号波长。",
+      "TruncatedPlaneWaveExcitation": "截断平面波激励的信号波长。"
+    }
+  },
+  "WavelengthDep": {
+    "section": "Material",
+    "signature": "WavelengthDep = <enum> | { <enum>, ... }",
+    "description": "控制复折射率实部和虚部的波长依赖性。选项：Real, Imag。",
+    "parameters": [],
+    "example": "WavelengthDep = {Real, Imag}",
+    "keywords": []
+  },
+  "WavelengthList": {
+    "section": "Output",
+    "signature": "WavelengthList = <float> | { <float>, ... }",
+    "description": "指定 DFT 类型仿真使用的波长列表，单位为 nm。",
+    "parameters": [],
+    "example": "WavelengthList = {450, 550, 650}",
+    "keywords": [],
+    "contexts": {
+      "Plot": "DFT 类型绘图仿真的波长列表。",
+      "Extractor": "DFT 类型提取器仿真的波长列表。",
+      "Sensor": "DFT 类型传感器仿真的波长列表。",
+      "Farfield": "DFT 类型远场仿真的波长列表。",
+      "RTA": "DFT 类型 RTA 仿真的波长列表。",
+      "Monitor": "DFT 类型监测器仿真的波长列表。",
+      "Save": "DFT 类型保存仿真的波长列表。"
+    }
+  },
+  "WavelengthPrecision": {
+    "section": "Output",
+    "signature": "WavelengthPrecision = <int>",
+    "description": "指定 WavelengthList 与 DFT 波长之间匹配的精度。默认为 0。",
+    "parameters": [],
+    "example": "WavelengthPrecision = 2",
+    "keywords": [],
+    "contexts": {
+      "Plot": "绘图输出中波长匹配的精度。",
+      "Extractor": "提取器输出中波长匹配的精度。",
+      "Sensor": "传感器输出中波长匹配的精度。",
+      "Farfield": "远场输出中波长匹配的精度。",
+      "RTA": "RTA 输出中波长匹配的精度。",
+      "Monitor": "监测器输出中波长匹配的精度。",
+      "Save": "保存输出中波长匹配的精度。"
+    }
+  },
+  "WavelengthRange": {
+    "section": "Output",
+    "signature": "WavelengthRange = { <float>, <float> }",
+    "description": "指定 DFT 类型仿真的波长范围 {min, max}，单位为 nm。",
+    "parameters": [],
+    "example": "WavelengthRange = {400, 700}",
+    "keywords": [],
+    "contexts": {
+      "Plot": "DFT 类型绘图仿真的波长范围。",
+      "Extractor": "DFT 类型提取器仿真的波长范围。",
+      "Sensor": "DFT 类型传感器仿真的波长范围。",
+      "Farfield": "DFT 类型远场仿真的波长范围。",
+      "RTA": "DFT 类型 RTA 仿真的波长范围。",
+      "Monitor": "DFT 类型监测器仿真的波长范围。",
+      "Save": "DFT 类型保存仿真的波长范围。"
+    }
+  },
+  "WriteBehavior": {
+    "section": "Output",
+    "signature": "WriteBehavior = <enum>",
+    "description": "控制连续绘图实例写入文件的方式。选项：Numbered, Overwrite, OverwriteAndNumbered。默认为 Numbered。",
+    "parameters": [],
+    "example": "WriteBehavior = Overwrite",
+    "keywords": []
+  }
+}

@@ -62,6 +62,7 @@ sentaurus-syntax-highlight/
 │   ├── svisual_command_docs.{json,zh-CN.json}  ← Svisual 命令文档（中英文双语）
 │   ├── inspect_command_docs.{json,zh-CN.json}  ← Inspect 命令文档（中英文双语，193 条目）
 │   ├── sprocess_command_docs.{json,zh-CN.json} ← SProcess 命令文档（中英文双语，164 命令）
+│   ├── emw_command_docs.{json,zh-CN.json} ← EMW 命令文档（中英文双语，148 条目：20 section + 128 参数）
 │   ├── tcl_command_docs.{json,zh-CN.json}      ← Tcl 核心命令文档（中英文双语，66 命令）
 │   ├── tcl_expr_mathfunc_docs.{json,zh-CN.json} ← Tcl expr 数学函数文档（中英文双语，31 函数）
 │   └── tcl_subcommand_docs.{json,zh-CN.json} ← Tcl 子命令文档（中英文双语，5 主命令 83 子命令）
@@ -217,7 +218,7 @@ sentaurus-syntax-highlight/
 
 ### 第二层：关键词补全与文档悬停
 
-`src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（565 API）、Scheme 内置（191 函数）、SDEVICE（2117 关键词）、Tcl 核心命令（66 命令）、Tcl expr 数学函数（31 函数）、Svisual、Inspect（193 条目）、SProcess（164 命令）（均为中英文双语）。文档 JSON 按语言懒加载，激活时仅加载当前语言所需文档。Tcl 子命令采用单次 match+captures 模式实现上下文感知高亮，覆盖 string/file/info/array/dict 5 个主命令共 83 个子命令。HoverProvider 通过同行前向扫描检测主命令-子命令组合，查找嵌套两级文档 JSON。CompletionProvider 在主命令后第一个参数位触发子命令补全。SDEVICE 的 HoverProvider 支持 section 上下文感知文档查找，根据光标所在 section 栈优先匹配当前 section 的参数和关键词。
+`src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（565 API）、Scheme 内置（191 函数）、SDEVICE（2117 关键词）、Tcl 核心命令（66 命令）、Tcl expr 数学函数（31 函数）、Svisual、Inspect（193 条目）、SProcess（164 命令）、EMW（148 条目）（均为中英文双语）。文档 JSON 按语言懒加载，激活时仅加载当前语言所需文档。Tcl 子命令采用单次 match+captures 模式实现上下文感知高亮，覆盖 string/file/info/array/dict 5 个主命令共 83 个子命令。HoverProvider 通过同行前向扫描检测主命令-子命令组合，查找嵌套两级文档 JSON。CompletionProvider 在主命令后第一个参数位触发子命令补全。SDEVICE 的 HoverProvider 支持 section 上下文感知文档查找，根据光标所在 section 栈优先匹配当前 section 的参数和关键词。
 
 `src/definitions.js` 独立提供用户自定义变量的补全、悬停和跳转定义，通过 `document.version` 惰性缓存避免重复扫描。definitionText 扩展到行尾包含行末注释，并通过 `truncateDefinitionText` 工具函数按 `sentaurus.definitionMaxWidth` 设置截断过长文本。
 
