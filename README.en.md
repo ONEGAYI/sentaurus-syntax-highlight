@@ -69,11 +69,14 @@ Provides bilingual (English/Chinese) hover documentation that automatically swit
 
 | Language | Documentation Coverage | Count |
 |----------|----------------------|-------|
-| **SDE** | KEYWORD1 API functions (sdegeo, sde, sdedr, sdeicwb, sdepe, sdesnmesh, sdeio, sdeepi, sdesp) | 405 |
-| **SDE** | Scheme R5RS built-in functions (`define`, `let`, `lambda`, `map`, etc.) | 191 |
-| **SDEVICE** | KEYWORD1+KEYWORD2+KEYWORD3 commands (Physics, Solve, Plot, Math, System, etc.) | 341 |
-| **SVISUAL** | KEYWORD1 top-level commands + KEYWORD4 namespace functions | 257 |
-| SPROCESS / INSPECT / EMW | Keyword auto-completion (no hover documentation) | — |
+| **SDE** | API functions (sdegeo, sde, sdedr, etc., 9 namespaces) | 565 |
+| **SDE** | Scheme R5RS built-in functions (`define`, `let`, `lambda`, etc.) | 191 |
+| **SDEVICE** | Commands (Physics, Solve, Plot, Math, System, etc.) | 2123 |
+| **SVISUAL** | Top-level commands + namespace functions | 257 |
+| **SPROCESS** | Process simulation commands | 164 |
+| **INSPECT** | Data analysis commands | 193 |
+| **EMW** | Electromagnetic simulation commands | 148 |
+| **Tcl Common** | Core commands + expr math functions + subcommands (shared across all Tcl tools) | 92 + 31 + 152 |
 
 Hover shows function signature, parameter descriptions, and example code. Completion list includes detailed documentation.
 

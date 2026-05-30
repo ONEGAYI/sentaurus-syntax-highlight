@@ -4,6 +4,28 @@
 
 ---
 
+## [2.3.0] - 2026-05-30
+
+补全全部 7 种工具的中英文双语悬停文档，所有 Tcl 方言工具现已支持命令级文档提示。新增 Tcl 复杂命令体系（子命令、expr 数学函数）的高亮与文档覆盖。
+
+### 新功能
+
+- **Inspect 命令文档**（#83）：新增 193 条 Inspect 命令的中英文双语文档，覆盖 15 个 section（核心 I/O、数据访问、提取函数、Extraction Library、公式函数等），悬停时显示命令签名、参数说明和示例代码
+- **SPROCESS 命令文档**（#85）：新增 164 条 SProcess 工艺仿真命令的中英文双语文档
+- **EMW 命令文档**（#88）：新增 148 条 EMW 电磁仿真命令的中英文双语文档（20 section + 128 参数）
+- **Tcl 复杂命令体系高亮与文档**（#89，Close #10）：新增 Tcl 子命令（11 主命令、152 子命令）和 expr 数学函数（31 函数）的上下文感知高亮与中英文双语悬停文档，子命令覆盖 string/file/info/array/dict/namespace/clock/binary/encoding/package/chan；补齐 26 个 Tcl 顶层命令文档至 92 条；同步 all_keywords 和 5 个 Tcl TextMate 语法文件
+- **SProcess 别名诊断**（#82）：将 SProcess `define`/`fset` 识别为 `set` 等价变量定义，`defineproc`/`fproc` 识别为 `proc` 等价过程定义，消除别名变量的未定义误报
+
+### Bug 修复
+
+- **修复 SPROCESS 点号命令高亮截断**（#86，Close #84）：TextMate 语法中 `icwb`/`transform` 等短前缀命令先于 `icwb.create.all.masks`/`transform.refinement` 等长命令匹配，导致点号命令高亮被截断。调整 KEYWORD1 分组按长名优先排列
+
+### 其他改进
+
+- 更新 README 中英文文档覆盖表，反映所有工具的文档数量现状（SDE 565、SDEVICE 2123、Svisual 257、SPROCESS 164、Inspect 193、EMW 148、Tcl 通用 92+31+152）
+
+---
+
 ## [2.2.3] - 2026-05-29
 
 修复 SDE Contact 未定义误报和 Scheme 连字符变量 Hover 失效两个回归问题。
@@ -1099,6 +1121,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.3.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.2.3...v2.3.0
 [2.2.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.2.2...v2.2.3
 [2.2.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.2.1...v2.2.2
 [2.2.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.2.0...v2.2.1

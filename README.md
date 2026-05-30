@@ -69,11 +69,14 @@
 
 | 语言 | 文档覆盖 | 数量 |
 |------|----------|------|
-| **SDE** | KEYWORD1 API 函数（sdegeo、sde、sdedr、sdeicwb、sdepe、sdesnmesh、sdeio、sdeepi、sdesp） | 405 个 |
-| **SDE** | Scheme R5RS 内置函数（`define`、`let`、`lambda`、`map` 等） | 191 个 |
-| **SDEVICE** | KEYWORD1+KEYWORD2+KEYWORD3 命令（Physics、Solve、Plot、Math、System 等） | 341 个 |
-| **SVISUAL** | KEYWORD1 顶层命令 + KEYWORD4 命名空间函数 | 257 个 |
-| SPROCESS / INSPECT / EMW | 关键词自动补全（无悬停文档） | — |
+| **SDE** | API 函数（sdegeo、sde、sdedr 等 9 个命名空间） | 565 |
+| **SDE** | Scheme R5RS 内置函数（`define`、`let`、`lambda` 等） | 191 |
+| **SDEVICE** | 命令（Physics、Solve、Plot、Math、System 等） | 2123 |
+| **SVISUAL** | 顶层命令 + 命名空间函数 | 257 |
+| **SPROCESS** | 工艺仿真命令 | 164 |
+| **INSPECT** | 数据分析命令 | 193 |
+| **EMW** | 电磁仿真命令 | 148 |
+| **Tcl 通用** | 核心命令 + expr 数学函数 + 子命令（所有 Tcl 工具共享） | 92 + 31 + 152 |
 
 悬停时显示函数签名、参数说明和示例代码，补全列表附带详细文档。
 
