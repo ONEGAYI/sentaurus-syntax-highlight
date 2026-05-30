@@ -40,15 +40,15 @@
     {
       "patterns": [
         {
-          "match": "\\b(simSetDouble|layers|diffuse|simDelayDouble|profile|boundary|SheetResistance|Enu2G|paste|SetTS4PolyMode|help|polyhedron|stdiff|SetTemp|icwb\\.composite|equation|topo|strain_profile|SetInterfaceInjectionLKMC|Arr|Arrhenius|contact|SetAtomistic|StressDependentSilicidation|extract|GetMoleFractionParam|SetTS4MechanicsMode|etch|simGetDouble|setMobilityModel)(?![A-Za-z0-9_:-])",
+          "match": "\\b(simSetDouble|layers|diffuse|simDelayDouble|profile|boundary|SheetResistance|Enu2G|paste|SetTS4PolyMode|help|polyhedron|stdiff|SetTemp|equation|topo|strain_profile|SetInterfaceInjectionLKMC|Arr|Arrhenius|contact|SetAtomistic|StressDependentSilicidation|extract|GetMoleFractionParam|SetTS4MechanicsMode|etch|simGetDouble|setMobilityModel)(?![A-Za-z0-9_:-])",
           "name": "keyword.control.sprocess"
         },
         {
-          "match": "\\b(tclsel|region|term|math|plot\\.2d|point\\.xy|beam|GetMoleFractionFields|graphics|icwb\\.create\\.mask|DeleteRefinementboxes|print\\.commands|ambient|define|AdvancedPowerDeviceMode|interface|icwb|SetIIIVDiffParams|stress|fproc|integrate|SetTDRList|simSetBoolean|Enu2K|SetPerformanceMode|SetTS4ImplantMode|element|pdbdiff|transform|update_principal_stress)(?![A-Za-z0-9_:-])",
+          "match": "\\b(tclsel|region|term|math|plot\\.2d|beam|GetMoleFractionFields|graphics|icwb\\.create\\.all\\.masks|icwb\\.create\\.mask|icwb\\.contact\\.mask|icwb\\.composite|icwb|DeleteRefinementboxes|print\\.commands|ambient|define|AdvancedPowerDeviceMode|interface|SetIIIVDiffParams|stress|fproc|integrate|SetTDRList|simSetBoolean|Enu2K|SetPerformanceMode|SetTS4ImplantMode|element|pdbdiff|transform\\.refinement|transform\\.mask|transform|update_principal_stress)(?![A-Za-z0-9_:-])",
           "name": "keyword.control.sprocess"
         },
         {
-          "match": "\\b(KG2E|line|gas_flow|kmc|UnsetDielectricOxidationMode|implant|SetTS4OxidationMode|line_edge_roughness|bound|transform\\.refinement|Set3DDeviceMeshMode|sptopo|contour|KMC2PDE|icwb\\.create\\.all\\.masks|optimize|transform\\.mask|doping|WritePlx|translate|Compatibility|temp_ramp|SetDielectricOxidationMode|mgoals|mechdata|plot\\.1d|print_interpolated_params|AdvancedCalibration|KG2nu|icwb\\.contact\\.mask)(?![A-Za-z0-9_:-])",
+          "match": "\\b(KG2E|line|gas_flow|kmc|UnsetDielectricOxidationMode|implant|SetTS4OxidationMode|line_edge_roughness|bound|Set3DDeviceMeshMode|sptopo|contour|KMC2PDE|optimize|doping|WritePlx|translate|Compatibility|temp_ramp|SetDielectricOxidationMode|mgoals|mechdata|plot\\.1d|print_interpolated_params|AdvancedCalibration|KG2nu)(?![A-Za-z0-9_:-])",
           "name": "keyword.control.sprocess"
         },
         {
@@ -56,7 +56,7 @@
           "name": "keyword.control.sprocess"
         },
         {
-          "match": "\\b(mater|print\\.data|sde|SetMoleFractionFields|ArrBreak|refinebox|MoleFractionFields|mask|simGetBoolean|PowerDeviceMode|point|stressdata|sel|Set3DMovingMeshMode|defineproc|PDE2KMC)(?![A-Za-z0-9_:-])",
+          "match": "\\b(mater|print\\.data|sde|SetMoleFractionFields|ArrBreak|refinebox|MoleFractionFields|mask|simGetBoolean|PowerDeviceMode|point\\.xy|point|stressdata|sel|Set3DMovingMeshMode|defineproc|PDE2KMC)(?![A-Za-z0-9_:-])",
           "name": "keyword.control.sprocess"
         }
       ]
