@@ -108,6 +108,7 @@ sentaurus-syntax-highlight/
 │   │   ├── tcl-bracket-check.js                ← 括号平衡检查（findMismatchedBraces）
 │   │   ├── tcl-document-symbol.js              ← 文档大纲符号提取（getDocumentSymbols/SymbolKind）
 │   │   ├── tcl-symbol-configs.js               ← Tcl 工具 section 关键词 + 子 section 配置
+│   │   ├── tcl-subcommand-registry.js           ← Tcl 子命令注册表（11 主命令 152 子命令，驱动补全/悬停/语法同步）
 │   │   ├── pp-utils.js                         ← 预处理器分支分析 + #define 宏定义提取共享模块
 │   │   ├── parse-cache.js                      ← 统一解析缓存层（SchemeParseCache + TclParseCache）
 │   │   │
@@ -218,7 +219,7 @@ sentaurus-syntax-highlight/
 
 ### 第二层：关键词补全与文档悬停
 
-`src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（565 API）、Scheme 内置（191 函数）、SDEVICE（2117 关键词）、Tcl 核心命令（92 命令）、Tcl expr 数学函数（31 函数）、Svisual、Inspect（193 条目）、SProcess（164 命令）、EMW（148 条目）（均为中英文双语）。文档 JSON 按语言懒加载，激活时仅加载当前语言所需文档。Tcl 子命令采用 registry 驱动的单次 match+captures 模式实现上下文感知高亮，覆盖 string/file/info/array/dict/namespace/clock/binary/encoding/package/chan 11 个主命令共 152 个子命令。HoverProvider 通过 registry 判断主命令-子命令组合，查找嵌套两级文档 JSON。CompletionProvider 在主命令后第一个参数位触发子命令补全。SDEVICE 的 HoverProvider 支持 section 上下文感知文档查找，根据光标所在 section 栈优先匹配当前 section 的参数和关键词。
+`src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（565 API）、Scheme 内置（191 函数）、SDEVICE（2123 关键词）、Tcl 核心命令（92 命令）、Tcl expr 数学函数（31 函数）、Svisual、Inspect（193 条目）、SProcess（164 命令）、EMW（148 条目）（均为中英文双语）。文档 JSON 按语言懒加载，激活时仅加载当前语言所需文档。Tcl 子命令采用 registry 驱动的单次 match+captures 模式实现上下文感知高亮，覆盖 string/file/info/array/dict/namespace/clock/binary/encoding/package/chan 11 个主命令共 152 个子命令。HoverProvider 通过 registry 判断主命令-子命令组合，查找嵌套两级文档 JSON。CompletionProvider 在主命令后第一个参数位触发子命令补全。SDEVICE 的 HoverProvider 支持 section 上下文感知文档查找，根据光标所在 section 栈优先匹配当前 section 的参数和关键词。
 
 `src/definitions.js` 独立提供用户自定义变量的补全、悬停和跳转定义，通过 `document.version` 惰性缓存避免重复扫描。definitionText 扩展到行尾包含行末注释，并通过 `truncateDefinitionText` 工具函数按 `sentaurus.definitionMaxWidth` 设置截断过长文本。
 
