@@ -187,6 +187,92 @@ test('提取 proc 函数名（无参数）', () => {
     assert.strictEqual(vars[0].kind, 'function');
 });
 
+test('提取 defineproc 函数名和参数', () => {
+    const args = makeNode('braced_word', '{a b}', [
+        makeNode('{', '{', [], 0, 15, 0, 16),
+        makeNode('command', 'a b', [
+            makeNode('simple_word', 'a', [], 0, 16, 0, 17),
+            makeNode('word_list', '', [makeNode('simple_word', 'b', [], 0, 18, 0, 19)], 0, 18, 0, 19),
+        ], 0, 16, 0, 19),
+        makeNode('}', '}', [], 0, 19, 0, 20),
+    ], 0, 15, 0, 20);
+    const body = makeNode('braced_word', '{ body }', [], 0, 21, 0, 29);
+    const wordList = makeNode('word_list', '', [
+        makeNode('simple_word', 'myProc', [], 0, 11, 0, 17),
+        args,
+        body,
+    ], 0, 11, 0, 29);
+    const cmd = makeNode('command', 'defineproc myProc {a b} { body }', [
+        makeNode('simple_word', 'defineproc', [], 0, 0, 0, 10),
+        wordList,
+    ], 0, 0, 0, 29);
+    const root = makeNode('program', '', [cmd], 0, 0, 0, 29);
+    const vars = varExtractor.getVariables(root);
+    assert.ok(vars.some(v => v.name === 'myProc' && v.kind === 'function'));
+    assert.ok(vars.some(v => v.name === 'a' && v.kind === 'parameter'));
+    assert.ok(vars.some(v => v.name === 'b' && v.kind === 'parameter'));
+});
+
+test('提取 defineproc 默认值参数 {b 1.0} 时不提取默认值', () => {
+    const args = makeNode('braced_word', '{a {b 1.0}}', [
+        makeNode('{', '{', [], 0, 19, 0, 20),
+        makeNode('command', 'a {b 1.0}', [
+            makeNode('simple_word', 'a', [], 0, 20, 0, 21),
+            makeNode('word_list', '', [
+                makeNode('braced_word', '{b 1.0}', [
+                    makeNode('{', '{', [], 0, 22, 0, 23),
+                    makeNode('command', 'b 1.0', [
+                        makeNode('simple_word', 'b', [], 0, 23, 0, 24),
+                        makeNode('word_list', '', [makeNode('simple_word', '1.0', [], 0, 25, 0, 28)], 0, 25, 0, 28),
+                    ], 0, 23, 0, 28),
+                    makeNode('}', '}', [], 0, 28, 0, 29),
+                ], 0, 22, 0, 29),
+            ], 0, 22, 0, 29),
+        ], 0, 20, 0, 29),
+        makeNode('}', '}', [], 0, 29, 0, 30),
+    ], 0, 19, 0, 30);
+    const body = makeNode('braced_word', '{ body }', [], 0, 31, 0, 39);
+    const wordList = makeNode('word_list', '', [
+        makeNode('simple_word', 'myProc', [], 0, 11, 0, 17),
+        args,
+        body,
+    ], 0, 11, 0, 39);
+    const cmd = makeNode('command', 'defineproc myProc {a {b 1.0}} { body }', [
+        makeNode('simple_word', 'defineproc', [], 0, 0, 0, 10),
+        wordList,
+    ], 0, 0, 0, 39);
+    const root = makeNode('program', '', [cmd], 0, 0, 0, 39);
+    const vars = varExtractor.getVariables(root);
+    const params = vars.filter(v => v.kind === 'parameter').map(v => v.name);
+    assert.deepStrictEqual(params, ['a', 'b']);
+});
+
+test('提取 fproc 函数名和参数', () => {
+    const args = makeNode('braced_word', '{value factor}', [
+        makeNode('{', '{', [], 0, 10, 0, 11),
+        makeNode('command', 'value factor', [
+            makeNode('simple_word', 'value', [], 0, 11, 0, 16),
+            makeNode('word_list', '', [makeNode('simple_word', 'factor', [], 0, 17, 0, 23)], 0, 17, 0, 23),
+        ], 0, 11, 0, 23),
+        makeNode('}', '}', [], 0, 23, 0, 24),
+    ], 0, 10, 0, 24);
+    const body = makeNode('braced_word', '{ body }', [], 0, 25, 0, 33);
+    const wordList = makeNode('word_list', '', [
+        makeNode('simple_word', 'scale', [], 0, 6, 0, 11),
+        args,
+        body,
+    ], 0, 6, 0, 33);
+    const cmd = makeNode('command', 'fproc scale {value factor} { body }', [
+        makeNode('simple_word', 'fproc', [], 0, 0, 0, 5),
+        wordList,
+    ], 0, 0, 0, 33);
+    const root = makeNode('program', '', [cmd], 0, 0, 0, 33);
+    const vars = varExtractor.getVariables(root);
+    assert.ok(vars.some(v => v.name === 'scale' && v.kind === 'function'));
+    assert.ok(vars.some(v => v.name === 'value' && v.kind === 'parameter'));
+    assert.ok(vars.some(v => v.name === 'factor' && v.kind === 'parameter'));
+});
+
 // ── foreach 循环变量 ──
 console.log('\nforeach 循环变量:');
 

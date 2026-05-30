@@ -370,6 +370,25 @@ test('getVariables: file stat /path/to/file statArr → 提取变量 statArr', (
     assert.strictEqual(vars[0].name, 'statArr');
 });
 
+// ── 18. SProcess define / fset ──
+test('getVariables: define Xmax 700 → 提取变量 Xmax', () => {
+    const cmd = makeCommandNode('define', ['Xmax', '700'], 0);
+    const root = makeNode('program', '', [cmd], 0, 0, 0, 15);
+    const vars = varExtractor.getVariables(root, 'define Xmax 700');
+    assert.strictEqual(vars.length, 1, `应有 1 个变量，实际 ${vars.length}`);
+    assert.strictEqual(vars[0].name, 'Xmax');
+    assert.strictEqual(vars[0].kind, 'variable');
+});
+
+test('getVariables: fset SD_L 300 → 提取变量 SD_L', () => {
+    const cmd = makeCommandNode('fset', ['SD_L', '300'], 0);
+    const root = makeNode('program', '', [cmd], 0, 0, 0, 13);
+    const vars = varExtractor.getVariables(root, 'fset SD_L 300');
+    assert.strictEqual(vars.length, 1, `应有 1 个变量，实际 ${vars.length}`);
+    assert.strictEqual(vars[0].name, 'SD_L');
+    assert.strictEqual(vars[0].kind, 'variable');
+});
+
 
 // ════════════════════════════════════════════════════════════════
 // 二、作用域可见性（ScopeIndex）
@@ -401,6 +420,17 @@ test('Scope: append buf hello 全局可见', () => {
 test('Scope: lappend items x 全局可见', () => {
     const cmd = makeCommandNode('lappend', ['items', 'x'], 0);
     assertVisible('lappend items x', cmd, 'items', 1, 'lappend 全局作用域');
+});
+
+// ── define/fset 全局作用域 ──
+test('Scope: define Xmax 700 全局可见', () => {
+    const cmd = makeCommandNode('define', ['Xmax', '700'], 0);
+    assertVisible('define Xmax 700', cmd, 'Xmax', 1, 'define 全局作用域');
+});
+
+test('Scope: fset SD_L 300 全局可见', () => {
+    const cmd = makeCommandNode('fset', ['SD_L', '300'], 0);
+    assertVisible('fset SD_L 300', cmd, 'SD_L', 1, 'fset 全局作用域');
 });
 
 // ── lmap 全局作用域 ──
@@ -537,6 +567,30 @@ test('ERROR: lappend items x 在 ERROR 节点中仍被提取', () => {
     const vars = varExtractor.getVariables(root, 'lappend items x');
     assert.strictEqual(vars.length, 1, `应有 1 个变量，实际 ${vars.length}`);
     assert.strictEqual(vars[0].name, 'items');
+});
+
+test('ERROR: define Xmax 700 在 ERROR 节点中仍被提取且不重复', () => {
+    const errNode = makeNode('ERROR', 'define Xmax 700', [
+        makeNode('simple_word', 'define', [], 0, 0, 0, 6),
+        makeNode('simple_word', 'Xmax', [], 0, 7, 0, 11),
+        makeNode('simple_word', '700', [], 0, 12, 0, 15),
+    ], 0, 0, 0, 15);
+    const root = makeNode('program', '', [errNode], 0, 0, 0, 15);
+    const vars = varExtractor.getVariables(root, 'define Xmax 700');
+    assert.strictEqual(vars.length, 1, `应有 1 个变量，实际 ${vars.length}`);
+    assert.strictEqual(vars[0].name, 'Xmax');
+});
+
+test('ERROR: fset SD_L 300 在 ERROR 节点中仍被提取且不重复', () => {
+    const errNode = makeNode('ERROR', 'fset SD_L 300', [
+        makeNode('simple_word', 'fset', [], 0, 0, 0, 4),
+        makeNode('simple_word', 'SD_L', [], 0, 5, 0, 9),
+        makeNode('simple_word', '300', [], 0, 10, 0, 13),
+    ], 0, 0, 0, 13);
+    const root = makeNode('program', '', [errNode], 0, 0, 0, 13);
+    const vars = varExtractor.getVariables(root, 'fset SD_L 300');
+    assert.strictEqual(vars.length, 1, `应有 1 个变量，实际 ${vars.length}`);
+    assert.strictEqual(vars[0].name, 'SD_L');
 });
 
 test('ERROR: gets stdin line 在 ERROR 节点中仍被提取', () => {

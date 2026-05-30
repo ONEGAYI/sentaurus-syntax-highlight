@@ -220,6 +220,73 @@ function _isWordType(w) {
     return w && (w.type === 'simple_word' || w.type === 'id');
 }
 
+const TCL_SET_LIKE_COMMANDS = new Set(['set', 'define', 'fset']);
+const TCL_PROC_LIKE_COMMANDS = new Set(['proc', 'defineproc', 'fproc']);
+
+function _isSetLikeCommand(cmdName) {
+    return TCL_SET_LIKE_COMMANDS.has(cmdName);
+}
+
+function _isProcLikeCommand(cmdName) {
+    return TCL_PROC_LIKE_COMMANDS.has(cmdName);
+}
+
+function _extractSetLikeVarDef(words) {
+    if (words.length < 2 || !_isWordType(words[1])) return null;
+    const name = words[1].text;
+    if (name.startsWith('env(') || /^\d/.test(name)) return null;
+    return { name, line: words[1].startPosition.row + 1 };
+}
+
+function _extractProcLikeParams(argsNode) {
+    const params = [];
+    if (!argsNode) return params;
+
+    function pushParam(node) {
+        if (!node || !_isWordType(node)) return;
+        const name = node.text;
+        if (!name || name.startsWith('$') || /^\d/.test(name)) return;
+        params.push({ name, line: node.startPosition.row + 1 });
+    }
+
+    function pushDefaultParam(bracedNode) {
+        for (let i = 0; i < bracedNode.childCount; i++) {
+            const child = bracedNode.child(i);
+            if (!child || child.type === '{' || child.type === '}') continue;
+            if (_isWordType(child)) {
+                pushParam(child);
+                return;
+            }
+            if (child.type === 'command') {
+                const words = _getCommandWords(child);
+                if (words.length > 0) pushParam(words[0]);
+                return;
+            }
+        }
+    }
+
+    for (let i = 0; i < argsNode.childCount; i++) {
+        const child = argsNode.child(i);
+        if (!child || child.type === '{' || child.type === '}') continue;
+        if (_isWordType(child)) {
+            pushParam(child);
+        } else if (child.type === 'command') {
+            const words = _getCommandWords(child);
+            for (const word of words) {
+                if (_isWordType(word)) {
+                    pushParam(word);
+                } else if (word.type === 'braced_word' || word.type === 'braced_word_simple') {
+                    pushDefaultParam(word);
+                }
+            }
+        } else if (child.type === 'braced_word' || child.type === 'braced_word_simple') {
+            pushDefaultParam(child);
+        }
+    }
+
+    return params;
+}
+
 /**
  * 从 command 节点提取隐式变量定义。统一入口，供 extractor/scope 两模块共用。
  * @param {object} node - command 节点
@@ -229,7 +296,10 @@ function _isWordType(w) {
  */
 function _extractCommandVarDefs(node, cmdName, words) {
     const defs = [];
-    if (cmdName === 'lassign') {
+    if (_isSetLikeCommand(cmdName)) {
+        const def = _extractSetLikeVarDef(words);
+        if (def) defs.push(def);
+    } else if (cmdName === 'lassign') {
         for (let i = 2; i < words.length; i++) {
             if (_isWordType(words[i])) defs.push({ name: words[i].text, line: words[i].startPosition.row + 1 });
         }
@@ -342,7 +412,8 @@ function _extractErrorVarDefs(node, includeCompleteSet = false) {
     // Pass 1: 扫描 set + id/simple_word 兄弟节点对（空壳 set）
     for (let i = 0; i < node.childCount - 1; i++) {
         const cur = node.child(i);
-        const isSet = cur.type === 'set' || (cur.type === 'simple_word' && cur.text === 'set');
+        const isSet = cur.type === 'set'
+            || (cur.type === 'simple_word' && _isSetLikeCommand(cur.text));
         if (!isSet) continue;
         const next = node.child(i + 1);
         if (next && (next.type === 'id' || next.type === 'simple_word')) {
@@ -377,7 +448,20 @@ function _extractErrorVarDefs(node, includeCompleteSet = false) {
     if (!first || first.type !== 'simple_word') return defs;
     const cmdName = first.text;
 
-    if (cmdName === 'lassign') {
+    if (_isSetLikeCommand(cmdName)) {
+        if (node.childCount >= 2) {
+            const arg = node.child(1);
+            if (arg && (arg.type === 'simple_word' || arg.type === 'id')) {
+                const name = arg.text;
+                if (!name.startsWith('env(') && !/^\d/.test(name)) {
+                    const line = arg.startPosition.row + 1;
+                    if (!defs.some(d => d.name === name && d.line === line)) {
+                        defs.push({ name, line });
+                    }
+                }
+            }
+        }
+    } else if (cmdName === 'lassign') {
         for (let i = 2; i < node.childCount; i++) {
             const arg = node.child(i);
             if (arg && arg.type === 'simple_word') {
@@ -551,6 +635,10 @@ module.exports = {
     _extractCommandVarDefs,
     _extractBracedWordVars,
     _extractErrorVarDefs,
+    _isSetLikeCommand,
+    _extractSetLikeVarDef,
+    _isProcLikeCommand,
+    _extractProcLikeParams,
     _extractUpvarLocalNames,
     _extractVariableNames,
     _isSvisualVarDefCommand,

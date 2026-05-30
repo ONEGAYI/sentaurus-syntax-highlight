@@ -10,6 +10,10 @@ const {
     _extractForeachVarNames,
     _extractCommandVarDefs,
     _extractErrorVarDefs,
+    _isSetLikeCommand,
+    _extractSetLikeVarDef,
+    _isProcLikeCommand,
+    _extractProcLikeParams,
     _extractUpvarLocalNames,
     _extractVariableNames,
     _isSvisualVarDefCommand,
@@ -172,7 +176,7 @@ class ScopeIndex {
 
 /** buildScopeIndex 中已有专门处理的 command 名称 */
 const _HANDLED_CMDS = new Set([
-    'set', 'lappend', 'append', 'for', 'lassign', 'lmap', 'dict', 'incr',
+    'set', 'define', 'fset', 'proc', 'defineproc', 'fproc', 'lappend', 'append', 'for', 'lassign', 'lmap', 'dict', 'incr',
     'gets', 'scan', 'regexp', 'regsub', 'catch', 'variable', 'global', 'upvar',
     'array', 'file',
 ]);
@@ -293,7 +297,12 @@ function _collectCmdSubstDefs(node, globalDefs) {
             if (firstChild && firstChild.type === 'simple_word') {
                 const cmdName = firstChild.text;
                 const words = _getCommandWords(child);
-                if (cmdName === 'set' || cmdName === 'lappend' || cmdName === 'append') {
+                if (_isSetLikeCommand(cmdName)) {
+                    const def = _extractSetLikeVarDef(words);
+                    if (def) {
+                        globalDefs.push({ name: def.name, defLine: def.line, isProc: false });
+                    }
+                } else if (cmdName === 'lappend' || cmdName === 'append') {
                     for (const arg of words) {
                         if (arg.type === 'id' || arg.type === 'simple_word') {
                             const name = arg.text;
@@ -430,7 +439,9 @@ function _buildProcScope(procName, bodyNode, params, procScopes) {
     const localDefs = [];
     const scopeImports = [];
     _extractBracedBodyDefs(bodyNode, localDefs);
+    _collectLocalDefsForIndex(bodyNode, localDefs);
     _extractBracedBodyImports(bodyNode, scopeImports);
+    _collectScopeImportsForIndex(bodyNode, scopeImports);
 
     procScopes.push({
         name: procName,
@@ -440,6 +451,26 @@ function _buildProcScope(procName, bodyNode, params, procScopes) {
         localDefs,
         scopeImports,
     });
+}
+
+function _handleProcLikeCommandForIndex(node, globalDefs, procScopes) {
+    const words = _getCommandWords(node);
+    const nameNode = words[1];
+    const argsNode = words[2];
+    const bodyNode = words[3];
+    if (!nameNode || !nameNode.text || nameNode.text.startsWith('$')) return;
+
+    const procName = nameNode.text;
+    globalDefs.push({
+        name: procName,
+        defLine: nameNode.startPosition.row + 1,
+        isProc: true,
+    });
+
+    if (bodyNode && bodyNode.type === 'braced_word') {
+        const params = _extractProcLikeParams(argsNode).map(p => p.name);
+        _buildProcScope(procName, bodyNode, params, procScopes);
+    }
 }
 
 /**
@@ -629,7 +660,15 @@ function buildScopeIndex(root) {
             const firstChild = child.child(0);
             if (firstChild && firstChild.type === 'simple_word') {
                 const cmdName = firstChild.text;
-                if (cmdName === 'set' || cmdName === 'lappend' || cmdName === 'append') {
+                if (_isSetLikeCommand(cmdName)) {
+                    const words = _getCommandWords(child);
+                    const def = _extractSetLikeVarDef(words);
+                    if (def) {
+                        globalDefs.push({ name: def.name, defLine: def.line, isProc: false });
+                    }
+                } else if (_isProcLikeCommand(cmdName)) {
+                    _handleProcLikeCommandForIndex(child, globalDefs, procScopes);
+                } else if (cmdName === 'lappend' || cmdName === 'append') {
                     const words = _getCommandWords(child);
                     for (const arg of words) {
                         if (arg.type === 'id' || arg.type === 'simple_word') {
@@ -644,8 +683,7 @@ function buildScopeIndex(root) {
                             }
                         }
                     }
-                }
-                if (cmdName === 'incr') {
+                } else if (cmdName === 'incr') {
                     const words = _getCommandWords(child);
                     if (words.length >= 2) {
                         const varNode = words[1];
@@ -817,7 +855,11 @@ function _collectLocalDefsForIndex(node, defs) {
             if (firstChild && firstChild.type === 'simple_word') {
                 const cmdName = firstChild.text;
 
-                if (cmdName === 'for') {
+                if (_isSetLikeCommand(cmdName)) {
+                    const words = _getCommandWords(child);
+                    const def = _extractSetLikeVarDef(words);
+                    if (def) defs.push({ name: def.name, defLine: def.line });
+                } else if (cmdName === 'for') {
                     const words = _getCommandWords(child);
                     for (const w of words) {
                         if (w.type === 'braced_word') {

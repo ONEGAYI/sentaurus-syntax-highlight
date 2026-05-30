@@ -18,6 +18,7 @@ try {
 }
 const path = require('path');
 const astUtils = require('../src/lsp/tcl-scope');
+const tclAstUtils = require('../src/lsp/tcl-ast-utils');
 const varExtractor = require('../src/lsp/tcl-variable-extractor');
 
 async function main() {
@@ -46,6 +47,27 @@ async function main() {
                     `第 ${line} 行 $${name} 不应可见 (got: ${visible ? [...visible].join(',') : 'null'})`);
             }
         } finally { tree.delete(); }
+    }
+
+    function parseWithTree(code, fn) {
+        const tree = parser.parse(code);
+        try {
+            return fn(tree.rootNode);
+        } finally { tree.delete(); }
+    }
+
+    function assertProcLikeCommandShape(code, cmdName, procName) {
+        parseWithTree(code, root => {
+            const command = root.child(0);
+            assert(command && command.type === 'command', `${cmdName} 应解析为 command 节点`);
+            const words = tclAstUtils._getCommandWords(command);
+            assert.strictEqual(words[0].type, 'simple_word');
+            assert.strictEqual(words[0].text, cmdName);
+            assert.strictEqual(words[1].type, 'simple_word');
+            assert.strictEqual(words[1].text, procName);
+            assert.strictEqual(words[2].type, 'braced_word');
+            assert.strictEqual(words[3].type, 'braced_word');
+        });
     }
 
     console.log('\n=== 未定义变量检测集成测试 (真实 WASM) ===\n');
@@ -158,6 +180,64 @@ async function main() {
             'set cond 1\nif { $cond } {\n    set i 0\n    while { $i < 3 } {\n        set buf $i\n        incr i\n    }\n    puts $buf\n}',
             [{ name: 'buf', line: 8 }, { name: 'i', line: 8 }],
             []
+        );
+    });
+
+    test('SProcess define/fset 定义的变量在后续引用处可见', () => {
+        parseAndCheck(
+            'define Xmax 700\nfset SD_L 300\nfset M1_left [expr {$SD_L + 10}]\nline x location= $Xmax<nm>\nline y location= $M1_left<nm>',
+            [
+                { name: 'SD_L', line: 3 },
+                { name: 'Xmax', line: 4 },
+                { name: 'M1_left', line: 5 },
+            ],
+            []
+        );
+    });
+
+    test('SProcess defineproc/fproc 参数与局部变量在 body 内可见', () => {
+        parseAndCheck(
+            'defineproc add {a b} {\n    set sum [expr {$a + $b}]\n    puts $sum\n}\nfproc scale {value factor} {\n    set scaled [expr {$value * $factor}]\n    puts $scaled\n}',
+            [
+                { name: 'a', line: 2 },
+                { name: 'b', line: 2 },
+                { name: 'sum', line: 3 },
+                { name: 'value', line: 6 },
+                { name: 'factor', line: 6 },
+                { name: 'scaled', line: 7 },
+            ],
+            []
+        );
+    });
+
+    test('SProcess defineproc/fproc 在真实 WASM AST 中解析为 command-form', () => {
+        assertProcLikeCommandShape(
+            'defineproc add {a b} {\n    puts $a\n}',
+            'defineproc',
+            'add'
+        );
+        assertProcLikeCommandShape(
+            'fproc scale {value factor} {\n    puts $value\n}',
+            'fproc',
+            'scale'
+        );
+    });
+
+    test('SProcess defineproc/fproc 默认参数在 body 内可见且默认值不作为参数', () => {
+        parseAndCheck(
+            'defineproc add {a {b 1.0}} {\n    set sum [expr {$a + $b}]\n    puts $sum\n}\nfproc scale {value {factor 2.0}} {\n    set scaled [expr {$value * $factor}]\n    puts $scaled\n}',
+            [
+                { name: 'a', line: 2 },
+                { name: 'b', line: 2 },
+                { name: 'sum', line: 3 },
+                { name: 'value', line: 6 },
+                { name: 'factor', line: 6 },
+                { name: 'scaled', line: 7 },
+            ],
+            [
+                { name: '1.0', line: 2 },
+                { name: '2.0', line: 6 },
+            ]
         );
     });
 
