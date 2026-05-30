@@ -112,14 +112,14 @@
 
 ## 三、手动添加的 Tcl 内置命令模式
 
-5 种 Tcl 语言均包含以下手动添加的模式（不在 all_keywords.json 中，直接写入 tmLanguage）：
+5 种 Tcl 语言均包含以下手动添加的高亮模式；子命令补全候选同步在 `all_keywords.json` 的 `SUBCOMMAND` 分类中。
 
 | Scope | 关键词 | 数量 |
 |-------|--------|------|
 | `keyword.control.{lang}` | `if` `else` `elseif` `for` `foreach` `while` `switch` `break` `continue` `return` | ~10 |
 | `keyword.other.{lang}` | `proc` `try` `throw` | ~3 |
-| `support.function.{lang}` | `set` `puts` `gets` `list` `lindex` `llength` `lrange` `string` `expr` `incr` `info` `catch` `eval` ... | ~42 |
-| `support.type.tcl-subcommand` | 子命令（如 `string length` 的 `length`） | 所有 Tcl 工具 |
+| `support.function.{lang}` | Tcl 内置与复杂命令父命令（如 `namespace` `dict` `clock` `chan`） | 83+ |
+| `support.type.tcl-subcommand` | `string/file/info/array/dict/namespace/clock/binary/encoding/package/chan` 子命令（如 `namespace eval` 的 `eval`、`dict get` 的 `get`） | 152 |
 
 ## 四、Semantic Token 类型
 

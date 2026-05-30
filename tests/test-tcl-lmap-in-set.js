@@ -69,5 +69,5 @@ function test(name, fn) {
     });
 
     console.log(`\n${passed} passed, ${failed} failed`);
-    process.exit(failed > 0 ? 1 : 0);
+    if (failed > 0) process.exitCode = 1;
 })();

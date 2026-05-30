@@ -2,426 +2,783 @@
   "string": {
     "length": {
       "signature": "string length string",
-      "description": "返回字符串的字符数（非字节数）。",
-      "example": "string length \"Hello\"  ;# → 5"
+      "description": "返回 string 的字符数；对于 byte-array 值，返回实际字节长度。",
+      "example": "string length \"Hello\"  ;# => 5"
     },
     "match": {
       "signature": "string match ?-nocase? pattern string",
-      "description": "判断字符串是否匹配 glob 模式（*、?、[chars]）。",
+      "description": "返回 string 是否匹配 glob pattern，匹配时返回 1，否则返回 0。",
       "example": "string match *.tdr $filename"
     },
     "range": {
       "signature": "string range string first last",
-      "description": "返回从 first 到 last 索引（含两端）的子字符串。",
-      "example": "string range \"Hello World\" 0 4  ;# → Hello"
+      "description": "返回从 first 到 last 的闭区间字符范围。",
+      "example": "string range \"Hello World\" 0 4  ;# => Hello"
     },
     "first": {
       "signature": "string first needleString haystackString ?startIndex?",
-      "description": "返回 needleString 在 haystackString 中首次出现的索引。",
-      "example": "string first \"World\" \"Hello World\"  ;# → 6"
+      "description": "返回 needleString 在 haystackString 中首次精确出现的索引，未找到时返回 -1。",
+      "example": "string first \"World\" \"Hello World\"  ;# => 6"
     },
     "last": {
       "signature": "string last needleString haystackString ?lastIndex?",
-      "description": "返回 needleString 在 haystackString 中最后出现的索引。",
-      "example": "string last \"o\" \"Hello World\"  ;# → 7"
+      "description": "返回 needleString 在 haystackString 中最后一次精确出现时首字符的索引，未找到时返回 -1。",
+      "example": "string last \"o\" \"Hello World\"  ;# => 7"
     },
     "index": {
       "signature": "string index string charIndex",
-      "description": "返回 charIndex 位置的字符（支持 end-±N）。",
-      "example": "string index \"Hello\" end  ;# → o"
+      "description": "返回 charIndex 位置的字符；索引位于 string 范围外时返回空字符串。",
+      "example": "string index \"Hello\" end  ;# => o"
     },
     "trim": {
       "signature": "string trim string ?chars?",
-      "description": "去除字符串首尾的指定字符（默认为空白字符）。",
-      "example": "string trim \"  Hello  \"  ;# → Hello"
+      "description": "返回移除首尾 chars 中字符后的 string；默认移除空白字符和 NUL。",
+      "example": "string trim \"  Hello  \"  ;# => Hello"
     },
     "trimleft": {
       "signature": "string trimleft string ?chars?",
-      "description": "去除字符串开头的指定字符。",
-      "example": "string trimleft \"0042\" 0  ;# → 42"
+      "description": "返回移除开头 chars 中字符后的 string；默认移除空白字符和 NUL。",
+      "example": "string trimleft \"0042\" 0  ;# => 42"
     },
     "trimright": {
       "signature": "string trimright string ?chars?",
-      "description": "去除字符串末尾的指定字符。",
-      "example": "string trimright \"Hello000\" 0  ;# → Hello"
+      "description": "返回移除末尾 chars 中字符后的 string；默认移除空白字符和 NUL。",
+      "example": "string trimright \"Hello000\" 0  ;# => Hello"
     },
     "tolower": {
       "signature": "string tolower string ?first? ?last?",
-      "description": "将字符串转换为小写。",
-      "example": "string tolower \"Hello\"  ;# → hello"
+      "description": "返回将大写或 title case 字母转换为小写后的 string，可选择只转换 first..last 范围。",
+      "example": "string tolower \"Hello\"  ;# => hello"
     },
     "toupper": {
       "signature": "string toupper string ?first? ?last?",
-      "description": "将字符串转换为大写。",
-      "example": "string toupper \"Hello\"  ;# → HELLO"
+      "description": "返回将小写或 title case 字母转换为大写后的 string，可选择只转换 first..last 范围。",
+      "example": "string toupper \"Hello\"  ;# => HELLO"
     },
     "totitle": {
       "signature": "string totitle string ?first? ?last?",
-      "description": "将字符串首字符大写。",
-      "example": "string totitle \"hello world\"  ;# → Hello world"
+      "description": "返回将所选范围首字符转换为 title case、其余字符转换为小写后的 string。",
+      "example": "string totitle \"hello world\"  ;# => Hello world"
     },
     "equal": {
-      "signature": "string equal ?-nocase? string1 string2",
-      "description": "判断两个字符串是否相等，返回 1 或 0。",
-      "example": "string equal \"abc\" \"abc\"  ;# → 1"
+      "signature": "string equal ?-nocase? ?-length length? string1 string2",
+      "description": "返回 string1 和 string2 在所选比较选项下是否完全相同，相同时返回 1，否则返回 0。",
+      "example": "string equal -length 3 \"foobar\" \"foo\"  ;# => 1"
     },
     "compare": {
-      "signature": "string compare ?-nocase? ?-length int? string1 string2",
-      "description": "按字典序比较字符串，返回 -1、0 或 1。",
-      "example": "string compare \"abc\" \"abd\"  ;# → -1"
+      "signature": "string compare ?-nocase? ?-length length? string1 string2",
+      "description": "逐字符比较 string1 和 string2，并返回 -1、0 或 1。",
+      "example": "string compare \"abc\" \"abd\"  ;# => -1"
     },
     "is": {
-      "signature": "string is class ?-strict? string",
-      "description": "判断字符串是否属于指定字符类（alnum、alpha、ascii、boolean、digit、double、integer、list、lower、upper、space、wideinteger、wordchar、xdigit）。",
-      "example": "string is digit \"123\"  ;# → 1"
+      "signature": "string is class ?-strict? ?-failindex varname? string",
+      "description": "返回 string 是否为指定字符类的有效成员，是则返回 1，否则返回 0。",
+      "example": "string is digit \"123\"  ;# => 1"
     },
     "map": {
       "signature": "string map ?-nocase? mapping string",
-      "description": "根据映射表中的键值对替换子字符串。",
-      "example": "string map {abc 1 ab 2 a 3} \"aababc\"  ;# → 31c"
+      "description": "返回根据 mapping 中键值对替换子字符串后的 string。",
+      "example": "string map {abc 1 ab 2 a 3 1 0} 1abcaababcabababc  ;# => 01321221"
     },
     "repeat": {
       "signature": "string repeat string count",
-      "description": "返回字符串重复 count 次的结果。",
-      "example": "string repeat \"Ha\" 3  ;# → HaHaHa"
+      "description": "返回将 string 与自身拼接 count 次后的结果。",
+      "example": "string repeat \"Ha\" 3  ;# => HaHaHa"
     },
     "replace": {
-      "signature": "string replace string first last ?newString?",
-      "description": "将 first 到 last 位置的字符替换为 newString。",
-      "example": "string replace \"Hello World\" 5 11 \"Tcl\"  ;# → HelloTcl"
+      "signature": "string replace string first last ?newstring?",
+      "description": "返回移除或用 newstring 替换 first..last 闭区间字符范围后的 string。",
+      "example": "string replace \"Hello World\" 6 end \"Tcl\"  ;# => Hello Tcl"
     },
     "reverse": {
       "signature": "string reverse string",
-      "description": "返回字符反转后的字符串。",
-      "example": "string reverse \"Hello\"  ;# → olleH"
+      "description": "返回字符顺序反转后的 string。",
+      "example": "string reverse \"Hello\"  ;# => olleH"
     },
     "cat": {
-      "signature": "string cat ?string ...?",
-      "description": "将所有参数拼接为一个字符串（Tcl 8.6+）。",
-      "example": "string cat \"Hello\" \" \" \"World\"  ;# → Hello World"
+      "signature": "string cat ?string1? ?string2...?",
+      "description": "直接拼接提供的字符串并返回结果字符串。",
+      "example": "string cat \"Hello\" \" \" \"World\"  ;# => Hello World"
     },
     "wordstart": {
       "signature": "string wordstart string charIndex",
-      "description": "返回包含 charIndex 位置的单词的起始索引。",
-      "example": "string wordstart \"Hello World\" 8  ;# → 6"
+      "description": "返回包含 charIndex 的单词首字符索引；此子命令已废弃。",
+      "example": "string wordstart \"Hello World\" 8  ;# => 6"
     },
     "wordend": {
       "signature": "string wordend string charIndex",
-      "description": "返回包含 charIndex 位置的单词之后一个字符的索引。",
-      "example": "string wordend \"Hello World\" 0  ;# → 5"
+      "description": "返回包含 charIndex 的单词末字符之后的索引；此子命令已废弃。",
+      "example": "string wordend \"Hello World\" 0  ;# => 5"
     },
     "bytelength": {
       "signature": "string bytelength string",
-      "description": "返回字符串的字节数（已弃用，建议使用 encoding + string length）。",
-      "example": "string bytelength \"Hello\"  ;# → 5"
+      "description": "返回 Tcl 内部 modified UTF-8 表示中 string 的字节数；此子命令已废弃。",
+      "example": "string bytelength \"Hello\"  ;# => 5"
     }
   },
   "file": {
     "join": {
       "signature": "file join name ?name ...?",
-      "description": "使用平台分隔符拼接路径组件。",
-      "example": "file join /usr local bin  ;# → /usr/local/bin"
+      "description": "使用当前平台的正确分隔符组合一个或多个路径名；如果后续组件是绝对路径，会丢弃前面的组件。",
+      "example": "set path [file join /usr local bin]"
     },
     "dirname": {
       "signature": "file dirname name",
-      "description": "返回路径的目录部分。",
-      "example": "file dirname /usr/local/bin/tclsh  ;# → /usr/local/bin"
+      "description": "返回除最后一个元素外的所有路径组件；单个相对组件返回 .，根路径返回根本身。",
+      "example": "set dir [file dirname /usr/local/bin/tclsh]"
     },
     "tail": {
       "signature": "file tail name",
-      "description": "返回路径的文件名部分（最后一个组件）。",
-      "example": "file tail /usr/local/bin/tclsh  ;# → tclsh"
+      "description": "返回路径的最后一个文件系统组件，并忽略末尾的目录分隔符。",
+      "example": "set leaf [file tail /usr/local/bin/tclsh]"
     },
     "extension": {
       "signature": "file extension name",
-      "description": "返回文件扩展名（含点号）。",
-      "example": "file extension \"output.tdr\"  ;# → .tdr"
+      "description": "返回最后一个路径组件的最后一个扩展名（包含点号），没有扩展名时返回空字符串。",
+      "example": "set ext [file extension output.tdr]"
     },
     "rootname": {
       "signature": "file rootname name",
-      "description": "返回不含扩展名的文件名。",
-      "example": "file rootname \"output.tdr\"  ;# → output"
+      "description": "返回最后一个组件中最后一个点号之前的路径内容；没有扩展名时返回原始 name。",
+      "example": "set root [file rootname output.tdr]"
     },
     "exists": {
       "signature": "file exists name",
-      "description": "判断文件或目录是否存在，返回 1 或 0。",
-      "example": "if {[file exists $path]} { puts \"找到\" }"
+      "description": "如果路径存在且当前用户对其前导目录具有搜索权限，则返回 1，否则返回 0。",
+      "example": "if {[file exists $path]} { puts \"found\" }"
     },
     "isfile": {
       "signature": "file isfile name",
-      "description": "判断是否为普通文件，返回 1 或 0。",
-      "example": "file isfile $path  ;# → 1 或 0"
+      "description": "如果路径指向普通文件，则返回 1，否则返回 0。",
+      "example": "if {[file isfile $path]} { puts \"file\" }"
     },
     "isdirectory": {
       "signature": "file isdirectory name",
-      "description": "判断是否为目录，返回 1 或 0。",
-      "example": "file isdirectory $path  ;# → 1 或 0"
+      "description": "如果路径指向目录，则返回 1，否则返回 0。",
+      "example": "if {[file isdirectory $path]} { puts \"directory\" }"
     },
     "mkdir": {
-      "signature": "file mkdir dir ?dir ...?",
-      "description": "创建目录及所有必要的父目录。",
-      "example": "file mkdir /tmp/test/nested/dir"
+      "signature": "file mkdir ?dir ...?",
+      "description": "创建每个指定目录以及缺失的父目录；已存在的目录不会产生错误。",
+      "example": "file mkdir [file join $base output logs]"
     },
     "copy": {
-      "signature": "file copy ?-force? ?--? source target",
-      "description": "复制文件或目录。",
-      "example": "file copy input.tdr backup.tdr"
+      "signature": "file copy ?-force? ?--? source ?source ...? target",
+      "description": "复制文件或目录；多个 source 会复制到目标目录中，且只有指定 -force 时才覆盖已存在的目标。",
+      "example": "file copy -force input.tdr backup.tdr"
     },
     "delete": {
-      "signature": "file delete ?-force? ?--? pathname ?pathname ...?",
-      "description": "删除文件或目录。",
-      "example": "file delete -force /tmp/test"
+      "signature": "file delete ?-force? ?--? ?pathname ...?",
+      "description": "删除每个 pathname；非空目录需要 -force，删除不存在的 pathname 不视为错误。",
+      "example": "file delete -force [file join $base output]"
     },
     "rename": {
-      "signature": "file rename ?-force? ?--? source target",
-      "description": "重命名或移动文件/目录。",
-      "example": "file rename old.tdr new.tdr"
+      "signature": "file rename ?-force? ?--? source ?source ...? target",
+      "description": "重命名或移动文件和目录；多个 source 会移动到目标目录中，且只有指定 -force 时才覆盖已存在的目标。",
+      "example": "file rename -force old.tdr new.tdr"
     },
     "nativename": {
       "signature": "file nativename name",
-      "description": "返回平台原生的路径格式。",
-      "example": "file nativename /usr/local  ;# → /usr/local（Unix）或 \\usr\\local（Win）"
+      "description": "返回路径的平台原生形式，适合将文件名传递给操作系统命令。",
+      "example": "set native [file nativename $path]"
     },
     "normalize": {
       "signature": "file normalize name",
-      "description": "返回解析 . 和 .. 后的绝对路径。",
-      "example": "file normalize ../test  ;# → /absolute/path/test"
+      "description": "返回绝对的规范化路径表示，移除 . 和 ..，并使用该平台的标准原生格式。",
+      "example": "set absolute [file normalize ../results/output.tdr]"
     },
     "stat": {
       "signature": "file stat name varName",
-      "description": "将文件状态信息（atime、ctime、dev、gid、ino、mode、mtime、nlink、size、type、uid）存入数组 varName。",
-      "example": "file stat $path arr; puts $arr(size)"
+      "description": "将文件状态字段存入数组 varName，包括 atime、ctime、dev、gid、ino、mode、mtime、nlink、size、type 和 uid，并返回空字符串。",
+      "example": "file stat $path info; puts $info(size)"
     },
     "size": {
       "signature": "file size name",
-      "description": "返回文件大小（字节数）。",
-      "example": "file size output.tdr  ;# → 1048576"
+      "description": "返回指定文件的大小（字节数）；如果无法查询大小，则抛出错误。",
+      "example": "set bytes [file size output.tdr]"
     },
     "readable": {
       "signature": "file readable name",
-      "description": "判断当前用户是否可读，返回 1 或 0。",
-      "example": "if {[file readable $path]} { ... }"
+      "description": "如果当前用户可读取指定文件，则返回 1，否则返回 0。",
+      "example": "if {[file readable $path]} { puts \"readable\" }"
     },
     "writable": {
       "signature": "file writable name",
-      "description": "判断当前用户是否可写，返回 1 或 0。",
-      "example": "if {[file writable $path]} { ... }"
+      "description": "如果当前用户可写入指定文件，则返回 1，否则返回 0。",
+      "example": "if {[file writable $path]} { puts \"writable\" }"
     },
     "executable": {
       "signature": "file executable name",
-      "description": "判断文件是否可执行，返回 1 或 0。",
-      "example": "file executable $script  ;# → 1 或 0"
+      "description": "如果当前用户可执行指定文件，则返回 1，否则返回 0；在 Windows 上，目录以及 .exe、.com、.cmd 或 .bat 文件会被视为可执行。",
+      "example": "if {[file executable $script]} { puts \"executable\" }"
     },
     "mtime": {
       "signature": "file mtime name ?time?",
-      "description": "返回或设置最后修改时间（Unix 纪元秒数）。",
-      "example": "file mtime output.tdr  ;# → 1715232000"
+      "description": "以 POSIX 纪元秒数返回或设置文件的最后修改时间。",
+      "example": "set modified [file mtime output.tdr]"
     },
     "atime": {
       "signature": "file atime name ?time?",
-      "description": "返回或设置最后访问时间（Unix 纪元秒数）。",
-      "example": "file atime output.tdr  ;# → 1715232000"
+      "description": "以 POSIX 纪元秒数返回或设置文件的最后访问时间；某些文件系统（例如 Windows 上的 FAT）不支持访问时间。",
+      "example": "set accessed [file atime output.tdr]"
     },
     "type": {
       "signature": "file type name",
-      "description": "返回文件类型：file、directory、characterSpecial、blockSpecial、fifo、link 或 socket。",
-      "example": "file type $path  ;# → file"
+      "description": "返回文件类型字符串：file、directory、characterSpecial、blockSpecial、fifo、link 或 socket。",
+      "example": "set kind [file type $path]"
     }
   },
   "info": {
     "exists": {
       "signature": "info exists varName",
-      "description": "判断变量在当前作用域中是否存在，返回 1 或 0。",
-      "example": "if {[info exists voltage]} { puts $voltage }"
+      "description": "返回指定变量在当前作用域中是否存在，存在返回 1，否则返回 0。",
+      "example": "if {[info exists voltage]} {puts $voltage}"
     },
     "commands": {
       "signature": "info commands ?pattern?",
-      "description": "返回匹配模式的所有可见命令名。",
-      "example": "info commands string*  ;# → string"
+      "description": "返回匹配 pattern 的可见命令名；省略 pattern 时返回所有可见命令名。",
+      "example": "set stringCommands [info commands string*]"
     },
     "procs": {
       "signature": "info procs ?pattern?",
-      "description": "返回匹配模式的所有可见过程名。",
-      "example": "info procs calc_*  ;# → 过程名列表"
+      "description": "返回当前命名空间中匹配 pattern 的 Tcl 过程名；省略 pattern 时返回所有过程名。",
+      "example": "set procs [info procs calc_*]"
     },
     "args": {
       "signature": "info args procname",
-      "description": "返回指定过程的参数列表。",
-      "example": "info args myProc  ;# → {a b {c 0}}"
+      "description": "按顺序返回指定过程的参数名。",
+      "example": "set argNames [info args myProc]"
     },
     "body": {
       "signature": "info body procname",
-      "description": "返回指定过程的函数体。",
-      "example": "info body myProc  ;# → return $result"
+      "description": "返回指定过程的脚本体。",
+      "example": "set scriptBody [info body myProc]"
     },
     "level": {
       "signature": "info level ?number?",
-      "description": "返回当前栈级别或指定级别的信息。",
-      "example": "info level  ;# → 0"
+      "description": "返回当前栈层级，或返回指定栈层级上的命令及其参数。",
+      "example": "set depth [info level]"
     },
     "script": {
       "signature": "info script ?filename?",
-      "description": "返回当前正在执行的脚本文件名。",
+      "description": "返回当前正在求值的最内层脚本文件名，也可为当前调用临时覆盖该返回值。",
       "example": "set dir [file dirname [info script]]"
     },
     "hostname": {
       "signature": "info hostname",
-      "description": "返回机器名。",
-      "example": "info hostname  ;# → workstation01"
+      "description": "返回当前 Tcl 调用所在机器的主机名。",
+      "example": "set host [info hostname]"
     },
     "patchlevel": {
       "signature": "info patchlevel",
-      "description": "返回 Tcl 解释器的精确版本号（如 8.6.12）。",
-      "example": "info patchlevel  ;# → 8.6.12"
+      "description": "返回 tcl_patchLevel 中保存的 Tcl 精确补丁版本号。",
+      "example": "set patch [info patchlevel]"
     },
     "tclversion": {
       "signature": "info tclversion",
-      "description": "返回 Tcl 的主版本号.次版本号。",
-      "example": "info tclversion  ;# → 8.6"
+      "description": "返回 tcl_version 中保存的 Tcl major.minor 版本号。",
+      "example": "set version [info tclversion]"
     },
     "globals": {
       "signature": "info globals ?pattern?",
-      "description": "返回匹配模式的全局变量名。",
-      "example": "info globals env*  ;# → env"
+      "description": "返回匹配 pattern 的已定义全局变量名；省略 pattern 时返回所有全局变量名。",
+      "example": "set globalVars [info globals env*]"
     },
     "locals": {
       "signature": "info locals ?pattern?",
-      "description": "返回匹配模式的局部变量名。",
-      "example": "info locals  ;# → 局部变量名列表"
+      "description": "返回匹配 pattern 的已定义局部变量名，不包含由 global、upvar 或 variable 定义的变量。",
+      "example": "set localVars [info locals]"
     },
     "vars": {
       "signature": "info vars ?pattern?",
-      "description": "返回所有可见变量名（局部 + 通过 upvar/global 可访问的全局变量）。",
-      "example": "info vars  ;# → 可见变量名列表"
+      "description": "返回匹配 pattern 的当前可见变量名，包括局部变量和可见的全局变量。",
+      "example": "set visibleVars [info vars]"
     },
     "default": {
-      "signature": "info default procname arg varName",
-      "description": "判断过程参数是否有默认值，如有则存入 varName，返回 1 或 0。",
-      "example": "info default myProc voltage defVal"
+      "signature": "info default procname arg varname",
+      "description": "若过程参数有默认值，则将其存入 varname 并返回 1，否则返回 0。",
+      "example": "set hasDefault [info default myProc voltage defVal]"
     }
   },
   "array": {
     "exists": {
       "signature": "array exists arrayName",
-      "description": "判断 arrayName 是否为数组变量，返回 1 或 0。",
-      "example": "if {[array exists opts]} { ... }"
+      "description": "返回 arrayName 是否为数组变量，是则返回 1，否则返回 0。",
+      "example": "if {[array exists opts]} {puts [array size opts]}"
     },
     "get": {
       "signature": "array get arrayName ?pattern?",
-      "description": "返回匹配模式的键值对列表。",
-      "example": "array get opts  ;# → key1 val1 key2 val2"
+      "description": "返回元素名匹配 pattern 的数组键值列表；省略 pattern 时返回所有元素。",
+      "example": "set pairs [array get opts]"
     },
     "set": {
       "signature": "array set arrayName list",
-      "description": "从键值对列表设置数组元素。",
+      "description": "从偶数长度的键值列表设置数组元素，并在需要时创建数组。",
       "example": "array set opts {voltage 1.2 current 0.5}"
     },
     "names": {
       "signature": "array names arrayName ?mode? ?pattern?",
-      "description": "返回匹配模式的元素名。模式选项：-exact、-glob、-regexp。",
-      "example": "array names opts  ;# → voltage current"
+      "description": "使用 -exact、-glob 或 -regexp 匹配返回符合 pattern 的数组元素名，默认模式为 -glob。",
+      "example": "set names [array names opts -glob v*]"
     },
     "size": {
       "signature": "array size arrayName",
-      "description": "返回数组中元素的个数。",
-      "example": "array size opts  ;# → 2"
+      "description": "返回数组中的元素数量；若 arrayName 不是数组则返回 0。",
+      "example": "set count [array size opts]"
     },
     "unset": {
       "signature": "array unset arrayName ?pattern?",
-      "description": "删除匹配模式的数组元素（无模式则删除全部）。",
+      "description": "删除匹配 pattern 的数组元素；省略 pattern 时删除整个数组。",
       "example": "array unset opts voltage"
     },
     "statistics": {
       "signature": "array statistics arrayName",
-      "description": "返回数组哈希表分布的统计信息。",
-      "example": "array statistics opts"
+      "description": "返回用于表示该数组的哈希表分布统计信息。",
+      "example": "set stats [array statistics opts]"
     }
   },
   "dict": {
+    "append": {
+      "signature": "dict append dictionaryVariable key ?string ...?",
+      "description": "向字典变量中 key 映射的值追加字符串，缺失的 key 按空字符串处理。",
+      "example": "dict append opts title \" TCAD\""
+    },
     "create": {
       "signature": "dict create ?key value ...?",
-      "description": "从键值参数创建新字典。",
-      "example": "set d [dict create name \"test\" value 42]"
-    },
-    "get": {
-      "signature": "dict get dictionary ?key ...?",
-      "description": "返回给定键路径对应的值。",
-      "example": "dict get $d name  ;# → test"
-    },
-    "set": {
-      "signature": "dict set dictVar key ?key ...? value",
-      "description": "在字典变量的指定键路径设置值。",
-      "example": "dict set opts debug true"
+      "description": "从交替排列的 key 和 value 参数返回新字典。",
+      "example": "set d [dict create name test value 42]"
     },
     "exists": {
-      "signature": "dict exists dictionary key ?key ...?",
-      "description": "判断键路径是否存在于字典中，返回 1 或 0。",
-      "example": "if {[dict exists $d name]} { ... }"
-    },
-    "unset": {
-      "signature": "dict unset dictVar key ?key ...?",
-      "description": "从字典变量中移除指定键路径的条目。",
-      "example": "dict unset opts debug"
-    },
-    "remove": {
-      "signature": "dict remove dictionary ?key ...?",
-      "description": "返回移除指定键后的新字典。",
-      "example": "dict remove $d debug verbose"
-    },
-    "replace": {
-      "signature": "dict replace dictionary ?key value ...?",
-      "description": "返回替换指定键值对后的新字典。",
-      "example": "dict replace $d name \"newname\""
-    },
-    "merge": {
-      "signature": "dict merge ?dictionary ...?",
-      "description": "合并多个字典（后面的值覆盖前面的）。",
-      "example": "dict merge $defaults $userOpts"
-    },
-    "keys": {
-      "signature": "dict keys dictionary ?pattern?",
-      "description": "返回匹配模式的键列表。",
-      "example": "dict keys $d  ;# → name value"
-    },
-    "values": {
-      "signature": "dict values dictionary ?pattern?",
-      "description": "返回匹配模式的值列表。",
-      "example": "dict values $d  ;# → test 42"
-    },
-    "size": {
-      "signature": "dict size dictionary",
-      "description": "返回字典中键值对的数量。",
-      "example": "dict size $d  ;# → 2"
-    },
-    "for": {
-      "signature": "dict for {keyVar valueVar} dictionary body",
-      "description": "遍历字典的键值对。",
-      "example": "dict for {k v} $opts { puts \"$k = $v\" }"
-    },
-    "map": {
-      "signature": "dict map {keyVar valueVar} dictionary body",
-      "description": "映射遍历字典，将 body 结果收集为新字典（Tcl 8.7+）。",
-      "example": "dict map {k v} $opts { string toupper $v }"
+      "signature": "dict exists dictionaryValue key ?key ...?",
+      "description": "返回指定键路径是否存在于字典值中。",
+      "example": "if {[dict exists $d name]} {puts [dict get $d name]}"
     },
     "filter": {
-      "signature": "dict filter dictionary filterType arg ?arg ...?",
-      "description": "按键、值或脚本过滤字典。",
-      "example": "dict filter $d key name"
+      "signature": "dict filter dictionaryValue filterType arg ?arg ...?",
+      "description": "按 key、value 或 script 过滤器返回仅包含匹配条目的新字典。",
+      "example": "set filtered [dict filter $d key name]"
+    },
+    "for": {
+      "signature": "dict for {keyVariable valueVariable} dictionaryValue body",
+      "description": "按插入顺序遍历字典条目，并为每个条目设置 key 和 value 变量。",
+      "example": "dict for {k v} $opts {puts [list $k $v]}"
+    },
+    "get": {
+      "signature": "dict get dictionaryValue ?key ...?",
+      "description": "返回指定键路径上的值；未提供 key 时返回键值列表。",
+      "example": "set name [dict get $d name]"
+    },
+    "incr": {
+      "signature": "dict incr dictionaryVariable key ?increment?",
+      "description": "将字典变量中 key 映射的整数值增加 increment，缺失的 key 按 0 处理。",
+      "example": "dict incr counts warnings"
     },
     "info": {
-      "signature": "dict info dictionary",
-      "description": "返回字典的内部信息。",
-      "example": "dict info $d"
+      "signature": "dict info dictionaryValue",
+      "description": "返回用于显示的字典实现相关内部信息。",
+      "example": "set stats [dict info $d]"
+    },
+    "keys": {
+      "signature": "dict keys dictionaryValue ?globPattern?",
+      "description": "按插入顺序返回匹配可选 globPattern 的字典键。",
+      "example": "set keys [dict keys $d]"
+    },
+    "lappend": {
+      "signature": "dict lappend dictionaryVariable key ?value ...?",
+      "description": "向字典变量中 key 映射的列表追加值，缺失的 key 按空列表处理。",
+      "example": "dict lappend opts files input.tdr"
+    },
+    "map": {
+      "signature": "dict map {keyVariable valueVariable} dictionaryValue body",
+      "description": "对每个字典条目执行 body，并将结果收集为新字典返回。",
+      "example": "set upper [dict map {k v} $opts {string toupper $v}]"
+    },
+    "merge": {
+      "signature": "dict merge ?dictionaryValue ...?",
+      "description": "返回包含所有输入字典内容的新字典，后出现的映射覆盖先出现的映射。",
+      "example": "set opts [dict merge $defaults $userOpts]"
+    },
+    "remove": {
+      "signature": "dict remove dictionaryValue ?key ...?",
+      "description": "返回移除所列顶层 key 后的新字典；不存在的 key 会被忽略。",
+      "example": "set trimmed [dict remove $d debug verbose]"
+    },
+    "replace": {
+      "signature": "dict replace dictionaryValue ?key value ...?",
+      "description": "返回替换或新增所列键值对后的字典副本。",
+      "example": "set updated [dict replace $d name newname]"
+    },
+    "set": {
+      "signature": "dict set dictionaryVariable key ?key ...? value",
+      "description": "在字典变量的指定键路径设置值，并按需创建或更新嵌套字典。",
+      "example": "dict set opts debug true"
+    },
+    "size": {
+      "signature": "dict size dictionaryValue",
+      "description": "返回字典值中的键值映射数量。",
+      "example": "set count [dict size $d]"
+    },
+    "unset": {
+      "signature": "dict unset dictionaryVariable key ?key ...?",
+      "description": "从字典变量中移除指定键路径上的映射，并返回更新后的字典值。",
+      "example": "dict unset opts debug"
     },
     "update": {
-      "signature": "dict update dictVar key varName ?key varName ...? body",
-      "description": "从字典中提取值到变量，执行 body 后写回。",
-      "example": "dict update opts voltage v { set v [expr {$v * 2}] }"
+      "signature": "dict update dictionaryVariable key varName ?key varName ...? body",
+      "description": "在 body 执行期间将指定字典条目映射到变量，并在结束后写回变量更改。",
+      "example": "dict update opts voltage v {set v [expr {$v * 2}]}"
+    },
+    "values": {
+      "signature": "dict values dictionaryValue ?globPattern?",
+      "description": "按键的插入顺序返回匹配可选 globPattern 的字典值。",
+      "example": "set values [dict values $d]"
     },
     "with": {
-      "signature": "dict with dictVar ?key ...? body",
-      "description": "从字典键创建变量，执行 body 后自动写回。",
-      "example": "dict with opts { puts $voltage }"
+      "signature": "dict with dictionaryVariable ?key ...? body",
+      "description": "在 body 执行期间将字典条目映射到同名变量，并在结束后写回更改。",
+      "example": "dict with opts {puts $voltage}"
+    }
+  },
+  "namespace": {
+    "children": {
+      "signature": "namespace children ?namespace? ?pattern?",
+      "description": "返回属于某个命名空间的子命名空间完全限定名，可按 glob 模式筛选。",
+      "example": "namespace children ::"
+    },
+    "code": {
+      "signature": "namespace code script",
+      "description": "捕获当前命名空间上下文，并返回一个可稍后从任意命名空间执行的带作用域脚本。",
+      "example": "set callback [namespace code {puts $value}]"
+    },
+    "current": {
+      "signature": "namespace current",
+      "description": "返回当前命名空间的完全限定名，全局命名空间返回 ::。",
+      "example": "namespace current"
+    },
+    "delete": {
+      "signature": "namespace delete ?namespace namespace ...?",
+      "description": "删除一个或多个命名空间及其中的变量、过程和子命名空间。",
+      "example": "namespace delete ::demo"
+    },
+    "ensemble": {
+      "signature": "namespace ensemble subcommand ?arg ...?",
+      "description": "创建、配置、查询或检查分发到子命令的 ensemble 命令。",
+      "example": "namespace ensemble create -command ::demo"
+    },
+    "eval": {
+      "signature": "namespace eval namespace arg ?arg ...?",
+      "description": "激活指定命名空间，必要时创建它，并在该命名空间上下文中执行代码。",
+      "example": "namespace eval ::demo { variable value 42 }"
+    },
+    "exists": {
+      "signature": "namespace exists namespace",
+      "description": "判断 namespace 在当前上下文中是否为有效命名空间，返回 1 或 0。",
+      "example": "namespace exists ::demo"
+    },
+    "export": {
+      "signature": "namespace export ?-clear? ?pattern pattern ...?",
+      "description": "设置或查询导出模式，用于决定当前命名空间中哪些命令可被导入。",
+      "example": "namespace eval ::demo { namespace export run reset }"
+    },
+    "forget": {
+      "signature": "namespace forget ?pattern pattern ...?",
+      "description": "移除先前导入到当前命名空间的命令，撤销匹配的 namespace import 操作。",
+      "example": "namespace forget ::demo::*"
+    },
+    "import": {
+      "signature": "namespace import ?-force? ?pattern pattern ...?",
+      "description": "将已导出的命令导入当前命名空间；未指定 pattern 时返回已导入命令列表。",
+      "example": "namespace import ::demo::run"
+    },
+    "inscope": {
+      "signature": "namespace inscope namespace script ?arg ...?",
+      "description": "在已存在的命名空间中执行脚本，并把额外参数作为正确的列表元素追加。",
+      "example": "namespace inscope ::demo {puts $value}"
+    },
+    "origin": {
+      "signature": "namespace origin command",
+      "description": "返回导入命令背后的原始命令完全限定名。",
+      "example": "namespace origin run"
+    },
+    "parent": {
+      "signature": "namespace parent ?namespace?",
+      "description": "返回指定命名空间或当前命名空间的父命名空间完全限定名。",
+      "example": "namespace parent ::demo::child"
+    },
+    "path": {
+      "signature": "namespace path ?namespaceList?",
+      "description": "返回或设置当前命名空间的命令解析路径。",
+      "example": "namespace path {::utils ::common}"
+    },
+    "qualifiers": {
+      "signature": "namespace qualifiers string",
+      "description": "返回限定名中的前导命名空间限定部分，不检查这些命名空间是否存在。",
+      "example": "namespace qualifiers ::demo::child::run"
+    },
+    "tail": {
+      "signature": "namespace tail string",
+      "description": "返回限定命名空间、命令或变量名末尾的简单名称。",
+      "example": "namespace tail ::demo::child::run"
+    },
+    "upvar": {
+      "signature": "namespace upvar namespace ?otherVar myVar ...?",
+      "description": "将当前过程中的局部变量链接到指定命名空间中的变量。",
+      "example": "namespace upvar ::demo value localValue"
+    },
+    "unknown": {
+      "signature": "namespace unknown ?script?",
+      "description": "返回或设置当前命名空间中命令解析失败时使用的 unknown 处理器。",
+      "example": "namespace unknown ::unknown"
+    },
+    "which": {
+      "signature": "namespace which ?-command? ?-variable? name",
+      "description": "查找命令或变量名并返回其完全限定名；找不到时返回空字符串。",
+      "example": "namespace which -command puts"
+    }
+  },
+  "clock": {
+    "add": {
+      "signature": "clock add timeVal ?count unit...? ?-option value?",
+      "description": "向 timeVal 加上一个或多个时间偏移量，并返回结果的 epoch 秒数。",
+      "example": "clock add [clock scan \"2024-01-31\" -format \"%Y-%m-%d\"] 1 month"
+    },
+    "clicks": {
+      "signature": "clock clicks ?-option?",
+      "description": "返回用于相对计时测量的系统相关高分辨率计时器值。",
+      "example": "set start [clock clicks]"
+    },
+    "format": {
+      "signature": "clock format timeVal ?-option value...?",
+      "description": "将以 epoch 秒数表示的 timeVal 格式化为日期时间字符串。",
+      "example": "clock format 0 -format \"%Y-%m-%d\" -timezone :UTC"
+    },
+    "microseconds": {
+      "signature": "clock microseconds",
+      "description": "返回当前时间相对于 epoch 的整数微秒数。",
+      "example": "clock microseconds"
+    },
+    "milliseconds": {
+      "signature": "clock milliseconds",
+      "description": "返回当前时间相对于 epoch 的整数毫秒数。",
+      "example": "clock milliseconds"
+    },
+    "scan": {
+      "signature": "clock scan inputString ?-option value...?",
+      "description": "解析日期时间字符串，并返回对应的 epoch 秒数。",
+      "example": "clock scan \"2024-05-30 12:34:56\" -format \"%Y-%m-%d %H:%M:%S\" -timezone :UTC"
+    },
+    "seconds": {
+      "signature": "clock seconds",
+      "description": "返回当前时间相对于 epoch 的整数秒数。",
+      "example": "clock seconds"
+    }
+  },
+  "binary": {
+    "decode": {
+      "signature": "binary decode format ?-option value ...? data",
+      "description": "将 Base64、hex 或 uuencode 等可读编码数据解码回二进制数据。",
+      "example": "binary decode hex 48656c6c6f"
+    },
+    "encode": {
+      "signature": "binary encode format ?-option value ...? data",
+      "description": "使用选定的二进制编码将二进制数据编码为可读字符串。",
+      "example": "binary encode base64 \"Hello\""
+    },
+    "format": {
+      "signature": "binary format formatString ?arg arg ...?",
+      "description": "按照 formatString 将 Tcl 值打包为二进制字符串，并返回结果。",
+      "example": "binary format i 42"
+    },
+    "scan": {
+      "signature": "binary scan string formatString ?varName varName ...?",
+      "description": "从二进制字符串中解析字段，将扫描值赋给变量，并返回完成的转换数量。",
+      "example": "binary scan [binary format i 42] i value"
+    }
+  },
+  "encoding": {
+    "convertfrom": {
+      "signature": "encoding convertfrom ?encoding? data",
+      "description": "将指定编码的字节数据转换为 Tcl Unicode 字符。",
+      "example": "encoding convertfrom utf-8 \"\\xE2\\x82\\xAC\""
+    },
+    "convertto": {
+      "signature": "encoding convertto ?encoding? string",
+      "description": "将 Tcl Unicode 字符串转换为指定编码的字节数据。",
+      "example": "encoding convertto utf-8 \\u20ac"
+    },
+    "dirs": {
+      "signature": "encoding dirs ?directoryList?",
+      "description": "返回或设置搜索 *.enc 编码数据文件的目录列表。",
+      "example": "encoding dirs [list /usr/share/tcl/encoding]"
+    },
+    "names": {
+      "signature": "encoding names",
+      "description": "返回 Tcl 当前可用的所有编码名称。",
+      "example": "encoding names"
+    },
+    "system": {
+      "signature": "encoding system ?encoding?",
+      "description": "返回或设置 Tcl 向系统调用传递字符串时使用的系统编码。",
+      "example": "encoding system"
+    }
+  },
+  "package": {
+    "forget": {
+      "signature": "package forget ?package package ...?",
+      "description": "从当前解释器中删除指定包的所有信息。",
+      "example": "package forget demo"
+    },
+    "ifneeded": {
+      "signature": "package ifneeded package version ?script?",
+      "description": "返回或注册在需要时使特定包版本可用的脚本。",
+      "example": "package ifneeded demo 1.0 {source demo.tcl}"
+    },
+    "names": {
+      "signature": "package names",
+      "description": "返回此解释器中已提供或已有 package ifneeded 脚本的包名称。",
+      "example": "package names"
+    },
+    "present": {
+      "signature": "package present ?-exact? package ?requirement...?",
+      "description": "检查合适版本的包是否已经加载，但不会尝试加载它。",
+      "example": "package present Tcl 8.6"
+    },
+    "provide": {
+      "signature": "package provide package ?version?",
+      "description": "声明某个包版本已经存在，或返回当前已提供的版本。",
+      "example": "package provide demo 1.0"
+    },
+    "require": {
+      "signature": "package require ?-exact? package ?requirement...?",
+      "description": "确保已加载合适版本的包，并返回加载的版本。",
+      "example": "package require Tcl 8.6"
+    },
+    "unknown": {
+      "signature": "package unknown ?command?",
+      "description": "返回、设置或清除 package require 找不到合适包时使用的后备命令。",
+      "example": "package unknown ::pkgUnknown"
+    },
+    "vcompare": {
+      "signature": "package vcompare version1 version2",
+      "description": "比较两个包版本号，并返回 -1、0 或 1。",
+      "example": "package vcompare 1.2 1.10"
+    },
+    "versions": {
+      "signature": "package versions package",
+      "description": "返回已有 package ifneeded 信息的某个包的所有版本。",
+      "example": "package versions demo"
+    },
+    "vsatisfies": {
+      "signature": "package vsatisfies version requirement...",
+      "description": "如果 version 满足至少一个版本要求则返回 1，否则返回 0。",
+      "example": "package vsatisfies 1.2.3 1.2"
+    },
+    "prefer": {
+      "signature": "package prefer ?latest|stable?",
+      "description": "返回或设置 package require 是偏好最新的可接受版本，还是偏好最高的稳定可接受版本。",
+      "example": "package prefer"
+    }
+  },
+  "chan": {
+    "blocked": {
+      "signature": "chan blocked channelId",
+      "description": "如果上一次对 channelId 的输入操作因本来会阻塞而失败，则返回 1，否则返回 0。",
+      "example": "if {[chan blocked $chan]} { puts \"partial line\" }"
+    },
+    "close": {
+      "signature": "chan close channelId ?direction?",
+      "description": "关闭 channelId；提供 direction 时只半关闭 read 或 write 端，并按需刷新缓冲输出。",
+      "example": "chan close $chan"
+    },
+    "configure": {
+      "signature": "chan configure channelId ?optionName? ?value? ?optionName value?...",
+      "description": "查询或设置 channelId 的配置选项，例如阻塞模式、缓冲、编码、EOF 字符和行尾转换。",
+      "example": "chan configure stdout -buffering none"
+    },
+    "copy": {
+      "signature": "chan copy inputChan outputChan ?-size size? ?-command callback?",
+      "description": "将数据从 inputChan 复制到 outputChan，直到 EOF 或达到指定 size；可通过完成回调异步执行。",
+      "example": "chan copy $in $out -size 4096"
+    },
+    "create": {
+      "signature": "chan create mode cmdPrefix",
+      "description": "使用 cmdPrefix 作为处理器命令前缀创建脚本级反射通道，并返回新的通道句柄。",
+      "example": "set ch [chan create {read write} ::myRefChan]"
+    },
+    "eof": {
+      "signature": "chan eof channelId",
+      "description": "如果上一次对 channelId 的输入操作到达 EOF，则返回 1，否则返回 0。",
+      "example": "if {[chan eof $chan]} { chan close $chan }"
+    },
+    "event": {
+      "signature": "chan event channelId event ?script?",
+      "description": "获取、安装或移除 channelId 的 readable 或 writable 文件事件处理脚本。",
+      "example": "chan event $chan readable [list echoLine $chan]"
+    },
+    "flush": {
+      "signature": "chan flush channelId",
+      "description": "强制写出 channelId 中挂起的缓冲输出；除非通道为非阻塞，否则会等待刷新完成。",
+      "example": "chan flush stdout"
+    },
+    "gets": {
+      "signature": "chan gets channelId ?varName?",
+      "description": "从 channelId 读取下一行；返回该行，或将其存入 varName 并返回字符数。",
+      "example": "while {[chan gets $f line] >= 0} { puts $line }"
+    },
+    "names": {
+      "signature": "chan names ?pattern?",
+      "description": "返回打开的通道名称列表；可用 glob 风格的 pattern 进行过滤。",
+      "example": "chan names std*"
+    },
+    "pending": {
+      "signature": "chan pending mode channelId",
+      "description": "返回 channelId 内部当前缓冲的 input 或 output 字节数；如果该方向未打开则返回 -1。",
+      "example": "chan pending input $chan"
+    },
+    "pipe": {
+      "signature": "chan pipe",
+      "description": "创建独立管道，并返回由读取端和写入端通道组成的二元素列表。",
+      "example": "lassign [chan pipe] r w"
+    },
+    "pop": {
+      "signature": "chan pop channelId",
+      "description": "从 channelId 移除最顶层的转换；如果没有转换，则等同于关闭该通道。",
+      "example": "chan pop $chan"
+    },
+    "postevent": {
+      "signature": "chan postevent channelId eventSpec",
+      "description": "向 channelId 投递 eventSpec 中列出的反射通道事件；用于 chan create 创建的通道处理器。",
+      "example": "chan postevent $chan readable"
+    },
+    "push": {
+      "signature": "chan push channelId cmdPrefix",
+      "description": "在 channelId 顶部添加由 cmdPrefix 实现的脚本级转换，并返回转换句柄。",
+      "example": "set transform [chan push $chan ::UpperCase]"
+    },
+    "puts": {
+      "signature": "chan puts ?-nonewline? ?channelId? string",
+      "description": "向 channelId 写入 string 并追加换行；提供 -nonewline 时不追加，省略 channelId 时写入 stdout。",
+      "example": "chan puts $chan \"hello\""
+    },
+    "read": {
+      "signature": "chan read channelId ?numChars? | chan read ?-nonewline? channelId",
+      "description": "从 channelId 读取字符；可读取最多 numChars，或读取到 EOF、阻塞或错误为止；全量读取形式中的 -nonewline 会去除末尾换行。",
+      "example": "set data [chan read $f 1024]"
+    },
+    "seek": {
+      "signature": "chan seek channelId offset ?origin?",
+      "description": "设置 channelId 相对于 start、current 或 end 的当前字节偏移；会先刷新输出并丢弃缓冲输入。",
+      "example": "chan seek $f 0 start"
+    },
+    "tell": {
+      "signature": "chan tell channelId",
+      "description": "返回 channelId 底层流的当前字节偏移；不支持 seek 的通道返回 -1。",
+      "example": "set offset [chan tell $f]"
+    },
+    "truncate": {
+      "signature": "chan truncate channelId ?length?",
+      "description": "将 channelId 底层流长度设置为 length；省略 length 时使用当前字节偏移，并会先刷新通道。",
+      "example": "chan truncate $f"
     }
   }
 }
