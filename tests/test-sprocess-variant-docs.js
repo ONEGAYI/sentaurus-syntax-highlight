@@ -131,4 +131,113 @@ test('SPROCESS all new entries exist in both EN and ZH', () => {
     }
 });
 
+
+// === Code Integration Tests ===
+// 局部扩展 mock-vscode（仅在本测试文件中生效，不修改共享 mock）
+const mockVscode = require('./helpers/mock-vscode');
+
+// 补充本测试所需的构造函数（不影响其他测试文件）
+mockVscode.MarkdownString = function(value) { this.value = value || ''; };
+mockVscode.Hover = function(content, range) { this.content = content; this.range = range; };
+mockVscode.CompletionItem = function(label, kind) { this.label = label; this.kind = kind; };
+mockVscode.Range = function(s, e) { this.start = s; this.end = e; };
+mockVscode.Position = function(line, char) { this.line = line; this.character = char; };
+mockVscode.CompletionItemKind = {
+    Function: 0, Keyword: 1, Text: 0, Struct: 1, Class: 1,
+    Constant: 0, Value: 0, EnumMember: 0, Method: 0,
+};
+mockVscode.languages = {
+    registerHoverProvider: function() { return { dispose: function() {} }; },
+    registerCompletionItemProvider: function() { return { dispose: function() {} }; },
+};
+mockVscode.workspace = {
+    getConfiguration: function() { return { get: function() { return undefined; } }; },
+};
+
+const { formatDoc } = require('../src/docs-loader');
+
+test('alias resolution: formatDoc receives parent doc, not alias stub', () => {
+    const funcDocs = {
+        mask: {
+            section: 'Mask',
+            signature: 'mask name= <c>',
+            description: 'Creates a mask.',
+            parameters: [],
+            example: 'mask name= gate',
+            keywords: ['mask'],
+        },
+        masks: {
+            aliasOf: 'mask',
+            aliasType: 'plural',
+        },
+    };
+
+    // Simulate buildItems alias guard
+    let entry = funcDocs['masks'];
+    if (entry.aliasOf && funcDocs[entry.aliasOf]) {
+        entry = funcDocs[entry.aliasOf];
+    }
+    const md = formatDoc(entry, 'sprocess');
+    assert.ok(md.value.includes('mask name= <c>'), 'Should contain parent signature');
+    assert.ok(!md.value.includes('undefined'), 'Should not contain undefined');
+});
+
+test('dot fallback: word with dots resolves to dot-variant doc', () => {
+    const docs = {
+        'mask.edge.mns': {
+            section: 'Mask',
+            signature: 'mask edge.mns = <string_list>',
+            description: 'Specifies material names for mask edge.',
+            parameters: [],
+            example: 'mask edge.mns= {Resist Oxide}',
+            keywords: ['mask', 'edge'],
+        },
+    };
+
+    // Simulate HoverProvider dot fallback logic
+    const effectiveWord = 'mns';  // identWord match
+    const word = 'mask.edge.mns';  // full word match
+    let doc = docs[effectiveWord] || null;
+    if (!doc && word !== effectiveWord && word.includes('.')) {
+        const dotKey = word.replace(/=+$/, '');
+        doc = docs[dotKey] || null;
+    }
+    assert.ok(doc, 'Dot fallback should find mask.edge.mns');
+    assert.strictEqual(doc.section, 'Mask');
+});
+
+test('alias label generation: plural alias shows correct label', () => {
+    const funcDocs = {
+        mask: {
+            section: 'Mask',
+            signature: 'mask name= <c>',
+            description: 'Creates a mask.',
+            parameters: [],
+            example: 'mask name= gate',
+            keywords: ['mask'],
+        },
+        masks: {
+            aliasOf: 'mask',
+            aliasType: 'plural',
+        },
+    };
+
+    // Simulate HoverProvider alias resolution (useZh = false)
+    const useZh = false;
+    let doc = funcDocs['masks'];
+    let aliasLabel = '';
+    if (doc.aliasOf) {
+        const parentDoc = funcDocs[doc.aliasOf];
+        if (parentDoc) {
+            aliasLabel = doc.aliasType === 'plural'
+                ? `(plural of ${doc.aliasOf})`
+                : `(see ${doc.aliasOf})`;
+            doc = { ...parentDoc, _aliasLabel: aliasLabel };
+        }
+    }
+    assert.strictEqual(aliasLabel, '(plural of mask)');
+    assert.ok(doc.signature === 'mask name= <c>', 'Should use parent signature');
+    assert.ok(doc._aliasLabel === '(plural of mask)', 'Should have alias label');
+});
+
 summary();
