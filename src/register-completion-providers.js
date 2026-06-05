@@ -46,7 +46,11 @@ function buildItems(moduleKeywords, funcDocs, langId) {
             item.detail = detail;
             item.sortText = prefix + keyword;
             if (funcDocs[keyword]) {
-                item.documentation = formatDoc(funcDocs[keyword], langId);
+                let entry = funcDocs[keyword];
+                if (entry.aliasOf && funcDocs[entry.aliasOf]) {
+                    entry = funcDocs[entry.aliasOf];
+                }
+                item.documentation = formatDoc(entry, langId);
             }
             items.push(item);
         }
