@@ -6,7 +6,7 @@ const fs = require('fs');
 const { URL, fileURLToPath } = require('url');
 const { parseParText } = require('./par-parser');
 const { stackToPath, getContextAtPosition, detectScopeNameContext } = require('./par-context');
-const { SCOPE_TYPES_ARRAY, SOURCE_PRIORITY, MAX_CACHE_SIZE, MAX_INCLUDE_DEPTH, BUILTIN_MATERIALDB_STUB_FILES } = require('./par-constants');
+const { SCOPE_TYPES_ARRAY, SOURCE_PRIORITY, MAX_CACHE_SIZE, MAX_INCLUDE_DEPTH, BUILTIN_MATERIALDB_DIR, BUILTIN_MATERIALDB_EXCLUDE } = require('./par-constants');
 const { buildParCompletions } = require('./par-completion');
 
 /**
@@ -19,6 +19,7 @@ const { buildParCompletions } = require('./par-completion');
 function createParIndexService(deps) {
     const extensionPath = deps.extensionPath;
     const readFileFn = deps.readFile || ((p) => fs.readFileSync(p, 'utf8'));
+    const readdirFn = deps.readdirSync || ((dir) => fs.readdirSync(dir));
 
     // currentFileCache: Map<"uri:v{version}", ParResolvedResult>
     const currentFileCache = new Map();
@@ -224,14 +225,28 @@ function createParIndexService(deps) {
     }
 
     /**
-     * 加载内置 MaterialDB 占位数据。
+     * 加载内置 MaterialDB（从 references/MaterialDB 目录扫描所有 .par 文件）。
+     * 排除 BUILTIN_MATERIALDB_EXCLUDE 中的文件（如 example_sdevice.par）。
      * 通过 addMaterialDbFile 走相同归一化管线。
      */
     function loadBuiltinMaterialDb() {
         materialDbIndex.clear();
-        for (const entry of BUILTIN_MATERIALDB_STUB_FILES) {
-            addMaterialDbFile(entry.filePath, entry.text);
-        }
+        const materialDbDir = path.join(extensionPath, BUILTIN_MATERIALDB_DIR);
+        const t0 = Date.now();
+        try {
+            const files = readdirFn(materialDbDir);
+            for (const file of files) {
+                if (!file.toLowerCase().endsWith('.par')) continue;
+                if (BUILTIN_MATERIALDB_EXCLUDE.has(file)) continue;
+                try {
+                    const fullPath = path.join(materialDbDir, file);
+                    const text = readFileFn(fullPath);
+                    addMaterialDbFile(fullPath, text);
+                } catch (e) { console.warn('[SentaurusSyntax][MaterialDB] skip file', file, e.message); }
+            }
+        } catch (_) { /* directory not found — graceful degradation */ }
+        console.log('[SentaurusSyntax][MaterialDB] loadBuiltinMaterialDb — loaded',
+            materialDbIndex.size, 'files in', Date.now() - t0, 'ms');
     }
 
     /**
