@@ -4375,6 +4375,146 @@
       "rectangle"
     ]
   },
+  "mask.corner.mns": {
+    "section": "Mask",
+    "signature": "mask corner.mns = <string_list>",
+    "description": "Specifies the material names for mask corner processing on the minimum-norm side. Controls how mask corners are handled during mesh refinement.",
+    "parameters": [
+      {
+        "name": "corner.mns",
+        "type": "list",
+        "desc": "List of material names for minimum-norm side corner processing."
+      }
+    ],
+    "example": "mask corner.mns= {Resist Oxide}",
+    "keywords": [
+      "mask",
+      "corner",
+      "mns",
+      "refinement",
+      "mesh"
+    ]
+  },
+  "mask.corner.ngr": {
+    "section": "Mask",
+    "signature": "mask corner.ngr = <string_list>",
+    "description": "Specifies the material names for mask corner processing on the no-growth-region side. Controls refinement behavior at mask corners.",
+    "parameters": [
+      {
+        "name": "corner.ngr",
+        "type": "list",
+        "desc": "List of material names for no-growth-region side corner processing."
+      }
+    ],
+    "example": "mask corner.ngr= {Resist}",
+    "keywords": [
+      "mask",
+      "corner",
+      "ngr",
+      "refinement",
+      "mesh"
+    ]
+  },
+  "mask.corner.refine.extent": {
+    "section": "Mask",
+    "signature": "mask corner.refine.extent = <n>",
+    "description": "Specifies the extent of refinement around mask corners. Controls how far from the corner the mesh refinement extends.",
+    "parameters": [
+      {
+        "name": "corner.refine.extent",
+        "type": "float",
+        "desc": "Refinement extent distance (default unit: um)."
+      }
+    ],
+    "example": "mask corner.refine.extent= 0.05",
+    "keywords": [
+      "mask",
+      "corner",
+      "refine",
+      "extent",
+      "mesh"
+    ]
+  },
+  "mask.discretization.size": {
+    "section": "Mask",
+    "signature": "mask discretization.size = <n>",
+    "description": "Specifies the discretization size for mask edges. Controls the segment length used when converting mask edges into discrete segments for mesh generation.",
+    "parameters": [
+      {
+        "name": "discretization.size",
+        "type": "float",
+        "desc": "Discretization segment size (default unit: um)."
+      }
+    ],
+    "example": "mask discretization.size= 0.01",
+    "keywords": [
+      "mask",
+      "discretization",
+      "size",
+      "segment",
+      "mesh"
+    ]
+  },
+  "mask.edge.mns": {
+    "section": "Mask",
+    "signature": "mask edge.mns = <string_list>",
+    "description": "Specifies the material names for mask edge processing on the minimum-norm side. Used to control refinement along mask edges.",
+    "parameters": [
+      {
+        "name": "edge.mns",
+        "type": "list",
+        "desc": "List of material names for minimum-norm side edge processing."
+      }
+    ],
+    "example": "mask edge.mns= {Resist Oxide}",
+    "keywords": [
+      "mask",
+      "edge",
+      "mns",
+      "refinement",
+      "mesh"
+    ]
+  },
+  "mask.edge.ngr": {
+    "section": "Mask",
+    "signature": "mask edge.ngr = <string_list>",
+    "description": "Specifies the material names for mask edge processing on the no-growth-region side. Controls refinement along mask edges where no growth occurs.",
+    "parameters": [
+      {
+        "name": "edge.ngr",
+        "type": "list",
+        "desc": "List of material names for no-growth-region side edge processing."
+      }
+    ],
+    "example": "mask edge.ngr= {Resist}",
+    "keywords": [
+      "mask",
+      "edge",
+      "ngr",
+      "refinement",
+      "mesh"
+    ]
+  },
+  "mask.edge.refine.extent": {
+    "section": "Mask",
+    "signature": "mask edge.refine.extent = <n>",
+    "description": "Specifies the extent of refinement along mask edges. Controls how far from the edge boundary the mesh refinement extends.",
+    "parameters": [
+      {
+        "name": "edge.refine.extent",
+        "type": "float",
+        "desc": "Edge refinement extent distance (default unit: um)."
+      }
+    ],
+    "example": "mask edge.refine.extent= 0.1",
+    "keywords": [
+      "mask",
+      "edge",
+      "refine",
+      "extent",
+      "mesh"
+    ]
+  },
   "masks": {
     "aliasOf": "mask",
     "aliasType": "plural"
@@ -4823,6 +4963,19 @@
       "offset"
     ]
   },
+  "mgoals.native": {
+    "section": "Mesh",
+    "signature": "mgoals native",
+    "description": "Switches the mgoals meshing engine to use the native (built-in) mesher instead of the default MGOALS mesher. Used for compatibility with legacy meshing workflows.",
+    "parameters": [],
+    "example": "mgoals native",
+    "keywords": [
+      "mgoals",
+      "native",
+      "mesh",
+      "mesher"
+    ]
+  },
   "optimize": {
     "section": "Optimization",
     "signature": "optimize model.function=<c> model.parameters=<list> (target=<list> | target.file=<c>) ?history=<c>? ?max.iter=<n>? ?min.abs=<list>? ?min.rel=<list>? ?param.init=<list>? ?param.log=<list>? ?param.lower=<list>? ?param.upper=<list>? ?tolerance=<n>? ?weight=<list>?",
@@ -4906,6 +5059,19 @@
       "fitting",
       "parameters",
       "target"
+    ]
+  },
+  "optimize.dislocation": {
+    "section": "Optimization",
+    "signature": "optimize dislocation",
+    "description": "Enables dislocation optimization during mechanical stress simulations. Adjusts the dislocation network to minimize system energy.",
+    "parameters": [],
+    "example": "optimize dislocation",
+    "keywords": [
+      "optimize",
+      "dislocation",
+      "stress",
+      "mechanics"
     ]
   },
   "paste": {
