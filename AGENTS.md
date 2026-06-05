@@ -61,7 +61,7 @@ sentaurus-syntax-highlight/
 │   ├── sdevice_command_docs.{json,zh-CN.json}  ← SDEVICE 命令文档（中英文双语，2117 关键词）
 │   ├── svisual_command_docs.{json,zh-CN.json}  ← Svisual 命令文档（中英文双语）
 │   ├── inspect_command_docs.{json,zh-CN.json}  ← Inspect 命令文档（中英文双语，193 条目）
-│   ├── sprocess_command_docs.{json,zh-CN.json} ← SProcess 命令文档（中英文双语，164 命令）
+│   ├── sprocess_command_docs.{json,zh-CN.json} ← SProcess 命令文档（中英文双语，222 关键词）
 │   ├── tcl_command_docs.{json,zh-CN.json}      ← Tcl 核心命令文档（中英文双语，92 命令）
 │   ├── emw_command_docs.{json,zh-CN.json}      ← EMW 命令文档（中英文双语，148 条目：20 section + 128 参数）
 │   ├── tcl_expr_mathfunc_docs.{json,zh-CN.json} ← Tcl expr 数学函数文档（中英文双语，31 函数）
@@ -115,7 +115,7 @@ sentaurus-syntax-highlight/
 │   │   └── sdevicepar/                         ← SDEVICE PAR 参数文件补全子系统（Phase 2）
 │   │       ├── par-parser.js                   ← scope/block/parameter 三级 AST 解析 + include 链递归
 │   │       ├── par-context.js                  ← 光标位置上下文推断（scopeType/block/parameter 定位）
-│   │       ├── par-constants.js                ← 常量定义（scopeType 列表、内置占位 MaterialDB）
+│   │       ├── par-constants.js                ← 常量定义（scopeType 列表、内置 MaterialDB）
 │   │       ├── par-index-service.js            ← 文件级索引管理 + workspace 全量扫描 + MaterialDB 集成
 │   │       └── par-completion.js               ← 三级补全调度（scopeType/block/parameter）
 │   │   │
@@ -219,7 +219,7 @@ sentaurus-syntax-highlight/
 
 ### 第二层：关键词补全与文档悬停
 
-`src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（565 API）、Scheme 内置（191 函数）、SDEVICE（2123 关键词）、Tcl 核心命令（92 命令）、Tcl expr 数学函数（31 函数）、Svisual、Inspect（193 条目）、SProcess（164 命令）、EMW（148 条目）（均为中英文双语）。文档 JSON 按语言懒加载，激活时仅加载当前语言所需文档。Tcl 子命令采用 registry 驱动的单次 match+captures 模式实现上下文感知高亮，覆盖 string/file/info/array/dict/namespace/clock/binary/encoding/package/chan 11 个主命令共 152 个子命令。HoverProvider 通过 registry 判断主命令-子命令组合，查找嵌套两级文档 JSON。CompletionProvider 在主命令后第一个参数位触发子命令补全。SDEVICE 的 HoverProvider 支持 section 上下文感知文档查找，根据光标所在 section 栈优先匹配当前 section 的参数和关键词。
+`src/extension.js` 在语言激活时读取 `syntaxes/all_keywords.json`，为每种语言注册 `CompletionItemProvider`。同时加载函数文档 JSON 合并为统一的 `funcDocs` 对象，驱动 `HoverProvider`。当前覆盖 SDE（565 API）、Scheme 内置（191 函数）、SDEVICE（2123 关键词）、Tcl 核心命令（92 命令）、Tcl expr 数学函数（31 函数）、Svisual、Inspect（193 条目）、SProcess（222 关键词）、EMW（148 条目）（均为中英文双语）。文档 JSON 按语言懒加载，激活时仅加载当前语言所需文档。Tcl 子命令采用 registry 驱动的单次 match+captures 模式实现上下文感知高亮，覆盖 string/file/info/array/dict/namespace/clock/binary/encoding/package/chan 11 个主命令共 152 个子命令。HoverProvider 通过 registry 判断主命令-子命令组合，查找嵌套两级文档 JSON。CompletionProvider 在主命令后第一个参数位触发子命令补全。SProcess 的 HoverProvider 支持 alias 预处理（复数变体展开为带语言标注的父文档）与点号关键词回退查找。SDEVICE 的 HoverProvider 支持 section 上下文感知文档查找，根据光标所在 section 栈优先匹配当前 section 的参数和关键词。
 
 `src/definitions.js` 独立提供用户自定义变量的补全、悬停和跳转定义，通过 `document.version` 惰性缓存避免重复扫描。definitionText 扩展到行尾包含行末注释，并通过 `truncateDefinitionText` 工具函数按 `sentaurus.definitionMaxWidth` 设置截断过长文本。
 
@@ -237,7 +237,7 @@ SDEVICE 额外的纯文本语义层（`sdevice-semantic-provider.js`）：不依
 - `par-context.js` — 光标位置上下文推断，定位当前 scopeType/block/parameter
 - `par-completion.js` — 三级补全调度：scopeType 级聚合（忽略具体 scopeName），block/parameter 按 scopeType 过滤
 - `par-index-service.js` — 文件级索引管理，workspace 全量扫描（FileSystemWatcher 监听 create/change/delete 增量更新），MaterialDB 集成（`sentaurus.materialDbPath` 配置，两种文件格式归一化，混合监听策略：existence poller + directory watcher）
-- `par-constants.js` — 常量定义（scopeType 列表、内置 Silicon/Oxide 占位 MaterialDB）
+- `par-constants.js` — 常量定义（scopeType 列表、内置 MaterialDB 含 Silicon/Oxide/Si3N4 等 9 种真实 .par 文件）
 - 优先级：workspace > materialdb，同名符号去重保留高优先级。补全项显示 Source 字段（来源文件名），状态栏反馈扫描进度
 
 共用 Provider（`src/lsp/providers/`）：

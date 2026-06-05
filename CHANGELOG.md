@@ -4,6 +4,22 @@
 
 ---
 
+## [2.3.1] - 2026-06-05
+
+内置 MaterialDB 从占位 stub 升级为真实材料参数文件，并补全 61 个 SPROCESS 复数与点号变体关键词的 Hover 文档。
+
+### 新功能
+
+- **内置 MaterialDB 升级**（#76）：将内置 Silicon/Oxide 占位 MaterialDB 替换为真实 `.par` 材料参数文件（from T-2022.03），PAR 补全子系统现可提供实际的物理参数值而非空占位
+- **SPROCESS 复数与点号变体 Hover 文档**（#93，Close #87）：为 61 个 SPROCESS 关键词补全中英文双语悬停文档，采用混合策略——7 个复数变体通过 alias 机制展开父文档，51 个点号变体补充独立真实文档，164→222 key；HoverProvider 新增 alias 预处理与点号回退查找逻辑
+
+### 其他改进
+
+- **压缩内置 MaterialDB PAR 数据**（#91）：删除补全不依赖的说明注释、空行和纯数值表格行，MaterialDB 总大小从 325KB 降至 170KB（压缩 47%），解析出的补全符号保持一致
+- 补充 AGENTS.md 文件树遗漏的 `tcl-subcommand-registry.js` 并修正 SDEVICE 关键词数
+
+---
+
 ## [2.3.0] - 2026-05-30
 
 补全全部 7 种工具的中英文双语悬停文档，所有 Tcl 方言工具现已支持命令级文档提示。新增 Tcl 复杂命令体系（子命令、expr 数学函数）的高亮与文档覆盖。
@@ -1121,6 +1137,7 @@
 - 支持 5 种 Sentaurus 工具：SDE、SDevice、SProcess、EMW、Inspect
 
 <!-- 变更链接 -->
+[2.3.1]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.3.0...v2.3.1
 [2.3.0]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.2.3...v2.3.0
 [2.2.3]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.2.2...v2.2.3
 [2.2.2]: https://github.com/ONEGAYI/sentaurus-syntax-highlight/compare/v2.2.1...v2.2.2
