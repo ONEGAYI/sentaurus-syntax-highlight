@@ -596,4 +596,62 @@ test('loadBuiltinMaterialDb parses real Silicon.par format correctly', () => {
     service.dispose();
 });
 
+test('bundled MaterialDB stays compact while preserving completion symbols and copyright notices', () => {
+    const materialDbDir = path.join(__dirname, '..', 'references', 'MaterialDB');
+    const files = fs.readdirSync(materialDbDir)
+        .filter(name => name.toLowerCase().endsWith('.par') && name !== 'example_sdevice.par')
+        .sort();
+
+    const totalBytes = files.reduce((sum, name) => {
+        const fullPath = path.join(materialDbDir, name);
+        const content = fs.readFileSync(fullPath, 'utf8');
+        assert.ok(
+            /Copyright \(c\)/.test(content.slice(0, 512)),
+            name + ' should preserve the upstream copyright notice',
+        );
+        return sum + fs.statSync(fullPath).size;
+    }, 0);
+
+    assert.ok(totalBytes <= 175 * 1024, 'Bundled MaterialDB should stay <= 175 KiB, got ' + totalBytes);
+
+    for (const name of files) {
+        const fullPath = path.join(materialDbDir, name);
+        const tableRows = fs.readFileSync(fullPath, 'utf8')
+            .split(/\r?\n/)
+            .filter(line => {
+                const trimmed = line.trim();
+                return trimmed
+                    && !trimmed.includes('=')
+                    && /^[-+]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][-+]?\d+)?(?:\s+|\t+).*[;,]\s*$/.test(trimmed);
+            });
+        assert.strictEqual(tableRows.length, 0, name + ' should not keep raw numeric table rows');
+    }
+
+    const service = createParIndexService({
+        extensionPath: path.join(__dirname, '..'),
+    });
+    service.loadBuiltinMaterialDb();
+    const symbols = service.getMaterialDbSymbols();
+
+    const expected = [
+        ['scope', 'Silicon', 'Material/Silicon'],
+        ['scope', 'Oxide', 'Material/Oxide'],
+        ['block', 'Epsilon', 'Material/Silicon/Epsilon'],
+        ['block', 'Bandgap', 'Material/Silicon/Bandgap'],
+        ['parameter', 'epsilon', 'Material/Silicon/Epsilon/epsilon'],
+        ['parameter', 'Eg0', 'Material/Silicon/Bandgap/Eg0'],
+        ['block', 'Bandgap', 'Material/SiliconGermanium/Bandgap'],
+        ['parameter', 'Eg0(0)', 'Material/SiliconGermanium/Bandgap/Eg0(0)'],
+    ];
+
+    for (const [kind, name, fullPath] of expected) {
+        assert.ok(
+            symbols.some(s => s.kind === kind && s.name === name && s.fullPath === fullPath),
+            'Should preserve completion symbol ' + fullPath,
+        );
+    }
+
+    service.dispose();
+});
+
 summary();

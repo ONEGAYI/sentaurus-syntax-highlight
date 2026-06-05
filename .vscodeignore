@@ -1,4 +1,5 @@
 .vscode/**
+.codex/**
 .serena/**
 .gitignore
 .git/**
