@@ -10,7 +10,7 @@ const astUtils = require('./lsp/tcl-ast-utils');
 const ppUtils = require('./lsp/pp-utils');
 const { decodeHtml, stripTclVarPrefix } = ppUtils;
 const vectorKW = require('./lsp/providers/sdevice-vector-keywords');
-const { KIND_MAP, SORT_PREFIX, DETAIL_LABEL, formatDoc } = require('./docs-loader');
+const { KIND_MAP, SORT_PREFIX, DETAIL_LABEL, formatDoc, resolveAlias } = require('./docs-loader');
 const tclSubcommands = require('./lsp/tcl-subcommand-registry');
 
 /**
@@ -46,11 +46,8 @@ function buildItems(moduleKeywords, funcDocs, langId) {
             item.detail = detail;
             item.sortText = prefix + keyword;
             if (funcDocs[keyword]) {
-                let entry = funcDocs[keyword];
-                if (entry.aliasOf && funcDocs[entry.aliasOf]) {
-                    entry = funcDocs[entry.aliasOf];
-                }
-                item.documentation = formatDoc(entry, langId);
+                const entry = resolveAlias(funcDocs[keyword], funcDocs);
+                if (entry) item.documentation = formatDoc(entry, langId);
             }
             items.push(item);
         }
@@ -490,14 +487,14 @@ function registerCompletionProviders(context, deps) {
                     const docHoverRange = langId === 'sde' ? range : identRange;
                     if (doc) {
                         if (doc.aliasOf) {
-                            const parentDoc = docs[doc.aliasOf];
+                            const parentDoc = resolveAlias(doc, docs);
                             if (parentDoc) {
                                 const aliasLabel = doc.aliasType === 'plural'
                                     ? (useZh ? `（${doc.aliasOf} 的复数形式）` : `(plural of ${doc.aliasOf})`)
                                     : (useZh ? `（参见 ${doc.aliasOf}）` : `(see ${doc.aliasOf})`);
                                 doc = { ...parentDoc, _aliasLabel: aliasLabel };
                             } else {
-                                const missingLabel = useZh ? '（文档暂缺）' : ' (doc missing)';
+                                const missingLabel = useZh ? ' （文档暂缺）' : ' (doc missing)';
                                 return new vscode.Hover(
                                     new vscode.MarkdownString(`**${effectiveWord}** → *${doc.aliasOf}*${missingLabel}`),
                                     docHoverRange

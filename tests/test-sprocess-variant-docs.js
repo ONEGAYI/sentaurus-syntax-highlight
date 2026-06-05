@@ -133,30 +133,37 @@ test('SPROCESS all new entries exist in both EN and ZH', () => {
 
 
 // === Code Integration Tests ===
-// 局部扩展 mock-vscode（仅在本测试文件中生效，不修改共享 mock）
+// 局部扩展 mock-vscode（仅在本测试文件中生效）
 const mockVscode = require('./helpers/mock-vscode');
 
-// 补充本测试所需的构造函数（不影响其他测试文件）
-mockVscode.MarkdownString = function(value) { this.value = value || ''; };
-mockVscode.Hover = function(content, range) { this.content = content; this.range = range; };
-mockVscode.CompletionItem = function(label, kind) { this.label = label; this.kind = kind; };
-mockVscode.Range = function(s, e) { this.start = s; this.end = e; };
-mockVscode.Position = function(line, char) { this.line = line; this.character = char; };
-mockVscode.CompletionItemKind = {
-    Function: 0, Keyword: 1, Text: 0, Struct: 1, Class: 1,
-    Constant: 0, Value: 0, EnumMember: 0, Method: 0,
+// 保存原始属性，测试结束后恢复，防止 Node.js 模块缓存污染其他测试文件
+const _saved = {};
+const _mockExtensions = {
+    MarkdownString: function(value) { this.value = value || ''; },
+    Hover: function(content, range) { this.content = content; this.range = range; },
+    CompletionItem: function(label, kind) { this.label = label; this.kind = kind; },
+    Range: function(s, e) { this.start = s; this.end = e; },
+    Position: function(line, char) { this.line = line; this.character = char; },
+    CompletionItemKind: {
+        Function: 0, Keyword: 1, Text: 0, Struct: 1, Class: 1,
+        Constant: 0, Value: 0, EnumMember: 0, Method: 0,
+    },
+    languages: {
+        registerHoverProvider: function() { return { dispose: function() {} }; },
+        registerCompletionItemProvider: function() { return { dispose: function() {} }; },
+    },
+    workspace: {
+        getConfiguration: function() { return { get: function() { return undefined; } }; },
+    },
 };
-mockVscode.languages = {
-    registerHoverProvider: function() { return { dispose: function() {} }; },
-    registerCompletionItemProvider: function() { return { dispose: function() {} }; },
-};
-mockVscode.workspace = {
-    getConfiguration: function() { return { get: function() { return undefined; } }; },
-};
+for (const [key, value] of Object.entries(_mockExtensions)) {
+    _saved[key] = mockVscode[key];
+    mockVscode[key] = value;
+}
 
-const { formatDoc } = require('../src/docs-loader');
+const { formatDoc, resolveAlias } = require('../src/docs-loader');
 
-test('alias resolution: formatDoc receives parent doc, not alias stub', () => {
+test('alias resolution: formatDoc receives parent doc via resolveAlias, not alias stub', () => {
     const funcDocs = {
         mask: {
             section: 'Mask',
@@ -172,14 +179,23 @@ test('alias resolution: formatDoc receives parent doc, not alias stub', () => {
         },
     };
 
-    // Simulate buildItems alias guard
-    let entry = funcDocs['masks'];
-    if (entry.aliasOf && funcDocs[entry.aliasOf]) {
-        entry = funcDocs[entry.aliasOf];
-    }
+    // 使用实际的 resolveAlias 函数（与 buildItems 和 HoverProvider 共用）
+    const entry = resolveAlias(funcDocs['masks'], funcDocs);
+    assert.ok(entry, 'resolveAlias should return parent doc for valid alias');
     const md = formatDoc(entry, 'sprocess');
     assert.ok(md.value.includes('mask name= <c>'), 'Should contain parent signature');
     assert.ok(!md.value.includes('undefined'), 'Should not contain undefined');
+});
+
+test('resolveAlias returns null for alias with missing parent (buildItems guard)', () => {
+    const funcDocs = {
+        orphans: {
+            aliasOf: 'nonexistent',
+            aliasType: 'plural',
+        },
+    };
+    const entry = resolveAlias(funcDocs['orphans'], funcDocs);
+    assert.strictEqual(entry, null, 'resolveAlias should return null when parent is missing');
 });
 
 test('dot fallback: word with dots resolves to dot-variant doc', () => {
@@ -194,7 +210,9 @@ test('dot fallback: word with dots resolves to dot-variant doc', () => {
         },
     };
 
-    // Simulate HoverProvider dot fallback logic
+    // 模拟 HoverProvider 点号 fallback 逻辑
+    // 注意：此逻辑依赖于 HoverProvider 闭包内的局部变量（effectiveWord, word），
+    // 无法直接调用，因此模拟行为而非调用实际代码
     const effectiveWord = 'mns';  // identWord match
     const word = 'mask.edge.mns';  // full word match
     let doc = docs[effectiveWord] || null;
@@ -206,7 +224,7 @@ test('dot fallback: word with dots resolves to dot-variant doc', () => {
     assert.strictEqual(doc.section, 'Mask');
 });
 
-test('alias label generation: plural alias shows correct label', () => {
+test('alias label generation: plural alias shows correct English label', () => {
     const funcDocs = {
         mask: {
             section: 'Mask',
@@ -222,12 +240,11 @@ test('alias label generation: plural alias shows correct label', () => {
         },
     };
 
-    // Simulate HoverProvider alias resolution (useZh = false)
     const useZh = false;
     let doc = funcDocs['masks'];
     let aliasLabel = '';
     if (doc.aliasOf) {
-        const parentDoc = funcDocs[doc.aliasOf];
+        const parentDoc = resolveAlias(doc, funcDocs);
         if (parentDoc) {
             aliasLabel = doc.aliasType === 'plural'
                 ? `(plural of ${doc.aliasOf})`
@@ -239,5 +256,79 @@ test('alias label generation: plural alias shows correct label', () => {
     assert.ok(doc.signature === 'mask name= <c>', 'Should use parent signature');
     assert.ok(doc._aliasLabel === '(plural of mask)', 'Should have alias label');
 });
+
+test('alias label generation: plural alias shows correct Chinese label', () => {
+    const funcDocs = {
+        mask: {
+            section: 'Mask',
+            signature: 'mask name= <c>',
+            description: 'Creates a mask.',
+            parameters: [],
+            example: 'mask name= gate',
+            keywords: ['mask'],
+        },
+        masks: {
+            aliasOf: 'mask',
+            aliasType: 'plural',
+        },
+    };
+
+    const useZh = true;
+    let doc = funcDocs['masks'];
+    let aliasLabel = '';
+    if (doc.aliasOf) {
+        const parentDoc = resolveAlias(doc, funcDocs);
+        if (parentDoc) {
+            aliasLabel = doc.aliasType === 'plural'
+                ? `（${doc.aliasOf} 的复数形式）`
+                : `（参见 ${doc.aliasOf}）`;
+            doc = { ...parentDoc, _aliasLabel: aliasLabel };
+        }
+    }
+    assert.strictEqual(aliasLabel, '（mask 的复数形式）');
+    assert.ok(doc._aliasLabel === '（mask 的复数形式）', 'Should have Chinese alias label');
+});
+
+test('alias label generation: non-plural alias shows generic "see" label', () => {
+    const funcDocs = {
+        mask: {
+            section: 'Mask',
+            signature: 'mask name= <c>',
+            description: 'Creates a mask.',
+            parameters: [],
+            example: 'mask name= gate',
+            keywords: ['mask'],
+        },
+        msk: {
+            aliasOf: 'mask',
+            aliasType: 'abbreviation',
+        },
+    };
+
+    // English generic label
+    let doc = funcDocs['msk'];
+    let aliasLabel = '';
+    const parentDoc = resolveAlias(doc, funcDocs);
+    if (parentDoc) {
+        aliasLabel = doc.aliasType === 'plural'
+            ? `(plural of ${doc.aliasOf})`
+            : `(see ${doc.aliasOf})`;
+    }
+    assert.strictEqual(aliasLabel, '(see mask)');
+
+    // Chinese generic label
+    let aliasLabelZh = '';
+    if (parentDoc) {
+        aliasLabelZh = doc.aliasType === 'plural'
+            ? `（${doc.aliasOf} 的复数形式）`
+            : `（参见 ${doc.aliasOf}）`;
+    }
+    assert.strictEqual(aliasLabelZh, '（参见 mask）');
+});
+
+// 恢复 mock-vscode 原始属性，防止模块缓存污染
+for (const [key, value] of Object.entries(_saved)) {
+    mockVscode[key] = value;
+}
 
 summary();

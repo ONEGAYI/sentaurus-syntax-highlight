@@ -108,6 +108,21 @@ function applySnippetPrefixes(snippetText) {
     return result;
 }
 
+/**
+ * Resolve an alias entry to its target document.
+ * - Non-alias entry: returned unchanged.
+ * - Alias with existing target: returns the parent document.
+ * - Alias with missing target: returns null (caller handles fallback).
+ *
+ * @param {object|null} entry — doc entry (may have aliasOf/aliasType)
+ * @param {object} docs — full doc dictionary for aliasOf lookup
+ * @returns {object|null} resolved document or null
+ */
+function resolveAlias(entry, docs) {
+    if (!entry || !entry.aliasOf) return entry;
+    return docs[entry.aliasOf] || null;
+}
+
 module.exports = {
     KIND_MAP,
     SORT_PREFIX,
@@ -116,4 +131,5 @@ module.exports = {
     DEFAULT_PREFIXES,
     formatDoc,
     applySnippetPrefixes,
+    resolveAlias,
 };
