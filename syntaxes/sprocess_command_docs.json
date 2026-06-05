@@ -1229,6 +1229,63 @@
       "reaction"
     ]
   },
+  "ambient.name": {
+    "section": "Ambient",
+    "signature": "ambient name = <c>",
+    "description": "Specifies the name of the ambient gas or environment used in the simulation. The name identifies the ambient for reference in subsequent commands such as diffuse or deposit.",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "Name of the ambient gas (e.g., O2, N2, H2O)."
+      }
+    ],
+    "example": "ambient name= O2\nambient name= N2",
+    "keywords": [
+      "ambient",
+      "gas",
+      "environment",
+      "name"
+    ]
+  },
+  "ambient.products": {
+    "section": "Ambient",
+    "signature": "ambient products = <string_list>",
+    "description": "Specifies the product species generated during the ambient reaction. Used in oxidation and diffusion simulations to define reaction products.",
+    "parameters": [
+      {
+        "name": "products",
+        "type": "list",
+        "desc": "List of product species names."
+      }
+    ],
+    "example": "ambient products= {SiO2}",
+    "keywords": [
+      "ambient",
+      "reaction",
+      "products",
+      "oxidation"
+    ]
+  },
+  "ambient.rate": {
+    "section": "Ambient",
+    "signature": "ambient rate = <string_list>",
+    "description": "Specifies the reaction rate expression for the ambient gas. Defines the kinetic rate of the surface reaction during oxidation or deposition.",
+    "parameters": [
+      {
+        "name": "rate",
+        "type": "list",
+        "desc": "Rate expression or coefficients for the ambient reaction."
+      }
+    ],
+    "example": "ambient rate= {1.0}",
+    "keywords": [
+      "ambient",
+      "rate",
+      "kinetics",
+      "reaction"
+    ]
+  },
   "ambients": {
     "aliasOf": "ambient",
     "aliasType": "plural"
@@ -1271,6 +1328,19 @@
       "direction",
       "incidence",
       "multiple-beam"
+    ]
+  },
+  "beam.dose": {
+    "section": "Beam",
+    "signature": "beam dose",
+    "description": "Queries or sets the beam dose value for implantation simulations. Returns the current dose when used without arguments.",
+    "parameters": [],
+    "example": "beam dose",
+    "keywords": [
+      "beam",
+      "dose",
+      "implant",
+      "query"
     ]
   },
   "bound": {
@@ -1366,6 +1436,25 @@
       "conversion",
       "geometry",
       "topography"
+    ]
+  },
+  "boundary.conditions": {
+    "section": "Boundary",
+    "signature": "boundary conditions = <string_list>",
+    "description": "Specifies the boundary conditions applied at the edges of the simulation domain. Controls how the simulator handles domain boundaries for diffusion and mechanics calculations.",
+    "parameters": [
+      {
+        "name": "conditions",
+        "type": "list",
+        "desc": "List of boundary condition specifications (e.g., reflecting, absorbing)."
+      }
+    ],
+    "example": "boundary conditions= {reflecting reflecting}",
+    "keywords": [
+      "boundary",
+      "conditions",
+      "simulation",
+      "domain"
     ]
   },
   "contact": {
