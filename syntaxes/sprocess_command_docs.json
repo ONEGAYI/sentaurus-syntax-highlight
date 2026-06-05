@@ -6281,6 +6281,51 @@
       "geometry"
     ]
   },
+  "point.coord": {
+    "section": "Geometry",
+    "signature": "point coord = <string_list>",
+    "description": "Specifies the coordinates of a named point. Points are used as building blocks for polygon and mask definitions.",
+    "parameters": [
+      {
+        "name": "coord",
+        "type": "list",
+        "desc": "Coordinate values (2D: x y, 3D: x y z)."
+      }
+    ],
+    "example": "point name= p1 coord= {0.0 0.0}",
+    "keywords": [
+      "point",
+      "coordinate",
+      "geometry",
+      "2D"
+    ]
+  },
+  "point.implant": {
+    "section": "Geometry",
+    "signature": "point implant",
+    "description": "Defines a point used for implantation reference. Used to specify spatial reference points for implant operations.",
+    "parameters": [],
+    "example": "point implant",
+    "keywords": [
+      "point",
+      "implant",
+      "reference",
+      "geometry"
+    ]
+  },
+  "point.response": {
+    "section": "Geometry",
+    "signature": "point response",
+    "description": "Defines a point used for response surface extraction. Used to specify evaluation points for response analysis.",
+    "parameters": [],
+    "example": "point response",
+    "keywords": [
+      "point",
+      "response",
+      "surface",
+      "extraction"
+    ]
+  },
   "point.xy": {
     "section": "Structure",
     "signature": "point.xy x=<n> y=<n> [color=<c>] [move] [name=<c>] [symb=<c>]",
@@ -6408,6 +6453,79 @@
       "geometry",
       "insertion",
       "2D"
+    ]
+  },
+  "polygon.bounding.boxes": {
+    "section": "Geometry",
+    "signature": "polygon bounding.boxes",
+    "description": "Returns the bounding boxes of all defined polygons. Useful for querying the spatial extent of polygonal regions.",
+    "parameters": [],
+    "example": "polygon bounding.boxes",
+    "keywords": [
+      "polygon",
+      "bounding",
+      "box",
+      "extent",
+      "query"
+    ]
+  },
+  "polygon.inside.points": {
+    "section": "Geometry",
+    "signature": "polygon inside.points",
+    "description": "Tests which polygons contain given points. Returns the polygon names that enclose the specified coordinates.",
+    "parameters": [],
+    "example": "polygon inside.points",
+    "keywords": [
+      "polygon",
+      "inside",
+      "point",
+      "containment",
+      "query"
+    ]
+  },
+  "polygon.name": {
+    "section": "Geometry",
+    "signature": "polygon name = <c>",
+    "description": "Specifies the name of a polygon for identification. Named polygons can be referenced by mask and other geometry commands.",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "Name identifier for the polygon."
+      }
+    ],
+    "example": "polygon name= GatePoly points= {p1 p2 p3 p4}",
+    "keywords": [
+      "polygon",
+      "name",
+      "identifier",
+      "geometry"
+    ]
+  },
+  "polygon.names": {
+    "section": "Geometry",
+    "signature": "polygon names",
+    "description": "Returns a list of all defined polygon names. Used to query existing polygon definitions in the simulation.",
+    "parameters": [],
+    "example": "polygon names",
+    "keywords": [
+      "polygon",
+      "names",
+      "list",
+      "query"
+    ]
+  },
+  "polygon.tessellations": {
+    "section": "Geometry",
+    "signature": "polygon tessellations",
+    "description": "Returns the tessellation (triangulation) of defined polygons. Used for mesh generation from polygonal boundaries.",
+    "parameters": [],
+    "example": "polygon tessellations",
+    "keywords": [
+      "polygon",
+      "tessellation",
+      "triangulation",
+      "mesh"
     ]
   },
   "polygons": {
@@ -6548,6 +6666,25 @@
       "brick",
       "insertion",
       "extrusion"
+    ]
+  },
+  "polyhedron.material": {
+    "section": "Geometry",
+    "signature": "polyhedron material = <c>",
+    "description": "Specifies the material type for a polyhedron region. Used in 3D simulations to assign material properties to polyhedral volumes.",
+    "parameters": [
+      {
+        "name": "material",
+        "type": "string",
+        "desc": "Material name for the polyhedron (e.g., Silicon, Oxide)."
+      }
+    ],
+    "example": "polyhedron material= Silicon",
+    "keywords": [
+      "polyhedron",
+      "material",
+      "3D",
+      "volume"
     ]
   },
   "print.1d": {
