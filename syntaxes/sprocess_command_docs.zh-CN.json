@@ -1229,6 +1229,10 @@
       "reaction"
     ]
   },
+  "ambients": {
+    "aliasOf": "ambient",
+    "aliasType": "plural"
+  },
   "beam": {
     "section": "Implant",
     "signature": "beam name=<c> (direction= {<x> <y>} | incidence=<n>) factor=<n> [list]",
@@ -1478,6 +1482,10 @@
       "TDR",
       "device"
     ]
+  },
+  "contacts": {
+    "aliasOf": "contact",
+    "aliasType": "plural"
   },
   "contour": {
     "section": "Structure",
@@ -3354,6 +3362,10 @@
       "material"
     ]
   },
+  "interfaces": {
+    "aliasOf": "interface",
+    "aliasType": "plural"
+  },
   "interpolate": {
     "section": "Numerics",
     "signature": "interpolate <material> [extract.variable.names= {<c> <c> ...}] [max | min] [name=<c>] [report.location] [value=<n>] [x=<n>] [y=<n>] [z=<n>]",
@@ -4008,6 +4020,10 @@
       "photo",
       "rectangle"
     ]
+  },
+  "masks": {
+    "aliasOf": "mask",
+    "aliasType": "plural"
   },
   "mater": {
     "section": "Material",
@@ -5790,6 +5806,10 @@
       "scatter"
     ]
   },
+  "points": {
+    "aliasOf": "point",
+    "aliasType": "plural"
+  },
   "polygon": {
     "section": "Geometry",
     "signature": "polygon clear | list | (name=<c> [rectangle | points= {<pt1> <pt2> ...} | segments= {<y1> <z1> <y2> <z2> ...} | tdr=<c> [materials= {<mat1> ...}] | min= {<y> <z>} max= {<y> <z>}] [xy])",
@@ -5869,6 +5889,10 @@
       "insertion",
       "2D"
     ]
+  },
+  "polygons": {
+    "aliasOf": "polygon",
+    "aliasType": "plural"
   },
   "polyhedron": {
     "section": "Geometry",
@@ -6720,6 +6744,10 @@
       "initialization",
       "structure"
     ]
+  },
+  "regions": {
+    "aliasOf": "region",
+    "aliasType": "plural"
   },
   "sde": {
     "section": "Structure",
@@ -8271,6 +8299,868 @@
       "principal",
       "mechanics",
       "tensor"
+    ]
+  },
+  "ambient.name": {
+    "section": "Ambient",
+    "signature": "ambient name = <c>",
+    "description": "指定仿真中使用的环境气体名称。该名称用于在后续命令（如 diffuse 或 deposit）中引用该环境气氛。",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "环境气体名称（例如 O2、N2、H2O）。"
+      }
+    ],
+    "example": "ambient name= O2\nambient name= N2",
+    "keywords": [
+      "ambient",
+      "gas",
+      "environment",
+      "name"
+    ]
+  },
+  "ambient.products": {
+    "section": "Ambient",
+    "signature": "ambient products = <string_list>",
+    "description": "指定环境气氛反应生成的产物种类。用于氧化和扩散仿真中定义反应产物。",
+    "parameters": [
+      {
+        "name": "products",
+        "type": "list",
+        "desc": "产物种类名称列表。"
+      }
+    ],
+    "example": "ambient products= {SiO2}",
+    "keywords": [
+      "ambient",
+      "reaction",
+      "products",
+      "oxidation"
+    ]
+  },
+  "ambient.rate": {
+    "section": "Ambient",
+    "signature": "ambient rate = <string_list>",
+    "description": "指定环境气体的反应速率表达式。定义氧化或沉积过程中表面反应的动力学速率。",
+    "parameters": [
+      {
+        "name": "rate",
+        "type": "list",
+        "desc": "环境气氛反应的速率表达式或系数。"
+      }
+    ],
+    "example": "ambient rate= {1.0}",
+    "keywords": [
+      "ambient",
+      "rate",
+      "kinetics",
+      "reaction"
+    ]
+  },
+  "beam.dose": {
+    "section": "Beam",
+    "signature": "beam dose",
+    "description": "查询或设置注入仿真的束流剂量值。不带参数使用时返回当前剂量。",
+    "parameters": [],
+    "example": "beam dose",
+    "keywords": [
+      "beam",
+      "dose",
+      "implant",
+      "query"
+    ]
+  },
+  "boundary.conditions": {
+    "section": "Boundary",
+    "signature": "boundary conditions = <string_list>",
+    "description": "指定施加于仿真域边界的边界条件。控制求解器在扩散和力学计算中对域边界的处理方式。",
+    "parameters": [
+      {
+        "name": "conditions",
+        "type": "list",
+        "desc": "边界条件规格列表（例如 reflecting、absorbing）。"
+      }
+    ],
+    "example": "boundary conditions= {reflecting reflecting}",
+    "keywords": [
+      "boundary",
+      "conditions",
+      "simulation",
+      "domain"
+    ]
+  },
+  "create.all.masks": {
+    "section": "ICWBBoundary",
+    "signature": "icwb.create.all.masks",
+    "description": "为 IC Workbench (ICWB) 版图文件中定义的所有层创建掩膜。自动处理每一层并生成对应的掩膜定义，用于后续的沉积和刻蚀操作。",
+    "parameters": [],
+    "example": "icwb.create.all.masks",
+    "keywords": [
+      "ICVWB",
+      "mask",
+      "layer",
+      "GDS",
+      "layout",
+      "all"
+    ]
+  },
+  "deposit.intrinsic": {
+    "section": "Deposit",
+    "signature": "deposit intrinsic",
+    "description": "沉积一层本征（未掺杂）材料。用于在不引入任何掺杂剂的情况下沉积材料层。",
+    "parameters": [],
+    "example": "deposit intrinsic Oxide thickness= 0.01",
+    "keywords": [
+      "deposit",
+      "intrinsic",
+      "undoped",
+      "layer"
+    ]
+  },
+  "deposit.type": {
+    "section": "Deposit",
+    "signature": "deposit type = <c>",
+    "description": "指定当前 deposit 命令的沉积类型。控制沉积方式为各向异性、各向同性或使用特定的填充方法。",
+    "parameters": [
+      {
+        "name": "type",
+        "type": "enum",
+        "desc": "沉积类型：anisotropic（各向异性）、isotropic（各向同性）或 fill（填充）。"
+      }
+    ],
+    "example": "deposit type= anisotropic Oxide thickness= 0.1",
+    "keywords": [
+      "deposit",
+      "type",
+      "anisotropic",
+      "isotropic"
+    ]
+  },
+  "element.to.gauss": {
+    "section": "Implant",
+    "signature": "element to.gauss",
+    "description": "将解析注入剖面（Pearson 或双 Pearson）转换为高斯表示。允许对注入剖面进行后续的解析运算。",
+    "parameters": [],
+    "example": "element to.gauss",
+    "keywords": [
+      "element",
+      "gauss",
+      "implant",
+      "profile",
+      "conversion"
+    ]
+  },
+  "etch.rate.modifier": {
+    "section": "Etch",
+    "signature": "etch rate.modifier = <string_list>",
+    "description": "指定特定材料的刻蚀速率乘数或修正系数。用于精细调整复杂刻蚀工艺中的刻蚀速率。",
+    "parameters": [
+      {
+        "name": "rate.modifier",
+        "type": "list",
+        "desc": "与材料名称配对的速率修正表达式。"
+      }
+    ],
+    "example": "etch rate.modifier= {Oxide 1.5}",
+    "keywords": [
+      "etch",
+      "rate",
+      "modifier",
+      "material"
+    ]
+  },
+  "extract.moments": {
+    "section": "Extract",
+    "signature": "extract moments",
+    "description": "提取已注入掺杂剂剖面的统计矩（射程、偏差、偏度、峰度）。用于分析注入剖面的特征。",
+    "parameters": [],
+    "example": "extract moments",
+    "keywords": [
+      "extract",
+      "moments",
+      "implant",
+      "statistics",
+      "profile"
+    ]
+  },
+  "extract.variable.name": {
+    "section": "Extract",
+    "signature": "extract variable.name = <c>",
+    "description": "指定从仿真结果中提取的单个变量名称。提取的值存储后可供后续引用。",
+    "parameters": [
+      {
+        "name": "variable.name",
+        "type": "string",
+        "desc": "要提取的变量名称。"
+      }
+    ],
+    "example": "extract variable.name= Xval",
+    "keywords": [
+      "extract",
+      "variable",
+      "name",
+      "result"
+    ]
+  },
+  "extract.variable.names": {
+    "section": "Extract",
+    "signature": "extract variable.names = <string_list>",
+    "description": "指定从仿真结果中提取的变量名称列表。用于一次检索多个仿真量。",
+    "parameters": [
+      {
+        "name": "variable.names",
+        "type": "list",
+        "desc": "要提取的变量名称列表。"
+      }
+    ],
+    "example": "extract variable.names= {Xval Yval Zval}",
+    "keywords": [
+      "extract",
+      "variable",
+      "names",
+      "result",
+      "list"
+    ]
+  },
+  "interface.mat.pairs": {
+    "section": "Interface",
+    "signature": "interface mat.pairs = <string_list>",
+    "description": "指定需要在其界面应用复合或其他界面属性的材料对。每对由两个材料名称组成。",
+    "parameters": [
+      {
+        "name": "mat.pairs",
+        "type": "list",
+        "desc": "用于界面属性分配的材料名称对列表。"
+      }
+    ],
+    "example": "interface mat.pairs= {Silicon Oxide}",
+    "keywords": [
+      "interface",
+      "material",
+      "pairs",
+      "recombination"
+    ]
+  },
+  "interface.materials": {
+    "section": "Interface",
+    "signature": "interface materials = <string_list>",
+    "description": "指定需要应用界面属性或边界条件的材料。用于定义特定材料对之间的界面模型。",
+    "parameters": [
+      {
+        "name": "materials",
+        "type": "list",
+        "desc": "用于界面定义的材料名称列表。"
+      }
+    ],
+    "example": "interface materials= {Silicon Oxide}",
+    "keywords": [
+      "interface",
+      "materials",
+      "boundary",
+      "model"
+    ]
+  },
+  "interface.region.pairs": {
+    "section": "Interface",
+    "signature": "interface region.pairs = <string_list>",
+    "description": "指定需要在其界面应用属性的区域对。与 mat.pairs 类似，但使用区域名称而非材料名称以实现更精细的控制。",
+    "parameters": [
+      {
+        "name": "region.pairs",
+        "type": "list",
+        "desc": "用于界面属性分配的区域名称对列表。"
+      }
+    ],
+    "example": "interface region.pairs= {R1 R2}",
+    "keywords": [
+      "interface",
+      "region",
+      "pairs",
+      "property"
+    ]
+  },
+  "interface.regions": {
+    "section": "Interface",
+    "signature": "interface regions = <string_list>",
+    "description": "指定需要在其边界应用界面属性的区域。用于区域级的界面模型分配。",
+    "parameters": [
+      {
+        "name": "regions",
+        "type": "list",
+        "desc": "用于界面定义的区域名称列表。"
+      }
+    ],
+    "example": "interface regions= {source drain}",
+    "keywords": [
+      "interface",
+      "regions",
+      "boundary",
+      "model"
+    ]
+  },
+  "kmc.reset.snapshot": {
+    "section": "KMC",
+    "signature": "kmc reset.snapshot",
+    "description": "重置动力学蒙特卡罗 (KMC) 快照状态。用于清除已存储的 KMC 状态，从当前配置重新开始 KMC 仿真。",
+    "parameters": [],
+    "example": "kmc reset.snapshot",
+    "keywords": [
+      "KMC",
+      "reset",
+      "snapshot",
+      "kinetic",
+      "monte carlo"
+    ]
+  },
+  "kmc.stress": {
+    "section": "KMC",
+    "signature": "kmc stress",
+    "description": "启用或查询动力学蒙特卡罗仿真中的应力计算。启用后，KMC 会考虑应力对缺陷扩散和反应速率的影响。",
+    "parameters": [],
+    "example": "kmc stress",
+    "keywords": [
+      "KMC",
+      "stress",
+      "kinetic",
+      "monte carlo",
+      "defect"
+    ]
+  },
+  "load.commands": {
+    "section": "Load",
+    "signature": "load commands = <c>",
+    "description": "指定包含要加载并执行的 Tcl 命令的文件。用于将外部命令脚本包含到当前仿真流程中。",
+    "parameters": [
+      {
+        "name": "commands",
+        "type": "string",
+        "desc": "要加载的 Tcl 命令文件路径。"
+      }
+    ],
+    "example": "load commands= my_setup.tcl",
+    "keywords": [
+      "load",
+      "commands",
+      "script",
+      "file",
+      "include"
+    ]
+  },
+  "load.mc": {
+    "section": "Load",
+    "signature": "load mc",
+    "description": "加载蒙特卡罗注入表或数据。用于从预计算的数据文件初始化蒙特卡罗仿真参数。",
+    "parameters": [],
+    "example": "load mc",
+    "keywords": [
+      "load",
+      "monte carlo",
+      "implant",
+      "data"
+    ]
+  },
+  "mask.corner.mns": {
+    "section": "Mask",
+    "signature": "mask corner.mns = <string_list>",
+    "description": "指定掩膜角处理的最小法向量侧材料名称。控制掩膜角在网格细化过程中的处理方式。",
+    "parameters": [
+      {
+        "name": "corner.mns",
+        "type": "list",
+        "desc": "最小法向量侧角处理用的材料名称列表。"
+      }
+    ],
+    "example": "mask corner.mns= {Resist Oxide}",
+    "keywords": [
+      "mask",
+      "corner",
+      "mns",
+      "refinement",
+      "mesh"
+    ]
+  },
+  "mask.corner.ngr": {
+    "section": "Mask",
+    "signature": "mask corner.ngr = <string_list>",
+    "description": "指定掩膜角处理的无生长区域侧材料名称。控制掩膜角的细化行为。",
+    "parameters": [
+      {
+        "name": "corner.ngr",
+        "type": "list",
+        "desc": "无生长区域侧角处理用的材料名称列表。"
+      }
+    ],
+    "example": "mask corner.ngr= {Resist}",
+    "keywords": [
+      "mask",
+      "corner",
+      "ngr",
+      "refinement",
+      "mesh"
+    ]
+  },
+  "mask.corner.refine.extent": {
+    "section": "Mask",
+    "signature": "mask corner.refine.extent = <n>",
+    "description": "指定掩膜角周围的细化范围。控制网格细化从角点向外延伸的距离。",
+    "parameters": [
+      {
+        "name": "corner.refine.extent",
+        "type": "float",
+        "desc": "细化范围距离（默认单位：um）。"
+      }
+    ],
+    "example": "mask corner.refine.extent= 0.05",
+    "keywords": [
+      "mask",
+      "corner",
+      "refine",
+      "extent",
+      "mesh"
+    ]
+  },
+  "mask.discretization.size": {
+    "section": "Mask",
+    "signature": "mask discretization.size = <n>",
+    "description": "指定掩膜边的离散化尺寸。控制在将掩膜边转换为离散线段用于网格生成时使用的线段长度。",
+    "parameters": [
+      {
+        "name": "discretization.size",
+        "type": "float",
+        "desc": "离散化线段尺寸（默认单位：um）。"
+      }
+    ],
+    "example": "mask discretization.size= 0.01",
+    "keywords": [
+      "mask",
+      "discretization",
+      "size",
+      "segment",
+      "mesh"
+    ]
+  },
+  "mask.edge.mns": {
+    "section": "Mask",
+    "signature": "mask edge.mns = <string_list>",
+    "description": "指定掩膜边处理的最小法向量侧材料名称。用于控制掩膜边沿的细化方式。",
+    "parameters": [
+      {
+        "name": "edge.mns",
+        "type": "list",
+        "desc": "最小法向量侧边处理用的材料名称列表。"
+      }
+    ],
+    "example": "mask edge.mns= {Resist Oxide}",
+    "keywords": [
+      "mask",
+      "edge",
+      "mns",
+      "refinement",
+      "mesh"
+    ]
+  },
+  "mask.edge.ngr": {
+    "section": "Mask",
+    "signature": "mask edge.ngr = <string_list>",
+    "description": "指定掩膜边处理的无生长区域侧材料名称。控制不发生生长的掩膜边沿的细化方式。",
+    "parameters": [
+      {
+        "name": "edge.ngr",
+        "type": "list",
+        "desc": "无生长区域侧边处理用的材料名称列表。"
+      }
+    ],
+    "example": "mask edge.ngr= {Resist}",
+    "keywords": [
+      "mask",
+      "edge",
+      "ngr",
+      "refinement",
+      "mesh"
+    ]
+  },
+  "mask.edge.refine.extent": {
+    "section": "Mask",
+    "signature": "mask edge.refine.extent = <n>",
+    "description": "指定掩膜边沿的细化范围。控制网格细化从边界面延伸的距离。",
+    "parameters": [
+      {
+        "name": "edge.refine.extent",
+        "type": "float",
+        "desc": "边沿细化范围距离（默认单位：um）。"
+      }
+    ],
+    "example": "mask edge.refine.extent= 0.1",
+    "keywords": [
+      "mask",
+      "edge",
+      "refine",
+      "extent",
+      "mesh"
+    ]
+  },
+  "mgoals.native": {
+    "section": "Mesh",
+    "signature": "mgoals native",
+    "description": "将 mgoals 网格引擎切换为使用内置（原生）网格生成器，而非默认的 MGOALS 网格生成器。用于与旧版网格工作流的兼容。",
+    "parameters": [],
+    "example": "mgoals native",
+    "keywords": [
+      "mgoals",
+      "native",
+      "mesh",
+      "mesher"
+    ]
+  },
+  "optimize.dislocation": {
+    "section": "Optimization",
+    "signature": "optimize dislocation",
+    "description": "启用机械应力仿真中的位错优化。调整位错网络以最小化系统能量。",
+    "parameters": [],
+    "example": "optimize dislocation",
+    "keywords": [
+      "optimize",
+      "dislocation",
+      "stress",
+      "mechanics"
+    ]
+  },
+  "point.coord": {
+    "section": "Geometry",
+    "signature": "point coord = <string_list>",
+    "description": "指定命名点的坐标。点用作多边形和掩膜定义的构造单元。",
+    "parameters": [
+      {
+        "name": "coord",
+        "type": "list",
+        "desc": "坐标值（二维：x y，三维：x y z）。"
+      }
+    ],
+    "example": "point name= p1 coord= {0.0 0.0}",
+    "keywords": [
+      "point",
+      "coordinate",
+      "geometry",
+      "2D"
+    ]
+  },
+  "point.implant": {
+    "section": "Geometry",
+    "signature": "point implant",
+    "description": "定义用于注入参考的点。用于指定注入操作的空间参考点。",
+    "parameters": [],
+    "example": "point implant",
+    "keywords": [
+      "point",
+      "implant",
+      "reference",
+      "geometry"
+    ]
+  },
+  "point.response": {
+    "section": "Geometry",
+    "signature": "point response",
+    "description": "定义用于响应面提取的点。用于指定响应分析的评估点。",
+    "parameters": [],
+    "example": "point response",
+    "keywords": [
+      "point",
+      "response",
+      "surface",
+      "extraction"
+    ]
+  },
+  "polygon.bounding.boxes": {
+    "section": "Geometry",
+    "signature": "polygon bounding.boxes",
+    "description": "返回所有已定义多边形的边界框。用于查询多边形区域的空间范围。",
+    "parameters": [],
+    "example": "polygon bounding.boxes",
+    "keywords": [
+      "polygon",
+      "bounding",
+      "box",
+      "extent",
+      "query"
+    ]
+  },
+  "polygon.inside.points": {
+    "section": "Geometry",
+    "signature": "polygon inside.points",
+    "description": "测试哪些多边形包含给定的点。返回包围指定坐标的多边形名称。",
+    "parameters": [],
+    "example": "polygon inside.points",
+    "keywords": [
+      "polygon",
+      "inside",
+      "point",
+      "containment",
+      "query"
+    ]
+  },
+  "polygon.name": {
+    "section": "Geometry",
+    "signature": "polygon name = <c>",
+    "description": "指定多边形的标识名称。命名后的多边形可被 mask 和其他几何命令引用。",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "多边形的名称标识符。"
+      }
+    ],
+    "example": "polygon name= GatePoly points= {p1 p2 p3 p4}",
+    "keywords": [
+      "polygon",
+      "name",
+      "identifier",
+      "geometry"
+    ]
+  },
+  "polygon.names": {
+    "section": "Geometry",
+    "signature": "polygon names",
+    "description": "返回所有已定义多边形名称的列表。用于查询仿真中现有多边形定义。",
+    "parameters": [],
+    "example": "polygon names",
+    "keywords": [
+      "polygon",
+      "names",
+      "list",
+      "query"
+    ]
+  },
+  "polygon.tessellations": {
+    "section": "Geometry",
+    "signature": "polygon tessellations",
+    "description": "返回已定义多边形的镶嵌（三角剖分）结果。用于从多边形边界生成网格。",
+    "parameters": [],
+    "example": "polygon tessellations",
+    "keywords": [
+      "polygon",
+      "tessellation",
+      "triangulation",
+      "mesh"
+    ]
+  },
+  "polyhedron.material": {
+    "section": "Geometry",
+    "signature": "polyhedron material = <c>",
+    "description": "指定多面体区域的材料类型。用于在三维仿真中为多面体体积分配材料属性。",
+    "parameters": [
+      {
+        "name": "material",
+        "type": "string",
+        "desc": "多面体的材料名称（例如 Silicon、Oxide）。"
+      }
+    ],
+    "example": "polyhedron material= Silicon",
+    "keywords": [
+      "polyhedron",
+      "material",
+      "3D",
+      "volume"
+    ]
+  },
+  "profile.reshaping": {
+    "section": "Profile",
+    "signature": "profile reshaping",
+    "description": "启用或控制氧化过程中的掺杂剖面重塑。调整掺杂分布以补偿移动边界和氧化层生长。",
+    "parameters": [],
+    "example": "profile reshaping",
+    "keywords": [
+      "profile",
+      "reshaping",
+      "dopant",
+      "oxidation"
+    ]
+  },
+  "region.list": {
+    "section": "Region",
+    "signature": "region list = <string_list>",
+    "description": "指定区域名称列表。用于在单个命令中分组或引用多个区域。",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "区域名称列表。"
+      }
+    ],
+    "example": "region list= {R1 R2 R3}",
+    "keywords": [
+      "region",
+      "list",
+      "names",
+      "group"
+    ]
+  },
+  "region.name": {
+    "section": "Region",
+    "signature": "region name = <c>",
+    "description": "指定仿真区域的名称。命名后的区域可被 deposit、etch 等命令引用以实现空间定位。",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "区域名称标识符。"
+      }
+    ],
+    "example": "region name= source Silicon",
+    "keywords": [
+      "region",
+      "name",
+      "identifier",
+      "spatial"
+    ]
+  },
+  "region.names": {
+    "section": "Region",
+    "signature": "region names",
+    "description": "返回所有已定义区域名称的列表。用于查询仿真域中现有的区域定义。",
+    "parameters": [],
+    "example": "region names",
+    "keywords": [
+      "region",
+      "names",
+      "list",
+      "query"
+    ]
+  },
+  "slice.angle": {
+    "section": "Slice",
+    "signature": "slice angle = <n>",
+    "description": "指定仿真域切片的角度。用于在三维仿真中以任意角度创建二维截面。",
+    "parameters": [
+      {
+        "name": "angle",
+        "type": "float",
+        "desc": "切片角度（单位：度）。"
+      }
+    ],
+    "example": "slice angle= 45.0",
+    "keywords": [
+      "slice",
+      "angle",
+      "cross-section",
+      "3D"
+    ]
+  },
+  "slice.angle.offset": {
+    "section": "Slice",
+    "signature": "slice angle.offset",
+    "description": "返回或设置切片操作的角偏移量。用于在三维仿真中调整域切片的参考角度。",
+    "parameters": [],
+    "example": "slice angle.offset",
+    "keywords": [
+      "slice",
+      "angle",
+      "offset",
+      "3D",
+      "cross-section"
+    ]
+  },
+  "smooth.brep": {
+    "section": "Smooth",
+    "signature": "smooth brep",
+    "description": "对几何体边进行边界表示 (B-rep) 平滑处理。消除仿真几何体中的尖锐角和锯齿状边界。",
+    "parameters": [],
+    "example": "smooth brep",
+    "keywords": [
+      "smooth",
+      "brep",
+      "boundary",
+      "geometry"
+    ]
+  },
+  "smooth.distance": {
+    "section": "Smooth",
+    "signature": "smooth distance = <n>",
+    "description": "指定几何操作的平滑距离。控制应用于边界和界面的平滑范围。",
+    "parameters": [
+      {
+        "name": "distance",
+        "type": "float",
+        "desc": "平滑距离（默认单位：um）。"
+      }
+    ],
+    "example": "smooth distance= 0.005",
+    "keywords": [
+      "smooth",
+      "distance",
+      "geometry",
+      "boundary"
+    ]
+  },
+  "smooth.field": {
+    "section": "Smooth",
+    "signature": "smooth field = <c>",
+    "description": "指定要平滑处理的场变量。对指定的求解场（例如掺杂浓度）施加平滑以减少数值噪声。",
+    "parameters": [
+      {
+        "name": "field",
+        "type": "string",
+        "desc": "要平滑处理的场变量名称。"
+      }
+    ],
+    "example": "smooth field= BoronConcentration",
+    "keywords": [
+      "smooth",
+      "field",
+      "concentration",
+      "numerical"
+    ]
+  },
+  "smooth.points": {
+    "section": "Smooth",
+    "signature": "smooth points = <string_list>",
+    "description": "指定定义平滑区域的点。平滑处理应用于由这些点定义的区域内的几何体边界。",
+    "parameters": [
+      {
+        "name": "points",
+        "type": "list",
+        "desc": "定义平滑区域的命名点列表。"
+      }
+    ],
+    "example": "smooth points= {p1 p2 p3}",
+    "keywords": [
+      "smooth",
+      "points",
+      "region",
+      "geometry"
+    ]
+  },
+  "stress.relax": {
+    "section": "Stress",
+    "signature": "stress relax",
+    "description": "对仿真域执行应力松弛计算。在沉积或刻蚀等结构变化后计算平衡应力状态。",
+    "parameters": [],
+    "example": "stress relax",
+    "keywords": [
+      "stress",
+      "relax",
+      "equilibrium",
+      "mechanics"
+    ]
+  },
+  "stress.values": {
+    "section": "Stress",
+    "signature": "stress values = <string_list>",
+    "description": "指定要施加到仿真域的应力值。用于对材料或区域施加外部或初始应力条件。",
+    "parameters": [
+      {
+        "name": "values",
+        "type": "list",
+        "desc": "要施加的应力值列表（分量：xx、yy、zz、xy、yz、xz）。"
+      }
+    ],
+    "example": "stress values= {1e7 0 0 0 0 0}",
+    "keywords": [
+      "stress",
+      "values",
+      "mechanics",
+      "initial",
+      "condition"
     ]
   }
 }
