@@ -1626,6 +1626,21 @@
       "data field"
     ]
   },
+  "create.all.masks": {
+    "section": "ICWBBoundary",
+    "signature": "icwb.create.all.masks",
+    "description": "Creates masks for all layers defined in the IC Workbench (ICWB) layout file. Automatically processes every layer and generates corresponding mask definitions for subsequent deposit and etch operations.",
+    "parameters": [],
+    "example": "icwb.create.all.masks",
+    "keywords": [
+      "ICVWB",
+      "mask",
+      "layer",
+      "GDS",
+      "layout",
+      "all"
+    ]
+  },
   "define": {
     "section": "Utility",
     "signature": "define <name> <value>",
@@ -3569,6 +3584,82 @@
       "material"
     ]
   },
+  "interface.mat.pairs": {
+    "section": "Interface",
+    "signature": "interface mat.pairs = <string_list>",
+    "description": "Specifies pairs of materials at whose interface recombination or other interface properties are applied. Each pair consists of two material names.",
+    "parameters": [
+      {
+        "name": "mat.pairs",
+        "type": "list",
+        "desc": "List of material name pairs for interface property assignment."
+      }
+    ],
+    "example": "interface mat.pairs= {Silicon Oxide}",
+    "keywords": [
+      "interface",
+      "material",
+      "pairs",
+      "recombination"
+    ]
+  },
+  "interface.materials": {
+    "section": "Interface",
+    "signature": "interface materials = <string_list>",
+    "description": "Specifies the materials at which interface properties or boundary conditions are applied. Used to define interface models between specific material pairs.",
+    "parameters": [
+      {
+        "name": "materials",
+        "type": "list",
+        "desc": "List of material names for interface definition."
+      }
+    ],
+    "example": "interface materials= {Silicon Oxide}",
+    "keywords": [
+      "interface",
+      "materials",
+      "boundary",
+      "model"
+    ]
+  },
+  "interface.region.pairs": {
+    "section": "Interface",
+    "signature": "interface region.pairs = <string_list>",
+    "description": "Specifies pairs of regions at whose interface properties are applied. Similar to mat.pairs but uses region names instead of material names for finer control.",
+    "parameters": [
+      {
+        "name": "region.pairs",
+        "type": "list",
+        "desc": "List of region name pairs for interface property assignment."
+      }
+    ],
+    "example": "interface region.pairs= {R1 R2}",
+    "keywords": [
+      "interface",
+      "region",
+      "pairs",
+      "property"
+    ]
+  },
+  "interface.regions": {
+    "section": "Interface",
+    "signature": "interface regions = <string_list>",
+    "description": "Specifies the regions at whose boundaries interface properties are applied. Used for region-level interface model assignment.",
+    "parameters": [
+      {
+        "name": "regions",
+        "type": "list",
+        "desc": "List of region names for interface definition."
+      }
+    ],
+    "example": "interface regions= {source drain}",
+    "keywords": [
+      "interface",
+      "regions",
+      "boundary",
+      "model"
+    ]
+  },
   "interfaces": {
     "aliasOf": "interface",
     "aliasType": "plural"
@@ -3825,6 +3916,34 @@
       "diffusion",
       "defect",
       "concentration"
+    ]
+  },
+  "kmc.reset.snapshot": {
+    "section": "KMC",
+    "signature": "kmc reset.snapshot",
+    "description": "Resets the Kinetic Monte Carlo (KMC) snapshot state. Used to clear the stored KMC state and restart the KMC simulation from the current configuration.",
+    "parameters": [],
+    "example": "kmc reset.snapshot",
+    "keywords": [
+      "KMC",
+      "reset",
+      "snapshot",
+      "kinetic",
+      "monte carlo"
+    ]
+  },
+  "kmc.stress": {
+    "section": "KMC",
+    "signature": "kmc stress",
+    "description": "Enables or queries stress calculation within the Kinetic Monte Carlo simulation. When enabled, KMC accounts for stress effects on defect diffusion and reaction rates.",
+    "parameters": [],
+    "example": "kmc stress",
+    "keywords": [
+      "KMC",
+      "stress",
+      "kinetic",
+      "monte carlo",
+      "defect"
     ]
   },
   "layers": {
@@ -4115,6 +4234,39 @@
       "TDR",
       "interpolation",
       "mesh",
+      "data"
+    ]
+  },
+  "load.commands": {
+    "section": "Load",
+    "signature": "load commands = <c>",
+    "description": "Specifies a file containing Tcl commands to be loaded and executed. Used to include external command scripts into the current simulation flow.",
+    "parameters": [
+      {
+        "name": "commands",
+        "type": "string",
+        "desc": "Path to the Tcl command file to load."
+      }
+    ],
+    "example": "load commands= my_setup.tcl",
+    "keywords": [
+      "load",
+      "commands",
+      "script",
+      "file",
+      "include"
+    ]
+  },
+  "load.mc": {
+    "section": "Load",
+    "signature": "load mc",
+    "description": "Loads Monte Carlo implantation tables or data. Used to initialize Monte Carlo simulation parameters from pre-computed data files.",
+    "parameters": [],
+    "example": "load mc",
+    "keywords": [
+      "load",
+      "monte carlo",
+      "implant",
       "data"
     ]
   },
