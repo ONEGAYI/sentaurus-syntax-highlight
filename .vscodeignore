@@ -21,6 +21,7 @@ assets/**
 display_test/**
 
 references/**
+!references/MaterialDB/**
 docs/**
 !docs/help/**
 

@@ -4,6 +4,39 @@
 const { test, summary } = require('./helpers/test-runner');
 const assert = require('assert');
 const { createParIndexService } = require('../src/lsp/sdevicepar/par-index-service');
+const path = require('path');
+const fs = require('fs');
+
+// Mock bundled MaterialDB files (mirrors old stub data for backward-compatible assertions)
+const MOCK_BUILTIN_FILES = {
+    'Silicon.par': [
+        'Epsilon {',
+        '  epsilon = 11.7',
+        '}',
+        '',
+        'Bandgap {',
+        '  Eg0 = 1.12',
+        '}',
+    ].join('\n'),
+    'Oxide.par': [
+        'Epsilon {',
+        '  epsilon = 3.9',
+        '}',
+    ].join('\n'),
+};
+
+function createBuiltinService(extraDeps) {
+    return createParIndexService({
+        extensionPath: '/ext',
+        readdirSync: () => Object.keys(MOCK_BUILTIN_FILES),
+        readFile: (p) => {
+            const name = path.basename(p);
+            if (MOCK_BUILTIN_FILES[name]) return MOCK_BUILTIN_FILES[name];
+            throw new Error('ENOENT: ' + p);
+        },
+        ...extraDeps,
+    });
+}
 
 // ── 基础接口 ────────────────────────────────────────────
 
@@ -22,7 +55,7 @@ test('getMaterialDbFileCount is 0 before load', () => {
 // ── loadBuiltinMaterialDb ───────────────────────────────
 
 test('loadBuiltinMaterialDb populates placeholder materialdb symbols', () => {
-    const service = createParIndexService({ extensionPath: '/ext' });
+    const service = createBuiltinService();
     service.loadBuiltinMaterialDb();
 
     const symbols = service.getMaterialDbSymbols();
@@ -47,7 +80,7 @@ test('loadBuiltinMaterialDb populates placeholder materialdb symbols', () => {
 });
 
 test('builtin placeholder symbols use completable parentPath', () => {
-    const service = createParIndexService({ extensionPath: '/ext' });
+    const service = createBuiltinService();
     service.loadBuiltinMaterialDb();
 
     const symbols = service.getMaterialDbSymbols();
@@ -187,7 +220,7 @@ test('addMaterialDbFile accumulates across multiple calls', () => {
 });
 
 test('clearMaterialDb removes all materialdb symbols', () => {
-    const service = createParIndexService({ extensionPath: '/ext' });
+    const service = createBuiltinService();
     service.loadBuiltinMaterialDb();
     assert.ok(service.getMaterialDbSymbols().length > 0);
 
@@ -199,7 +232,7 @@ test('clearMaterialDb removes all materialdb symbols', () => {
 });
 
 test('dispose clears materialDbIndex', () => {
-    const service = createParIndexService({ extensionPath: '/ext' });
+    const service = createBuiltinService();
     service.loadBuiltinMaterialDb();
     assert.ok(service.getMaterialDbSymbols().length > 0);
     service.dispose();
@@ -208,7 +241,7 @@ test('dispose clears materialDbIndex', () => {
 });
 
 test('clearMaterialDb followed by addMaterialDbFile works', () => {
-    const service = createParIndexService({ extensionPath: '/ext' });
+    const service = createBuiltinService();
     service.loadBuiltinMaterialDb();
     service.clearMaterialDb();
 
@@ -224,7 +257,7 @@ test('clearMaterialDb followed by addMaterialDbFile works', () => {
 // ── getCompletionsAt 集成 MaterialDB ──────────────────────
 
 test('scopeName completion includes builtin materialdb', () => {
-    const service = createParIndexService({ extensionPath: '/ext' });
+    const service = createBuiltinService();
     service.loadBuiltinMaterialDb();
 
     const doc = {
@@ -249,7 +282,7 @@ test('scopeName completion includes builtin materialdb', () => {
 });
 
 test('block completion inside Material scope includes materialdb', () => {
-    const service = createParIndexService({ extensionPath: '/ext' });
+    const service = createBuiltinService();
     service.loadBuiltinMaterialDb();
 
     const text = 'Material = "Silicon" {\n  \n}\n';
@@ -276,7 +309,7 @@ test('block completion inside Material scope includes materialdb', () => {
 });
 
 test('parameter completion inside Material block includes materialdb', () => {
-    const service = createParIndexService({ extensionPath: '/ext' });
+    const service = createBuiltinService();
     service.loadBuiltinMaterialDb();
 
     const text = 'Material = "Silicon" {\n  Epsilon {\n    \n  }\n}\n';
@@ -300,7 +333,7 @@ test('parameter completion inside Material block includes materialdb', () => {
 });
 
 test('workspace source wins over materialdb for same-name symbol', () => {
-    const service = createParIndexService({ extensionPath: '/ext' });
+    const service = createBuiltinService();
 
     service.addWorkspaceFile('file:///ws/test.par',
         'Material = "Silicon" {\n  Bandgap {\n    Eg0 = 1.08\n  }\n}\n');
@@ -413,7 +446,7 @@ test('removeMaterialDbFile then addMaterialDbFile updates file', () => {
 // ── 回归测试：scope 名补全不依赖当前文件缓存 ──────────────────
 
 test('scopeName completion works without currentFileCache (cache miss)', () => {
-    const service = createParIndexService({ extensionPath: '/ext' });
+    const service = createBuiltinService();
     service.loadBuiltinMaterialDb();
 
     // 不调用 parseCurrentFile — 模拟文档版本已变更但 debounce 未触发的场景
@@ -430,6 +463,135 @@ test('scopeName completion works without currentFileCache (cache miss)', () => {
     const names = scopeNameItems.map(i => i.label);
     assert.ok(names.includes('Silicon'), 'Should suggest Silicon from materialdb');
     assert.ok(names.includes('Oxide'), 'Should suggest Oxide from materialdb');
+
+    service.dispose();
+});
+
+// ── loadBuiltinMaterialDb 目录加载 ────────────────────────
+
+test('loadBuiltinMaterialDb skips files in BUILTIN_MATERIALDB_EXCLUDE', () => {
+    const allFiles = {
+        'Silicon.par': 'Epsilon { epsilon = 11.7 }\n',
+        'example_sdevice.par': 'Material = "Test" {\n}\n',
+        'Oxide.par': 'Epsilon { epsilon = 3.9 }\n',
+    };
+    const service = createParIndexService({
+        extensionPath: '/ext',
+        readdirSync: () => Object.keys(allFiles),
+        readFile: (p) => {
+            const name = path.basename(p);
+            if (allFiles[name]) return allFiles[name];
+            throw new Error('ENOENT: ' + p);
+        },
+    });
+    service.loadBuiltinMaterialDb();
+
+    const symbols = service.getMaterialDbSymbols();
+    const scopeNames = symbols.filter(s => s.kind === 'scope').map(s => s.name);
+    assert.ok(scopeNames.includes('Silicon'), 'Should load Silicon');
+    assert.ok(scopeNames.includes('Oxide'), 'Should load Oxide');
+    assert.ok(!scopeNames.includes('Test'), 'Should NOT load example_sdevice.par');
+    assert.strictEqual(service.getMaterialDbFileCount(), 2);
+
+    service.dispose();
+});
+
+test('loadBuiltinMaterialDb graceful degradation when directory missing', () => {
+    const service = createParIndexService({
+        extensionPath: '/nonexistent',
+        readdirSync: () => { throw new Error('ENOENT'); },
+    });
+    service.loadBuiltinMaterialDb();
+    assert.strictEqual(service.getMaterialDbSymbols().length, 0);
+    assert.strictEqual(service.getMaterialDbFileCount(), 0);
+    service.dispose();
+});
+
+test('loadBuiltinMaterialDb only loads .par files', () => {
+    const allFiles = {
+        'Silicon.par': 'Epsilon { epsilon = 11.7 }\n',
+        'readme.txt': 'not a par file',
+        'Oxide.par': 'Epsilon { epsilon = 3.9 }\n',
+    };
+    const service = createParIndexService({
+        extensionPath: '/ext',
+        readdirSync: () => Object.keys(allFiles),
+        readFile: (p) => {
+            const name = path.basename(p);
+            if (allFiles[name]) return allFiles[name];
+            throw new Error('ENOENT: ' + p);
+        },
+    });
+    service.loadBuiltinMaterialDb();
+    assert.strictEqual(service.getMaterialDbFileCount(), 2, 'Should only load .par files');
+    service.dispose();
+});
+
+test('loadBuiltinMaterialDb handles empty directory', () => {
+    const service = createBuiltinService({
+        readdirSync: () => [],
+    });
+    service.loadBuiltinMaterialDb();
+    assert.strictEqual(service.getMaterialDbFileCount(), 0);
+    assert.strictEqual(service.getMaterialDbSymbols().length, 0);
+    service.dispose();
+});
+
+test('loadBuiltinMaterialDb skips unreadable files gracefully', () => {
+    const files = {
+        'Silicon.par': 'Epsilon { epsilon = 11.7 }\n',
+        'Corrupted.par': null,
+        'Oxide.par': 'Epsilon { epsilon = 3.9 }\n',
+    };
+    const service = createParIndexService({
+        extensionPath: '/ext',
+        readdirSync: () => Object.keys(files),
+        readFile: (p) => {
+            const name = path.basename(p);
+            if (name === 'Corrupted.par') throw new Error('EACCES');
+            if (files[name]) return files[name];
+            throw new Error('ENOENT: ' + p);
+        },
+    });
+    service.loadBuiltinMaterialDb();
+    assert.strictEqual(service.getMaterialDbFileCount(), 2, 'Should load Silicon and Oxide only');
+    const scopeNames = service.getMaterialDbSymbols()
+        .filter(s => s.kind === 'scope')
+        .map(s => s.name);
+    assert.ok(scopeNames.includes('Silicon'));
+    assert.ok(scopeNames.includes('Oxide'));
+    assert.ok(!scopeNames.includes('Corrupted'));
+    service.dispose();
+});
+
+test('loadBuiltinMaterialDb parses real Silicon.par format correctly', () => {
+    const realSiliconPath = path.join(__dirname, '..', 'references', 'MaterialDB', 'Silicon.par');
+    const realSiliconContent = fs.readFileSync(realSiliconPath, 'utf8');
+    const service = createParIndexService({
+        extensionPath: '/ext',
+        readdirSync: () => ['Silicon.par'],
+        readFile: (p) => {
+            if (path.basename(p) === 'Silicon.par') return realSiliconContent;
+            throw new Error('ENOENT: ' + p);
+        },
+    });
+    service.loadBuiltinMaterialDb();
+
+    const symbols = service.getMaterialDbSymbols();
+
+    // 验证 synthetic scope
+    const scope = symbols.find(s => s.kind === 'scope' && s.name === 'Silicon');
+    assert.ok(scope, 'Should create Silicon synthetic scope');
+    assert.strictEqual(scope.scopeType, 'Material');
+
+    // 验证至少解析出 20+ blocks（实际 99 个）
+    const siliconBlocks = symbols.filter(s => s.kind === 'block' && s.parentPath === 'Material/Silicon');
+    assert.ok(siliconBlocks.length >= 20, 'Real Silicon.par should have 20+ blocks, got ' + siliconBlocks.length);
+
+    // 验证常见 block 存在
+    const blockNames = siliconBlocks.map(s => s.name);
+    assert.ok(blockNames.includes('Epsilon'), 'Should have Epsilon');
+    assert.ok(blockNames.includes('Bandgap'), 'Should have Bandgap');
 
     service.dispose();
 });

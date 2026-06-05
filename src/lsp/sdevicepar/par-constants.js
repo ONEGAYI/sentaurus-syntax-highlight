@@ -23,34 +23,19 @@ const MAX_INCLUDE_DEPTH = 8;
 const MAX_CACHE_SIZE = 20;
 
 /**
- * 内置 MaterialDB 占位文件数据。Phase 2.3 仅包含 Silicon + Oxide 的少量 block/parameter，
- * 证明 MaterialDB 管线接入成功。完整内置库填充在下次 PR。
- *
- * 采用与用户 MaterialDB 相同的"顶层 block"格式（格式 A），
- * 通过 addMaterialDbFile 走完全相同的归一化管线。
+ * 内置 MaterialDB 目录（相对于插件安装路径）。
+ * 包含 Sentaurus T-2022.03 MaterialDB 中的常用材料参数文件。
+ * loadBuiltinMaterialDb() 在 activate 时扫描此目录并加载所有 .par 文件。
  */
-const BUILTIN_MATERIALDB_STUB_FILES = [
-    {
-        filePath: '[built-in MaterialDB]/Silicon.par',
-        text: [
-            'Epsilon {',
-            '  epsilon = 11.7',
-            '}',
-            '',
-            'Bandgap {',
-            '  Eg0 = 1.12',
-            '}',
-        ].join('\n'),
-    },
-    {
-        filePath: '[built-in MaterialDB]/Oxide.par',
-        text: [
-            'Epsilon {',
-            '  epsilon = 3.9',
-            '}',
-        ].join('\n'),
-    },
-];
+const BUILTIN_MATERIALDB_DIR = 'references/MaterialDB';
+
+/**
+ * 内置 MaterialDB 中应排除的文件名集合。
+ * example_sdevice.par 是器件定义文件，不是材料参数文件。
+ */
+const BUILTIN_MATERIALDB_EXCLUDE = new Set([
+    'example_sdevice.par',
+]);
 
 module.exports = {
     SCOPE_TYPES,
@@ -58,5 +43,6 @@ module.exports = {
     SOURCE_PRIORITY,
     MAX_INCLUDE_DEPTH,
     MAX_CACHE_SIZE,
-    BUILTIN_MATERIALDB_STUB_FILES,
+    BUILTIN_MATERIALDB_DIR,
+    BUILTIN_MATERIALDB_EXCLUDE,
 };
