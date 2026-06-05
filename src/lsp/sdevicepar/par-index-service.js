@@ -242,7 +242,7 @@ function createParIndexService(deps) {
                     const fullPath = path.join(materialDbDir, file);
                     const text = readFileFn(fullPath);
                     addMaterialDbFile(fullPath, text);
-                } catch (_) { /* skip unreadable files */ }
+                } catch (e) { console.warn('[SentaurusSyntax][MaterialDB] skip file', file, e.message); }
             }
         } catch (_) { /* directory not found — graceful degradation */ }
         console.log('[SentaurusSyntax][MaterialDB] loadBuiltinMaterialDb — loaded',
