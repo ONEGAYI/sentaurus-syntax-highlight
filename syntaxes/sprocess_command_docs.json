@@ -6956,6 +6956,19 @@
       "import"
     ]
   },
+  "profile.reshaping": {
+    "section": "Profile",
+    "signature": "profile reshaping",
+    "description": "Enables or controls dopant profile reshaping during oxidation. Adjusts the dopant distribution to account for moving boundaries and oxide growth.",
+    "parameters": [],
+    "example": "profile reshaping",
+    "keywords": [
+      "profile",
+      "reshaping",
+      "dopant",
+      "oxidation"
+    ]
+  },
   "reaction": {
     "section": "Diffusion",
     "signature": "reaction (list | (lkmc [energy=<n>] [prefactor=<n>] [reactants=<list>] [products=<list>] ...) | mat.l=<c> mat.r=<c> mat.new=<c> name=<c>) [ambient.name=<c>] [clear] [delete] [diffusing.species=<list>] [multiphase] [KMC.species=<c>] ...",
@@ -7400,6 +7413,57 @@
       "mesh",
       "initialization",
       "structure"
+    ]
+  },
+  "region.list": {
+    "section": "Region",
+    "signature": "region list = <string_list>",
+    "description": "Specifies a list of region names. Used to group or reference multiple regions in a single command.",
+    "parameters": [
+      {
+        "name": "list",
+        "type": "list",
+        "desc": "List of region names."
+      }
+    ],
+    "example": "region list= {R1 R2 R3}",
+    "keywords": [
+      "region",
+      "list",
+      "names",
+      "group"
+    ]
+  },
+  "region.name": {
+    "section": "Region",
+    "signature": "region name = <c>",
+    "description": "Specifies the name of a simulation region. Named regions can be referenced by deposit, etch, and other commands for spatial targeting.",
+    "parameters": [
+      {
+        "name": "name",
+        "type": "string",
+        "desc": "Region name identifier."
+      }
+    ],
+    "example": "region name= source Silicon",
+    "keywords": [
+      "region",
+      "name",
+      "identifier",
+      "spatial"
+    ]
+  },
+  "region.names": {
+    "section": "Region",
+    "signature": "region names",
+    "description": "Returns a list of all defined region names. Used to query existing region definitions in the simulation domain.",
+    "parameters": [],
+    "example": "region names",
+    "keywords": [
+      "region",
+      "names",
+      "list",
+      "query"
     ]
   },
   "regions": {
@@ -7853,6 +7917,39 @@
       "data"
     ]
   },
+  "slice.angle": {
+    "section": "Slice",
+    "signature": "slice angle = <n>",
+    "description": "Specifies the angle for slicing the simulation domain. Used in 3D simulations to create 2D cross-sections at arbitrary angles.",
+    "parameters": [
+      {
+        "name": "angle",
+        "type": "float",
+        "desc": "Slice angle in degrees."
+      }
+    ],
+    "example": "slice angle= 45.0",
+    "keywords": [
+      "slice",
+      "angle",
+      "cross-section",
+      "3D"
+    ]
+  },
+  "slice.angle.offset": {
+    "section": "Slice",
+    "signature": "slice angle.offset",
+    "description": "Returns or sets the angular offset for slice operations. Used to adjust the reference angle for domain slicing in 3D simulations.",
+    "parameters": [],
+    "example": "slice angle.offset",
+    "keywords": [
+      "slice",
+      "angle",
+      "offset",
+      "3D",
+      "cross-section"
+    ]
+  },
   "smooth": {
     "section": "Structure",
     "signature": "smooth smooth.field= <list> [init=<n>][<min|s>] [smooth.distance= {<double array>}]",
@@ -7881,6 +7978,76 @@
       "gradient",
       "implant",
       "damage"
+    ]
+  },
+  "smooth.brep": {
+    "section": "Smooth",
+    "signature": "smooth brep",
+    "description": "Performs boundary representation (B-rep) smoothing on geometry edges. Removes sharp corners and jagged boundaries from the simulation geometry.",
+    "parameters": [],
+    "example": "smooth brep",
+    "keywords": [
+      "smooth",
+      "brep",
+      "boundary",
+      "geometry"
+    ]
+  },
+  "smooth.distance": {
+    "section": "Smooth",
+    "signature": "smooth distance = <n>",
+    "description": "Specifies the smoothing distance for geometry operations. Controls the extent of smoothing applied to boundaries and interfaces.",
+    "parameters": [
+      {
+        "name": "distance",
+        "type": "float",
+        "desc": "Smoothing distance (default unit: um)."
+      }
+    ],
+    "example": "smooth distance= 0.005",
+    "keywords": [
+      "smooth",
+      "distance",
+      "geometry",
+      "boundary"
+    ]
+  },
+  "smooth.field": {
+    "section": "Smooth",
+    "signature": "smooth field = <c>",
+    "description": "Specifies the field variable to be smoothed. Applies smoothing to the specified solution field (e.g., doping concentration) to reduce numerical noise.",
+    "parameters": [
+      {
+        "name": "field",
+        "type": "string",
+        "desc": "Name of the field variable to smooth."
+      }
+    ],
+    "example": "smooth field= BoronConcentration",
+    "keywords": [
+      "smooth",
+      "field",
+      "concentration",
+      "numerical"
+    ]
+  },
+  "smooth.points": {
+    "section": "Smooth",
+    "signature": "smooth points = <string_list>",
+    "description": "Specifies the points defining the smoothing region. Smoothing is applied to geometry boundaries within the region defined by these points.",
+    "parameters": [
+      {
+        "name": "points",
+        "type": "list",
+        "desc": "List of named points defining the smoothing region."
+      }
+    ],
+    "example": "smooth points= {p1 p2 p3}",
+    "keywords": [
+      "smooth",
+      "points",
+      "region",
+      "geometry"
     ]
   },
   "solution": {
@@ -8092,6 +8259,39 @@
       "relaxation",
       "viscous",
       "mechanics"
+    ]
+  },
+  "stress.relax": {
+    "section": "Stress",
+    "signature": "stress relax",
+    "description": "Performs stress relaxation on the simulation domain. Computes the equilibrium stress state after structural changes such as deposition or etching.",
+    "parameters": [],
+    "example": "stress relax",
+    "keywords": [
+      "stress",
+      "relax",
+      "equilibrium",
+      "mechanics"
+    ]
+  },
+  "stress.values": {
+    "section": "Stress",
+    "signature": "stress values = <string_list>",
+    "description": "Specifies stress values to be applied to the simulation domain. Used to impose external or initial stress conditions on materials or regions.",
+    "parameters": [
+      {
+        "name": "values",
+        "type": "list",
+        "desc": "List of stress values to apply (components: xx, yy, zz, xy, yz, xz)."
+      }
+    ],
+    "example": "stress values= {1e7 0 0 0 0 0}",
+    "keywords": [
+      "stress",
+      "values",
+      "mechanics",
+      "initial",
+      "condition"
     ]
   },
   "stressdata": {
