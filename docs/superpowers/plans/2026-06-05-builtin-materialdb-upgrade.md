@@ -135,6 +135,7 @@ function loadBuiltinMaterialDb() {
 function loadBuiltinMaterialDb() {
     materialDbIndex.clear();
     const materialDbDir = path.join(extensionPath, BUILTIN_MATERIALDB_DIR);
+    const t0 = Date.now();
     try {
         const files = readdirFn(materialDbDir);
         for (const file of files) {
@@ -147,6 +148,8 @@ function loadBuiltinMaterialDb() {
             } catch (_) { /* skip unreadable files */ }
         }
     } catch (_) { /* directory not found — graceful degradation */ }
+    console.log('[SentaurusSyntax][MaterialDB] loadBuiltinMaterialDb — loaded',
+        materialDbIndex.size, 'files in', Date.now() - t0, 'ms');
 }
 ```
 
@@ -301,10 +304,93 @@ test('loadBuiltinMaterialDb only loads .par files', () => {
 });
 ```
 
-- [ ] **Step 6: 运行全部测试**
+- [ ] **Step 6: 新增测试 — 空目录场景**
+
+```js
+test('loadBuiltinMaterialDb handles empty directory', () => {
+    const service = createBuiltinService({
+        readdirSync: () => [],
+    });
+    service.loadBuiltinMaterialDb();
+    assert.strictEqual(service.getMaterialDbFileCount(), 0);
+    assert.strictEqual(service.getMaterialDbSymbols().length, 0);
+    service.dispose();
+});
+```
+
+- [ ] **Step 7: 新增测试 — 单文件不可读不中断整体加载**
+
+```js
+test('loadBuiltinMaterialDb skips unreadable files gracefully', () => {
+    const files = {
+        'Silicon.par': 'Epsilon { epsilon = 11.7 }\n',
+        'Corrupted.par': null,
+        'Oxide.par': 'Epsilon { epsilon = 3.9 }\n',
+    };
+    const service = createParIndexService({
+        extensionPath: '/ext',
+        readdirSync: () => Object.keys(files),
+        readFile: (p) => {
+            const name = path.basename(p);
+            if (name === 'Corrupted.par') throw new Error('EACCES');
+            if (files[name]) return files[name];
+            throw new Error('ENOENT: ' + p);
+        },
+    });
+    service.loadBuiltinMaterialDb();
+    assert.strictEqual(service.getMaterialDbFileCount(), 2, 'Should load Silicon and Oxide only');
+    const scopeNames = service.getMaterialDbSymbols()
+        .filter(s => s.kind === 'scope')
+        .map(s => s.name);
+    assert.ok(scopeNames.includes('Silicon'));
+    assert.ok(scopeNames.includes('Oxide'));
+    assert.ok(!scopeNames.includes('Corrupted'));
+    service.dispose();
+});
+```
+
+- [ ] **Step 8: 新增测试 — 真实 Silicon.par 文件集成验证**
+
+```js
+test('loadBuiltinMaterialDb parses real Silicon.par format correctly', () => {
+    const realSiliconPath = path.join(__dirname, '..', 'references', 'MaterialDB', 'Silicon.par');
+    const realSiliconContent = fs.readFileSync(realSiliconPath, 'utf8');
+    const service = createParIndexService({
+        extensionPath: '/ext',
+        readdirSync: () => ['Silicon.par'],
+        readFile: (p) => {
+            if (path.basename(p) === 'Silicon.par') return realSiliconContent;
+            throw new Error('ENOENT: ' + p);
+        },
+    });
+    service.loadBuiltinMaterialDb();
+
+    const symbols = service.getMaterialDbSymbols();
+
+    // 验证 synthetic scope
+    const scope = symbols.find(s => s.kind === 'scope' && s.name === 'Silicon');
+    assert.ok(scope, 'Should create Silicon synthetic scope');
+    assert.strictEqual(scope.scopeType, 'Material');
+
+    // 验证至少解析出 20+ blocks（实际 99 个）
+    const siliconBlocks = symbols.filter(s => s.kind === 'block' && s.parentPath === 'Material/Silicon');
+    assert.ok(siliconBlocks.length >= 20, 'Real Silicon.par should have 20+ blocks, got ' + siliconBlocks.length);
+
+    // 验证常见 block 存在
+    const blockNames = siliconBlocks.map(s => s.name);
+    assert.ok(blockNames.includes('Epsilon'), 'Should have Epsilon');
+    assert.ok(blockNames.includes('Bandgap'), 'Should have Bandgap');
+
+    service.dispose();
+});
+```
+
+注意：此测试需在文件顶部添加 `const fs = require('fs');`。
+
+- [ ] **Step 9: 运行全部测试**
 
 Run: `node tests/test-par-materialdb.js`
-Expected: 所有测试 PASS，包括新增的 3 个测试
+Expected: 所有测试 PASS，包括新增的 6 个测试
 
 Run: `node tests/test-par-index.js`
 Expected: 所有测试 PASS（此文件不受影响）
@@ -409,7 +495,7 @@ references/MaterialDB/ 目录加载真实材料参数文件 (169KB/188block)。
 - .vscodeignore: 添加 !references/MaterialDB/** 例外
 - THIRD_PARTY_NOTICES.md: 添加 MaterialDB 数据来源说明
 - test-par-materialdb.js: 更新现有测试使用依赖注入，
-  新增 3 个测试覆盖目录加载/排除/降级场景
+  新增 6 个测试覆盖目录加载/排除/降级/空目录/单文件失败/真实文件场景
 
 覆盖 7 种材料：Silicon(99block)、Oxide(18)、Germanium(21)、
 Si3N4(14)、HfO2(12)、4H-SiC(13)、Metal(11)
