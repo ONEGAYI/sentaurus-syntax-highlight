@@ -476,10 +476,36 @@ function registerCompletionProviders(context, deps) {
                     }
 
                     const canonKey = sdeviceLowerToCanon.get(wordLower);
-                    const doc = (canonKey && docs[canonKey]) || docs[effectiveWord] || docs[decodeHtml(effectiveWord)];
+                    let doc = (canonKey && docs[canonKey]) || docs[effectiveWord] || docs[decodeHtml(effectiveWord)];
+                    // 点号 fallback：identWord（/[\w]+/）无法匹配含点号的词如 mask.edge.mns
+                    if (!doc && word !== effectiveWord && word.includes('.')) {
+                        const dotKey = word.replace(/=+$/, '');
+                        doc = docs[dotKey] || docs[decodeHtml(dotKey)];
+                    }
                     // SDE 函数名含冒号，hover 范围需覆盖完整词
                     const docHoverRange = langId === 'sde' ? range : identRange;
-                    if (doc) return new vscode.Hover(formatDoc(doc, langId), docHoverRange);
+                    if (doc) {
+                        if (doc.aliasOf) {
+                            const parentDoc = docs[doc.aliasOf];
+                            if (parentDoc) {
+                                const aliasLabel = doc.aliasType === 'plural'
+                                    ? (useZh ? `（${doc.aliasOf} 的复数形式）` : `(plural of ${doc.aliasOf})`)
+                                    : (useZh ? `（参见 ${doc.aliasOf}）` : `(see ${doc.aliasOf})`);
+                                doc = { ...parentDoc, _aliasLabel: aliasLabel };
+                            } else {
+                                const missingLabel = useZh ? '（文档暂缺）' : ' (doc missing)';
+                                return new vscode.Hover(
+                                    new vscode.MarkdownString(`**${effectiveWord}** → *${doc.aliasOf}*${missingLabel}`),
+                                    docHoverRange
+                                );
+                            }
+                        }
+                        const md = formatDoc(doc, langId);
+                        if (doc._aliasLabel) {
+                            md.value = `*${doc._aliasLabel}*\n\n` + md.value;
+                        }
+                        return new vscode.Hover(md, docHoverRange);
+                    }
 
                     const userDefs = defs.getDefinitions(document, langId);
                     let def = null;
