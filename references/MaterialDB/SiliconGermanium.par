@@ -1,0 +1,4319 @@
+* Copyright (c) 1994-2018 Synopsys, Inc.
+* This parameter file and the associated documentation are proprietary
+* to Synopsys, Inc.  This parameter file may only be used in accordance
+* with the terms and conditions of a written license agreement with
+* Synopsys, Inc.  All other use, reproduction, or distribution of this
+* parameter file is strictly prohibited.
+
+* [01Sch] Schaffler, Properties of Advanced Semiconductor Materials GaN, AlN, InN, BN, SiC, Sige,
+* John Wiley & Sons, Inc., New York, pp. 149-188, 2001
+* [64Gla] Glasbrenner and Slack, Phys. Rev., 164, 4A, pp 1058-1069, 1964
+* [58BRA] Braunstein, Moore, and Herman in C. Penn, T. Frommherz, and G. Bauer, Properties
+* of Silicon Germanium and SiGe: Carbon EMIS Datareviews Series, no. 24, chapter 4.1
+* [54STo] Stohr and Klemm, Anorg. Allgem. Chem., 241, pp. 305, 1954
+* [00Pa] V. Palankovsky, Thesis, TU Vienna, 2000
+* [81Jac] C. Jacoboni et al, Phys. Rev., B24, 2, pp. 1014, 1981
+* [10Ene] Eneman, IEEE TED, vol. 57, no. 10, 2010
+
+* Mole dependent material: SiGe (x=0) = Si
+* Mole dependent material: SiGe (x=1) = Ge
+
+Epsilon
+  {       
+    * Ratio of the permittivities of material and vacuum
+    * epsilon() = epsilon
+    * Mole fraction dependent model.
+    * If only constant parameters are specified, those values will be
+    * used for any mole fraction instead of the interpolation below.
+    * Linear interpolation is used on the interval [0,1].
+
+    Xmax(0) = 0.0
+    Xmax(1) = 1.0
+
+    epsilon(0) = 11.70 #[1], [01Sch], see Silicon, linear interpolation between Silicon and Germanium 
+    epsilon(1) = 16.20 #[1], [01Sch], see Germanium
+  }
+
+Epsilon_aniso
+  {
+    * Ratio of the permittivities of material and vacuum
+    * epsilon() = epsilon
+
+    Xmax(0) = 0.0
+    Xmax(1) = 1.0
+
+    epsilon(0) = 11.70 #[1], see isotropic case
+    epsilon(1) = 16.20 #[1], see isotropic case
+  }
+
+RefractiveIndex
+  {
+    * Optical Refractive Index
+    * refractiveindex() = refractiveindex * (1 + alpha * (T-Tpar))
+
+    Tpar = 3.0000e+02 #[K]
+
+    * Mole fraction dependent model.
+    * If only constant parameters are specified, those values will be
+    * used for any mole fraction instead of the interpolation below.
+    * Linear interpolation is used on the interval [0,1].
+
+    refractiveindex(0) = 3.45 #[1]
+    refractiveindex(1) = 1 #[1]
+    alpha(0) = 2.0000e-04 #[1/K]
+    alpha(1) = 2.0000e-04 #[1/K]
+    CarrDepCoeff(0) = 1	#[1]
+    CarrDepCoeff(1) = 1	#[1]
+
+    * Gain dependence of refractive index in active region:
+    * a) Linear model: delta n = a0 * ( (n+p)/(2 * N0) - 1)
+    * b) Logarithmic model: delta n = a0 * log ( (n+p)/(2 * N0) )
+    * where n/p are the carrier densities in the active region. 
+    a0 = 0.0000e+00 #[1]
+    N0 = 1.0000e+18 #[1/cm^3]
+  }
+
+ComplexRefractiveIndex
+  {
+    *  Complex refractive index model: n_complex = n + i*k (unitless)  
+    *  with n = n_0 + delta_n_lambda + delta_n_T + delta_n_carr + delta_n_gain 
+    *       k = k_0 + delta_k_lambda             + delta_k_carr                
+  
+    * Base refractive index and extinction coefficient: 
+    *     n_0, k_0 
+  
+    * Wavelength dependence (real and imag): 
+    *     Formula 0: delta_n_lambda = Cn_lambda * lambda + Dn_lambda * lambda^2 
+    *                delta_k_lambda = Ck_lambda * lambda + Dk_lambda * lambda^2 
+    *     Formula 1: Read tabulated values 
+    *                NumericalTable (...)  
+    *     Formula 2: Read tabulated values from file 
+    *                NumericalTable = <string> 
+  
+    * Temperature dependence (real): 
+    *     delta_n_T = n_0 * ( Cn_temp * (T-Tpar)) 
+  
+    * Carrier dependence (real) 
+    *     delta_n_carr = - Cn_carr * (const.) * (n/m_e + p/m_h) 
+  
+    * Carrier dependence (imag) 
+    *     delta_k_carr = 1 / (4*PI) * (wavelength^Gamma_k_carr_e*Ck_carr_e*n + wavelength^Gamma_k_carr_h*Ck_carr_h*p) 
+  
+    * Gain dependence (real) 
+    *     lin: delta_n_gain = Cn_gain * ( (n+p)/(2 * Npar) - 1) 
+    *     log: delta_n_gain = Cn_gain * log ( (n+p)/(2 * Npar ) )
+
+    n_0(0) = 3.45 # [1]
+    n_0(1) = 1 # [1]
+    k_0(0) = 0.0000e+00 # [1]
+    k_0(1) = 0.0000e+00 # [1]
+    Cn_lambda(0) = 0.0000e+00 # [um^-1]
+    Cn_lambda(1) = 0.0000e+00 # [um^-1]
+    Dn_lambda(0) = 0.0000e+00 # [um^-2]
+    Dn_lambda(1) = 0.0000e+00 # [um^-2]
+    Ck_lambda(0) = 0.0000e+00 # [um^-1]
+    Ck_lambda(1) = 0.0000e+00 # [um^-1]
+    Dk_lambda(0) = 0.0000e+00 # [um^-2]
+    Dk_lambda(1) = 0.0000e+00 # [um^-2]
+    Cn_temp(0) = 2.0000e-04 # [K^-1]
+    Cn_temp(1) = 2.0000e-04 # [K^-1]
+    Cn_carr(0) = 1 # [1]
+    Cn_carr(1) = 1 # [1]
+    Cn_gain(0) = 0.0000e+00 # [1]
+    Cn_gain(1) = 0.0000e+00 # [1]
+    Npar(0) = 1.0000e+18 # [cm^-3]
+    Npar(1) = 1.0000e+18 # [cm^-3]
+    Ck_carr(0) = 0.0000e+00, 0.0000e+00 #[cm^2]
+    Ck_carr(1) = 0.0000e+00, 0.0000e+00 #[cm^2]
+    Gamma_k_carr(0) = 1, 1 #[1]
+    Gamma_k_carr(1) = 1, 1 #[1]
+
+    Formula = 0
+    Tpar = 3.0000e+02 # [K]
+  } 
+
+* SpectralConversion
+* { * Spectral Conversion Model
+*   No default model, user has to define.
+*   All wavelength parameters should be in nanometers.
+*   Choice of Analytic or NumericalTable selected in Physics section of region
+*  
+*   ConversionEfficiency = float     * ratio of absorbed photons that are reemitted.
+*   AbsorptionScaling = float        * scale absorption
+*   EmissionScaling = float          * scale emission
+*   Analytic (
+*     AbsorptionProfile = (
+*        Gaussian(lambda0 sigma peakvalue dc_offset lambda_range0 lambda_range1)
+*        Lorentzian(lambda0 width peakvalue dc_offset lambda_range0 lambda_range1)
+*        ...
+*     )
+*     EmissionProfile = (
+*        Gaussian(lambda0 sigma peakvalue dc_offset lambda_range0 lambda_range1)
+*        Lorentzian(lambda0 width peakvalue dc_offset lambda_range0 lambda_range1)
+*        ...
+*     )
+*   )
+*   NumericalTable (
+*     AbsorptionProfile = (
+*        lambda0 value0
+*        lambda1 value1
+*        ...
+*     )
+*     EmissionProfile = (
+*        lambda0 value0
+*        lambda1 value1
+*        ...
+*     )
+
+*   ConversionEfficiency = 1.0
+* }
+
+LatticeHeatCapacity
+  {
+    * cv() = cv + cv_b * T + cv_c * T^2 + cv_d * T^3 
+    * lumped electron-hole-lattice heat capacity
+
+    Xmax(0) = 0.0
+    Xmax(1) = 1.0
+
+    * without temperature dependence
+    cv(0) = 1.63 #[J/(K cm^3)], [01Sch] 
+    cv(1) = 1.67 #[J/(K cm^3)], [01Sch] 
+    cv_b(0) = 0.0000e+00 #[J/(K^2 cm^3)] 
+    cv_b(1) = 0.0000e+00 #[J/(K^2 cm^3)]
+    cv_c(0) = 0.0000e+00 #[J/(K^3 cm^3)] 
+    cv_c(1) = 0.0000e+00 #[J/(K^3 cm^3)] 
+    cv_d(0) = 0.0000e+00 #[J/(K^4 cm^3)] 
+    cv_d(1) = 0.0000e+00 #[J/(K^4 cm^3)]
+
+    * with temperature dependence
+    * linear interpolation, corner materials see Silicon.par and Germanium.par
+    * cv(0) = -0.02 #[J/(K cm^3)], [01Sch] 
+    * cv(1) = 1.2043 #[J/(K cm^3)], [01Sch] 
+    * cv_b(0) = 8.4176e-03 #[J/(K^2 cm^3)] 
+    * cv_b(1) = 2.4133e-03 #[J/(K^2 cm^3)]
+    * cv_c(0) = -1.1200e-05 #[J/(K^3 cm^3)] 
+    * cv_c(1) = -3.2718e-06 #[J/(K^3 cm^3)] 
+    * cv_d(0) = 5.1800e-09 #[J/(K^4 cm^3)] 
+    * cv_d(1) = 1.6184e-09 #[J/(K^4 cm^3)]    
+  }
+
+Kappa
+  { 
+    * Lattice thermal conductivity
+    * Formula = 0:
+    * thermal resistivity = 1 / ( 1/kappa + 1/kappa_b * T + 1/kappa_c * T^2 )
+    * Formula = 1:
+    * thermal conductivity = kappa + kappa_b * T + kappa_c * T^2
+    * Mole fraction dependent model.
+    * If only constant parameters are specified, those values will be
+    * used for any mole fraction instead of the interpolation below.
+    * The following interpolation polynom can be used on interval [Xmin(I),Xmax(I)]:
+    * F(X) = F(I-1)+A(I)*(X-Xmin(I))+B(I)*(X-Xmin(I))^2+C(I)*(X-Xmin(I))^3,
+    * where Xmax(I), F(I), B(I), C(I) are defined below for each interval.
+    * A(I) is calculated for a boundary condition F(Xmax(I)) = F(I).
+    * Definition of mole fraction intervals, parameters, and coefficients:
+
+    Formula =       0
+
+    Xmax(0) = 0.0
+    Xmax(1) = 0.1
+    Xmax(2) = 0.2
+    Xmax(3) = 0.3
+    Xmax(4) = 0.4
+    Xmax(5) = 0.5
+    Xmax(6) = 0.6
+    Xmax(7) = 0.7
+    Xmax(8) = 0.8
+    Xmax(9) = 0.9
+    Xmax(10) = 1.0
+
+    1/kappa(0) = 0.5895 #see Silicon [64Gla], at T=300K, mole fraction dependence from [54STO] and [01Sch]
+    1/kappa(1) = 10.53
+    1/kappa(2) = 15.87
+    1/kappa(3) = 14.04
+    1/kappa(4) = 12.56
+    1/kappa(5) = 11.36
+    1/kappa(6) = 10.37
+    1/kappa(7) = 9.54
+    1/kappa(8) = 8.83
+    1/kappa(9) = 5.0 
+    1/kappa(10) = 1.848 #see Germanium [64Gla]
+
+    #1/kappa(0) = -0.0393 #see Silicon [64Gla], temperature dependence linearly interpolated between Si and Ge,
+    # mole fraction dependence from [54STO] and [01Sch]
+    #1/kappa(1) = 9.66
+    #1/kappa(2) = 14.8
+    #1/kappa(3) = 12.7
+    #1/kappa(4) = 11.0
+    #1/kappa(5) = 9.54
+    #1/kappa(6) = 8.31
+    #1/kappa(7) = 7.25
+    #1/kappa(8) = 6.30
+    #1/kappa(9) = 2.23
+    #1/kappa(10) = -1.16 #see Germanium [64Gla]
+
+    1/kappa_b(0) = 0.0
+    1/kappa_b(1) = 0.0
+    1/kappa_b(2) = 0.0
+    1/kappa_b(3) = 0.0
+    1/kappa_b(4) = 0.0
+    1/kappa_b(5) = 0.0
+    1/kappa_b(6) = 0.0
+    1/kappa_b(7) = 0.0
+    1/kappa_b(8) = 0.0
+    1/kappa_b(9) = 0.0
+    1/kappa_b(10) = 0.0
+
+    #1/kappa_b(0) = 0.00155 #see Silicon [64Gla], temperature dependence linearly interpolated between Si and Ge
+    #1/kappa_b(1) = 0.002515
+    #1/kappa_b(2) = 0.00348
+    #1/kappa_b(3) = 0.004445
+    #1/kappa_b(4) = 0.00541
+    #1/kappa_b(5) = 0.006375
+    #1/kappa_b(6) = 0.00734
+    #1/kappa_b(7) = 0.008305
+    #1/kappa_b(8) = 0.00927
+    #1/kappa_b(9) = 0.010235
+    #1/kappa_b(10) = 0.0112 #see Germanium [64Gla]
+
+    1/kappa_c(0) = 0.0
+    1/kappa_c(1) = 0.0
+    1/kappa_c(2) = 0.0
+    1/kappa_c(3) = 0.0
+    1/kappa_c(4) = 0.0
+    1/kappa_c(5) = 0.0
+    1/kappa_c(6) = 0.0
+    1/kappa_c(7) = 0.0
+    1/kappa_c(8) = 0.0
+    1/kappa_c(9) = 0.0
+    1/kappa_c(10) = 0.0
+
+    #1/kappa_c(0) = 1.82e-06 #see Silicon [64Gla], temperature dependence linearly interpolated between Si and Ge
+    #1/kappa_c(1) = 1.25e-06
+    #1/kappa_c(2) = 6.74e-07
+    #1/kappa_c(3) = 1.01e-07
+    #1/kappa_c(4) = -4.72e-07
+    #1/kappa_c(5) = -1.05e-06
+    #1/kappa_c(6) = -1.62e-06
+    #1/kappa_c(7) = -2.19e-06
+    #1/kappa_c(8) = -2.76e-06
+    #1/kappa_c(9) = -3.34e-06
+    #1/kappa_c(10) = -3.91e-06 #see Germanium [64Gla]
+
+    kappa(0) = 1.6964 #see Silicon [64Gla], at T=300K, mole fraction dependence from [54STO] and [01Sch]
+    kappa(1) = 0.095
+    kappa(2) = 0.0630
+    kappa(3) = 0.0712
+    kappa(4) = 0.0796
+    kappa(5) = 0.0880
+    kappa(6) = 0.0964
+    kappa(7) = 0.1048
+    kappa(8) = 0.1132
+    kappa(9) = 0.2 
+    kappa(10) = 0.5411 #see Germanium [64Gla]
+
+    kappa_b(0) = 0.0
+    kappa_b(1) = 0.0
+    kappa_b(2) = 0.0
+    kappa_b(3) = 0.0
+    kappa_b(4) = 0.0
+    kappa_b(5) = 0.0
+    kappa_b(6) = 0.0
+    kappa_b(7) = 0.0
+    kappa_b(8) = 0.0
+    kappa_b(9) = 0.0
+    kappa_b(10) = 0.0
+
+    kappa_c(0) = 0.0
+    kappa_c(1) = 0.0
+    kappa_c(2) = 0.0
+    kappa_c(3) = 0.0
+    kappa_c(4) = 0.0
+    kappa_c(5) = 0.0
+    kappa_c(6) = 0.0
+    kappa_c(7) = 0.0
+    kappa_c(8) = 0.0
+    kappa_c(9) = 0.0
+    kappa_c(10) = 0.0
+  }
+
+Kappa_aniso
+  { 
+    * Lattice thermal conductivity
+    * Formula = 0:
+    * thermal resistivity = 1 / ( 1/kappa + 1/kappa_b * T + 1/kappa_c * T^2 )
+    * Formula = 1:
+    * thermal conductivity = kappa + kappa_b * T + kappa_c * T^2
+    * Mole fraction dependent model.
+    * If only constant parameters are specified, those values will be
+    * used for any mole fraction instead of the interpolation below.
+    * The following interpolation polynom can be used on interval [Xmin(I),Xmax(I)]:
+    * F(X) = F(I-1)+A(I)*(X-Xmin(I))+B(I)*(X-Xmin(I))^2+C(I)*(X-Xmin(I))^3,
+    * where Xmax(I), F(I), B(I), C(I) are defined below for each interval.
+    * A(I) is calculated for a boundary condition F(Xmax(I)) = F(I).
+    * Definition of mole fraction intervals, parameters, and coefficients:
+
+    Formula =       0
+
+    Xmax(0) = 0.0
+    Xmax(1) = 0.1
+    Xmax(2) = 0.2
+    Xmax(3) = 0.3
+    Xmax(4) = 0.4
+    Xmax(5) = 0.5
+    Xmax(6) = 0.6
+    Xmax(7) = 0.7
+    Xmax(8) = 0.8
+    Xmax(9) = 0.9
+    Xmax(10) = 1.0
+
+    1/kappa(0) = 0.5895 #see Silicon [64Gla], at T=300K, mole fraction dependence from [54STO] and [01Sch]
+    1/kappa(1) = 10.53
+    1/kappa(2) = 15.87
+    1/kappa(3) = 14.04
+    1/kappa(4) = 12.56
+    1/kappa(5) = 11.36
+    1/kappa(6) = 10.37
+    1/kappa(7) = 9.54
+    1/kappa(8) = 8.83
+    1/kappa(9) = 5.0 
+    1/kappa(10) = 1.848 #see Germanium [64Gla]
+
+    #1/kappa(0) = -0.0393 #see Silicon [64Gla], temperature dependence linearly interpolated between Si and Ge,
+    # mole fraction dependence from [54STO] and [01Sch]
+    #1/kappa(1) = 9.66
+    #1/kappa(2) = 14.8
+    #1/kappa(3) = 12.7
+    #1/kappa(4) = 11.0
+    #1/kappa(5) = 9.54
+    #1/kappa(6) = 8.31
+    #1/kappa(7) = 7.25
+    #1/kappa(8) = 6.30
+    #1/kappa(9) = 2.23
+    #1/kappa(10) = -1.16 #see Germanium [64Gla]
+
+    1/kappa_b(0) = 0.0
+    1/kappa_b(1) = 0.0
+    1/kappa_b(2) = 0.0
+    1/kappa_b(3) = 0.0
+    1/kappa_b(4) = 0.0
+    1/kappa_b(5) = 0.0
+    1/kappa_b(6) = 0.0
+    1/kappa_b(7) = 0.0
+    1/kappa_b(8) = 0.0
+    1/kappa_b(9) = 0.0
+    1/kappa_b(10) = 0.0
+
+    #1/kappa_b(0) = 0.00155 #see Silicon [64Gla], temperature dependence linearly interpolated between Si and Ge
+    #1/kappa_b(1) = 0.002515
+    #1/kappa_b(2) = 0.00348
+    #1/kappa_b(3) = 0.004445
+    #1/kappa_b(4) = 0.00541
+    #1/kappa_b(5) = 0.006375
+    #1/kappa_b(6) = 0.00734
+    #1/kappa_b(7) = 0.008305
+    #1/kappa_b(8) = 0.00927
+    #1/kappa_b(9) = 0.010235
+    #1/kappa_b(10) = 0.0112 #see Germanium [64Gla]
+
+    1/kappa_c(0) = 0.0
+    1/kappa_c(1) = 0.0
+    1/kappa_c(2) = 0.0
+    1/kappa_c(3) = 0.0
+    1/kappa_c(4) = 0.0
+    1/kappa_c(5) = 0.0
+    1/kappa_c(6) = 0.0
+    1/kappa_c(7) = 0.0
+    1/kappa_c(8) = 0.0
+    1/kappa_c(9) = 0.0
+    1/kappa_c(10) = 0.0
+
+    #1/kappa_c(0) = 1.82e-06 #see Silicon [64Gla], temperature dependence linearly interpolated between Si and Ge
+    #1/kappa_c(1) = 1.25e-06
+    #1/kappa_c(2) = 6.74e-07
+    #1/kappa_c(3) = 1.01e-07
+    #1/kappa_c(4) = -4.72e-07
+    #1/kappa_c(5) = -1.05e-06
+    #1/kappa_c(6) = -1.62e-06
+    #1/kappa_c(7) = -2.19e-06
+    #1/kappa_c(8) = -2.76e-06
+    #1/kappa_c(9) = -3.34e-06
+    #1/kappa_c(10) = -3.91e-06 #see Germanium [64Gla]
+
+    kappa(0) = 1.6964 #see Silicon [64Gla], at T=300K, mole fraction dependence from [54STO] and [01Sch]
+    kappa(1) = 0.095
+    kappa(2) = 0.0630
+    kappa(3) = 0.0712
+    kappa(4) = 0.0796
+    kappa(5) = 0.0880
+    kappa(6) = 0.0964
+    kappa(7) = 0.1048
+    kappa(8) = 0.1132
+    kappa(9) = 0.2 
+    kappa(10) = 0.5411 #see Germanium [64Gla]
+
+    kappa_b(0) = 0.0
+    kappa_b(1) = 0.0
+    kappa_b(2) = 0.0
+    kappa_b(3) = 0.0
+    kappa_b(4) = 0.0
+    kappa_b(5) = 0.0
+    kappa_b(6) = 0.0
+    kappa_b(7) = 0.0
+    kappa_b(8) = 0.0
+    kappa_b(9) = 0.0
+    kappa_b(10) = 0.0
+
+    kappa_c(0) = 0.0
+    kappa_c(1) = 0.0
+    kappa_c(2) = 0.0
+    kappa_c(3) = 0.0
+    kappa_c(4) = 0.0
+    kappa_c(5) = 0.0
+    kappa_c(6) = 0.0
+    kappa_c(7) = 0.0
+    kappa_c(8) = 0.0
+    kappa_c(9) = 0.0
+    kappa_c(10) = 0.0
+}
+
+CarrierThermalConductivity
+{ *  Lower limit for the carrier thermal conductivities,
+  *  expressed as a fraction of the lattice
+  *  thermal conductivity K_L (i.e. of kappa, see above)
+	K_n/K_L	= 1.0000e-34	# [1]
+	K_p/K_L	= 1.0000e-34	# [1]
+}
+
+*  EnergyRelaxationTime{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+* EnergyFlux{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+* ThermalDiffusion{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+* HeatFlux{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+* AvalancheFactors{...} 
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+* TEPower{...} 
+
+* Ionization{...}  
+
+Bandgap
+  {
+    * Eg = Eg0 + dEg0 + alpha Tpar^2 / (beta + Tpar) - alpha T^2 / (beta + T)
+    * dEg0(<bgn_model_name>) is a band gap correction term.  It is used together with
+    * an appropriate BGN model, if this BGN model is chosen in Physics section
+    * Parameter 'Tpar' specifies the value of lattice 
+    * temperature, at which parameters below are defined
+    * Chi0 is electron affinity.
+    Bgn2Chi = 0.5
+    dEg0(Bennett) = 0.0000e+00	# [eV]
+    dEg0(Slotboom) = -4.7950e-03 # [eV]
+    dEg0(OldSlotboom) = 0.0000e+00 # [eV]
+    dEg0(delAlamo) = -1.4070e-02 # [eV]
+    Tpar = 3.0000e+02 # [K]
+    * Mole fraction dependent model.
+    * If only constant parameters are specified, those values will be
+    * used for any mole fraction instead of the interpolation below.
+    * The following interpolation polynom can be used on interval [Xmin(I),Xmax(I)]:
+    * F(X) = F(I-1)+A(I)*(X-Xmin(I))+B(I)*(X-Xmin(I))^2+C(I)*(X-Xmin(I))^3,
+    * where Xmax(I), F(I), B(I), C(I) are defined below for each interval.
+    * A(I) is calculated for a boundary condition F(Xmax(I)) = F(I).
+    * Definition of mole fraction intervals, parameters, and coefficients:
+    Xmax(0) =  0.0
+    Xmax(1) =  0.1
+    Xmax(2) =  0.2
+    Xmax(3) =  0.3
+    Xmax(4) =  0.4
+    Xmax(5) =  0.5
+    Xmax(6) =  0.6
+    Xmax(7) =  0.7
+    Xmax(8) =  0.8
+    Xmax(9) =  0.9
+    Xmax(10) = 1.0
+
+    Eg0(0) = 1.12416 #[58BRA] - mole fraction dependence
+    Eg0(1) = 1.07
+    Eg0(2) = 1.03
+    Eg0(3) = 0.99
+    Eg0(4) = 0.95
+    Eg0(5) = 0.935
+    Eg0(6) = 0.915
+    Eg0(7) = 0.9
+    Eg0(8) = 0.89
+    Eg0(9) = 0.82
+    Eg0(10) = 0.6638
+
+    Chi0(0) = 4.0727 #[58BRA] - mole fraction dependence
+    Chi0(1) = 4.029
+    Chi0(2) = 4.021
+    Chi0(3) = 3.998
+    Chi0(4) = 3.989
+    Chi0(5) = 3.984
+    Chi0(6) = 3.938
+    Chi0(7) = 3.887
+    Chi0(8) = 3.832
+    Chi0(9) = 3.836
+    Chi0(10) = 4.000
+
+    alpha(0) = 4.7300e-04 # [eV/K]
+    alpha(1) = 4.7340e-04 # [eV/K]
+    alpha(2) = 4.7380e-04 # [eV/K]
+    alpha(3) = 4.7420e-04 # [eV/K]
+    alpha(4) = 4.7460e-04 # [eV/K]
+    alpha(5) = 4.7500e-04 # [eV/K]
+    alpha(6) = 4.7540e-04 # [eV/K]
+    alpha(7) = 4.7580e-04 # [eV/K]
+    alpha(8) = 4.7620e-04 # [eV/K]
+    alpha(9) = 4.7660e-04 # [eV/K]
+    alpha(10) = 4.7700e-04 # [eV/K]
+
+    beta(0) = 6.3600e+02 # [K]
+    beta(1) = 5.9590e+02 # [K]
+    beta(2) = 5.5580e+02 # [K]
+    beta(3) = 5.1570e+02 # [K]
+    beta(4) = 4.7560e+02 # [K]
+    beta(5) = 4.3550e+02 # [K]
+    beta(6) = 3.9540e+02 # [K]
+    beta(7) = 3.5530e+02 # [K]
+    beta(8) = 3.1520e+02 # [K]
+    beta(9) = 2.7510e+02 # [K]
+    beta(10) = 2.3500e+02 # [K]
+
+    WorkFunction = 4.25	# [eV]
+    FermiEnergy	= 11.7 # [eV]
+  }
+
+OldSlotboom
+{ * deltaEg = dEg0 + Ebgn ( ln(N/Nref) + [ (ln(N/Nref))^2 + C]^1/2 )
+  * dEg0 is defined in BandGap section 
+  * Mole fraction dependent model.
+  * If only constant parameters are specified, those values will be
+  * used for any mole fraction instead of the interpolation below.
+  * Linear interpolation is used on the interval [0,1].
+
+    Xmax(0) = 0.0
+    Xmax(1) = 0.1
+    Xmax(2) = 0.2
+    Xmax(3) = 0.3
+    Xmax(4) = 0.4
+    Xmax(5) = 0.5
+    Xmax(6) = 0.6
+    Xmax(7) = 0.7
+    Xmax(8) = 0.8
+    Xmax(9) = 0.9
+    Xmax(10) = 1.0
+
+    Ebgn(0) = 9.00e-03
+    Ebgn(1) = 8.50e-03
+    Ebgn(2) = 8.00e-03
+    Ebgn(3) = 7.50e-03
+    Ebgn(4) = 7.00e-03
+    Ebgn(5) = 6.50e-03
+    Ebgn(6) = 6.00e-03
+    Ebgn(7) = 5.50e-03
+    Ebgn(8) = 5.00e-03
+    Ebgn(9) = 4.50e-03
+    Ebgn(10) = 4.00e-03
+
+    Nref(0) = 1.0e+17
+    Nref(1) = 1.0e+17
+    Nref(2) = 1.0e+17
+    Nref(3) = 1.0e+17
+    Nref(4) = 1.0e+17
+    Nref(5) = 1.0e+17
+    Nref(6) = 1.0e+17
+    Nref(7) = 1.0e+17
+    Nref(8) = 1.0e+17
+    Nref(9) = 1.0e+17
+    Nref(10) = 1.0e+17
+}
+
+Slotboom
+{ * deltaEg = dEg0 + Ebgn ( ln(N/Nref) + [ (ln(N/Nref))^2 + C]^1/2 )
+  * dEg0 is defined in BandGap section 
+  * Mole fraction dependent model.
+  * If only constant parameters are specified, those values will be
+  * used for any mole fraction instead of the interpolation below.
+  * Linear interpolation is used on the interval [0,1].
+	Ebgn(0)	= 6.9200e-03	# [eV]
+	Ebgn(1)	= 6.9200e-03	# [eV]
+	Nref(0)	= 1.3000e+17	# [cm^-3]
+	Nref(1)	= 1.3000e+17	# [cm^-3]
+	C(0)	= 0.5	# [1]
+	C(1)	= 0.5	# [1]
+}
+
+delAlamo
+{ * deltaEg = dEg0 + Ebgn  ln(N/Nref) 
+  * dEg0 is defined in BandGap section 
+  * Mole fraction dependent model.
+  * If only constant parameters are specified, those values will be
+  * used for any mole fraction instead of the interpolation below.
+  * Linear interpolation is used on the interval [0,1].
+	Ebgn(0)	= 0.0187	# [eV]
+	Ebgn(1)	= 0.0187	# [eV]
+	Nref(0)	= 7.0000e+17	# [cm^-3]
+	Nref(1)	= 7.0000e+17	# [cm^-3]
+}
+
+Bennett
+{ * deltaEg = dEg0 + Ebgn (ln(N/Nref))^2
+  * dEg0 is defined in BandGap section 
+  * Mole fraction dependent model.
+  * If only constant parameters are specified, those values will be
+  * used for any mole fraction instead of the interpolation below.
+  * Linear interpolation is used on the interval [0,1].
+	Ebgn(0)	= 6.8400e-03	# [eV]
+	Ebgn(1)	= 6.8400e-03	# [eV]
+	Nref(0)	= 3.1620e+18	# [cm^-3]
+	Nref(1)	= 3.1620e+18	# [cm^-3]
+}
+
+JainRoulston
+{ * deltaEg = A_i N^(1/3) + B_i N^(1/4) + C_i N^(1/2) + D_i N^(1/2)
+  * where i is n for n-type or p for p-type
+  * Mole fraction dependent model.
+  * If only constant parameters are specified, those values will be
+  * used for any mole fraction instead of the interpolation below.
+  * Linear interpolation is used on the interval [0,1].
+	A_n(0)	= 0.0000e+00	# [eV cm]
+	A_n(1)	= 0.0000e+00	# [eV cm]
+	B_n(0)	= 0.0000e+00	# [eV cm^(3/4)]
+	B_n(1)	= 0.0000e+00	# [eV cm^(3/4)]
+	C_n(0)	= 0.0000e+00	# [eV cm^(3/2)]
+	C_n(1)	= 0.0000e+00	# [eV cm^(3/2)]
+	D_n(0)	= 0.0000e+00	# [eV cm^(3/2)]
+	D_n(1)	= 0.0000e+00	# [eV cm^(3/2)]
+	A_p(0)	= 0.0000e+00	# [eV cm]
+	A_p(1)	= 0.0000e+00	# [eV cm]
+	B_p(0)	= 0.0000e+00	# [eV cm^(3/4)]
+	B_p(1)	= 0.0000e+00	# [eV cm^(3/4)]
+	C_p(0)	= 0.0000e+00	# [eV cm^(3/2)]
+	C_p(1)	= 0.0000e+00	# [eV cm^(3/2)]
+	D_p(0)	= 0.0000e+00	# [eV cm^(3/2)]
+	D_p(1)	= 0.0000e+00	# [eV cm^(3/2)]
+}
+
+*  FreeCarrierAbsorption{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+*  BandstructureParameters{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+
+*  QWstrain{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+eDOSMass
+{
+  * For effective mass specification Formula1 (me approximation):
+  * or Formula2 (Nc300) can be used :
+	Formula	= 2	# [1]
+  * Formula1:
+  * me/m0 = [ (6 * mt)^2 *  ml ]^(1/3) + mm
+  * mt = a[Eg(0)/Eg(T)] 
+  * Nc(T) = 2(2pi*kB/h_Planck^2*me*T)^3/2 = 2.5094e19 ((me/m0)*(T/300))^3/2 
+  * Mole fraction dependent model.
+  * If only constant parameters are specified, those values will be
+  * used for any mole fraction instead of the interpolation below.
+  * Linear interpolation is used on the interval [0,1].
+                Xmax(0)         =       0.
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       0.6
+                Xmax(7)         =       0.7
+                Xmax(8)         =       0.8
+                Xmax(9)         =       0.9
+                Xmax(10)        =       1.0
+
+                Nc300(0)        =       2.89e+19                #default 2.89e19, #from MC 2.911E19, 300K, ioffe database: 2.75E19-3.22E19
+                Nc300(1)        =       2.89e+19
+                Nc300(2)        =       2.89e+19
+                Nc300(3)        =       2.89e+19
+                Nc300(4)        =       2.89e+19
+                Nc300(5)        =       2.89e+19
+                Nc300(6)        =       2.89e+19
+                Nc300(7)        =       2.89e+19
+                Nc300(8)        =       2.89e+19
+                Nc300(9)        =       1.0288e+19
+                Nc300(10)       =       1.0288e+19              #ioffe database: 1.0E19, 300K
+}
+
+hDOSMass
+{
+  * For effective mass specification Formula1 (mh approximation):
+  * or Formula2 (Nv300) can be used :
+	Formula	= 2	# [1]
+  * Formula1:
+  * mh =  m0*{[(a+bT+cT^2+dT^3+eT^4)/(1+fT+gT^2+hT^3+iT^4)]^(2/3) + mm}
+  * Nv(T) = 2(2pi*kB/h_Planck^2*mh*T)^3/2 = 2.5094e19 ((mh/m0)*(T/300))^3/2 
+  * Mole fraction dependent model.
+  * If only constant parameters are specified, those values will be
+  * used for any mole fraction instead of the interpolation below.
+  * Linear interpolation is used on the interval [0,1].
+
+        Xmax(0)         =       0.
+        Xmax(1)         =       1.
+
+	a(0)	= 0.0000e+00	# [1]
+	a(1)	= 0.0000e+00	# [1]
+	b(0)	= 0.0000e+00	# [K^-1]
+	b(1)	= 0.0000e+00	# [K^-1]
+	c(0)	= 0.0000e+00	# [K^-2]
+	c(1)	= 0.0000e+00	# [K^-2]
+	d(0)	= 0.0000e+00	# [K^-3]
+	d(1)	= 0.0000e+00	# [K^-3]
+	e(0)	= 0.0000e+00	# [K^-4]
+	e(1)	= 0.0000e+00	# [K^-4]
+	f(0)	= 0.0000e+00	# [K^-1]
+	f(1)	= 0.0000e+00	# [K^-1]
+	g(0)	= 0.0000e+00	# [K^-2]
+	g(1)	= 0.0000e+00	# [K^-2]
+	h(0)	= 0.0000e+00	# [K^-3]
+	h(1)	= 0.0000e+00	# [K^-3]
+	i(0)	= 0.0000e+00	# [K^-4]
+	i(1)	= 0.0000e+00	# [K^-4]
+	mm(0)	= 1.15247	# [1]
+	mm(1)	= 0.38	# [1]
+
+        Formula         =       2
+
+        Nv300(0)        =       3.14e+19                #default 3.14e19, #from MC 2.06E19, 300K, ioffe database: 1.82E19
+        Nv300(1)        =       0.50e+19                #linear interpolation of effective mass (x=0: mh/m0=1.152, x=1: mh/m0=0.336)
+
+        #Nv300(0)       =       1.819e+19               #default 3.14e19, #from MC 2.06E19, 300K, ioffe database: 1.82E19
+        #Nv300(1)       =      0.500e+19               #ioffe database: 4.95E18, 300K
+}
+
+SchroedingerParameters:
+{ * For the hole masses for Schroedinger equation you can
+  * use different formulas.
+  * 0: use the isotropic density of states effective mass
+  * 1: (for materials with Si-like hole band structure)
+  *    m(k)/m0=1/(A+-sqrt(B+C*((xy)^2+(yz)^2+(zx)^2)))
+  *    where k=(x,y,z) is unit normal vector in reziprocal
+  *    space.  '+' for light hole band, '-' for heavy hole band
+  * 2: Heavy hole mass mh and light hole mass ml are
+  *    specified explicitly.
+  *    Use me as electron mass for free-carrier effect in 
+  *    the refractive index model.
+  * For electron masses, the following formula options exist:
+  * 0: use the isotropic density of states effective mass
+  * 1: (for materials with Si-like hole band structure)
+  *    use the a, ml, and mm parameters from eDOSMass.
+  *    Typically, this leads to anisotropy.
+	formula	= 1 ,	1	# [1]
+  * Formula(hole) 1 parameters:
+	A	= 4.22	# [1]
+	B	= 0.6084	# [1]
+	C	= 23.058	# [1]
+  * Lifting of degeneracy of bulk valleys. The value for
+  * electrons is added to the band edge for the subband
+  * ladder of lower degeneracy if positive, and subtracted
+  * from the band edge for the ladder of higher degeneracy
+  * if negative. (that is, the value of the band edge is
+  * always increased).  For holes, the value is subtracted from
+  * the band edge for the heavy hole band is positive,
+  * add added tp that of the light hole band if
+  * negative.  The signs are such that the shift always
+  * moves the band edges 'outward', away from midgap.  The
+  * gap itself is defined as the separation of the
+  * unshifted band edges and remains unaffected.
+	offset	= 0.0000e+00 ,	0.0000e+00	# [eV]
+  * Alternative to the specification of formula, offset,
+  * and masses, you can make an arbitrary number of ladder
+  * specification, 'eLadder(mz, mxy, deg, dE) and hLadder(...)
+  * Here, mz is the quantization mass, mxy an in-plane DOS mass,
+  * deg the ladder degeneracy, and dE an shift of the band edge
+  * for the ladder (non-negative; the shift is always outward,
+  * away from midgap).  When present, we solve the Schroedinger
+  * equation separately for each ladder
+
+  * Temperatures in rescaling of the mxy for eLadder and hLadder
+	ShiftTemperature	= 1.0000e+10 ,	1.0000e+10	# [K]
+}
+
+QuantumPotentialParameters
+        {
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       1.0
+
+                gamma(0)        =       4.5,    7.3             #Silicon value for electrons, from MC 8.3 for Silicon
+                gamma(1)        =       4.5,    6.4             #Nv interpolation with Nv(Silicon)=3.14e19 used
+                gamma(2)        =       4.5,    5.8
+                gamma(3)        =       4.5,    5.4
+                gamma(4)        =       4.5,    5.0
+                gamma(5)        =       4.5,    4.7
+                gamma(6)        =       4.5,    4.7
+
+                #Xmax(0)        =       0.0
+                #Xmax(1)        =       0.1
+                #Xmax(2)        =       0.2
+                #Xmax(3)        =       0.3
+                #Xmax(4)        =       0.4
+                #Xmax(5)        =       0.5
+                #Xmax(6)        =       0.6
+                #Xmax(7)        =       0.7
+                #Xmax(8)        =       0.8
+                #Xmax(9)        =       0.9
+                #Xmax(10)       =       1.0
+
+                #gamma(0)       =       4.5,    4.5             #Silicon value for electrons, from MC 8.3 for Silicon
+                #gamma(1)       =       4.5,    4.5             #Nv interpolation with Nv(Silicon)=1.89e19 used
+                #gamma(2)       =       4.5,    4.5
+                #gamma(3)       =       4.5,    4.5
+                #gamma(4)       =       4.5,    4.4
+                #gamma(5)       =       4.5,    4.2
+                #gamma(6)       =       4.5,    4.0
+                #gamma(7)       =       4.5,    3.7
+                #gamma(8)       =       4.5,    3.2
+                #gamma(9)       =       4.5,    2.5
+                #gamma(10)      =       4.5,    1.8
+
+                theta           =       0.5,    0.5
+                xi              =       1,      1
+                eta             =       1,      1
+        }
+
+QuantumPotentialParameters "100"
+        {
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       1.0
+
+                gamma(0)        =       4.5,    7.3             #Silicon value for electrons, from MC 8.3 for Silicon
+                gamma(1)        =       4.5,    6.4             #Nv interpolation with Nv(Silicon)=3.14e19 used
+                gamma(2)        =       4.5,    5.8
+                gamma(3)        =       4.5,    5.4
+                gamma(4)        =       4.5,    5.0
+                gamma(5)        =       4.5,    4.7
+                gamma(6)        =       4.5,    4.7
+
+                #Xmax(0)        =       0.0
+                #Xmax(1)        =       0.1
+                #Xmax(2)        =       0.2
+                #Xmax(3)        =       0.3
+                #Xmax(4)        =       0.4
+                #Xmax(5)        =       0.5
+                #Xmax(6)        =       0.6
+                #Xmax(7)        =       0.7
+                #Xmax(8)        =       0.8
+                #Xmax(9)        =       0.9
+                #Xmax(10)       =       1.0
+
+                #gamma(0)       =       4.5,    4.5             #Silicon value for electrons, from MC 8.3 for Silicon
+                #gamma(1)       =       4.5,    4.5             #Nv interpolation with Nv(Silicon)=1.89e19 used
+                #gamma(2)       =       4.5,    4.5
+                #gamma(3)       =       4.5,    4.5
+                #gamma(4)       =       4.5,    4.4
+                #gamma(5)       =       4.5,    4.2
+                #gamma(6)       =       4.5,    4.0
+                #gamma(7)       =       4.5,    3.7
+                #gamma(8)       =       4.5,    3.2
+                #gamma(9)       =       4.5,    2.5
+                #gamma(10)      =       4.5,    1.8
+
+                theta           =       0.5,    0.5
+                xi              =       1,      1
+                eta             =       1,      1
+        }
+
+QuantumPotentialParameters "110"
+        {
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       1.0
+
+                gamma(0)        =       6.35,   3.3             #Silicon value for electrons
+                gamma(1)        =       6.35,   3.0             #Nv interpolation with Nv(Silicon)=3.14e19 used
+                gamma(2)        =       6.35,   2.7
+                gamma(3)        =       6.35,   2.5
+                gamma(4)        =       6.35    2.3
+                gamma(5)        =       6.35,   2.2
+                gamma(6)        =       6.35,   2.2
+
+                #Xmax(0)        =       0.0
+                #Xmax(1)        =       0.1
+                #Xmax(2)        =       0.2
+                #Xmax(3)        =       0.3
+                #Xmax(4)        =       0.4
+                #Xmax(5)        =       0.5
+                #Xmax(6)        =       0.6
+                #Xmax(7)        =       0.7
+                #Xmax(8)        =       0.8
+                #Xmax(9)        =       0.9
+                #Xmax(10)       =       1.0
+
+                #gamma(0)       =       6.35,   1.6             #Silicon value for electrons, from MC 8.3 for Silicon
+                #gamma(1)       =       6.35,   1.6             #Nv interpolation with Nv(Silicon)=1.89e19 used
+                #gamma(2)       =       6.35,   1.6
+                #gamma(3)       =       6.35,   1.6
+                #gamma(4)       =       6.35,   1.6
+                #gamma(5)       =       6.35,   1.6
+                #gamma(6)       =       6.35,   1.6
+                #gamma(7)       =       6.35,   1.6
+                #gamma(8)       =       6.35,   1.4
+                #gamma(9)       =       6.35,   1.2
+                #gamma(10)      =       6.35,   0.9
+
+                theta           =       0.5,    0.5
+                xi              =       1,      1
+                eta             =       1,      1
+        }
+
+QuantumPotentialParameters "111"
+       {
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       1.0
+
+                gamma(0)        =       6.65,   4.3             #Silicon value for electrons, from MC 3.3 for Silicon
+                gamma(1)        =       6.65,   3.9
+                gamma(2)        =       6.65,   3.5
+                gamma(3)        =       6.65,   3.3
+                gamma(4)        =       6.65,   3.0
+                gamma(5)        =       6.65,   2.9
+                gamma(6)        =       6.65,   2.9
+
+                theta           =       0.5,    0.5
+                xi              =       1,      1
+                eta             =       1,      1
+        }
+
+ConstantMobility:
+  {
+    * mu_const = mumax (T/T0)^(-Exponent)
+    * Mole fraction dependent model.
+    * If only constant parameters are specified, those values will be
+    * used for any mole fraction instead of the interpolation below.
+    * Linear interpolation is used on the interval [0,1].
+
+    Xmax(0) = 0.0
+    Xmax(1) = 0.1
+    Xmax(2) = 0.2
+    Xmax(3) = 0.3
+    Xmax(4) = 0.4
+    Xmax(5) = 0.5
+    Xmax(6) = 0.6
+    Xmax(7) = 0.7
+    Xmax(8) = 0.8
+    Xmax(9) = 0.9
+    Xmax(10) = 1.0
+
+    Exponent(0)	= 2.5, 2.2 #[1]  
+    Exponent(1)	= 2.4, 2.21 #[1]
+    Exponent(2)	= 2.3, 2.22 #[1]
+    Exponent(3)	= 2.2, 2.23 #[1]
+    Exponent(4)	= 2.1, 2.24 #[1]
+    Exponent(5)	= 2.0, 2.25 #[1]
+    Exponent(6)	= 1.9, 2.26 #[1]
+    Exponent(7)	= 1.8, 2.27 #[1]
+    Exponent(8)	= 1.7, 2.28 #[1]
+    Exponent(9)	= 1.6, 2.29 #[1]
+    Exponent(10) = 1.6, 2.3 #[1]
+
+    mumax(0) = 1417.0, 486.0
+    mumax(1) = 976.9, 364.0
+    mumax(2) = 568.7, 300.0
+    mumax(3) = 290.9, 300.0
+    mumax(4) = 250.0, 320.0
+    mumax(5) = 276.7, 364.0
+    mumax(6) = 373.1, 550.0
+    mumax(7) = 378.3, 700.0
+    mumax(8) = 392.8, 900.0
+    mumax(9) = 1037.8, 1300.0
+    mumax(10) = 3856.7, 1789.5
+
+    mutunnel = 0.05, 0.05 #[cm^2/(Vs)]
+  }
+
+ConstantMobility_aniso:
+  { 
+    * mu_const = mumax (T/T0)^(-Exponent)
+    * Mole fraction dependent model.
+    * If only constant parameters are specified, those values will be
+    * used for any mole fraction instead of the interpolation below.
+    * Linear interpolation is used on the interval [0,1].
+
+    Xmax(0) = 0.0
+    Xmax(1) = 0.1
+    Xmax(2) = 0.2
+    Xmax(3) = 0.3
+    Xmax(4) = 0.4
+    Xmax(5) = 0.5
+    Xmax(6) = 0.6
+    Xmax(7) = 0.7
+    Xmax(8) = 0.8
+    Xmax(9) = 0.9
+    Xmax(10) = 1.0
+
+    Exponent(0)	= 2.5, 2.2 #[1]  
+    Exponent(1)	= 2.4, 2.21 #[1]
+    Exponent(2)	= 2.3, 2.22 #[1]
+    Exponent(3)	= 2.2, 2.23 #[1]
+    Exponent(4)	= 2.1, 2.24 #[1]
+    Exponent(5)	= 2.0, 2.25 #[1]
+    Exponent(6)	= 1.9, 2.26 #[1]
+    Exponent(7)	= 1.8, 2.27 #[1]
+    Exponent(8)	= 1.7, 2.28 #[1]
+    Exponent(9)	= 1.6, 2.29 #[1]
+    Exponent(10) = 1.6, 2.3 #[1]
+
+    mumax(0) = 1417.0, 486.0
+    mumax(1) = 976.9, 364.0
+    mumax(2) = 568.7, 300.0
+    mumax(3) = 290.9, 300.0
+    mumax(4) = 250.0, 320.0
+    mumax(5) = 276.7, 364.0
+    mumax(6) = 373.1, 550.0
+    mumax(7) = 378.3, 700.0
+    mumax(8) = 392.8, 900.0
+    mumax(9) = 1037.8, 1300.0
+    mumax(10) = 3856.7, 1789.5
+
+    mutunnel = 0.05, 0.05 #[cm^2/(Vs)]
+  }
+
+*  DopingDependence{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+
+*  DopingDependence_aniso{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+PhuMob: 
+  {
+
+    Xmax(0) = 0.0
+    Xmax(1) = 0.1
+    Xmax(2) = 0.2
+    Xmax(3) = 0.3
+    Xmax(4) = 0.4
+    Xmax(5) = 0.5
+    Xmax(6) = 0.6
+    Xmax(7) = 0.7
+    Xmax(8) = 0.8
+    Xmax(9) = 0.9
+    Xmax(10) = 1.0
+
+    mumax_As(0) = 1.4170e+03	# [cm^2/Vs] 
+    mumax_As(1) = 9.0000e+02	# [cm^2/Vs] 
+    mumax_As(2) = 5.7500e+02	# [cm^2/Vs] 
+    mumax_As(3) = 5.0000e+02	# [cm^2/Vs] 
+    mumax_As(4) = 4.5000e+02	# [cm^2/Vs] 
+    mumax_As(5) = 4.5000e+02	# [cm^2/Vs] 
+    mumax_As(6) = 4.5000e+02	# [cm^2/Vs] 
+    mumax_As(7) = 4.5000e+02	# [cm^2/Vs] 
+    mumax_As(8) = 6.0000e+02	# [cm^2/Vs] 
+    mumax_As(9) = 2.2500e+03	# [cm^2/Vs] 
+    mumax_As(10) = 3.8567e+03	# [cm^2/Vs] 
+
+    mumax_P(0) = 1.4140e+03	# [cm^2/Vs] 
+    mumax_P(1) = 9.0000e+02	# [cm^2/Vs] 
+    mumax_P(2) = 5.7500e+02	# [cm^2/Vs] 
+    mumax_P(3) = 5.0000e+02	# [cm^2/Vs] 
+    mumax_P(4) = 4.5000e+02	# [cm^2/Vs] 
+    mumax_P(5) = 4.5000e+02	# [cm^2/Vs] 
+    mumax_P(6) = 4.5000e+02	# [cm^2/Vs] 
+    mumax_P(7) = 4.5000e+02	# [cm^2/Vs] 
+    mumax_P(8) = 6.0000e+02	# [cm^2/Vs] 
+    mumax_P(9) = 2.2500e+03	# [cm^2/Vs] 
+    mumax_P(10) = 3.8567e+03	# [cm^2/Vs] 
+
+    mumax_B(0) = 4.8600e+02	# [cm^2/Vs] 
+    mumax_B(1) = 4.2500e+02	# [cm^2/Vs] 
+    mumax_B(2) = 3.2500e+02	# [cm^2/Vs] 
+    mumax_B(3) = 3.0000e+02	# [cm^2/Vs] 
+    mumax_B(4) = 3.5000e+02	# [cm^2/Vs] 
+    mumax_B(5) = 4.0000e+02	# [cm^2/Vs] 
+    mumax_B(6) = 5.5000e+02	# [cm^2/Vs] 
+    mumax_B(7) = 7.2500e+02	# [cm^2/Vs] 
+    mumax_B(8) = 9.0000e+02	# [cm^2/Vs] 
+    mumax_B(9) = 1.3750e+03	# [cm^2/Vs] 
+    mumax_B(10) = 1.7895e+03	# [cm^2/Vs] 
+
+    mumin_As(0) = 56.0 # [cm^2/Vs] 
+    mumin_As(1) = 56.0 # [cm^2/Vs] 
+    mumin_As(2) = 56.0 # [cm^2/Vs] 
+    mumin_As(3) = 56.0 # [cm^2/Vs] 
+    mumin_As(4) = 56.0 # [cm^2/Vs] 
+    mumin_As(5) = 56.0 # [cm^2/Vs] 
+    mumin_As(6) = 56.0 # [cm^2/Vs] 
+    mumin_As(7) = 56.0 # [cm^2/Vs] 
+    mumin_As(8) = 56.0 # [cm^2/Vs] 
+    mumin_As(9) = 56.0 # [cm^2/Vs] 
+    mumin_As(10) = 56.0 # [cm^2/Vs] 
+
+    mumin_P(0) = 72.3 # [cm^2/Vs]
+    mumin_P(1) = 72.3 # [cm^2/Vs]  
+    mumin_P(2) = 72.3 # [cm^2/Vs] 
+    mumin_P(3) = 72.3 # [cm^2/Vs] 
+    mumin_P(4) = 72.3 # [cm^2/Vs] 
+    mumin_P(5) = 72.3 # [cm^2/Vs] 
+    mumin_P(6) = 72.3 # [cm^2/Vs] 
+    mumin_P(7) = 72.3 # [cm^2/Vs] 
+    mumin_P(8) = 72.3 # [cm^2/Vs] 
+    mumin_P(9) = 72.3 # [cm^2/Vs] 
+    mumin_P(10) = 72.3 # [cm^2/Vs] 
+
+    mumin_B(0) = 46.0 # [cm^2/Vs]
+    mumin_B(1) = 46.0 # [cm^2/Vs]  
+    mumin_B(2) = 46.0 # [cm^2/Vs] 
+    mumin_B(3) = 46.0 # [cm^2/Vs] 
+    mumin_B(4) = 46.0 # [cm^2/Vs] 
+    mumin_B(5) = 46.0 # [cm^2/Vs] 
+    mumin_B(6) = 46.0 # [cm^2/Vs] 
+    mumin_B(7) = 46.0 # [cm^2/Vs] 
+    mumin_B(8) = 46.0 # [cm^2/Vs] 
+    mumin_B(9) = 46.0 # [cm^2/Vs] 
+    mumin_B(10) = 46.0 # [cm^2/Vs] 
+
+    alpha_As(0) = 0.680 # [1]
+    alpha_As(1) = 0.667 # [1]
+    alpha_As(2) = 0.654 # [1]
+    alpha_As(3) = 0.641 # [1]
+    alpha_As(4) = 0.628 # [1]
+    alpha_As(5) = 0.614 # [1]
+    alpha_As(6) = 0.601 # [1]
+    alpha_As(7) = 0.587 # [1]
+    alpha_As(8) = 0.574 # [1]
+    alpha_As(9) = 0.560 # [1]
+    alpha_As(10) = 0.550 # [1]
+
+    alpha_P(0) = 0.711 # [1]
+    alpha_P(1) = 0.695 # [1]
+    alpha_P(2) = 0.679 # [1]
+    alpha_P(3) = 0.663 # [1]
+    alpha_P(4) = 0.647 # [1]
+    alpha_P(5) = 0.631 # [1]
+    alpha_P(6) = 0.615 # [1]
+    alpha_P(7) = 0.599 # [1]
+    alpha_P(8) = 0.583 # [1]
+    alpha_P(9) = 0.567 # [1]
+    alpha_P(10) = 0.550 # [1]
+
+    alpha_B(0) = 0.719 # [1]
+    alpha_B(1) = 0.702 # [1]
+    alpha_B(2) = 0.685 # [1]
+    alpha_B(3) = 0.668 # [1]
+    alpha_B(4) = 0.651 # [1]
+    alpha_B(5) = 0.634 # [1]
+    alpha_B(6) = 0.618 # [1]
+    alpha_B(7) = 0.601 # [1]
+    alpha_B(8) = 0.584 # [1]
+    alpha_B(9) = 0.567 # [1]
+    alpha_B(10) = 0.550 # [1]
+
+    theta_As = 2.285 # [1]
+    n_ref_As = 9.6800e+16 # [cm^(-3)]
+    theta_P = 2.285 # [1]
+    n_ref_P = 9.2000e+16 # [cm^(-3)]
+    theta_B = 2.247 # [1]
+    n_ref_B = 2.2300e+17 # [cm^(-3)]
+    nref_D = 4.0000e+20	# [cm^(-3)]
+    nref_A = 7.2000e+20	# [cm^(-3)]
+    cref_D = 0.21 # [1]
+    cref_A = 0.5 # [1]
+    me_over_m0 = 1 # [1]
+    mh_over_m0 = 1.258 # [1]
+    f_CW = 2.459 # [1]
+    f_BH = 3.828 # [1]
+    f_e = 1 # [1]
+    f_h = 1 # [1]
+    alpha1_g_k = -7.2169e-01 # [1]
+    alpha1_g_m = -1.5952e+00 # [1]
+  }
+
+*  EnormalDependence{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+
+*  EnormalDependence_aniso{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+IALMob
+  {
+    * for <110> and <100> channel
+ 
+    EnormMinimum = 0 #[V/cm]
+
+    Xmax(0) = 0.0
+    Xmax(1) = 0.1
+    Xmax(2) = 0.2
+    Xmax(3) = 0.3
+    Xmax(4) = 0.4
+    Xmax(5) = 0.5
+    Xmax(6) = 0.6
+    Xmax(7) = 0.7
+    Xmax(8) = 0.8
+    Xmax(9) = 0.9
+    Xmax(10) = 1.0
+
+    * original bulk mobility data at low doping
+    mumax(0) = 1417.0, 486.0 # [cm^2/V/s] 
+    mumax(1) = 900.0, 425.0 # [cm^2/V/s] 
+    mumax(2) = 575.0, 325.0 # [cm^2/V/s]
+    mumax(3) = 500.0, 300.0 # [cm^2/V/s]
+    mumax(4) = 450.0, 350.0 # [cm^2/V/s]
+    mumax(5) = 450.0, 400.0 # [cm^2/V/s]
+    mumax(6) = 450.0, 550.0 # [cm^2/V/s]
+    mumax(7) = 450.0, 725.0 # [cm^2/V/s]  
+    mumax(8) = 600.0, 900.0 # [cm^2/V/s] 
+    mumax(9) = 2250.0, 1375.0 # [cm^2/V/s]
+    mumax(10) = 3856.7, 1789.5 # [cm^2/V/s]
+
+    alpha(0) = 0.68, 0.719 # [1]
+    alpha(1) = 0.667, 0.702 # [1]
+    alpha(2) = 0.654, 0.685 # [1]
+    alpha(3) = 0.641, 0.668 # [1]
+    alpha(4) = 0.628, 0.651 # [1]
+    alpha(5) = 0.614, 0.634 # [1]
+    alpha(6) = 0.601, 0.618 # [1]
+    alpha(7) = 0.587, 0.601 # [1]
+    alpha(8) = 0.574, 0.584 # [1]
+    alpha(9) = 0.56, 0.567 # [1] 
+    alpha(10) = 0.55, 0.55 # [1]
+
+    mumin(0) = 	56.0, 46.0 # [cm^2/V/s]
+    mumin(1) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(2) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(3) = 	56.0, 46.0 # [cm^2/V/s]               
+    mumin(4) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(5) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(6) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(7) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(8) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(9) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(10) = 56.0, 46.0 # [cm^2/V/s]
+
+    theta(0) = 2.285, 2.247
+    theta(1) = 2.285, 2.247
+    theta(2) = 2.285, 2.247
+    theta(3) = 2.285, 2.247
+    theta(4) = 2.285, 2.247
+    theta(5) = 2.285, 2.247
+    theta(6) = 2.285, 2.247
+    theta(7) = 2.285, 2.247
+    theta(8) = 2.285, 2.247
+    theta(9) = 2.285, 2.247
+    theta(10) = 2.285, 2.247
+      		      		
+    n_ref(0) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(1) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(2) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(3) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(4) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(5) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(6) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(7) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(8) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(9) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(10) =	9.68e16, 2.23e17 # [1/cm^3]
+      		      		
+    nref_A(0) =	7.2e+20 # [1/cm^3]
+    nref_A(1) =	7.2e+20 # [1/cm^3]
+    nref_A(2) =	7.2e+20 # [1/cm^3]
+    nref_A(3) =	7.2e+20 # [1/cm^3]
+    nref_A(4) =	7.2e+20 # [1/cm^3]
+    nref_A(5) =	7.2e+20 # [1/cm^3]
+    nref_A(6) =	7.2e+20 # [1/cm^3]
+    nref_A(7) =	7.2e+20 # [1/cm^3]
+    nref_A(8) =	7.2e+20 # [1/cm^3]
+    nref_A(9) =	7.2e+20 # [1/cm^3]
+    nref_A(10) = 7.2e+20 # [1/cm^3]
+
+    nref_D(0) =	4.0e+20 # [1/cm^3]
+    nref_D(1) =	4.0e+20 # [1/cm^3]
+    nref_D(2) =	4.0e+20 # [1/cm^3]
+    nref_D(3) =	4.0e+20 # [1/cm^3]
+    nref_D(4) =	4.0e+20 # [1/cm^3]
+    nref_D(5) =	4.0e+20 # [1/cm^3]
+    nref_D(6) =	4.0e+20 # [1/cm^3]
+    nref_D(7) =	4.0e+20 # [1/cm^3]
+    nref_D(8) =	4.0e+20 # [1/cm^3]
+    nref_D(9) =	4.0e+20 # [1/cm^3]
+    nref_D(10) = 4.0e+20  # [1/cm^3]     		      		
+      		      		      		      		      		      		
+    cref_D(0) =	0.21
+    cref_D(1) =	0.21
+    cref_D(2) =	0.21
+    cref_D(3) =	0.21
+    cref_D(4) =	0.21
+    cref_D(5) =	0.21
+    cref_D(6) =	0.21
+    cref_D(7) =	0.21
+    cref_D(8) =	0.21
+    cref_D(9) =	0.21
+    cref_D(10) = 0.21
+
+    cref_A(0) =	0.5
+    cref_A(1) =	0.5
+    cref_A(2) =	0.5
+    cref_A(3) =	0.5
+    cref_A(4) =	0.5
+    cref_A(5) =	0.5
+    cref_A(6) =	0.5
+    cref_A(7) =	0.5
+    cref_A(8) =	0.5
+    cref_A(9) =	0.5
+    cref_A(10) = 0.5
+     		      		      		      		
+    me_over_m0(0) = 1.0
+    me_over_m0(1) = 1.0
+    me_over_m0(2) = 1.0
+    me_over_m0(3) = 1.0
+    me_over_m0(4) = 1.0
+    me_over_m0(5) = 1.0
+    me_over_m0(6) = 1.0
+    me_over_m0(7) = 1.0
+    me_over_m0(8) = 1.0
+    me_over_m0(9) = 1.0
+    me_over_m0(10) = 1.0
+		
+    mh_over_m0(0) = 1.258 
+    mh_over_m0(1) = 1.258 
+    mh_over_m0(2) = 1.258 
+    mh_over_m0(3) = 1.258 
+    mh_over_m0(4) = 1.258 
+    mh_over_m0(5) = 1.258 
+    mh_over_m0(6) = 1.258 
+    mh_over_m0(7) = 1.258 
+    mh_over_m0(8) = 1.258 
+    mh_over_m0(9) = 1.258 
+    mh_over_m0(10) = 1.258 
+
+    B(0) = 8.00e+07, 1.00e+06 # [cm/s]                
+    B(1) = 8.00e+07, 2.00e+06 # [cm/s]               
+    B(2) = 8.00e+07, 3.00e+06 # [cm/s]               
+    B(3) = 8.00e+07, 4.00e+06 # [cm/s]                
+    B(4) = 8.00e+07, 5.00e+06 # [cm/s]                
+    B(5) = 8.00e+07, 6.00e+06 # [cm/s]                
+    B(6) = 8.00e+07, 7.00e+06 # [cm/s]                
+    B(7) = 8.00e+07, 8.00e+06 # [cm/s]                
+    B(8) = 8.00e+07, 9.00e+06 # [cm/s]                
+    B(9) = 5.00e+07, 1.00e+07 # [cm/s]                
+    B(10) = 5.00e+07, 1.10e+07 # [cm/s]                
+
+    C(0) = 1.90e+02, 3.20e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(1) = 1.90e+02, 3.48e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(2) = 1.90e+02, 3.76e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(3) = 1.90e+02, 4.04e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(4) = 1.90e+02, 4.32e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(5) = 1.90e+02, 4.60e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(6) = 1.90e+02, 4.88e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(7) = 1.90e+02, 5.16e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(8) = 1.90e+02, 5.44e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(9) = 1.25e+02, 5.72e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(10) = 1.25e+02, 6.00e+03 # [cm^(5/3)*V^(-2/3)/s]               
+
+    delta(0) = 1.00e+13, 1.30e+14 # [cm^2/V/s]                
+    delta(1) = 1.00e+13, 1.92e+14 # [cm^2/V/s]                
+    delta(2) = 1.00e+13, 2.54e+14 # [cm^2/V/s]                
+    delta(3) = 1.00e+13, 3.16e+14 # [cm^2/V/s]                
+    delta(4) = 1.00e+13, 3.78e+14 # [cm^2/V/s]                
+    delta(5) = 1.00e+13, 4.40e+14 # [cm^2/V/s]                
+    delta(6) = 1.00e+13, 5.02e+14 # [cm^2/V/s]                
+    delta(7) = 1.00e+13, 5.64e+14 # [cm^2/V/s]                
+    delta(8) = 1.00e+13, 6.26e+14 # [cm^2/V/s]                
+    delta(9) = 4.00e+12, 6.88e+14 # [cm^2/V/s]                
+    delta(10) = 4.00e+12, 7.50e+14 # [cm^2/V/s]                
+
+    lambda(0) = 1.0, 1.0
+    lambda(1) = 1.0, 1.0
+    lambda(2) = 1.0, 1.0
+    lambda(3) = 1.0, 1.0
+    lambda(4) = 1.0, 1.0
+    lambda(5) = 1.0, 1.0
+    lambda(6) = 1.0, 1.0
+    lambda(7) = 1.0, 1.0
+    lambda(8) = 1.0, 1.0
+    lambda(9) = 1.0, 1.0
+    lambda(10) = 1.0, 1.0
+
+    lambda_sr(0) = 1.0, 1.0
+    lambda_sr(1) = 1.0, 1.0
+    lambda_sr(2) = 1.0, 1.0
+    lambda_sr(3) = 1.0, 1.0
+    lambda_sr(4) = 1.0, 1.0
+    lambda_sr(5) = 1.0, 1.0
+    lambda_sr(6) = 1.0, 1.0
+    lambda_sr(7) = 1.0, 1.0
+    lambda_sr(8) = 1.0, 1.0
+    lambda_sr(9) = 1.0, 1.0
+    lambda_sr(10) = 1.0, 1.0
+
+    lambda_sr_A(0) = 0.09, 0.0
+    lambda_sr_A(1) = 0.0867, 0.0
+    lambda_sr_A(2) = 0.0833, 0.0
+    lambda_sr_A(3) = 0.08, 0.0
+    lambda_sr_A(4) = 0.078, 0.0
+    lambda_sr_A(5) = 0.076, 0.0
+    lambda_sr_A(6) = 0.074, 0.0
+    lambda_sr_A(7) = 0.072, 0.0
+    lambda_sr_A(8) = 0.07, 0.0
+    lambda_sr_A(9) = 0.09, 0.0
+    lambda_sr_A(10) = 0.1, 0.0
+    	        
+    lambda_sr_D(0) = 0.0, 0.01
+    lambda_sr_D(1) = 0.0, 0.01
+    lambda_sr_D(2) = 0.0, 0.01
+    lambda_sr_D(3) = 0.0, 0.01
+    lambda_sr_D(4) = 0.0, 0.01
+    lambda_sr_D(5) = 0.0, 0.01
+    lambda_sr_D(6) = 0.0, 0.01
+    lambda_sr_D(7) = 0.0, 0.01
+    lambda_sr_D(8) = 0.0, 0.01
+    lambda_sr_D(9) = 0.0, 0.01
+    lambda_sr_D(10) = 0.0, 0.05
+
+    lambda_ph2d_A(0) = 0.14, 0.0
+    lambda_ph2d_A(1) = 0.14, 0.0
+    lambda_ph2d_A(2) = 0.14, 0.0
+    lambda_ph2d_A(3) = 0.14, 0.0
+    lambda_ph2d_A(4) = 0.14, 0.0
+    lambda_ph2d_A(5) = 0.14, 0.0
+    lambda_ph2d_A(6) = 0.14, 0.0
+    lambda_ph2d_A(7) = 0.14, 0.0
+    lambda_ph2d_A(8) = 0.14, 0.0
+    lambda_ph2d_A(9) = 0.14, 0.0
+    lambda_ph2d_A(10) = 0.14, 0.0
+
+    lambda_ph2d_D(0) = 0.0, 0.0
+    lambda_ph2d_D(1) = 0.0, 0.001
+    lambda_ph2d_D(2) = 0.0, 0.002
+    lambda_ph2d_D(3) = 0.0, 0.003
+    lambda_ph2d_D(4) = 0.0, 0.004
+    lambda_ph2d_D(5) = 0.0, 0.005
+    lambda_ph2d_D(6) = 0.0, 0.006
+    lambda_ph2d_D(7) = 0.0, 0.007
+    lambda_ph2d_D(8) = 0.0, 0.008
+    lambda_ph2d_D(9) = 0.0, 0.009
+    lambda_ph2d_D(10) = 0.0, 0.01
+
+    alpha_ph2d_A(0) = 1.0, 1.0
+    alpha_ph2d_A(1) = 1.0, 1.0
+    alpha_ph2d_A(2) = 1.0, 1.0
+    alpha_ph2d_A(3) = 1.0, 1.0
+    alpha_ph2d_A(4) = 1.0, 1.0
+    alpha_ph2d_A(5) = 1.0, 1.0
+    alpha_ph2d_A(6) = 1.0, 1.0
+    alpha_ph2d_A(7) = 1.0, 1.0
+    alpha_ph2d_A(8) = 1.0, 1.0
+    alpha_ph2d_A(9) = 1.0, 1.0
+    alpha_ph2d_A(10) = 1.0, 1.0
+
+    alpha_ph2d_D(0) = 1.0, 1.0
+    alpha_ph2d_D(1) = 1.0, 1.0
+    alpha_ph2d_D(2) = 1.0, 1.0
+    alpha_ph2d_D(3) = 1.0, 1.0
+    alpha_ph2d_D(4) = 1.0, 1.0
+    alpha_ph2d_D(5) = 1.0, 1.0
+    alpha_ph2d_D(6) = 1.0, 1.0
+    alpha_ph2d_D(7) = 1.0, 1.0
+    alpha_ph2d_D(8) = 1.0, 1.0
+    alpha_ph2d_D(9) = 1.0, 1.0
+    alpha_ph2d_D(10) = 1.0, 1.0
+
+    alpha_sr_A(0) = 1.0, 1.0
+    alpha_sr_A(1) = 1.0, 1.0
+    alpha_sr_A(2) = 1.0, 1.0
+    alpha_sr_A(3) = 1.0, 1.0
+    alpha_sr_A(4) = 1.0, 1.0
+    alpha_sr_A(5) = 1.0, 1.0
+    alpha_sr_A(6) = 1.0, 1.0
+    alpha_sr_A(7) = 1.0, 1.0
+    alpha_sr_A(8) = 1.0, 1.0
+    alpha_sr_A(9) = 1.0, 1.0
+    alpha_sr_A(10) = 1.0, 1.0
+
+    alpha_sr_D(0) = 1.0, 1.0
+    alpha_sr_D(1) = 1.0, 1.0
+    alpha_sr_D(2) = 1.0, 1.0
+    alpha_sr_D(3) = 1.0, 1.0
+    alpha_sr_D(4) = 1.0, 1.0
+    alpha_sr_D(5) = 1.0, 1.0
+    alpha_sr_D(6) = 1.0, 1.0
+    alpha_sr_D(7) = 1.0, 1.0
+    alpha_sr_D(8) = 1.0, 1.0
+    alpha_sr_D(9) = 1.0, 1.0
+    alpha_sr_D(10) = 1.0, 1.0
+
+    A(0) = 2.0, 2.0
+    A(1) = 2.0, 2.0
+    A(2) = 2.0, 2.0
+    A(3) = 2.0, 2.0
+    A(4) = 2.0, 2.0
+    A(5) = 2.0, 2.0
+    A(6) = 2.0, 2.0
+    A(7) = 2.0, 2.0
+    A(8) = 2.0, 2.0
+    A(9) = 2.0, 2.0
+    A(10) = 2.0, 2.0	             	             	             	             	        
+     	             	             	             	             	             	             	        
+    alpha_sr(0) = 0.0, 0.0
+    alpha_sr(1) = 0.0, 1.0e-22
+    alpha_sr(2) = 0.0, 2.0e-22
+    alpha_sr(3) = 0.0, 3.0e-22
+    alpha_sr(4) = 0.0, 4.0e-22
+    alpha_sr(5) = 0.0, 5.0e-22
+    alpha_sr(6) = 0.0, 6.0e-22
+    alpha_sr(7) = 0.0, 7.0e-22
+    alpha_sr(8) = 0.0, 8.0e-22
+    alpha_sr(9) = 0.0, 9.0e-22
+    alpha_sr(10) = 0.0, 3.0e-21, #1.0e-21
+    	             	        
+    S(0) = 0.3042, 0.3042
+    S(1) = 0.3042, 0.3042     
+    S(2) = 0.3042, 0.3042     
+    S(3) = 0.3042, 0.3042     
+    S(4) = 0.3042, 0.3042     
+    S(5) = 0.3042, 0.3042     
+    S(6) = 0.3042, 0.3042     
+    S(7) = 0.3042, 0.3042     
+    S(8) = 0.3042, 0.3042     
+    S(9) = 0.3042, 0.3042     
+    S(10) = 0.3042, 0.3042     
+    	        
+    P(0) = 4.0, 4.0 # [1] 
+    P(1) = 4.0, 3.7 # [1]     	        
+    P(2) = 4.0, 3.6 # [1]     	        
+    P(3) = 4.0, 3.5 # [1]     	        
+    P(4) = 4.0, 3.4 # [1]     	        
+    P(5) = 4.0, 3.3 # [1]     	        
+    P(6) = 4.0, 3.3 # [1]     	        
+    P(7) = 4.0, 3.3 # [1]     	        
+    P(8) = 4.0, 3.4 # [1]     	        
+    P(9) = 4.0, 3.6 # [1]     	        
+    P(10) = 4.0, 4.0 # [1]     	        
+   	        		     	        
+    k(0) = 1.0, 1.0 # [1]     
+    k(1) = 1.0, 1.0 # [1]     
+    k(2) = 1.0, 1.0 # [1]     
+    k(3) = 1.0, 1.0 # [1]     
+    k(4) = 1.0, 1.0 # [1]     
+    k(5) = 1.0, 1.0 # [1]     
+    k(6) = 1.0, 1.0 # [1]     
+    k(7) = 1.0, 1.0 # [1]     
+    k(8) = 1.0, 1.0 # [1]     
+    k(9) = 1.0, 1.0 # [1]     
+    k(10) = 1.0, 1.0 # [1]     
+	        
+    nu(0) = 0.0, 0.0 # [1]     	            	             	             	            	                 
+    nu(1) = 0.0, 0.0 # [1]
+    nu(2) = 0.0, 0.0 # [1]
+    nu(3) = 0.0, 0.0 # [1]
+    nu(4) = 0.0, 0.0 # [1]
+    nu(5) = 0.0, 0.0 # [1]
+    nu(6) = 0.0, 0.0 # [1]
+    nu(7) = 0.0, 0.0 # [1]
+    nu(8) = 0.0, 0.0 # [1]
+    nu(9) = 0.0, 0.0 # [1]
+    nu(10) = 0.0, 0.0 # [1]
+	             	            	             	             	            	   
+    eta(0) = 1.0e+50, 1.0e+50 # [V^2/cm/s]     	            	             	             	            	             
+    eta(1) = 1.0e+50, 1.0e+50 # [V^2/cm/s]     	            	             	             	            	             
+    eta(2) = 1.0e+50, 1.0e+50 # [V^2/cm/s]     	            	             	             	            	             
+    eta(3) = 1.0e+50, 1.0e+50 # [V^2/cm/s]
+    eta(4) = 1.0e+50, 1.0e+50 # [V^2/cm/s] 
+    eta(5) = 1.0e+50, 1.0e+50 # [V^2/cm/s] 
+    eta(6) = 1.0e+50, 1.0e+50 # [V^2/cm/s] 
+    eta(7) = 1.0e+50, 1.0e+50 # [V^2/cm/s] 
+    eta(8) = 1.0e+50, 1.0e+50 # [V^2/cm/s] 
+    eta(9) = 1.0e+50, 1.0e+50 # [V^2/cm/s] 
+    eta(10) = 1.0e+50, 1.0e+50 # [V^2/cm/s]      	            	             	             	            	             	             	            	             	             	            	             	             
+    N1(0) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(1) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(2) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(3) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(4) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(5) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(6) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(7) = 1.0e+15, 1.0e+15 # [1/cm^3] 
+    N1(8) = 1.0e+15, 1.0e+15 # [1/cm^3] 
+    N1(9) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(10) = 1.0e+15, 1.0e+15 # [1/cm^3] 
+             	        
+    N2(0) = 1.0e+15, 1.0e+14 # [1/cm^3]
+    N2(1) = 1.0e+15, 1.0e+14 # [1/cm^3]
+    N2(2) = 1.0e+15, 1.0e+14 # [1/cm^3]     	            	             	             	            	             
+    N2(3) = 1.0e+15, 1.0e+14 # [1/cm^3]     	            	             	             	            
+    N2(4) = 1.0e+15, 1.0e+14 # [1/cm^3]
+    N2(5) = 1.0e+15, 1.0e+14 # [1/cm^3]
+    N2(6) = 1.0e+15, 1.0e+14 # [1/cm^3]
+    N2(7) = 1.0e+15, 1.0e+14 # [1/cm^3] 
+    N2(8) = 1.0e+15, 1.0e+14 # [1/cm^3] 
+    N2(9) = 1.0e+15, 1.0e+14 # [1/cm^3]
+    N2(10) = 1.0e+15, 1.0e+14 # [1/cm^3] 
+
+    D1_inv(0) = 350.0, 350.0
+    D1_inv(1) = 350.0, 500.0
+    D1_inv(2) = 350.0, 650.0
+    D1_inv(3) = 350.0, 800.0
+    D1_inv(4) = 350.0, 950.0
+    D1_inv(5) = 350.0, 1100.0
+    D1_inv(6) = 350.0, 1250.0
+    D1_inv(7) = 350.0, 1400.0
+    D1_inv(8) = 350.0, 1550.0
+    D1_inv(9) = 950.0, 1700.0
+    D1_inv(10) = 950.0, 1850.0
+
+    D2_inv(0) = 350.0, 350.0
+    D2_inv(1) = 350.0, 500.0
+    D2_inv(2) = 350.0, 650.0
+    D2_inv(3) = 350.0, 800.0
+    D2_inv(4) = 350.0, 950.0
+    D2_inv(5) = 350.0, 1100.0
+    D2_inv(6) = 350.0, 1250.0
+    D2_inv(7) = 350.0, 1400.0
+    D2_inv(8) = 350.0, 1550.0
+    D2_inv(9) = 950.0, 1700.0
+    D2_inv(10) = 950.0, 1850.0
+     	            	              	              	            	        
+    nu0_inv(0) = 1.5, 1.5
+    nu0_inv(1) = 1.5, 1.5 
+    nu0_inv(2) = 1.5, 1.5 
+    nu0_inv(3) = 1.5, 1.5 
+    nu0_inv(4) = 1.5, 1.5 
+    nu0_inv(5) = 1.5, 1.5 
+    nu0_inv(6) = 1.5, 1.5 
+    nu0_inv(7) = 1.5, 1.5 
+    nu0_inv(8) = 1.5, 1.5 
+    nu0_inv(9) = 1.5, 1.5 
+    nu0_inv(10) = 1.5, 1.5 
+     	              	        
+    nu1_inv(0) = 2.0, 2.0
+    nu1_inv(1) = 2.0, 2.0 
+    nu1_inv(2) = 2.0, 2.0 
+    nu1_inv(3) = 2.0, 2.0 
+    nu1_inv(4) = 2.0, 2.0 
+    nu1_inv(5) = 2.0, 2.0 
+    nu1_inv(6) = 2.0, 2.0 
+    nu1_inv(7) = 2.0, 2.0 
+    nu1_inv(8) = 2.0, 2.0 
+    nu1_inv(9) = 2.0, 2.0 
+    nu1_inv(10) = 2.0, 2.0 
+      	             	        
+    nu2_inv(0) = 0.5, 0.5
+    nu2_inv(1) = 0.5, 0.5 
+    nu2_inv(2) = 0.5, 0.5 
+    nu2_inv(3) = 0.5, 0.5 
+    nu2_inv(4) = 0.5, 0.5 
+    nu2_inv(5) = 0.5, 0.5 
+    nu2_inv(6) = 0.5, 0.5 
+    nu2_inv(7) = 0.5, 0.5 
+    nu2_inv(8) = 0.5, 0.5 
+    nu2_inv(9) = 0.5, 0.5 
+    nu2_inv(10) = 0.5, 0.5 
+
+    alpha1_inv(0) = 0.0, 0.0
+    alpha1_inv(1) = 0.0, 0.0
+    alpha1_inv(2) = 0.0, 0.0
+    alpha1_inv(3) = 0.0, 0.0
+    alpha1_inv(4) = 0.0, 0.0
+    alpha1_inv(5) = 0.0, 0.0
+    alpha1_inv(6) = 0.0, 0.0
+    alpha1_inv(7) = 0.0, 0.0
+    alpha1_inv(8) = 0.0, 0.0
+    alpha1_inv(9) = 0.0, 0.0
+    alpha1_inv(10) = 0.0, 0.0
+
+    alpha2_inv(0) = 0.0, 0.0
+    alpha2_inv(1) = 0.0, 0.0
+    alpha2_inv(2) = 0.0, 0.0
+    alpha2_inv(3) = 0.0, 0.0
+    alpha2_inv(4) = 0.0, 0.0
+    alpha2_inv(5) = 0.0, 0.0
+    alpha2_inv(6) = 0.0, 0.0
+    alpha2_inv(7) = 0.0, 0.0
+    alpha2_inv(8) = 0.0, 0.0
+    alpha2_inv(9) = 0.0, 0.0
+    alpha2_inv(10) = 0.0, 0.0
+	        	      
+    D1_acc(0) = 350.0, 350.0
+    D1_acc(1) = 350.0, 500.0
+    D1_acc(2) = 350.0, 650.0
+    D1_acc(3) = 350.0, 800.0
+    D1_acc(4) = 350.0, 950.0
+    D1_acc(5) = 350.0, 1100.0
+    D1_acc(6) = 350.0, 1250.0
+    D1_acc(7) = 350.0, 1400.0
+    D1_acc(8) = 350.0, 1550.0
+    D1_acc(9) = 950.0, 1700.0
+    D1_acc(10) = 950.0, 1850.0
+
+    D2_acc(0) = 350.0, 350.0
+    D2_acc(1) = 350.0, 500.0
+    D2_acc(2) = 350.0, 650.0
+    D2_acc(3) = 350.0, 800.0
+    D2_acc(4) = 350.0, 950.0
+    D2_acc(5) = 350.0, 1100.0
+    D2_acc(6) = 350.0, 1250.0
+    D2_acc(7) = 350.0, 1400.0
+    D2_acc(8) = 350.0, 1550.0
+    D2_acc(9) = 950.0, 1700.0
+    D2_acc(10) = 950.0, 1850.0
+     	            	              	              	            	        
+    nu0_acc(0) = 1.5, 1.5
+    nu0_acc(1) = 1.5, 1.5 
+    nu0_acc(2) = 1.5, 1.5 
+    nu0_acc(3) = 1.5, 1.5 
+    nu0_acc(4) = 1.5, 1.5 
+    nu0_acc(5) = 1.5, 1.5 
+    nu0_acc(6) = 1.5, 1.5 
+    nu0_acc(7) = 1.5, 1.5 
+    nu0_acc(8) = 1.5, 1.5 
+    nu0_acc(9) = 1.5, 1.5 
+    nu0_acc(10) = 1.5, 1.5 
+     	              	        
+    nu1_acc(0) = 2.0, 2.0
+    nu1_acc(1) = 2.0, 2.0 
+    nu1_acc(2) = 2.0, 2.0 
+    nu1_acc(3) = 2.0, 2.0 
+    nu1_acc(4) = 2.0, 2.0 
+    nu1_acc(5) = 2.0, 2.0 
+    nu1_acc(6) = 2.0, 2.0 
+    nu1_acc(7) = 2.0, 2.0 
+    nu1_acc(8) = 2.0, 2.0 
+    nu1_acc(9) = 2.0, 2.0 
+    nu1_acc(10) = 2.0, 2.0 
+      	             	        
+    nu2_acc(0) = 0.5, 0.5
+    nu2_acc(1) = 0.5, 0.5 
+    nu2_acc(2) = 0.5, 0.5 
+    nu2_acc(3) = 0.5, 0.5 
+    nu2_acc(4) = 0.5, 0.5 
+    nu2_acc(5) = 0.5, 0.5 
+    nu2_acc(6) = 0.5, 0.5 
+    nu2_acc(7) = 0.5, 0.5 
+    nu2_acc(8) = 0.5, 0.5 
+    nu2_acc(9) = 0.5, 0.5 
+    nu2_acc(10) = 0.5, 0.5 
+
+    alpha1_acc(0) = 0.0, 0.0
+    alpha1_acc(1) = 0.0, 0.0
+    alpha1_acc(2) = 0.0, 0.0
+    alpha1_acc(3) = 0.0, 0.0
+    alpha1_acc(4) = 0.0, 0.0
+    alpha1_acc(5) = 0.0, 0.0
+    alpha1_acc(6) = 0.0, 0.0
+    alpha1_acc(7) = 0.0, 0.0
+    alpha1_acc(8) = 0.0, 0.0
+    alpha1_acc(9) = 0.0, 0.0
+    alpha1_acc(10) = 0.0, 0.0
+
+    alpha2_acc(0) = 0.0, 0.0
+    alpha2_acc(1) = 0.0, 0.0
+    alpha2_acc(2) = 0.0, 0.0
+    alpha2_acc(3) = 0.0, 0.0
+    alpha2_acc(4) = 0.0, 0.0
+    alpha2_acc(5) = 0.0, 0.0
+    alpha2_acc(6) = 0.0, 0.0
+    alpha2_acc(7) = 0.0, 0.0
+    alpha2_acc(8) = 0.0, 0.0
+    alpha2_acc(9) = 0.0, 0.0
+    alpha2_acc(10) = 0.0, 0.0
+	        
+    a_ph2d(0) = 1.0, 1.0
+    a_ph2d(1) = 1.0, 1.0
+    a_ph2d(2) = 1.0, 1.0
+    a_ph2d(3) = 1.0, 1.0
+    a_ph2d(4) = 1.0, 1.0
+    a_ph2d(5) = 1.0, 1.0
+    a_ph2d(6) = 1.0, 1.0
+    a_ph2d(7) = 1.0, 1.0
+    a_ph2d(8) = 1.0, 1.0
+    a_ph2d(9) = 1.0, 1.0
+    a_ph2d(10) = 1.0, 1.0
+
+    a_ph3d(0) = 1.0, 1.0
+    a_ph3d(1) = 1.0, 1.0
+    a_ph3d(2) = 1.0, 1.0
+    a_ph3d(3) = 1.0, 1.0
+    a_ph3d(4) = 1.0, 1.0
+    a_ph3d(5) = 1.0, 1.0
+    a_ph3d(6) = 1.0, 1.0
+    a_ph3d(7) = 1.0, 1.0
+    a_ph3d(8) = 1.0, 1.0
+    a_ph3d(9) = 1.0, 1.0
+    a_ph3d(10) = 1.0, 1.0
+
+    a_c2d(0) = 1.0, 1.0
+    a_c2d(1) = 1.0, 1.0
+    a_c2d(2) = 1.0, 1.0
+    a_c2d(3) = 1.0, 1.0
+    a_c2d(4) = 1.0, 1.0
+    a_c2d(5) = 1.0, 1.0
+    a_c2d(6) = 1.0, 1.0
+    a_c2d(7) = 1.0, 1.0
+    a_c2d(8) = 1.0, 1.0
+    a_c2d(9) = 1.0, 1.0
+    a_c2d(10) = 1.0, 1.0
+
+    a_c3d(0) = 1.0, 1.0
+    a_c3d(1) = 1.0, 1.0
+    a_c3d(2) = 1.0, 1.0
+    a_c3d(3) = 1.0, 1.0
+    a_c3d(4) = 1.0, 1.0
+    a_c3d(5) = 1.0, 1.0
+    a_c3d(6) = 1.0, 1.0
+    a_c3d(7) = 1.0, 1.0
+    a_c3d(8) = 1.0, 1.0
+    a_c3d(9) = 1.0, 1.0
+    a_c3d(10) = 1.0, 1.0
+
+    a_sr(0) = 1.0, 1.0
+    a_sr(1) = 1.0, 1.0
+    a_sr(2) = 1.0, 1.0
+    a_sr(3) = 1.0, 1.0
+    a_sr(4) = 1.0, 1.0
+    a_sr(5) = 1.0, 1.0
+    a_sr(6) = 1.0, 1.0
+    a_sr(7) = 1.0, 1.0
+    a_sr(8) = 1.0, 1.0
+    a_sr(9) = 1.0, 1.0
+    a_sr(10) = 1.0, 1.0
+
+    t0(0) = 5.0e-4, 5.0e-4 # um
+    t0(1) = 5.0e-4, 5.0e-4 # um
+    t0(2) = 5.0e-4, 5.0e-4 # um
+    t0(3) = 5.0e-4, 5.0e-4 # um
+    t0(4) = 5.0e-4, 5.0e-4 # um
+    t0(5) = 5.0e-4, 5.0e-4 # um
+    t0(6) = 5.0e-4, 5.0e-4 # um
+    t0(7) = 5.0e-4, 5.0e-4 # um
+    t0(8) = 5.0e-4, 5.0e-4 # um
+    t0(9) = 5.0e-4, 5.0e-4 # um
+    t0(10) = 5.0e-4, 5.0e-4 # um
+
+    S_t(0) = 0.02846, 0.02846
+    S_t(1) = 0.02846, 0.02846
+    S_t(2) = 0.02846, 0.02846
+    S_t(3) = 0.02846, 0.02846
+    S_t(4) = 0.02846, 0.02846
+    S_t(5) = 0.02846, 0.02846
+    S_t(6) = 0.02846, 0.02846
+    S_t(7) = 0.02846, 0.02846
+    S_t(8) = 0.02846, 0.02846
+    S_t(9) = 0.02846, 0.02846
+    S_t(10) = 0.02846, 0.02846
+
+    tcoulomb(0) = 3.0e-3, 3.0e-3
+    tcoulomb(1) = 3.0e-3, 3.0e-3
+    tcoulomb(2) = 3.0e-3, 3.0e-3
+    tcoulomb(3) = 3.0e-3, 3.0e-3
+    tcoulomb(4) = 3.0e-3, 3.0e-3
+    tcoulomb(5) = 3.0e-3, 3.0e-3
+    tcoulomb(6) = 3.0e-3, 3.0e-3
+    tcoulomb(7) = 3.0e-3, 3.0e-3
+    tcoulomb(8) = 3.0e-3, 3.0e-3
+    tcoulomb(9) = 3.0e-3, 3.0e-3
+    tcoulomb(10) = 3.0e-3, 3.0e-3
+
+    l_crit(0) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(1) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit(2) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(3) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(4) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(5) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(6) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(7) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(8) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(9) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(10) = 1.0e-6, 1.0e-6 # [cm]	
+    	        
+    l_crit_c(0) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(1) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(2) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(3) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(4) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(5) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(6) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(7) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(8) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(10) = 1.0e-6, 1.0e-6 # [cm]	
+  }
+
+IALMob "100":
+  {
+    * for <110> and <100> channel
+ 
+    EnormMinimum = 0 #[V/cm]
+
+    Xmax(0) = 0.0
+    Xmax(1) = 0.1
+    Xmax(2) = 0.2
+    Xmax(3) = 0.3
+    Xmax(4) = 0.4
+    Xmax(5) = 0.5
+    Xmax(6) = 0.6
+    Xmax(7) = 0.7
+    Xmax(8) = 0.8
+    Xmax(9) = 0.9
+    Xmax(10) = 1.0
+
+    * original bulk mobility data at low doping
+    mumax(0) = 1417.0, 486.0 # [cm^2/V/s] 
+    mumax(1) = 900.0, 425.0 # [cm^2/V/s] 
+    mumax(2) = 575.0, 325.0 # [cm^2/V/s]
+    mumax(3) = 500.0, 300.0 # [cm^2/V/s]
+    mumax(4) = 450.0, 350.0 # [cm^2/V/s]
+    mumax(5) = 450.0, 400.0 # [cm^2/V/s]
+    mumax(6) = 450.0, 550.0 # [cm^2/V/s]
+    mumax(7) = 450.0, 725.0 # [cm^2/V/s]  
+    mumax(8) = 600.0, 900.0 # [cm^2/V/s] 
+    mumax(9) = 2250.0, 1375.0 # [cm^2/V/s]
+    mumax(10) = 3856.7, 1789.5 # [cm^2/V/s]
+
+    alpha(0) = 0.68, 0.719 # [1]
+    alpha(1) = 0.667, 0.702 # [1]
+    alpha(2) = 0.654, 0.685 # [1]
+    alpha(3) = 0.641, 0.668 # [1]
+    alpha(4) = 0.628, 0.651 # [1]
+    alpha(5) = 0.614, 0.634 # [1]
+    alpha(6) = 0.601, 0.618 # [1]
+    alpha(7) = 0.587, 0.601 # [1]
+    alpha(8) = 0.574, 0.584 # [1]
+    alpha(9) = 0.56, 0.567 # [1] 
+    alpha(10) = 0.55, 0.55 # [1]
+
+    mumin(0) = 	56.0, 46.0 # [cm^2/V/s]
+    mumin(1) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(2) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(3) = 	56.0, 46.0 # [cm^2/V/s]               
+    mumin(4) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(5) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(6) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(7) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(8) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(9) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(10) = 56.0, 46.0 # [cm^2/V/s]
+
+    theta(0) = 2.285, 2.247
+    theta(1) = 2.285, 2.247
+    theta(2) = 2.285, 2.247
+    theta(3) = 2.285, 2.247
+    theta(4) = 2.285, 2.247
+    theta(5) = 2.285, 2.247
+    theta(6) = 2.285, 2.247
+    theta(7) = 2.285, 2.247
+    theta(8) = 2.285, 2.247
+    theta(9) = 2.285, 2.247
+    theta(10) = 2.285, 2.247
+      		      		
+    n_ref(0) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(1) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(2) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(3) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(4) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(5) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(6) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(7) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(8) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(9) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(10) =	9.68e16, 2.23e17 # [1/cm^3]
+      		      		
+    nref_A(0) =	7.2e+20 # [1/cm^3]
+    nref_A(1) =	7.2e+20 # [1/cm^3]
+    nref_A(2) =	7.2e+20 # [1/cm^3]
+    nref_A(3) =	7.2e+20 # [1/cm^3]
+    nref_A(4) =	7.2e+20 # [1/cm^3]
+    nref_A(5) =	7.2e+20 # [1/cm^3]
+    nref_A(6) =	7.2e+20 # [1/cm^3]
+    nref_A(7) =	7.2e+20 # [1/cm^3]
+    nref_A(8) =	7.2e+20 # [1/cm^3]
+    nref_A(9) =	7.2e+20 # [1/cm^3]
+    nref_A(10) = 7.2e+20 # [1/cm^3]
+
+    nref_D(0) =	4.0e+20 # [1/cm^3]
+    nref_D(1) =	4.0e+20 # [1/cm^3]
+    nref_D(2) =	4.0e+20 # [1/cm^3]
+    nref_D(3) =	4.0e+20 # [1/cm^3]
+    nref_D(4) =	4.0e+20 # [1/cm^3]
+    nref_D(5) =	4.0e+20 # [1/cm^3]
+    nref_D(6) =	4.0e+20 # [1/cm^3]
+    nref_D(7) =	4.0e+20 # [1/cm^3]
+    nref_D(8) =	4.0e+20 # [1/cm^3]
+    nref_D(9) =	4.0e+20 # [1/cm^3]
+    nref_D(10) = 4.0e+20  # [1/cm^3]     		      		
+      		      		      		      		      		      		
+    cref_D(0) =	0.21
+    cref_D(1) =	0.21
+    cref_D(2) =	0.21
+    cref_D(3) =	0.21
+    cref_D(4) =	0.21
+    cref_D(5) =	0.21
+    cref_D(6) =	0.21
+    cref_D(7) =	0.21
+    cref_D(8) =	0.21
+    cref_D(9) =	0.21
+    cref_D(10) = 0.21
+
+    cref_A(0) =	0.5
+    cref_A(1) =	0.5
+    cref_A(2) =	0.5
+    cref_A(3) =	0.5
+    cref_A(4) =	0.5
+    cref_A(5) =	0.5
+    cref_A(6) =	0.5
+    cref_A(7) =	0.5
+    cref_A(8) =	0.5
+    cref_A(9) =	0.5
+    cref_A(10) = 0.5
+     		      		      		      		
+    me_over_m0(0) = 1.0
+    me_over_m0(1) = 1.0
+    me_over_m0(2) = 1.0
+    me_over_m0(3) = 1.0
+    me_over_m0(4) = 1.0
+    me_over_m0(5) = 1.0
+    me_over_m0(6) = 1.0
+    me_over_m0(7) = 1.0
+    me_over_m0(8) = 1.0
+    me_over_m0(9) = 1.0
+    me_over_m0(10) = 1.0
+		
+    mh_over_m0(0) = 1.258 
+    mh_over_m0(1) = 1.258 
+    mh_over_m0(2) = 1.258 
+    mh_over_m0(3) = 1.258 
+    mh_over_m0(4) = 1.258 
+    mh_over_m0(5) = 1.258 
+    mh_over_m0(6) = 1.258 
+    mh_over_m0(7) = 1.258 
+    mh_over_m0(8) = 1.258 
+    mh_over_m0(9) = 1.258 
+    mh_over_m0(10) = 1.258 
+
+    B(0) = 8.00e+07, 1.00e+06 # [cm/s]                
+    B(1) = 8.00e+07, 2.00e+06 # [cm/s]               
+    B(2) = 8.00e+07, 3.00e+06 # [cm/s]               
+    B(3) = 8.00e+07, 4.00e+06 # [cm/s]                
+    B(4) = 8.00e+07, 5.00e+06 # [cm/s]                
+    B(5) = 8.00e+07, 6.00e+06 # [cm/s]                
+    B(6) = 8.00e+07, 7.00e+06 # [cm/s]                
+    B(7) = 8.00e+07, 8.00e+06 # [cm/s]                
+    B(8) = 8.00e+07, 9.00e+06 # [cm/s]                
+    B(9) = 5.00e+07, 1.00e+07 # [cm/s]                
+    B(10) = 5.00e+07, 1.10e+07 # [cm/s]                
+
+    C(0) = 1.90e+02, 3.20e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(1) = 1.90e+02, 3.48e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(2) = 1.90e+02, 3.76e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(3) = 1.90e+02, 4.04e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(4) = 1.90e+02, 4.32e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(5) = 1.90e+02, 4.60e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(6) = 1.90e+02, 4.88e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(7) = 1.90e+02, 5.16e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(8) = 1.90e+02, 5.44e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(9) = 1.25e+02, 5.72e+03 # [cm^(5/3)*V^(-2/3)/s]                
+    C(10) = 1.25e+02, 6.00e+03 # [cm^(5/3)*V^(-2/3)/s]               
+
+    delta(0) = 1.00e+13, 1.30e+14 # [cm^2/V/s]                
+    delta(1) = 1.00e+13, 1.92e+14 # [cm^2/V/s]                
+    delta(2) = 1.00e+13, 2.54e+14 # [cm^2/V/s]                
+    delta(3) = 1.00e+13, 3.16e+14 # [cm^2/V/s]                
+    delta(4) = 1.00e+13, 3.78e+14 # [cm^2/V/s]                
+    delta(5) = 1.00e+13, 4.40e+14 # [cm^2/V/s]                
+    delta(6) = 1.00e+13, 5.02e+14 # [cm^2/V/s]                
+    delta(7) = 1.00e+13, 5.64e+14 # [cm^2/V/s]                
+    delta(8) = 1.00e+13, 6.26e+14 # [cm^2/V/s]                
+    delta(9) = 4.00e+12, 6.88e+14 # [cm^2/V/s]                
+    delta(10) = 4.00e+12, 7.50e+14 # [cm^2/V/s]                
+
+    lambda(0) = 1.0, 1.0
+    lambda(1) = 1.0, 1.0
+    lambda(2) = 1.0, 1.0
+    lambda(3) = 1.0, 1.0
+    lambda(4) = 1.0, 1.0
+    lambda(5) = 1.0, 1.0
+    lambda(6) = 1.0, 1.0
+    lambda(7) = 1.0, 1.0
+    lambda(8) = 1.0, 1.0
+    lambda(9) = 1.0, 1.0
+    lambda(10) = 1.0, 1.0
+
+    lambda_sr(0) = 1.0, 1.0
+    lambda_sr(1) = 1.0, 1.0
+    lambda_sr(2) = 1.0, 1.0
+    lambda_sr(3) = 1.0, 1.0
+    lambda_sr(4) = 1.0, 1.0
+    lambda_sr(5) = 1.0, 1.0
+    lambda_sr(6) = 1.0, 1.0
+    lambda_sr(7) = 1.0, 1.0
+    lambda_sr(8) = 1.0, 1.0
+    lambda_sr(9) = 1.0, 1.0
+    lambda_sr(10) = 1.0, 1.0
+
+    lambda_sr_A(0) = 0.09, 0.0
+    lambda_sr_A(1) = 0.0867, 0.0
+    lambda_sr_A(2) = 0.0833, 0.0
+    lambda_sr_A(3) = 0.08, 0.0
+    lambda_sr_A(4) = 0.078, 0.0
+    lambda_sr_A(5) = 0.076, 0.0
+    lambda_sr_A(6) = 0.074, 0.0
+    lambda_sr_A(7) = 0.072, 0.0
+    lambda_sr_A(8) = 0.07, 0.0
+    lambda_sr_A(9) = 0.09, 0.0
+    lambda_sr_A(10) = 0.1, 0.0
+    	        
+    lambda_sr_D(0) = 0.0, 0.01
+    lambda_sr_D(1) = 0.0, 0.01
+    lambda_sr_D(2) = 0.0, 0.01
+    lambda_sr_D(3) = 0.0, 0.01
+    lambda_sr_D(4) = 0.0, 0.01
+    lambda_sr_D(5) = 0.0, 0.01
+    lambda_sr_D(6) = 0.0, 0.01
+    lambda_sr_D(7) = 0.0, 0.01
+    lambda_sr_D(8) = 0.0, 0.01
+    lambda_sr_D(9) = 0.0, 0.01
+    lambda_sr_D(10) = 0.0, 0.05
+
+    lambda_ph2d_A(0) = 0.14, 0.0
+    lambda_ph2d_A(1) = 0.14, 0.0
+    lambda_ph2d_A(2) = 0.14, 0.0
+    lambda_ph2d_A(3) = 0.14, 0.0
+    lambda_ph2d_A(4) = 0.14, 0.0
+    lambda_ph2d_A(5) = 0.14, 0.0
+    lambda_ph2d_A(6) = 0.14, 0.0
+    lambda_ph2d_A(7) = 0.14, 0.0
+    lambda_ph2d_A(8) = 0.14, 0.0
+    lambda_ph2d_A(9) = 0.14, 0.0
+    lambda_ph2d_A(10) = 0.14, 0.0
+
+    lambda_ph2d_D(0) = 0.0, 0.0
+    lambda_ph2d_D(1) = 0.0, 0.001
+    lambda_ph2d_D(2) = 0.0, 0.002
+    lambda_ph2d_D(3) = 0.0, 0.003
+    lambda_ph2d_D(4) = 0.0, 0.004
+    lambda_ph2d_D(5) = 0.0, 0.005
+    lambda_ph2d_D(6) = 0.0, 0.006
+    lambda_ph2d_D(7) = 0.0, 0.007
+    lambda_ph2d_D(8) = 0.0, 0.008
+    lambda_ph2d_D(9) = 0.0, 0.009
+    lambda_ph2d_D(10) = 0.0, 0.01
+
+    alpha_ph2d_A(0) = 1.0, 1.0
+    alpha_ph2d_A(1) = 1.0, 1.0
+    alpha_ph2d_A(2) = 1.0, 1.0
+    alpha_ph2d_A(3) = 1.0, 1.0
+    alpha_ph2d_A(4) = 1.0, 1.0
+    alpha_ph2d_A(5) = 1.0, 1.0
+    alpha_ph2d_A(6) = 1.0, 1.0
+    alpha_ph2d_A(7) = 1.0, 1.0
+    alpha_ph2d_A(8) = 1.0, 1.0
+    alpha_ph2d_A(9) = 1.0, 1.0
+    alpha_ph2d_A(10) = 1.0, 1.0
+
+    alpha_ph2d_D(0) = 1.0, 1.0
+    alpha_ph2d_D(1) = 1.0, 1.0
+    alpha_ph2d_D(2) = 1.0, 1.0
+    alpha_ph2d_D(3) = 1.0, 1.0
+    alpha_ph2d_D(4) = 1.0, 1.0
+    alpha_ph2d_D(5) = 1.0, 1.0
+    alpha_ph2d_D(6) = 1.0, 1.0
+    alpha_ph2d_D(7) = 1.0, 1.0
+    alpha_ph2d_D(8) = 1.0, 1.0
+    alpha_ph2d_D(9) = 1.0, 1.0
+    alpha_ph2d_D(10) = 1.0, 1.0
+
+    alpha_sr_A(0) = 1.0, 1.0
+    alpha_sr_A(1) = 1.0, 1.0
+    alpha_sr_A(2) = 1.0, 1.0
+    alpha_sr_A(3) = 1.0, 1.0
+    alpha_sr_A(4) = 1.0, 1.0
+    alpha_sr_A(5) = 1.0, 1.0
+    alpha_sr_A(6) = 1.0, 1.0
+    alpha_sr_A(7) = 1.0, 1.0
+    alpha_sr_A(8) = 1.0, 1.0
+    alpha_sr_A(9) = 1.0, 1.0
+    alpha_sr_A(10) = 1.0, 1.0
+
+    alpha_sr_D(0) = 1.0, 1.0
+    alpha_sr_D(1) = 1.0, 1.0
+    alpha_sr_D(2) = 1.0, 1.0
+    alpha_sr_D(3) = 1.0, 1.0
+    alpha_sr_D(4) = 1.0, 1.0
+    alpha_sr_D(5) = 1.0, 1.0
+    alpha_sr_D(6) = 1.0, 1.0
+    alpha_sr_D(7) = 1.0, 1.0
+    alpha_sr_D(8) = 1.0, 1.0
+    alpha_sr_D(9) = 1.0, 1.0
+    alpha_sr_D(10) = 1.0, 1.0
+
+    A(0) = 2.0, 2.0
+    A(1) = 2.0, 2.0
+    A(2) = 2.0, 2.0
+    A(3) = 2.0, 2.0
+    A(4) = 2.0, 2.0
+    A(5) = 2.0, 2.0
+    A(6) = 2.0, 2.0
+    A(7) = 2.0, 2.0
+    A(8) = 2.0, 2.0
+    A(9) = 2.0, 2.0
+    A(10) = 2.0, 2.0	             	             	             	             	        
+     	             	             	             	             	             	             	        
+    alpha_sr(0) = 0.0, 0.0
+    alpha_sr(1) = 0.0, 1.0e-22
+    alpha_sr(2) = 0.0, 2.0e-22
+    alpha_sr(3) = 0.0, 3.0e-22
+    alpha_sr(4) = 0.0, 4.0e-22
+    alpha_sr(5) = 0.0, 5.0e-22
+    alpha_sr(6) = 0.0, 6.0e-22
+    alpha_sr(7) = 0.0, 7.0e-22
+    alpha_sr(8) = 0.0, 8.0e-22
+    alpha_sr(9) = 0.0, 9.0e-22
+    alpha_sr(10) = 0.0, 3.0e-21, #1.0e-21
+    	             	        
+    S(0) = 0.3042, 0.3042
+    S(1) = 0.3042, 0.3042     
+    S(2) = 0.3042, 0.3042     
+    S(3) = 0.3042, 0.3042     
+    S(4) = 0.3042, 0.3042     
+    S(5) = 0.3042, 0.3042     
+    S(6) = 0.3042, 0.3042     
+    S(7) = 0.3042, 0.3042     
+    S(8) = 0.3042, 0.3042     
+    S(9) = 0.3042, 0.3042     
+    S(10) = 0.3042, 0.3042     
+    	        
+    P(0) = 4.0, 4.0 # [1] 
+    P(1) = 4.0, 3.7 # [1]     	        
+    P(2) = 4.0, 3.6 # [1]     	        
+    P(3) = 4.0, 3.5 # [1]     	        
+    P(4) = 4.0, 3.4 # [1]     	        
+    P(5) = 4.0, 3.3 # [1]     	        
+    P(6) = 4.0, 3.3 # [1]     	        
+    P(7) = 4.0, 3.3 # [1]     	        
+    P(8) = 4.0, 3.4 # [1]     	        
+    P(9) = 4.0, 3.6 # [1]     	        
+    P(10) = 4.0, 4.0 # [1]     	        
+   	        		     	        
+    k(0) = 1.0, 1.0 # [1]     
+    k(1) = 1.0, 1.0 # [1]     
+    k(2) = 1.0, 1.0 # [1]     
+    k(3) = 1.0, 1.0 # [1]     
+    k(4) = 1.0, 1.0 # [1]     
+    k(5) = 1.0, 1.0 # [1]     
+    k(6) = 1.0, 1.0 # [1]     
+    k(7) = 1.0, 1.0 # [1]     
+    k(8) = 1.0, 1.0 # [1]     
+    k(9) = 1.0, 1.0 # [1]     
+    k(10) = 1.0, 1.0 # [1]     
+	        
+    nu(0) = 0.0, 0.0 # [1]     	            	             	             	            	                 
+    nu(1) = 0.0, 0.0 # [1]
+    nu(2) = 0.0, 0.0 # [1]
+    nu(3) = 0.0, 0.0 # [1]
+    nu(4) = 0.0, 0.0 # [1]
+    nu(5) = 0.0, 0.0 # [1]
+    nu(6) = 0.0, 0.0 # [1]
+    nu(7) = 0.0, 0.0 # [1]
+    nu(8) = 0.0, 0.0 # [1]
+    nu(9) = 0.0, 0.0 # [1]
+    nu(10) = 0.0, 0.0 # [1]
+	             	            	             	             	            	   
+    eta(0) = 1.0e+50, 1.0e+50 # [V^2/cm/s]     	            	             	             	            	             
+    eta(1) = 1.0e+50, 1.0e+50 # [V^2/cm/s]     	            	             	             	            	             
+    eta(2) = 1.0e+50, 1.0e+50 # [V^2/cm/s]     	            	             	             	            	             
+    eta(3) = 1.0e+50, 1.0e+50 # [V^2/cm/s]
+    eta(4) = 1.0e+50, 1.0e+50 # [V^2/cm/s] 
+    eta(5) = 1.0e+50, 1.0e+50 # [V^2/cm/s] 
+    eta(6) = 1.0e+50, 1.0e+50 # [V^2/cm/s] 
+    eta(7) = 1.0e+50, 1.0e+50 # [V^2/cm/s] 
+    eta(8) = 1.0e+50, 1.0e+50 # [V^2/cm/s] 
+    eta(9) = 1.0e+50, 1.0e+50 # [V^2/cm/s] 
+    eta(10) = 1.0e+50, 1.0e+50 # [V^2/cm/s]      	            	             	             	            	             	             	            	             	             	            	             	             
+    N1(0) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(1) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(2) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(3) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(4) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(5) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(6) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(7) = 1.0e+15, 1.0e+15 # [1/cm^3] 
+    N1(8) = 1.0e+15, 1.0e+15 # [1/cm^3] 
+    N1(9) = 1.0e+15, 1.0e+15 # [1/cm^3]
+    N1(10) = 1.0e+15, 1.0e+15 # [1/cm^3] 
+             	        
+    N2(0) = 1.0e+15, 1.0e+14 # [1/cm^3]
+    N2(1) = 1.0e+15, 1.0e+14 # [1/cm^3]
+    N2(2) = 1.0e+15, 1.0e+14 # [1/cm^3]     	            	             	             	            	             
+    N2(3) = 1.0e+15, 1.0e+14 # [1/cm^3]     	            	             	             	            
+    N2(4) = 1.0e+15, 1.0e+14 # [1/cm^3]
+    N2(5) = 1.0e+15, 1.0e+14 # [1/cm^3]
+    N2(6) = 1.0e+15, 1.0e+14 # [1/cm^3]
+    N2(7) = 1.0e+15, 1.0e+14 # [1/cm^3] 
+    N2(8) = 1.0e+15, 1.0e+14 # [1/cm^3] 
+    N2(9) = 1.0e+15, 1.0e+14 # [1/cm^3]
+    N2(10) = 1.0e+15, 1.0e+14 # [1/cm^3] 
+
+    D1_inv(0) = 350.0, 350.0
+    D1_inv(1) = 350.0, 500.0
+    D1_inv(2) = 350.0, 650.0
+    D1_inv(3) = 350.0, 800.0
+    D1_inv(4) = 350.0, 950.0
+    D1_inv(5) = 350.0, 1100.0
+    D1_inv(6) = 350.0, 1250.0
+    D1_inv(7) = 350.0, 1400.0
+    D1_inv(8) = 350.0, 1550.0
+    D1_inv(9) = 950.0, 1700.0
+    D1_inv(10) = 950.0, 1850.0
+
+    D2_inv(0) = 350.0, 350.0
+    D2_inv(1) = 350.0, 500.0
+    D2_inv(2) = 350.0, 650.0
+    D2_inv(3) = 350.0, 800.0
+    D2_inv(4) = 350.0, 950.0
+    D2_inv(5) = 350.0, 1100.0
+    D2_inv(6) = 350.0, 1250.0
+    D2_inv(7) = 350.0, 1400.0
+    D2_inv(8) = 350.0, 1550.0
+    D2_inv(9) = 950.0, 1700.0
+    D2_inv(10) = 950.0, 1850.0
+     	            	              	              	            	        
+    nu0_inv(0) = 1.5, 1.5
+    nu0_inv(1) = 1.5, 1.5 
+    nu0_inv(2) = 1.5, 1.5 
+    nu0_inv(3) = 1.5, 1.5 
+    nu0_inv(4) = 1.5, 1.5 
+    nu0_inv(5) = 1.5, 1.5 
+    nu0_inv(6) = 1.5, 1.5 
+    nu0_inv(7) = 1.5, 1.5 
+    nu0_inv(8) = 1.5, 1.5 
+    nu0_inv(9) = 1.5, 1.5 
+    nu0_inv(10) = 1.5, 1.5 
+     	              	        
+    nu1_inv(0) = 2.0, 2.0
+    nu1_inv(1) = 2.0, 2.0 
+    nu1_inv(2) = 2.0, 2.0 
+    nu1_inv(3) = 2.0, 2.0 
+    nu1_inv(4) = 2.0, 2.0 
+    nu1_inv(5) = 2.0, 2.0 
+    nu1_inv(6) = 2.0, 2.0 
+    nu1_inv(7) = 2.0, 2.0 
+    nu1_inv(8) = 2.0, 2.0 
+    nu1_inv(9) = 2.0, 2.0 
+    nu1_inv(10) = 2.0, 2.0 
+      	             	        
+    nu2_inv(0) = 0.5, 0.5
+    nu2_inv(1) = 0.5, 0.5 
+    nu2_inv(2) = 0.5, 0.5 
+    nu2_inv(3) = 0.5, 0.5 
+    nu2_inv(4) = 0.5, 0.5 
+    nu2_inv(5) = 0.5, 0.5 
+    nu2_inv(6) = 0.5, 0.5 
+    nu2_inv(7) = 0.5, 0.5 
+    nu2_inv(8) = 0.5, 0.5 
+    nu2_inv(9) = 0.5, 0.5 
+    nu2_inv(10) = 0.5, 0.5 
+
+    alpha1_inv(0) = 0.0, 0.0
+    alpha1_inv(1) = 0.0, 0.0
+    alpha1_inv(2) = 0.0, 0.0
+    alpha1_inv(3) = 0.0, 0.0
+    alpha1_inv(4) = 0.0, 0.0
+    alpha1_inv(5) = 0.0, 0.0
+    alpha1_inv(6) = 0.0, 0.0
+    alpha1_inv(7) = 0.0, 0.0
+    alpha1_inv(8) = 0.0, 0.0
+    alpha1_inv(9) = 0.0, 0.0
+    alpha1_inv(10) = 0.0, 0.0
+
+    alpha2_inv(0) = 0.0, 0.0
+    alpha2_inv(1) = 0.0, 0.0
+    alpha2_inv(2) = 0.0, 0.0
+    alpha2_inv(3) = 0.0, 0.0
+    alpha2_inv(4) = 0.0, 0.0
+    alpha2_inv(5) = 0.0, 0.0
+    alpha2_inv(6) = 0.0, 0.0
+    alpha2_inv(7) = 0.0, 0.0
+    alpha2_inv(8) = 0.0, 0.0
+    alpha2_inv(9) = 0.0, 0.0
+    alpha2_inv(10) = 0.0, 0.0
+	        	      
+    D1_acc(0) = 350.0, 350.0
+    D1_acc(1) = 350.0, 500.0
+    D1_acc(2) = 350.0, 650.0
+    D1_acc(3) = 350.0, 800.0
+    D1_acc(4) = 350.0, 950.0
+    D1_acc(5) = 350.0, 1100.0
+    D1_acc(6) = 350.0, 1250.0
+    D1_acc(7) = 350.0, 1400.0
+    D1_acc(8) = 350.0, 1550.0
+    D1_acc(9) = 950.0, 1700.0
+    D1_acc(10) = 950.0, 1850.0
+
+    D2_acc(0) = 350.0, 350.0
+    D2_acc(1) = 350.0, 500.0
+    D2_acc(2) = 350.0, 650.0
+    D2_acc(3) = 350.0, 800.0
+    D2_acc(4) = 350.0, 950.0
+    D2_acc(5) = 350.0, 1100.0
+    D2_acc(6) = 350.0, 1250.0
+    D2_acc(7) = 350.0, 1400.0
+    D2_acc(8) = 350.0, 1550.0
+    D2_acc(9) = 950.0, 1700.0
+    D2_acc(10) = 950.0, 1850.0
+     	            	              	              	            	        
+    nu0_acc(0) = 1.5, 1.5
+    nu0_acc(1) = 1.5, 1.5 
+    nu0_acc(2) = 1.5, 1.5 
+    nu0_acc(3) = 1.5, 1.5 
+    nu0_acc(4) = 1.5, 1.5 
+    nu0_acc(5) = 1.5, 1.5 
+    nu0_acc(6) = 1.5, 1.5 
+    nu0_acc(7) = 1.5, 1.5 
+    nu0_acc(8) = 1.5, 1.5 
+    nu0_acc(9) = 1.5, 1.5 
+    nu0_acc(10) = 1.5, 1.5 
+     	              	        
+    nu1_acc(0) = 2.0, 2.0
+    nu1_acc(1) = 2.0, 2.0 
+    nu1_acc(2) = 2.0, 2.0 
+    nu1_acc(3) = 2.0, 2.0 
+    nu1_acc(4) = 2.0, 2.0 
+    nu1_acc(5) = 2.0, 2.0 
+    nu1_acc(6) = 2.0, 2.0 
+    nu1_acc(7) = 2.0, 2.0 
+    nu1_acc(8) = 2.0, 2.0 
+    nu1_acc(9) = 2.0, 2.0 
+    nu1_acc(10) = 2.0, 2.0 
+      	             	        
+    nu2_acc(0) = 0.5, 0.5
+    nu2_acc(1) = 0.5, 0.5 
+    nu2_acc(2) = 0.5, 0.5 
+    nu2_acc(3) = 0.5, 0.5 
+    nu2_acc(4) = 0.5, 0.5 
+    nu2_acc(5) = 0.5, 0.5 
+    nu2_acc(6) = 0.5, 0.5 
+    nu2_acc(7) = 0.5, 0.5 
+    nu2_acc(8) = 0.5, 0.5 
+    nu2_acc(9) = 0.5, 0.5 
+    nu2_acc(10) = 0.5, 0.5 
+
+    alpha1_acc(0) = 0.0, 0.0
+    alpha1_acc(1) = 0.0, 0.0
+    alpha1_acc(2) = 0.0, 0.0
+    alpha1_acc(3) = 0.0, 0.0
+    alpha1_acc(4) = 0.0, 0.0
+    alpha1_acc(5) = 0.0, 0.0
+    alpha1_acc(6) = 0.0, 0.0
+    alpha1_acc(7) = 0.0, 0.0
+    alpha1_acc(8) = 0.0, 0.0
+    alpha1_acc(9) = 0.0, 0.0
+    alpha1_acc(10) = 0.0, 0.0
+
+    alpha2_acc(0) = 0.0, 0.0
+    alpha2_acc(1) = 0.0, 0.0
+    alpha2_acc(2) = 0.0, 0.0
+    alpha2_acc(3) = 0.0, 0.0
+    alpha2_acc(4) = 0.0, 0.0
+    alpha2_acc(5) = 0.0, 0.0
+    alpha2_acc(6) = 0.0, 0.0
+    alpha2_acc(7) = 0.0, 0.0
+    alpha2_acc(8) = 0.0, 0.0
+    alpha2_acc(9) = 0.0, 0.0
+    alpha2_acc(10) = 0.0, 0.0
+	        
+    a_ph2d(0) = 1.0, 1.0
+    a_ph2d(1) = 1.0, 1.0
+    a_ph2d(2) = 1.0, 1.0
+    a_ph2d(3) = 1.0, 1.0
+    a_ph2d(4) = 1.0, 1.0
+    a_ph2d(5) = 1.0, 1.0
+    a_ph2d(6) = 1.0, 1.0
+    a_ph2d(7) = 1.0, 1.0
+    a_ph2d(8) = 1.0, 1.0
+    a_ph2d(9) = 1.0, 1.0
+    a_ph2d(10) = 1.0, 1.0
+
+    a_ph3d(0) = 1.0, 1.0
+    a_ph3d(1) = 1.0, 1.0
+    a_ph3d(2) = 1.0, 1.0
+    a_ph3d(3) = 1.0, 1.0
+    a_ph3d(4) = 1.0, 1.0
+    a_ph3d(5) = 1.0, 1.0
+    a_ph3d(6) = 1.0, 1.0
+    a_ph3d(7) = 1.0, 1.0
+    a_ph3d(8) = 1.0, 1.0
+    a_ph3d(9) = 1.0, 1.0
+    a_ph3d(10) = 1.0, 1.0
+
+    a_c2d(0) = 1.0, 1.0
+    a_c2d(1) = 1.0, 1.0
+    a_c2d(2) = 1.0, 1.0
+    a_c2d(3) = 1.0, 1.0
+    a_c2d(4) = 1.0, 1.0
+    a_c2d(5) = 1.0, 1.0
+    a_c2d(6) = 1.0, 1.0
+    a_c2d(7) = 1.0, 1.0
+    a_c2d(8) = 1.0, 1.0
+    a_c2d(9) = 1.0, 1.0
+    a_c2d(10) = 1.0, 1.0
+
+    a_c3d(0) = 1.0, 1.0
+    a_c3d(1) = 1.0, 1.0
+    a_c3d(2) = 1.0, 1.0
+    a_c3d(3) = 1.0, 1.0
+    a_c3d(4) = 1.0, 1.0
+    a_c3d(5) = 1.0, 1.0
+    a_c3d(6) = 1.0, 1.0
+    a_c3d(7) = 1.0, 1.0
+    a_c3d(8) = 1.0, 1.0
+    a_c3d(9) = 1.0, 1.0
+    a_c3d(10) = 1.0, 1.0
+
+    a_sr(0) = 1.0, 1.0
+    a_sr(1) = 1.0, 1.0
+    a_sr(2) = 1.0, 1.0
+    a_sr(3) = 1.0, 1.0
+    a_sr(4) = 1.0, 1.0
+    a_sr(5) = 1.0, 1.0
+    a_sr(6) = 1.0, 1.0
+    a_sr(7) = 1.0, 1.0
+    a_sr(8) = 1.0, 1.0
+    a_sr(9) = 1.0, 1.0
+    a_sr(10) = 1.0, 1.0
+
+    t0(0) = 5.0e-4, 5.0e-4 # um
+    t0(1) = 5.0e-4, 5.0e-4 # um
+    t0(2) = 5.0e-4, 5.0e-4 # um
+    t0(3) = 5.0e-4, 5.0e-4 # um
+    t0(4) = 5.0e-4, 5.0e-4 # um
+    t0(5) = 5.0e-4, 5.0e-4 # um
+    t0(6) = 5.0e-4, 5.0e-4 # um
+    t0(7) = 5.0e-4, 5.0e-4 # um
+    t0(8) = 5.0e-4, 5.0e-4 # um
+    t0(9) = 5.0e-4, 5.0e-4 # um
+    t0(10) = 5.0e-4, 5.0e-4 # um
+
+    S_t(0) = 0.02846, 0.02846
+    S_t(1) = 0.02846, 0.02846
+    S_t(2) = 0.02846, 0.02846
+    S_t(3) = 0.02846, 0.02846
+    S_t(4) = 0.02846, 0.02846
+    S_t(5) = 0.02846, 0.02846
+    S_t(6) = 0.02846, 0.02846
+    S_t(7) = 0.02846, 0.02846
+    S_t(8) = 0.02846, 0.02846
+    S_t(9) = 0.02846, 0.02846
+    S_t(10) = 0.02846, 0.02846
+
+    tcoulomb(0) = 3.0e-3, 3.0e-3
+    tcoulomb(1) = 3.0e-3, 3.0e-3
+    tcoulomb(2) = 3.0e-3, 3.0e-3
+    tcoulomb(3) = 3.0e-3, 3.0e-3
+    tcoulomb(4) = 3.0e-3, 3.0e-3
+    tcoulomb(5) = 3.0e-3, 3.0e-3
+    tcoulomb(6) = 3.0e-3, 3.0e-3
+    tcoulomb(7) = 3.0e-3, 3.0e-3
+    tcoulomb(8) = 3.0e-3, 3.0e-3
+    tcoulomb(9) = 3.0e-3, 3.0e-3
+    tcoulomb(10) = 3.0e-3, 3.0e-3
+
+    l_crit(0) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(1) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit(2) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(3) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(4) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(5) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(6) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(7) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(8) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(9) = 1.0e-6, 1.0e-6 # [cm]	
+    l_crit(10) = 1.0e-6, 1.0e-6 # [cm]	
+    	        
+    l_crit_c(0) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(1) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(2) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(3) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(4) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(5) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(6) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(7) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(8) = 1.0e-6, 1.0e-6 # [cm]
+    l_crit_c(10) = 1.0e-6, 1.0e-6 # [cm]	
+  }
+
+####for <110> channel
+IALMob "110":
+  {
+    EnormMinimum = 0.0
+ 
+    Xmax(0) = 0.0
+    Xmax(1) = 0.1
+    Xmax(2) = 0.2
+    Xmax(3) = 0.3
+    Xmax(4) = 0.4
+    Xmax(5) = 0.5
+    Xmax(6) = 0.6
+    Xmax(7) = 0.7
+    Xmax(8) = 0.8
+    Xmax(9) = 0.9
+    Xmax(10) = 1.0
+
+    * original bulk mobility data at low doping
+    mumax(0) = 1417.0, 486.0 # [cm^2/V/s] 
+    mumax(1) = 900.0, 425.0 # [cm^2/V/s] 
+    mumax(2) = 575.0, 325.0 # [cm^2/V/s]
+    mumax(3) = 500.0, 300.0 # [cm^2/V/s]
+    mumax(4) = 450.0, 350.0 # [cm^2/V/s]
+    mumax(5) = 450.0, 400.0 # [cm^2/V/s]
+    mumax(6) = 450.0, 550.0 # [cm^2/V/s]
+    mumax(7) = 450.0, 725.0 # [cm^2/V/s]  
+    mumax(8) = 600.0, 900.0 # [cm^2/V/s] 
+    mumax(9) = 2250.0, 1375.0 # [cm^2/V/s]
+    mumax(10) = 3856.7, 1789.5 # [cm^2/V/s]
+
+    alpha(0) = 0.68, 0.719 # [1]
+    alpha(1) = 0.667, 0.702 # [1]
+    alpha(2) = 0.654, 0.685 # [1]
+    alpha(3) = 0.641, 0.668 # [1]
+    alpha(4) = 0.628, 0.651 # [1]
+    alpha(5) = 0.614, 0.634 # [1]
+    alpha(6) = 0.601, 0.618 # [1]
+    alpha(7) = 0.587, 0.601 # [1]
+    alpha(8) = 0.574, 0.584 # [1]
+    alpha(9) = 0.56, 0.567 # [1] 
+    alpha(10) = 0.55, 0.55 # [1]
+
+    mumin(0) = 	56.0, 46.0 # [cm^2/V/s]
+    mumin(1) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(2) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(3) = 	56.0, 46.0 # [cm^2/V/s]               
+    mumin(4) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(5) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(6) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(7) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(8) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(9) = 	56.0, 46.0 # [cm^2/V/s] 
+    mumin(10) = 56.0, 46.0 # [cm^2/V/s]
+
+    theta(0) = 2.285, 2.247
+    theta(1) = 2.285, 2.247
+    theta(2) = 2.285, 2.247
+    theta(3) = 2.285, 2.247
+    theta(4) = 2.285, 2.247
+    theta(5) = 2.285, 2.247
+    theta(6) = 2.285, 2.247
+    theta(7) = 2.285, 2.247
+    theta(8) = 2.285, 2.247
+    theta(9) = 2.285, 2.247
+    theta(10) = 2.285, 2.247
+      		      		
+    n_ref(0) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(1) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(2) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(3) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(4) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(5) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(6) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(7) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(8) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(9) =	9.68e16, 2.23e17 # [1/cm^3]
+    n_ref(10) =	9.68e16, 2.23e17 # [1/cm^3]
+      		      		
+    nref_A(0) =	7.2e+20 # [1/cm^3]
+    nref_A(1) =	7.2e+20 # [1/cm^3]
+    nref_A(2) =	7.2e+20 # [1/cm^3]
+    nref_A(3) =	7.2e+20 # [1/cm^3]
+    nref_A(4) =	7.2e+20 # [1/cm^3]
+    nref_A(5) =	7.2e+20 # [1/cm^3]
+    nref_A(6) =	7.2e+20 # [1/cm^3]
+    nref_A(7) =	7.2e+20 # [1/cm^3]
+    nref_A(8) =	7.2e+20 # [1/cm^3]
+    nref_A(9) =	7.2e+20 # [1/cm^3]
+    nref_A(10) = 7.2e+20 # [1/cm^3]
+
+    nref_D(0) =	4.0e+20 # [1/cm^3]
+    nref_D(1) =	4.0e+20 # [1/cm^3]
+    nref_D(2) =	4.0e+20 # [1/cm^3]
+    nref_D(3) =	4.0e+20 # [1/cm^3]
+    nref_D(4) =	4.0e+20 # [1/cm^3]
+    nref_D(5) =	4.0e+20 # [1/cm^3]
+    nref_D(6) =	4.0e+20 # [1/cm^3]
+    nref_D(7) =	4.0e+20 # [1/cm^3]
+    nref_D(8) =	4.0e+20 # [1/cm^3]
+    nref_D(9) =	4.0e+20 # [1/cm^3]
+    nref_D(10) = 4.0e+20  # [1/cm^3]     		      		
+      		      		      		      		      		      		
+    cref_D(0) =	0.21
+    cref_D(1) =	0.21
+    cref_D(2) =	0.21
+    cref_D(3) =	0.21
+    cref_D(4) =	0.21
+    cref_D(5) =	0.21
+    cref_D(6) =	0.21
+    cref_D(7) =	0.21
+    cref_D(8) =	0.21
+    cref_D(9) =	0.21
+    cref_D(10) = 0.21
+
+    cref_A(0) =	0.5
+    cref_A(1) =	0.5
+    cref_A(2) =	0.5
+    cref_A(3) =	0.5
+    cref_A(4) =	0.5
+    cref_A(5) =	0.5
+    cref_A(6) =	0.5
+    cref_A(7) =	0.5
+    cref_A(8) =	0.5
+    cref_A(9) =	0.5
+    cref_A(10) = 0.5
+      		      		      		      		
+    me_over_m0(0) = 1.0
+    me_over_m0(1) = 1.0
+    me_over_m0(2) = 1.0
+    me_over_m0(3) = 1.0
+    me_over_m0(4) = 1.0
+    me_over_m0(5) = 1.0
+    me_over_m0(6) = 1.0
+    me_over_m0(7) = 1.0
+    me_over_m0(8) = 1.0
+    me_over_m0(9) = 1.0
+    me_over_m0(10) = 1.0
+		
+    mh_over_m0(0) = 1.258 
+    mh_over_m0(1) = 1.258 
+    mh_over_m0(2) = 1.258 
+    mh_over_m0(3) = 1.258 
+    mh_over_m0(4) = 1.258 
+    mh_over_m0(5) = 1.258 
+    mh_over_m0(6) = 1.258 
+    mh_over_m0(7) = 1.258 
+    mh_over_m0(8) = 1.258 
+    mh_over_m0(9) = 1.258 
+    mh_over_m0(10) = 1.258 
+
+    B(0) = 5.00e+07, 1.00e+04	
+    B(1) = 5.00e+07, 1.00e+04
+    B(2) = 5.00e+07, 1.00e+04	
+    B(3) = 5.00e+07, 1.00e+04	
+    B(4) = 5.00e+07, 1.00e+04	
+    B(5) = 5.00e+07, 1.00e+04	
+    B(6) = 5.00e+07, 1.00e+04	
+    B(7) = 5.00e+07, 1.00e+04	
+    B(8) = 5.00e+07, 1.00e+04	
+    B(9) = 5.00e+07, 1.00e+04	
+    B(10) = 5.00e+07, 1.00e+04
+
+    C(0) = 5.00e+01, 7.00e+02
+    C(1) = 5.00e+01, 7.30e+02	
+    C(2) = 5.00e+01, 7.60e+02	
+    C(3) = 5.00e+01, 7.90e+02	
+    C(4) = 5.00e+01, 8.20e+02	
+    C(5) = 5.00e+01, 8.50e+02	
+    C(6) = 5.00e+01, 8.80e+02	
+    C(7) = 5.00e+01, 9.10e+02	
+    C(8) = 5.00e+01, 9.40e+02	
+    C(9) = 1.25e+02, 9.70e+02	
+    C(10) = 1.50e+02, 1.00e+03	
+												
+    delta(0) = 3.00e+12, 1.00e+20
+    delta(1) = 3.00e+12, 1.00e+20	
+    delta(2) = 3.00e+12, 1.00e+20	
+    delta(3) = 3.00e+12, 1.00e+20	
+    delta(4) = 3.00e+12, 1.00e+20	
+    delta(5) = 3.00e+12, 1.00e+20	
+    delta(6) = 3.00e+12, 1.00e+20	
+    delta(7) = 3.00e+12, 1.00e+20	
+    delta(8) = 3.00e+12, 1.00e+20	
+    delta(9) = 3.00e+12, 1.00e+20	
+    delta(10) = 3.00e+12, 1.00e+20 	
+		
+    lambda(0) = 1.0, 1.0
+    lambda(1) = 1.0, 1.0
+    lambda(2) = 1.0, 1.0
+    lambda(3) = 1.0, 1.0
+    lambda(4) = 1.0, 1.0
+    lambda(5) = 1.0, 1.0
+    lambda(6) = 1.0, 1.0
+    lambda(7) = 1.0, 1.0
+    lambda(8) = 1.0, 1.0
+    lambda(9) = 1.0, 1.0
+    lambda(10) = 1.0, 1.0
+
+    lambda_sr(0) = 1.0, 1.0
+    lambda_sr(1) = 1.0, 1.0
+    lambda_sr(2) = 1.0, 1.0
+    lambda_sr(3) = 1.0, 1.0
+    lambda_sr(4) = 1.0, 1.0
+    lambda_sr(5) = 1.0, 1.0
+    lambda_sr(6) = 1.0, 1.0
+    lambda_sr(7) = 1.0, 1.0
+    lambda_sr(8) = 1.0, 1.0
+    lambda_sr(9) = 1.0, 1.0
+    lambda_sr(10) = 1.0, 1.0
+
+    lambda_sr_A(0) = 0.09, 0.0
+    lambda_sr_A(1) = 0.09, 0.0
+    lambda_sr_A(2) = 0.09, 0.0
+    lambda_sr_A(3) = 0.09, 0.0
+    lambda_sr_A(4) = 0.09, 0.0
+    lambda_sr_A(5) = 0.09, 0.0
+    lambda_sr_A(6) = 0.09, 0.0
+    lambda_sr_A(7) = 0.09, 0.0
+    lambda_sr_A(8) = 0.09, 0.0
+    lambda_sr_A(9) = 0.11, 0.0
+    lambda_sr_A(10) = 0.12, 0.0
+    	        
+    lambda_sr_D(0) = 0.0, 0.0
+    lambda_sr_D(1) = 0.0, 0.0
+    lambda_sr_D(2) = 0.0, 0.0
+    lambda_sr_D(3) = 0.0, 0.0
+    lambda_sr_D(4) = 0.0, 0.0
+    lambda_sr_D(5) = 0.0, 0.0
+    lambda_sr_D(6) = 0.0, 0.0
+    lambda_sr_D(7) = 0.0, 0.0
+    lambda_sr_D(8) = 0.0, 0.0
+    lambda_sr_D(9) = 0.0, 0.0
+    lambda_sr_D(10) = 0.0, 0.0
+     	            	             	             	        
+    lambda_ph2d_A(0) = 0.13, 0.0
+    lambda_ph2d_A(1) = 0.128, 0.0
+    lambda_ph2d_A(2) = 0.126, 0.0
+    lambda_ph2d_A(3) = 0.124, 0.0
+    lambda_ph2d_A(4) = 0.122, 0.0
+    lambda_ph2d_A(5) = 0.12, 0.0
+    lambda_ph2d_A(6) = 0.118, 0.0
+    lambda_ph2d_A(7) = 0.116, 0.0
+    lambda_ph2d_A(8) = 0.13, 0.0
+    lambda_ph2d_A(9) = 0.15, 0.0
+    lambda_ph2d_A(10) = 0.16, 0.0
+
+    lambda_ph2d_D(0) = 0.0, 0.08
+    lambda_ph2d_D(1) = 0.0, 0.0805
+    lambda_ph2d_D(2) = 0.0, 0.081
+    lambda_ph2d_D(3) = 0.0, 0.0815
+    lambda_ph2d_D(4) = 0.0, 0.082
+    lambda_ph2d_D(5) = 0.0, 0.0825
+    lambda_ph2d_D(6) = 0.0, 0.083
+    lambda_ph2d_D(7) = 0.0, 0.0835
+    lambda_ph2d_D(8) = 0.0, 0.084
+    lambda_ph2d_D(9) = 0.0, 0.0845
+    lambda_ph2d_D(10) = 0.0, 0.085
+
+    alpha_ph2d_A(0) = 1.0, 1.0
+    alpha_ph2d_A(1) = 1.0, 1.0
+    alpha_ph2d_A(2) = 1.0, 1.0
+    alpha_ph2d_A(3) = 1.0, 1.0
+    alpha_ph2d_A(4) = 1.0, 1.0
+    alpha_ph2d_A(5) = 1.0, 1.0
+    alpha_ph2d_A(6) = 1.0, 1.0
+    alpha_ph2d_A(7) = 1.0, 1.0
+    alpha_ph2d_A(8) = 1.0, 1.0
+    alpha_ph2d_A(9) = 1.0, 1.0
+    alpha_ph2d_A(10) = 1.0, 1.0
+
+    alpha_ph2d_D(0) = 1.0, 1.0
+    alpha_ph2d_D(1) = 1.0, 1.0
+    alpha_ph2d_D(2) = 1.0, 1.0
+    alpha_ph2d_D(3) = 1.0, 1.0
+    alpha_ph2d_D(4) = 1.0, 1.0
+    alpha_ph2d_D(5) = 1.0, 1.0
+    alpha_ph2d_D(6) = 1.0, 1.0
+    alpha_ph2d_D(7) = 1.0, 1.0
+    alpha_ph2d_D(8) = 1.0, 1.0
+    alpha_ph2d_D(9) = 1.0, 1.0
+    alpha_ph2d_D(10) = 1.0, 1.0
+
+    alpha_sr_A(0) = 1.0, 1.0
+    alpha_sr_A(1) = 1.0, 1.0
+    alpha_sr_A(2) = 1.0, 1.0
+    alpha_sr_A(3) = 1.0, 1.0
+    alpha_sr_A(4) = 1.0, 1.0
+    alpha_sr_A(5) = 1.0, 1.0
+    alpha_sr_A(6) = 1.0, 1.0
+    alpha_sr_A(7) = 1.0, 1.0
+    alpha_sr_A(8) = 1.0, 1.0
+    alpha_sr_A(9) = 1.0, 1.0
+    alpha_sr_A(10) = 1.0, 1.0
+
+    alpha_sr_D(0) = 1.0, 1.0
+    alpha_sr_D(1) = 1.0, 1.0
+    alpha_sr_D(2) = 1.0, 1.0
+    alpha_sr_D(3) = 1.0, 1.0
+    alpha_sr_D(4) = 1.0, 1.0
+    alpha_sr_D(5) = 1.0, 1.0
+    alpha_sr_D(6) = 1.0, 1.0
+    alpha_sr_D(7) = 1.0, 1.0
+    alpha_sr_D(8) = 1.0, 1.0
+    alpha_sr_D(9) = 1.0, 1.0
+    alpha_sr_D(10) = 1.0, 1.0
+
+    A(0) = 2.0, 2.0
+    A(1) = 2.0, 2.0
+    A(2) = 2.0, 2.0
+    A(3) = 2.0, 2.0
+    A(4) = 2.0, 2.0
+    A(5) = 2.0, 2.0
+    A(6) = 2.0, 2.0
+    A(7) = 2.0, 2.0
+    A(8) = 2.0, 2.0
+    A(9) = 2.0, 2.0
+    A(10) = 2.0, 2.0	        
+     	             	             	             	             	             	             	        
+    alpha_sr(0) = 0.0, 0.0 
+    alpha_sr(1) = 0.0, 0.0
+    alpha_sr(2) = 0.0, 0.0
+    alpha_sr(3) = 0.0, 0.0
+    alpha_sr(4) = 0.0, 0.0
+    alpha_sr(5) = 0.0, 0.0
+    alpha_sr(6) = 0.0, 0.0
+    alpha_sr(7) = 0.0, 0.0
+    alpha_sr(8) = 0.0, 0.0
+    alpha_sr(9) = 0.0, 0.0
+    alpha_sr(10) = 0.0, 0.0
+     	             	        
+    S(0) = 0.3042, 1.0e6
+    S(1) = 0.3042, 1.0e6
+    S(2) = 0.3042, 1.0e6
+    S(3) = 0.3042, 1.0e6
+    S(4) = 0.3042, 1.0e6
+    S(5) = 0.3042, 1.0e6
+    S(6) = 0.3042, 1.0e6
+    S(7) = 0.3042, 1.0e6
+    S(8) = 0.3042, 1.0e6
+    S(9) = 0.3042, 1.0e6
+    S(10) = 0.3042, 1.0e6
+     	        
+    P(0) = 4.0, 4.0 
+    P(1) = 4.0, 4.0 
+    P(2) = 4.0, 4.0 
+    P(3) = 4.0, 4.0 
+    P(4) = 4.0, 4.0 
+    P(5) = 4.0, 4.0 
+    P(6) = 4.0, 4.0 
+    P(7) = 4.0, 4.0 
+    P(8) = 4.0, 4.0 
+    P(9) = 4.0, 4.0 
+    P(10) = 4.0, 4.0 
+    	        		     	        
+    k(0) = 1.0, 1.0
+    k(1) = 1.0, 1.0
+    k(2) = 1.0, 1.0
+    k(3) = 1.0, 1.0
+    k(4) = 1.0, 1.0
+    k(5) = 1.0, 1.0
+    k(6) = 1.0, 1.0
+    k(7) = 1.0, 1.0
+    k(8) = 1.0, 1.0
+    k(9) = 1.0, 1.0
+    k(10) = 1.0, 1.0
+     	        
+    nu(0) = 0.0, 0.0     	            	             	             	            	             	                 
+    nu(1) = 0.0, 0.0     	            	             	             	            	             	             
+    nu(2) = 0.0, 0.0     	            	             	             	            	             	                 
+    nu(3) = 0.0, 0.0 
+    nu(4) = 0.0, 0.0 
+    nu(5) = 0.0, 0.0 
+    nu(6) = 0.0, 0.0 
+    nu(7) = 0.0, 0.0 
+    nu(8) = 0.0, 0.0 
+    nu(9) = 0.0, 0.0 
+    nu(10) = 0.0, 0.0 
+
+    eta(0) = 1.0e+50, 1.0e+50
+    eta(1) = 1.0e+50, 1.0e+50 	            	             	             	            	             	               
+    eta(2) = 1.0e+50, 1.0e+50 	            	             	             	            	             	             
+    eta(3) = 1.0e+50, 1.0e+50 
+    eta(4) = 1.0e+50, 1.0e+50 
+    eta(5) = 1.0e+50, 1.0e+50 
+    eta(6) = 1.0e+50, 1.0e+50 
+    eta(7) = 1.0e+50, 1.0e+50 
+    eta(8) = 1.0e+50, 1.0e+50 
+    eta(9) = 1.0e+50, 1.0e+50 
+    eta(10) = 1.0e+50, 1.0e+50 
+
+    N1(0) = 1.0e+15, 1.0e+15     	            	             	             	            	             	           
+    N1(1) = 1.0e+15, 1.0e+15 
+    N1(2) = 1.0e+15, 1.0e+15 
+    N1(3) = 1.0e+15, 1.0e+15 
+    N1(4) = 1.0e+15, 1.0e+15 
+    N1(5) = 1.0e+15, 1.0e+15 
+    N1(6) = 1.0e+15, 1.0e+15 
+    N1(7) = 1.0e+15, 1.0e+15 
+    N1(8) = 1.0e+15, 1.0e+15 
+    N1(9) = 1.0e+15, 1.0e+15 
+    N1(10) = 1.0e+15, 1.0e+15 
+
+    N2(0) = 1.0e+15, 1.00e+14
+    N2(1) = 1.0e+15, 1.00e+14
+    N2(2) = 1.0e+15, 1.00e+14 
+    N2(3) = 1.0e+15, 1.00e+14 
+    N2(4) = 1.0e+15, 1.00e+14 
+    N2(5) = 1.0e+15, 1.00e+14 
+    N2(6) = 1.0e+15, 1.00e+14 
+    N2(7) = 1.0e+15, 1.00e+14 
+    N2(8) = 1.0e+15, 1.00e+14 
+    N2(9) = 1.0e+15, 1.00e+14 
+    N2(10) = 1.0e+15, 1.00e+14
+	             	             	            	             	             	        
+    D1_inv(0) = 350.0, 1500.0 
+    D1_inv(1) = 350.0, 1650.0
+    D1_inv(2) = 350.0, 1800.0
+    D1_inv(3) = 350.0, 1950.0
+    D1_inv(4) = 350.0, 2100.0
+    D1_inv(5) = 350.0, 2250.0
+    D1_inv(6) = 350.0, 2400.0
+    D1_inv(7) = 350.0, 2550.0
+    D1_inv(8) = 350.0, 2700.0
+    D1_inv(9) = 1050.0, 2950.0
+    D1_inv(10) = 1050.0, 3000.0
+     	        
+    D2_inv(0) = 350.0, 1500.0 
+    D2_inv(1) = 350.0, 1650.0
+    D2_inv(2) = 350.0, 1800.0
+    D2_inv(3) = 350.0, 1950.0
+    D2_inv(4) = 350.0, 2100.0
+    D2_inv(5) = 350.0, 2250.0
+    D2_inv(6) = 350.0, 2400.0
+    D2_inv(7) = 350.0, 2550.0
+    D2_inv(8) = 350.0, 2700.0
+    D2_inv(9) = 1050.0, 2950.0
+    D2_inv(10) = 1050.0, 3000.0
+   	              	            	        
+    nu0_inv(0) = 1.5, 1.5 
+    nu0_inv(1) = 1.5, 1.5 
+    nu0_inv(2) = 1.5, 1.5 
+    nu0_inv(3) = 1.5, 1.5 
+    nu0_inv(4) = 1.5, 1.5 
+    nu0_inv(5) = 1.5, 1.5 
+    nu0_inv(6) = 1.5, 1.5 
+    nu0_inv(7) = 1.5, 1.5 
+    nu0_inv(8) = 1.5, 1.5 
+    nu0_inv(9) = 1.5, 1.5 
+    nu0_inv(10) = 1.5, 1.5 
+
+    nu1_inv(0) = 2.0, 2.0 
+    nu1_inv(1) = 2.0, 2.0 
+    nu1_inv(2) = 2.0, 2.0 
+    nu1_inv(3) = 2.0, 2.0 
+    nu1_inv(4) = 2.0, 2.0 
+    nu1_inv(5) = 2.0, 2.0 
+    nu1_inv(6) = 2.0, 2.0 
+    nu1_inv(7) = 2.0, 2.0 
+    nu1_inv(8) = 2.0, 2.0 
+    nu1_inv(9) = 2.0, 2.0 
+    nu1_inv(10) = 2.0, 2.0 
+    	             	        
+    nu2_inv(0) = 0.5, 0.5
+    nu2_inv(1) = 0.5, 0.5
+    nu2_inv(2) = 0.5, 0.5
+    nu2_inv(3) = 0.5, 0.5
+    nu2_inv(4) = 0.5, 0.5
+    nu2_inv(5) = 0.5, 0.5
+    nu2_inv(6) = 0.5, 0.5
+    nu2_inv(7) = 0.5, 0.5
+    nu2_inv(8) = 0.5, 0.5
+    nu2_inv(9) = 0.5, 0.5
+    nu2_inv(10) = 0.5, 0.5
+
+    alpha1_inv(0) = 0.0, 0.0
+    alpha1_inv(1) = 0.0, 0.0
+    alpha1_inv(2) = 0.0, 0.0
+    alpha1_inv(3) = 0.0, 0.0
+    alpha1_inv(4) = 0.0, 0.0
+    alpha1_inv(5) = 0.0, 0.0
+    alpha1_inv(6) = 0.0, 0.0
+    alpha1_inv(7) = 0.0, 0.0
+    alpha1_inv(8) = 0.0, 0.0
+    alpha1_inv(9) = 0.0, 0.0
+    alpha1_inv(10) = 0.0, 0.0
+	        
+    alpha2_inv(0) = 0.0, 0.0
+    alpha2_inv(1) = 0.0, 0.0
+    alpha2_inv(2) = 0.0, 0.0
+    alpha2_inv(3) = 0.0, 0.0
+    alpha2_inv(4) = 0.0, 0.0
+    alpha2_inv(5) = 0.0, 0.0
+    alpha2_inv(6) = 0.0, 0.0
+    alpha2_inv(7) = 0.0, 0.0
+    alpha2_inv(8) = 0.0, 0.0
+    alpha2_inv(9) = 0.0, 0.0
+    alpha2_inv(10) = 0.0, 0.0
+
+    D1_acc(0) = 350.0, 350.0
+    D1_acc(1) = 350.0, 210.0
+    D1_acc(2) = 350.0, 245.0
+    D1_acc(3) = 350.0, 280.0
+    D1_acc(4) = 350.0, 315.0
+    D1_acc(5) = 350.0, 350.0
+    D1_acc(6) = 350.0, 385.0
+    D1_acc(7) = 350.0, 420.0
+    D1_acc(8) = 350.0, 455.0
+    D1_acc(9) = 700.0, 490.0
+    D1_acc(10) = 350.0, 525.0
+      	        
+    D2_acc(0) = 350.0, 350.0
+    D2_acc(1) = 350.0, 175.0
+    D2_acc(2) = 350.0, 175.0
+    D2_acc(3) = 350.0, 175.0
+    D2_acc(4) = 350.0, 175.0
+    D2_acc(5) = 350.0, 175.0
+    D2_acc(6) = 350.0, 175.0
+    D2_acc(7) = 350.0, 175.0
+    D2_acc(8) = 350.0, 175.0
+    D2_acc(9) = 700.0, 175.0
+    D2_acc(10) = 1050.0, 525.0
+      	              	            	        
+    nu0_acc(0) = 1.5, 1.5 
+    nu0_acc(1) = 1.5, 1.5 
+    nu0_acc(2) = 1.5, 1.5 
+    nu0_acc(3) = 1.5, 1.5 
+    nu0_acc(4) = 1.5, 1.5 
+    nu0_acc(5) = 1.5, 1.5 
+    nu0_acc(6) = 1.5, 1.5 
+    nu0_acc(7) = 1.5, 1.5 
+    nu0_acc(8) = 1.5, 1.5 
+    nu0_acc(9) = 1.5, 1.5 
+    nu0_acc(10) = 1.5, 1.5 
+     	              	        
+    nu1_acc(0) = 2.0, 2.0
+    nu1_acc(1) = 2.0, 2.0
+    nu1_acc(2) = 2.0, 2.0
+    nu1_acc(3) = 2.0, 2.0
+    nu1_acc(4) = 2.0, 2.0
+    nu1_acc(5) = 2.0, 2.0
+    nu1_acc(6) = 2.0, 2.0
+    nu1_acc(7) = 2.0, 2.0
+    nu1_acc(8) = 2.0, 2.0
+    nu1_acc(9) = 2.0, 2.0
+    nu1_acc(10) = 2.0, 2.0
+      	             	        
+    nu2_acc(0) = 0.5, 0.5 
+    nu2_acc(1) = 0.5, 0.5 
+    nu2_acc(2) = 0.5, 0.5 
+    nu2_acc(3) = 0.5, 0.5 
+    nu2_acc(4) = 0.5, 0.5 
+    nu2_acc(5) = 0.5, 0.5 
+    nu2_acc(6) = 0.5, 0.5 
+    nu2_acc(7) = 0.5, 0.5 
+    nu2_acc(8) = 0.5, 0.5 
+    nu2_acc(9) = 0.5, 0.5 
+    nu2_acc(10) = 0.5, 0.5 
+                      
+    alpha1_acc(0) = 0.0, 0.0
+    alpha1_acc(1) = 0.0, 0.0
+    alpha1_acc(2) = 0.0, 0.0
+    alpha1_acc(3) = 0.0, 0.0
+    alpha1_acc(4) = 0.0, 0.0
+    alpha1_acc(5) = 0.0, 0.0
+    alpha1_acc(6) = 0.0, 0.0
+    alpha1_acc(7) = 0.0, 0.0
+    alpha1_acc(8) = 0.0, 0.0
+    alpha1_acc(9) = 0.0, 0.0
+    alpha1_acc(10) = 0.0, 0.0
+	        
+    alpha2_acc(0)=0.0,0.0
+    alpha2_acc(1)=0.0,0.0
+    alpha2_acc(2)=0.0,0.0
+    alpha2_acc(3)=0.0,0.0
+    alpha2_acc(4)=0.0,0.0
+    alpha2_acc(5)=0.0,0.0
+    alpha2_acc(6)=0.0,0.0
+    alpha2_acc(7)=0.0,0.0
+    alpha2_acc(8)=0.0,0.0
+    alpha2_acc(9)=0.0,0.0
+    alpha2_acc(10)=0.0,0.0
+        
+    a_ph2d(0) =	1.0, 1.0
+    a_ph2d(1) =	1.0, 1.0
+    a_ph2d(2) =	1.0, 1.0
+    a_ph2d(3) =	1.0, 1.0
+    a_ph2d(4) =	1.0, 1.0
+    a_ph2d(5) =	1.0, 1.0
+    a_ph2d(6) =	1.0, 1.0
+    a_ph2d(7) =	1.0, 1.0
+    a_ph2d(8) =	1.0, 1.0
+    a_ph2d(9) =	1.0, 1.0
+    a_ph2d(10) = 1.0, 1.0
+	        
+    a_ph3d(0) = 1.0, 1.0
+    a_ph3d(1) = 1.0, 1.0
+    a_ph3d(2) = 1.0, 1.0
+    a_ph3d(3) = 1.0, 1.0
+    a_ph3d(4) = 1.0, 1.0
+    a_ph3d(5) = 1.0, 1.0
+    a_ph3d(6) = 1.0, 1.0
+    a_ph3d(7) = 1.0, 1.0
+    a_ph3d(8) = 1.0, 1.0
+    a_ph3d(9) = 1.0, 1.0
+    a_ph3d(10) = 1.0, 1.0
+
+    a_c2d(0) = 1.0, 1.0
+    a_c2d(1) = 1.0, 1.0
+    a_c2d(2) = 1.0, 1.0
+    a_c2d(3) = 1.0, 1.0
+    a_c2d(4) = 1.0, 1.0
+    a_c2d(5) = 1.0, 1.0
+    a_c2d(6) = 1.0, 1.0
+    a_c2d(7) = 1.0, 1.0
+    a_c2d(8) = 1.0, 1.0
+    a_c2d(9) = 1.0, 1.0
+    a_c2d(10) = 1.0, 1.0
+	        
+    a_c3d(0) = 1.0, 1.0
+    a_c3d(1) = 1.0, 1.0
+    a_c3d(2) = 1.0, 1.0
+    a_c3d(3) = 1.0, 1.0
+    a_c3d(4) = 1.0, 1.0
+    a_c3d(5) = 1.0, 1.0
+    a_c3d(6) = 1.0, 1.0
+    a_c3d(7) = 1.0, 1.0
+    a_c3d(8) = 1.0, 1.0
+    a_c3d(9) = 1.0, 1.0
+    a_c3d(10) = 1.0, 1.0
+	        
+    a_sr(0) = 1.0, 1.0
+    a_sr(1) = 1.0, 1.0
+    a_sr(2) = 1.0, 1.0
+    a_sr(3) = 1.0, 1.0
+    a_sr(4) = 1.0, 1.0
+    a_sr(5) = 1.0, 1.0
+    a_sr(6) = 1.0, 1.0
+    a_sr(7) = 1.0, 1.0
+    a_sr(8) = 1.0, 1.0
+    a_sr(9) = 1.0, 1.0
+    a_sr(10) = 1.0, 1.0
+
+    t0(0) = 5.0e-4, 5.0e-4
+    t0(1) = 5.0e-4, 5.0e-4
+    t0(2) = 5.0e-4, 5.0e-4
+    t0(3) = 5.0e-4, 5.0e-4
+    t0(4) = 5.0e-4, 5.0e-4
+    t0(5) = 5.0e-4, 5.0e-4
+    t0(6) = 5.0e-4, 5.0e-4
+    t0(7) = 5.0e-4, 5.0e-4
+    t0(8) = 5.0e-4, 5.0e-4
+    t0(9) = 5.0e-4, 5.0e-4
+    t0(10) = 5.0e-4, 5.0e-4
+
+    S_t(0) = 0.02846, 0.0246
+    S_t(1) = 0.02846, 0.0246
+    S_t(2) = 0.02846, 0.0246
+    S_t(3) = 0.02846, 0.0246
+    S_t(4) = 0.02846, 0.0246
+    S_t(5) = 0.02846, 0.0246
+    S_t(6) = 0.02846, 0.0246
+    S_t(7) = 0.02846, 0.0246
+    S_t(8) = 0.02846, 0.0246
+    S_t(9) = 0.02846, 0.0246
+    S_t(10) = 0.02846, 0.0246
+
+    tcoulomb(0) = 3.0e-3, 3.0e-3
+    tcoulomb(1) = 3.0e-3, 3.0e-3
+    tcoulomb(2) = 3.0e-3, 3.0e-3
+    tcoulomb(3) = 3.0e-3, 3.0e-3
+    tcoulomb(4) = 3.0e-3, 3.0e-3
+    tcoulomb(5) = 3.0e-3, 3.0e-3
+    tcoulomb(6) = 3.0e-3, 3.0e-3
+    tcoulomb(7) = 3.0e-3, 3.0e-3
+    tcoulomb(8) = 3.0e-3, 3.0e-3
+    tcoulomb(9) = 3.0e-3, 3.0e-3
+    tcoulomb(10) = 3.0e-3, 3.0e-3
+																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																								
+    l_crit(0) = 1.0e-6, 1.0e-6	
+    l_crit(1) = 1.0e-6, 1.0e-6	
+    l_crit(2) = 1.0e-6, 1.0e-6	
+    l_crit(3) = 1.0e-6, 1.0e-6	
+    l_crit(4) = 1.0e-6, 1.0e-6	
+    l_crit(5) = 1.0e-6, 1.0e-6	
+    l_crit(6) = 1.0e-6, 1.0e-6	
+    l_crit(7) = 1.0e-6, 1.0e-6	
+    l_crit(8) = 1.0e-6, 1.0e-6	
+    l_crit(9) = 1.0e-6, 1.0e-6	
+    l_crit(10) = 1.0e-6, 1.0e-6	
+     	        
+    l_crit_c(0) = 1.0e-6, 1.0e-6
+    l_crit_c(1) = 1.0e-6, 1.0e-6
+    l_crit_c(2) = 1.0e-6, 1.0e-6
+    l_crit_c(3) = 1.0e-6, 1.0e-6
+    l_crit_c(4) = 1.0e-6, 1.0e-6
+    l_crit_c(5) = 1.0e-6, 1.0e-6
+    l_crit_c(6) = 1.0e-6, 1.0e-6
+    l_crit_c(7) = 1.0e-6, 1.0e-6
+    l_crit_c(8) = 1.0e-6, 1.0e-6
+    l_crit_c(9) = 1.0e-6, 1.0e-6
+    l_crit_c(10) = 1.0e-6, 1.0e-6	
+  }
+        
+####for <110> channel - extracted from <112> channel
+IALMob "111":
+        {
+                #calibrated to sband at inversion condition (inversion sheet density=1.0E13 1/cm^2)
+                #alloy scattering potential=0.3 - smaller than the value used in MC
+
+                EnormMinimum    =       0
+
+                Xmax(0)         =       0.0
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       0.6
+                Xmax(7)         =       0.7
+                Xmax(8)         =       0.8
+                Xmax(9)         =       0.9
+                Xmax(10)        =       1.0
+
+                mumax(0)         =      1417.0, 486.0
+                mumax(1)         =      976.9,  364.0
+                mumax(2)         =      568.7,  300.0
+                mumax(3)         =      290.9,  300.0
+                mumax(4)         =      250.0,  320.0
+                mumax(5)         =      276.7,  364.0
+                mumax(6)         =      373.1,  550.0
+                mumax(7)         =      378.3,  700.0
+                mumax(8)         =      392.8,  900.0
+                mumax(9)         =      1037.8, 1300.0
+                mumax(10)        =      3856.7, 1789.5
+
+                alpha(0)         =      0.68,   0.719
+                alpha(1)         =      0.667,  0.702
+                alpha(2)         =      0.654,  0.685
+                alpha(3)         =      0.641,  0.668
+                alpha(4)         =      0.628,  0.651
+                alpha(5)         =      0.614,  0.634
+                alpha(6)         =      0.601,  0.618
+                alpha(7)         =      0.587,  0.601
+                alpha(8)         =      0.574,  0.584
+                alpha(9)         =      0.56,   0.567
+                alpha(10)        =      0.55,   0.55
+
+                mumin(0)         =      56.0,   46.0
+                mumin(1)         =      56.0,   46.0
+                mumin(2)         =      56.0,   46.0
+                mumin(3)         =      56.0,   46.0
+                mumin(4)         =      56.0,   46.0
+                mumin(5)         =      56.0,   46.0
+                mumin(6)         =      56.0,   46.0
+                mumin(7)         =      56.0,   46.0
+                mumin(8)         =      56.0,   46.0
+                mumin(9)         =      56.0,   46.0
+                mumin(10)        =      56.0,   46.0
+
+                theta            =      2.285,  2.247
+                n_ref            =      9.68e16,2.23e17
+                me_over_m0       =      1.0
+                mh_over_m0       =      1.258
+
+                #electrons are not calibrated but only roughly adjusted
+                B(0)             =      1.40e+06,       1.02e+06                #hole mole fraction dependence from Sband
+                B(1)             =      1.40e+06,       1.02e+06                #hole mole fraction dependence from Sband
+                B(2)             =      1.40e+06,       1.31e+06                #hole mole fraction dependence from Sband
+                B(3)             =      1.40e+06,       1.73e+06                #hole mole fraction dependence from Sband
+                B(4)             =      1.40e+06,       1.90e+06                #hole mole fraction dependence from Sband
+                B(5)             =      1.40e+06,       2.07e+06                #hole mole fraction dependence from Sband
+                B(6)             =      1.40e+06,       1.90e+06                #hole mole fraction dependence from Sband
+                B(7)             =      1.40e+06,       1.90e+06                #hole mole fraction dependence from Sband
+                B(8)             =      1.40e+06,       1.90e+06                #hole mole fraction dependence from Sband
+                B(9)             =      1.40e+06,       2.20e+06                #hole mole fraction dependence from Sband
+                B(10)            =      1.40e+06,       2.20e+06                #hole mole fraction dependence from Sband
+
+                C(0)             =      3.50e+04,       1.05e+04                #hole mole fraction dependence from Sband
+                C(1)             =      3.50e+04,       1.05e+04                #hole mole fraction dependence from Sband
+                C(2)             =      3.50e+04,       1.35e+04                #hole mole fraction dependence from Sband
+                C(3)             =      3.50e+04,       1.78e+04                #hole mole fraction dependence from Sband
+                C(4)             =      3.50e+04,       1.96e+04                #hole mole fraction dependence from Sband
+                C(5)             =      3.50e+04,       2.14e+04                #hole mole fraction dependence from Sband
+                C(6)             =      3.50e+04,       1.96e+04                #hole mole fraction dependence from Sband
+                C(7)             =      3.50e+04,       1.96e+04                #hole mole fraction dependence from Sband
+                C(8)             =      3.50e+04,       1.96e+04                #hole mole fraction dependence from Sband
+                C(9)             =      3.50e+04,       2.27e+04                #hole mole fraction dependence from Sband
+                C(10)            =      3.50e+04,       2.27e+04                #hole mole fraction dependence from Sband
+
+                delta(0)        =       1.75e+14,       3.25e+14                #hole mole fraction dependence from Sband
+                delta(1)        =       1.75e+14,       3.25e+14                #hole mole fraction dependence from Sband
+                delta(2)        =       1.75e+14,       4.18e+14                #hole mole fraction dependence from Sband
+                delta(3)        =       1.75e+14,       5.50e+14                #hole mole fraction dependence from Sband
+                delta(4)        =       1.75e+14,       6.05e+14                #hole mole fraction dependence from Sband
+                delta(5)        =       1.75e+14,       6.60e+14                #hole mole fraction dependence from Sband
+                delta(6)        =       1.75e+14,       6.05e+14                #hole mole fraction dependence from Sband
+                delta(7)        =       1.75e+14,       6.05e+14                #hole mole fraction dependence from Sband
+                delta(8)        =       1.75e+14,       6.05e+14                #hole mole fraction dependence from Sband
+                delta(9)        =       1.75e+14,       7.00e+14                #hole mole fraction dependence from Sband
+                delta(10)       =       1.75e+14,       7.00e+14                #hole mole fraction dependence from Sband
+
+                lambda(0)       =       0.0,            0.0
+                lambda(1)       =       0.0,            0.0
+                lambda(2)       =       0.0,            0.0
+                lambda(3)       =       0.0,            0.0
+                lambda(4)       =       0.0,            0.0
+                lambda(5)       =       0.0,            0.0
+                lambda(6)       =       0.0,            0.0
+                lambda(7)       =       0.0,            0.0
+                lambda(8)       =       0.0,            0.0
+                lambda(9)       =       0.0,            0.0
+                lambda(10)      =       0.0,            0.0
+
+                lambda_sr(0)    =       0.0,            0.0
+                lambda_sr(1)    =       0.0,            0.0
+                lambda_sr(2)    =       0.0,            0.0
+                lambda_sr(3)    =       0.0,            0.0
+                lambda_sr(4)    =       0.0,            0.0
+                lambda_sr(5)    =       0.0,            0.0
+                lambda_sr(6)    =       0.0,            0.0
+                lambda_sr(7)    =       0.0,            0.0
+                lambda_sr(8)    =       0.0,            0.0
+                lambda_sr(9)    =       0.0,            0.0
+                lambda_sr(10)   =       0.0,            0.0
+
+                A               =       2.0,            2.0
+                alpha_sr        =       5.0e-22,        0.0
+                nu              =       0.0,            0.0
+                D1_inv          =       300.0,          150.0
+                D2_inv          =       300.0,          150.0
+                nu0_inv         =       1.5,            1.5
+                nu1_inv         =       2.0,            2.0
+                nu2_inv         =       0.5,            0.5
+                alpha1_inv      =       0.0,            0.0
+                alpha2_inv      =       0.0,            0.0
+                l_crit          =       1.0e-6,         1.0e-6
+                l_crit_c        =       1.0e-6,         1.0e-6
+                eta             =       1.0e50,         1.0e50
+                N1              =       1.0,            1.0
+                N2              =       1.0,            1.0
+        }
+
+*  IALMob_aniso{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+ThinLayerMobility:
+        {
+                beta            =       4.0,            4.0             
+                zeta            =       2.88,           1.05                                    
+                p1              =       0.55,           0.0             
+                p2              =       400.0,          0.66            
+                p3              =       1.44            1.0                                             
+                mz1             =       0.916,          0.29            
+                mz2             =       0.19,           0.25
+                wt01            =       3.0e-06,        0.0              
+                wt02            =       3.5e-07,        0.0                                     
+                muac01          =       315.0,          30.2             
+                muac02          =       6.4,            69.0                                     
+                mutf0           =       0.15,           0.28            
+                musp0           =       1.145e-8,       1.6e-10                         
+                tsp0            =       1.0e-04,        1.0e-04                         
+                ftf0            =       6.25e+03,       1.0e+100                                
+                tmin            =       2.00e-03,       2.00e-03                                
+                eta1            =       6.0,            6.0             
+                eta2            =       1.0,            1.0                             
+                mutfh0          =       1.0e+06,        1.0e6                                     
+                ftfh0           =       1.0e+100,       1.0e+100
+        }      
+
+ThinLayerMobility "100":
+        {
+                beta            =       4.0,            4.0             
+                zeta            =       2.88,           1.05                                    
+                p1              =       0.55,           0.0             
+                p2              =       400.0,          0.66            
+                p3              =       1.44            1.0                                             
+                mz1             =       0.916,          0.29            
+                mz2             =       0.19,           0.25
+                wt01            =       3.0e-06,        0.0              
+                wt02            =       3.5e-07,        0.0                                     
+                muac01          =       315.0,          30.2             
+                muac02          =       6.4,            69.0                                     
+                mutf0           =       0.15,           0.28            
+                musp0           =       1.145e-8,       1.6e-10                         
+                tsp0            =       1.0e-04,        1.0e-04                         
+                ftf0            =       6.25e+03,       1.0e+100                                
+                tmin            =       2.00e-03,       2.00e-03                                
+                eta1            =       6.0,            6.0             
+                eta2            =       1.0,            1.0                             
+                mutfh0          =       1.0e+06,        1.0e6                                     
+                ftfh0           =       1.0e+100,       1.0e+100
+        }       
+
+ThinLayerMobility "110":
+       {
+                beta            =       4.0,            4.0
+                zeta            =       0.15,           8.2
+                p1              =       0.4,            0.1
+                p2              =       50.0,           2.0e6
+                p3              =       7.0,            4.0
+                mz1             =       0.315,          1.8
+                mz2             =       0.19,           0.23
+                wt01            =       3.5e-07,        3.0e-7
+                wt02            =       3.0e-06,        1.0e-5
+                muac01          =       85.0,           1300.0
+                muac02          =       300.0,          100.0
+                mutf0           =       6.9e-5,         0.0051
+                musp0           =       2.8e-3,         5.0e-5
+                tsp0            =       2.7e-04,        1.5e-04
+                ftf0            =       6.25e+03,       6.25e+03
+                tmin            =       2.00e-03,       2.00e-03
+                eta1            =       9.5,            7.5
+                eta2            =       1.5,            1.5
+                mutfh0          =       1.0e+06,        5.1
+                ftfh0           =       1.0e+100,       6.25e+04
+        }
+
+#copied from (110)
+ThinLayerMobility "111":
+       {
+                beta            =       4.0,            4.0
+                zeta            =       0.15,           8.2
+                p1              =       0.4,            0.1
+                p2              =       50.0,           2.0e6
+                p3              =       7.0,            4.0
+                mz1             =       0.315,          1.8
+                mz2             =       0.19,           0.23
+                wt01            =       3.5e-07,        3.0e-7
+                wt02            =       3.0e-06,        1.0e-5
+                muac01          =       85.0,           1300.0
+                muac02          =       300.0,          100.0
+                mutf0           =       6.9e-5,         0.0051
+                musp0           =       2.8e-3,         5.0e-5
+                tsp0            =       2.7e-04,        1.5e-04
+                ftf0            =       6.25e+03,       6.25e+03
+                tmin            =       2.00e-03,       2.00e-03
+                eta1            =       9.5,            7.5
+                eta2            =       1.5,            1.5
+                mutfh0          =       1.0e+06,        5.1
+                ftfh0           =       1.0e+100,       6.25e+04
+        }
+
+*  ThinLayerMobility_aniso{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+
+*  EffectiveStressModel{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+HighFieldDependence:
+       {
+                Vsat_Formula    =       1,      1
+
+                Xmax(0)         =       0.
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       0.6
+                Xmax(7)         =       0.7
+                Xmax(8)         =       0.8
+                Xmax(9)         =       0.9
+                Xmax(10)        =       1.0
+
+                beta0(0)        =       1.109,  1.213
+                beta0(1)        =       1.21,   1.213
+                beta0(2)        =       1.32,   1.213
+                beta0(3)        =       1.43,   1.213
+                beta0(4)        =       1.54,   1.213
+                beta0(5)        =       1.65,   1.213
+                beta0(6)        =       1.76,   1.213
+                beta0(7)        =       1.87,   1.213
+                beta0(8)        =       1.98,   1.213
+                beta0(9)        =       1.99,   1.213
+                beta0(10)       =       2.0,    1.213
+
+                #non-ballistic velocity saturation: equilibrium saturation velocity
+                vsat0(0)        =       1.07e+7,0.84e+7         #default
+                vsat0(1)        =       0.82e+7,0.81e+7         #linear interpolation for holes
+                vsat0(2)        =       0.62e+7,0.79e+7         #second order interpolation for electrons with bowing coefficient from [00Pal]
+                vsat0(3)        =       0.46e+7,0.76e+7         #instead of second order interpolation a hard jump to the Ge values at 85% might be better
+                vsat0(4)        =       0.36e+7,0.74e+7
+                vsat0(5)        =       0.29e+7,0.71e+7
+                vsat0(6)        =       0.27e+7,0.69e+7
+                vsat0(7)        =       0.30e+7,0.66e+7
+                vsat0(8)        =       0.37e+7,0.64e+7
+                vsat0(9)        =       0.49e+7,0.61e+7
+                vsat0(10)       =       0.65e07,0.60e+7         #electrons: [81Jac] in ioffe database
+                                                                #holes: [10Ene]
+
+                #ballistic velocity saturation: fittend to MC simulation of short channel FinFETs (holes)
+                #electrons are kept at their equilibrium values
+                #vsat0(0)       =       1.07e+7,1.01e+7
+                #vsat0(1)       =       0.82e+7,1.10e+7
+                #vsat0(2)       =       0.62e+7,1.19e+7
+                #vsat0(3)       =       0.46e+7,1.26e+7
+                #vsat0(4)       =       0.36e+7,1.34e+7
+                #vsat0(5)       =       0.29e+7,1.40e+7
+                #vsat0(6)       =       0.27e+7,1.46e+7
+                #vsat0(7)       =       0.30e+7,1.50e+7
+                #vsat0(8)       =       0.37e+7,1.55e+7
+                #vsat0(9)       =       0.49e+7,1.57e+7
+                #vsat0(10)      =       0.65e07,1.64e+7
+        }
+
+HighFieldDependence_aniso:
+       {
+                Vsat_Formula    =       1,      1
+
+                Xmax(0)         =       0.
+                Xmax(1)         =       0.1
+                Xmax(2)         =       0.2
+                Xmax(3)         =       0.3
+                Xmax(4)         =       0.4
+                Xmax(5)         =       0.5
+                Xmax(6)         =       0.6
+                Xmax(7)         =       0.7
+                Xmax(8)         =       0.8
+                Xmax(9)         =       0.9
+                Xmax(10)        =       1.0
+
+                beta0(0)        =       1.109,  1.213
+                beta0(1)        =       1.21,   1.213
+                beta0(2)        =       1.32,   1.213
+                beta0(3)        =       1.43,   1.213
+                beta0(4)        =       1.54,   1.213
+                beta0(5)        =       1.65,   1.213
+                beta0(6)        =       1.76,   1.213
+                beta0(7)        =       1.87,   1.213
+                beta0(8)        =       1.98,   1.213
+                beta0(9)        =       1.99,   1.213
+                beta0(10)       =       2.0,    1.213
+
+                #non-ballistic velocity saturation: equilibrium saturation velocity
+                vsat0(0)        =       1.07e+7,0.84e+7         #default
+                vsat0(1)        =       0.82e+7,0.81e+7         #linear interpolation for holes
+                vsat0(2)        =       0.62e+7,0.79e+7         #second order interpolation for electrons with bowing coefficient from [00Pal]
+                vsat0(3)        =       0.46e+7,0.76e+7         #instead of second order interpolation a hard jump to the Ge values at 85% might be better
+                vsat0(4)        =       0.36e+7,0.74e+7
+                vsat0(5)        =       0.29e+7,0.71e+7
+                vsat0(6)        =       0.27e+7,0.69e+7
+                vsat0(7)        =       0.30e+7,0.66e+7
+                vsat0(8)        =       0.37e+7,0.64e+7
+                vsat0(9)        =       0.49e+7,0.61e+7
+                vsat0(10)       =       0.65e07,0.60e+7         #electrons: [81Jac] in ioffe database
+                                                                #holes: [10Ene]
+
+                #ballistic velocity saturation: fittend to MC simulation of short channel FinFETs (holes)
+                #electrons are kept at their equilibrium values
+                #vsat0(0)       =       1.07e+7,1.01e+7
+                #vsat0(1)       =       0.82e+7,1.10e+7
+                #vsat0(2)       =       0.62e+7,1.19e+7
+                #vsat0(3)       =       0.46e+7,1.26e+7
+                #vsat0(4)       =       0.36e+7,1.34e+7
+                #vsat0(5)       =       0.29e+7,1.40e+7
+                #vsat0(6)       =       0.27e+7,1.46e+7
+                #vsat0(7)       =       0.30e+7,1.50e+7
+                #vsat0(8)       =       0.37e+7,1.55e+7
+                #vsat0(9)       =       0.49e+7,1.57e+7
+                #vsat0(10)      =       0.65e07,1.64e+7
+        }
+
+RCSMobility
+        {
+                #all parameters are copied from Silicon
+                d_crit          =       1.0e-7,         1.0e-7
+                l_crit          =       7.7e-8,         7.7e-8
+        }
+
+RPSMobility
+        {
+                #all parameters are copied from Silicon
+                murps0          =       124.18,         124.18
+                d_crit          =       1.0e-7,         1.0e-7
+                l_crit          =       7.7e-8,         7.7e-8
+        }
+
+Lombardi_highk:
+        {
+                #all parameters are copied from Silicon
+                alpha_lom_e             =       0.0
+                alpha_lom_h             =       0.0
+                alpha_rcs_e             =       0.0
+                alpha_rcs_h             =       0.0
+                alpha_rps_e             =       4.0
+                alpha_rps_h             =       4.0
+                d_crit_rcs_e            =       1.0e-7
+                d_crit_rcs_h            =       1.0e-7
+                l_crit_rcs_e            =       7.7e-8
+                l_crit_rcs_h            =       7.7e-8
+                d_crit_rps_e            =       1.0e-7
+                d_crit_rps_h            =       1.0e-7
+                l_crit_rps_e            =       7.7e-8
+                l_crit_rps_h            =       7.7e-8
+        }
+
+NegInterfaceChargeMobility:
+        {
+                #all parameters are copied from Silicon
+                E0                      =       1.0e-6, 1.0e-6
+                mu1                     =       250.0,  250.0
+                c_exp                   =       0.5,    0.5
+                l_crit                  =       7.7e-8, 7.7e-8
+        }
+
+PosInterfaceChargeMobility:
+        {
+                #all parameters are copied from Silicon
+                E0                      =       1.0e-6, 1.0e-6
+                mu1                     =       250.0,  250.0
+                c_exp                   =       0.5,    0.5
+                l_crit                  =       7.7e-8, 7.7e-8
+        }
+
+vanOverstraetendeMan * Impact Ionization:
+{ * G_impact = alpha_n n v_drift_n  +  alpha_p p v_drift_p
+  * with alpha = gamma a  exp(-Ecrit gamma/E) for E<E0 (low) and E>E0 (high)
+  * with gamma = tanh(hbarOmega/(2kT0)) / tanh(hbarOmega/(2kT))
+  * and Ecrit = b (default),
+  * or  Ecrit = (beta Eg)/(q lambda) (with BandgapDependence)
+* Mole fraction dependent model.
+* Linear interpolation is used on the interval [0,1].
+	a(low)(0)	= 7.0300e+05,	1.5820e+06	#[1/cm]
+	a(low)(1)	= 8.5500e+06,	2.8000e+06	#[1/cm]
+	a(high)(0)	= 7.0300e+05,	6.7100e+05	#[1/cm]
+	a(high)(1)	= 8.5500e+06,	2.8000e+06	#[1/cm]
+	b(low)(0)	= 1.2310e+06,	2.0360e+06	#[V/cm]
+	b(low)(1)	= 1.4200e+06,	1.0000e+06	#[V/cm]
+	b(high)(0)	= 1.2310e+06,	1.6930e+06	#[V/cm]
+	b(high)(1)	= 1.4200e+06,	1.0000e+06	#[V/cm]
+	E0(0)	= 4.0000e+05,	4.0000e+05	#[V/cm]
+	E0(1)	= 4.0000e+05,	4.0000e+05	#[V/cm]
+	hbarOmega(0)	= 0.063,	0.063	#[eV]
+	hbarOmega(1)	= 0.037,	0.037	#[eV]
+	beta(low)(0)	= 0.678925,	0.815009	#[1]
+	beta(low)(1)	= 1.39057,	0.979274	#[1]
+	beta(high)(0)	= 0.678925,	0.677706	#[1]
+	beta(high)(1)	= 1.39057,	0.979274	#[1]
+	lambda(0)	= 6.2000e-07,	4.5000e-07	#[cm]
+	lambda(1)	= 6.5000e-07,	6.5000e-07	#[cm]
+}
+
+vanOverstraetendeMan_aniso * Impact Ionization:
+{ * G_impact = alpha_n n v_drift_n  +  alpha_p p v_drift_p
+  * with alpha = gamma a  exp(-Ecrit gamma/E) for E<E0 (low) and E>E0 (high)
+  * with gamma = tanh(hbarOmega/(2kT0)) / tanh(hbarOmega/(2kT))
+  * and Ecrit = b (default),
+  * or  Ecrit = (beta Eg)/(q lambda) (with BandgapDependence)
+* Mole fraction dependent model.
+* Linear interpolation is used on the interval [0,1].
+	a(low)(0)	= 7.0300e+05,	1.5820e+06	#[1/cm]
+	a(low)(1)	= 8.5500e+06,	2.8000e+06	#[1/cm]
+	a(high)(0)	= 7.0300e+05,	6.7100e+05	#[1/cm]
+	a(high)(1)	= 8.5500e+06,	2.8000e+06	#[1/cm]
+	b(low)(0)	= 1.2310e+06,	2.0360e+06	#[V/cm]
+	b(low)(1)	= 1.4200e+06,	1.0000e+06	#[V/cm]
+	b(high)(0)	= 1.2310e+06,	1.6930e+06	#[V/cm]
+	b(high)(1)	= 1.4200e+06,	1.0000e+06	#[V/cm]
+	E0(0)	= 4.0000e+05,	4.0000e+05	#[V/cm]
+	E0(1)	= 4.0000e+05,	4.0000e+05	#[V/cm]
+	hbarOmega(0)	= 0.063,	0.063	#[eV]
+	hbarOmega(1)	= 0.037,	0.037	#[eV]
+	beta(low)(0)	= 0.678925,	0.815009	#[1]
+	beta(low)(1)	= 1.39057,	0.979274	#[1]
+	beta(high)(0)	= 0.678925,	0.677706	#[1]
+	beta(high)(1)	= 1.39057,	0.979274	#[1]
+	lambda(0)	= 6.2000e-07,	4.5000e-07	#[cm]
+	lambda(1)	= 6.5000e-07,	6.5000e-07	#[cm]
+}
+
+Band2BandTunneling 
+{ * See Sentaurus Device manual `Band-To-Band Tunneling' 
+  * Mole fraction dependent model.
+  * If only constant parameters are specified, those values will be
+  * used for any mole fraction instead of the interpolation below.
+  * Linear interpolation is used on the interval [0,1].
+	A(0)	= 8.9770e+20	# [1/cm/sec/V^2]
+	A(1)	= 8.9770e+20	# [1/cm/sec/V^2]
+	B(0)	= 2.1466e+07	# [V/cm/eV^1.5]
+	B(1)	= 2.1466e+07	# [V/cm/eV^1.5]
+	hbarOmega(0)	= 0.0186	# [eV]
+	hbarOmega(1)	= 0.0186	# [eV]
+
+  * Traditional models for the following keywords in input file:
+  * Band2Band(E1)  : A1*E*exp(-B1/E)
+  * Band2Band(E1_5): A1_5*E^1.5*exp(-B1_5/E)
+  * Band2Band(E2)  : A2*E^2*exp(-B2/E)
+	A1(0)	= 1.1000e+27	# [1/cm^2/sec/V]
+	A1(1)	= 1.1000e+27	# [1/cm^2/sec/V]
+	B1(0)	= 2.1300e+07	# [V/cm]
+	B1(1)	= 2.1300e+07	# [V/cm]
+	A1_5(0)	= 1.9000e+24	# [1/cm^1.5/sec/V^1.5]
+	A1_5(1)	= 1.9000e+24	# [1/cm^1.5/sec/V^1.5]
+	B1_5(0)	= 2.1900e+07	# [V/cm]
+	B1_5(1)	= 2.1900e+07	# [V/cm]
+	A2(0)	= 3.5000e+21	# [1/cm/sec/V^2]
+	A2(1)	= 3.5000e+21	# [1/cm/sec/V^2]
+	B2(0)	= 2.2500e+07	# [V/cm]
+	B2(1)	= 2.2500e+07	# [V/cm]
+
+  * Hurkx model for the following keywords in input file:
+  * Band2Band(Hurkx)  : -Agen*D*(E/E0)^Pgen*exp(-Bgen*(Eg/Eg300)^1.5/E) if D < 0
+  *                     -Arec*D*(E/E0)^Prec*exp(-Brec*(Eg/Eg300)^1.5/E) if D > 0
+  *                     D = (n*p-ni^2)/(n+ni)/(p+ni)*(1-|alpha|)+alpha, E0 = 1 V/cm
+  *                     So, if alpha = 0, it's original Hurkx model,
+  *                         if alpha = -1, it's only generation,
+  *                         if alpha = +1, it's only recombination.
+	Agen(0)	= 3.5000e+21	# [1/cm^3/sec]
+	Agen(1)	= 3.5000e+21	# [1/cm^3/sec]
+	Bgen(0)	= 2.2500e+07	# [V/cm]
+	Bgen(1)	= 2.2500e+07	# [V/cm]
+	Pgen(0)	= 2	# [1]
+	Pgen(1)	= 2	# [1]
+	Arec(0)	= 3.5000e+21	# [1/cm^3/sec]
+	Arec(1)	= 3.5000e+21	# [1/cm^3/sec]
+	Brec(0)	= 2.2500e+07	# [V/cm]
+	Brec(1)	= 2.2500e+07	# [V/cm]
+	Prec(0)	= 2	# [1]
+	Prec(1)	= 2	# [1]
+	alpha	= 0.0000e+00	# [1]
+
+  * nonlocal B2B models for the following keywords in command file:
+  * Band2Band(Model=NonlocalPath) : Nonlocal B2B tunneling with transition process using the tunneling path
+  * For the nonlocal B2B process:
+  * Apath : Prefactor Ad or Ap in the uniform field limit for the direct or indirect tunneling
+  * Bpath : Exponent  Bd or Bp in the uniform field limit for the direct or indirect tunneling
+  * Cpath : Factor g*Dop^2/rho for indirect tunneling
+  * Dpath : The conduction band offset D
+  * Ppath : The phonon energy P
+  *         Note that the indirect tunneling process is assumed if P>0, and the direct tunneling process is assumed if P=0
+  * Rpath : The ratio mv/mc. If Rpathi=0, it is automatically determined by
+  *         mv/mc = (1 + 2*mr)/(1 - 2*mr)
+  *         where mr=mc*mv/(mc+mv) is the reduced mass
+  * g     : Degeneracy factor
+  * m_c   : Effective mass in the conduction band
+  * m_v   : Effective mass in the valence band
+  * In the uniform field limit, the generation rate can be expressed by
+  * G = A * (F/F0)^2   * Exp(-B/F) for   direct tunneling
+  *   = A * (F/F0)^2.5 * Exp(-B/F) for indirect tunneling
+  * where
+  * Ad = g * mr^0.5 * (qF0)^2 / (36 * pi * h_bar^2 *E_T^0.5)
+  * Ap = g *(mc*mv)^1.5 * (1+2*N) * (qF0)^2.5 * Dop^2 / (2^7.75 * pi^2.5 * h_bar^2.5 * mr^1.25 * E_T^1.75 * rho * P)
+  * Bd = pi    * mr^0.5 * E_T^1.5 / (2 * h_bar * q)
+  * Bp = 2^2.5 * mr^0.5 * E_T^1.5 / (3 * h_bar * q)
+  * F0 = 1 V/cm, qF0 = 1 eV/cm, E_T = E_G + D
+  * For the paramter set (APath, Bpath, Dpath, Ppath, Rpath), the microscopic parameters such as mr, mc, and mv for the nonlocal B2B model are extracted internally.   * For the parameter set (Cpath, g, m_c, m_v), the microscopic parameters are used directly for the tunneling rate computation.
+	Apath(0)	= 4.0000e+14	# [1/cm^3/sec]
+	Apath(1)	= 9.1000e+16	# [1/cm^3/sec]
+	Bpath(0)	= 1.9000e+07	# [V/cm]
+	Bpath(1)	= 4.9000e+06	# [V/cm]
+	Cpath(0)	= 0.0000e+00	# [J^2*cm/kg]
+	Cpath(1)	= 0.0000e+00	# [J^2*cm/kg]
+	Dpath(0)	= 0.0000e+00	# [eV]
+	Dpath(1)	= 0.0000e+00	# [eV]
+	Ppath(0)	= 0.037	# [eV]
+	Ppath(1)	= 0.037	# [eV]
+	Rpath(0)	= 0.0000e+00	# [1]
+	Rpath(1)	= 0.0000e+00	# [1]
+	m_c(0)	= 0.0000e+00	# [m0]
+	m_c(1)	= 0.0000e+00	# [m0]
+	m_v(0)	= 0.0000e+00	# [m0]
+	m_v(1)	= 0.0000e+00	# [m0]
+	degeneracy	= 0.0000e+00	# [1]
+	QuantumPotentialFactor	= 0.0000e+00 ,	0.0000e+00	# [1]
+	QuantumPotentialPosFac	= 0.0000e+00 ,	0.0000e+00	# [1]
+	MaxTunnelLength	= 1.0000e-05	# [cm]
+
+  * min length to interfaces (for traditional & Hurkx models):
+	dDist	= 0.0000e+00	# [cm]
+  * min potential difference on length dPot/E (for traditional & Hurkx models):
+	dPot	= 0.0000e+00	# [V]
+  * numeric smoothing
+	MinField	= 0.0000e+00	# [V/cm]
+	MinGradQF	= 0.0000e+00	# [eV/cm]
+	DenCorRef	= 0.0000e+00 ,	0.0000e+00	# [cm^-3]
+}
+
+
+*  SHEDistribution{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+DirectTunnelling
+{ * eps_ins:   insulator dielectricity,
+  * E_F_M:     metal Fermi energy,
+  * m_M:       metal effective mass,
+  * m_ins:     insulator effective mass,
+  * E_i:       energy nodes for pseudo barrier,
+  * m_s:       semiconductor effective mass,
+  * m_dos:     semiconductor DOS effective mass,
+  * E_barrier: height of barrier between semiconductor and oxide,
+  * See the manual for more details.
+	eps_ins	= 2.13	# [1]
+	E_F_M	= 11.7	# [eV]
+	m_M	= 1	# [m0]
+	m_ins	= 0.5 ,	0.77	# [m0]
+	E0	= 0.0000e+00 ,	0.0000e+00	# [eV]
+	E1	= 0.0000e+00 ,	0.0000e+00	# [eV]
+	E2	= 0.0000e+00 ,	0.0000e+00	# [eV]
+* Mole fraction dependent model.
+* Linear interpolation is used on the interval [0,1].
+	m_s(0)	= 0.19,	0.16	#[m0]
+	m_s(1)	= 0.19,	0.16	#[m0]
+	m_dos(0)	= 0.32,	0.0000e+00	#[m0]
+	m_dos(1)	= 0.32,	0.0000e+00	#[m0]
+	E_barrier(0)	= 3.15,	4.73	#[eV]
+	E_barrier(1)	= 3.15,	4.73	#[eV]
+}
+
+
+*  Radiative Recombination Model{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+MLDAQMModel
+{ * eLambda:  electron thermal wavelength at T=300K
+  * hLambda:  hole thermal wavelength at T=300K
+  * Mole fraction dependent model.
+  * If only constant parameters are specified, those values will be
+  * used for any mole fraction instead of the interpolation below.
+  * Linear interpolation is used on the interval [0,1].
+	eLambda(0)	= 2.3500e-07	# [cm]
+	eLambda(1)	= 2.3500e-07	# [cm]
+	hLambda(0)	= 2.5000e-07	# [cm]
+	hLambda(1)	= 2.5000e-07	# [cm]
+	ekpDOSfactor(0)	= 1	# [1]
+	ekpDOSfactor(1)	= 1	# [1]
+	hkpDOSfactor(0)	= 0.4	# [1]
+	hkpDOSfactor(1)	= 0.4	# [1]
+}
+
+MultiValley
+{ * Arbitrary number of electron and hole valleys can be defined. 
+  * Electron density is written as: n=Nc*sum{d_i*F1/2((Ef-Ec-dEc_i)/kT)}, 
+  * where dEc_i is energy shift, d_i is DOS factor (defined by valley masses 
+  * and degeneracy) of valley i. To specify one valley the energy shift 
+  * in respect to band edge, degeneracy, non parabolicity, effective masses, 
+  * and valley orientation should be defined. The interface quantization mass
+  * (for MLDA model) will be compute automatically (using valley inverse mass 
+  * tensor and interface orientation). If the quantization mass is specified, 
+  * then it'll be independent of the interface orientation.
+	eValley"Delta1"(1,0.0000e+00,0.0000e+00)(ml=0.914 mt=0.196 energy=0.0000e+00 alpha=0.5 dospower=0.5 degeneracy=2 xiu=9.16 xid=0.77) 
+	eValley"Delta2"(0.0000e+00,1,0.0000e+00)(ml=0.914 mt=0.196 energy=0.0000e+00 alpha=0.5 dospower=0.5 degeneracy=2 xiu=9.16 xid=0.77) 
+	eValley"Delta3"(0.0000e+00,0.0000e+00,1)(ml=0.914 mt=0.196 energy=0.0000e+00 alpha=0.5 dospower=0.5 degeneracy=2 xiu=9.16 xid=0.77) 
+	eValley"L1"(1,1,1)(ml=1.69 mt=0.13 energy=1.1 alpha=0.5 dospower=0.5 degeneracy=1 xiu=11.5 xid=-6.5800e+00) 
+	eValley"L2"(-1.0000e+00,1,1)(ml=1.69 mt=0.13 energy=1.1 alpha=0.5 dospower=0.5 degeneracy=1 xiu=11.5 xid=-6.5800e+00) 
+	eValley"L3"(1,-1.0000e+00,1)(ml=1.69 mt=0.13 energy=1.1 alpha=0.5 dospower=0.5 degeneracy=1 xiu=11.5 xid=-6.5800e+00) 
+	eValley"L4"(1,1,-1.0000e+00)(ml=1.69 mt=0.13 energy=1.1 alpha=0.5 dospower=0.5 degeneracy=1 xiu=11.5 xid=-6.5800e+00) 
+	hValley"LH"(m=0.16 energy=0.0000e+00 alpha=0.0000e+00 dospower=0.5 degeneracy=1) 
+	hValley"HH"(m=0.49 energy=0.0000e+00 alpha=0.0000e+00 dospower=0.5 degeneracy=1) 
+	Xmax(0) = 0.0
+	Xmax(1) = 0.85
+	eValley"Delta1"(1)(ml=0.914 mt=0.196 energy=0.0000e+00 alpha=0.5 degeneracy=2 xiu=9.16 xid=0.77) 
+	eValley"Delta2"(1)(ml=0.914 mt=0.196 energy=0.0000e+00 alpha=0.5 degeneracy=2 xiu=9.16 xid=0.77) 
+	eValley"Delta3"(1)(ml=0.914 mt=0.196 energy=0.0000e+00 alpha=0.5 degeneracy=2 xiu=9.16 xid=0.77) 
+	eValley"L1"(1)(ml=1.768 mt=0.0967 energy=0.0000e+00 alpha=0.5 degeneracy=1 xiu=11.5 xid=-6.5800e+00) 
+	eValley"L2"(1)(ml=1.768 mt=0.0967 energy=0.0000e+00 alpha=0.5 degeneracy=1 xiu=11.5 xid=-6.5800e+00) 
+	eValley"L3"(1)(ml=1.768 mt=0.0967 energy=0.0000e+00 alpha=0.5 degeneracy=1 xiu=11.5 xid=-6.5800e+00) 
+	eValley"L4"(1)(ml=1.768 mt=0.0967 energy=0.0000e+00 alpha=0.5 degeneracy=1 xiu=11.5 xid=-6.5800e+00) 
+	hValley"LH"(1)(m=0.061 energy=0.0000e+00 alpha=0.0000e+00 degeneracy=1) 
+	hValley"HH"(1)(m=0.31 energy=0.0000e+00 alpha=0.0000e+00 degeneracy=1) 
+	Xmax(2) = 1
+	eValley"Delta1"(2)(ml=0.915 mt=0.201 energy=0.19 alpha=0.5 degeneracy=2 xiu=9.42 xid=-5.4000e-01) 
+	eValley"Delta2"(2)(ml=0.915 mt=0.201 energy=0.19 alpha=0.5 degeneracy=2 xiu=9.42 xid=-5.4000e-01) 
+	eValley"Delta3"(2)(ml=0.915 mt=0.201 energy=0.19 alpha=0.5 degeneracy=2 xiu=9.42 xid=-5.4000e-01) 
+	eValley"L1"(2)(ml=1.768 mt=0.0967 energy=0.0000e+00 alpha=0.5 degeneracy=1 xiu=11.5 xid=-6.5800e+00) 
+	eValley"L2"(2)(ml=1.768 mt=0.0967 energy=0.0000e+00 alpha=0.5 degeneracy=1 xiu=11.5 xid=-6.5800e+00) 
+	eValley"L3"(2)(ml=1.768 mt=0.0967 energy=0.0000e+00 alpha=0.5 degeneracy=1 xiu=11.5 xid=-6.5800e+00) 
+	eValley"L4"(2)(ml=1.768 mt=0.0967 energy=0.0000e+00 alpha=0.5 degeneracy=1 xiu=11.5 xid=-6.5800e+00) 
+	hValley"LH"(2)(m=0.044 energy=0.0000e+00 alpha=0.0000e+00 degeneracy=1) 
+	hValley"HH"(2)(m=0.28 energy=0.0000e+00 alpha=0.0000e+00 degeneracy=1) 
+}
+
+LatticeParameters
+{ * Crystal system, elasticity, and deformation potential are defined.
+  * X and Y vectors define the simulation coordinate system relative to the
+  * crystal orientation system. Also there is an option to represent the crystal
+  * system relative to the simulation one. In this case a keyword CrystalAxis 
+  * has to be in this section and X and Y vectors will represent [100] and [010]
+  * axis of the crystal system in the simulation one.
+  * Additional notes: 1 Pa = 10 dyn/cm^2; tensile stress/strain is positive.  
+  * S[i][j] - elasticity modulus; i,j = 1,2,...6 and j>=i.
+  * CrystalSystem is symmetry, used ONLY to define the elasticity matrics.
+  * Cubic (CrystalSystem=0): S[1][1],S[1][2],S[4][4]
+  * Hexagonal (CrystalSystem=1): S[1][1],S[1][2],S[1][3],S[3][3],S[4][4]
+  * X = (1, 0.0000e+00, 0.0000e+00) #[1]
+  * Y = (0.0000e+00, 1, 0.0000e+00) #[1]
+
+	S[1][1]	= 0.77	# [1e-12 cm^2/din]
+	S[1][2]	= -2.1000e-01	# [1e-12 cm^2/din]
+	S[4][4]	= 1.25	# [1e-12 cm^2/din]
+	CrystalSystem	= 0	# [1]
+
+  * Deformation potentials of 2 k.p model for electron delta-valleys 
+	xis	= 7	# [eV]
+	dbs	= 0.53	# [eV]
+	xiu	= 9.16	# [eV]
+	xid	= 0.77	# [eV]
+	Mkp	= 1.2	# [1]
+
+  * Deformation potentials of 6 k.p model for hole bands
+	adp	= 2.1	# [eV]
+	bdp	= -2.3300e+00	# [eV]
+	ddp	= -4.7500e+00	# [eV]
+	dso	= 0.044	# [eV]
+
+  * Luttinger parameters
+	gamma_1	= 4.27	# [1]
+	gamma_2	= 0.315	# [1]
+	gamma_3	= 1.4576	# [1]
+
+  * Deformation potentials and energy (in reference to delta-valley) for L-valleys 
+	xiu_l	= 11.5	# [eV]
+	xid_l	= -6.5800e+00	# [eV]
+	e_l	= 1.1	# [eV]
+
+  * Deformation potentials and energy (in reference to delta-valley) for Gamma-valley 
+	xid_gamma	= -7.0000e+00	# [eV]
+	e_gamma	= 2.3	# [eV]
+  * 
+    Xmax(0) = 0.0 
+    Xmax(1) = 1.0 
+  * 
+	S[1][1](1)	= 0.97	# [1e-12 cm^2/din]
+	S[1][2](1)	= -2.5000e-01	# [1e-12 cm^2/din]
+	S[4][4](1)	= 1.48	# [1e-12 cm^2/din]
+  * 
+	xis(1)	= 8.07	# [eV]
+	dbs(1)	= 0.9	# [eV]
+	xiu(1)	= 9.42	# [eV]
+	xid(1)	= -5.9000e-01	# [eV]
+	Mkp(1)	= 1	# [1]
+
+  * 
+	adp(1)	= 2	# [eV]
+	bdp(1)	= -2.1600e+00	# [eV]
+	ddp(1)	= -6.0600e+00	# [eV]
+	dso(1)	= 0.289	# [eV]
+
+  * 
+	gamma_1(1)	= 9.56	# [1]
+	gamma_2(1)	= 2.77	# [1]
+	gamma_3(1)	= 3.91	# [1]
+
+  * 
+	xiu_l(1)	= 11.5	# [eV]
+	xid_l(1)	= -6.5800e+00	# [eV]
+	e_l(1)	= -1.9000e-01	# [eV]
+
+  * 
+	xid_gamma(1)	= -7.0000e+00	# [eV]
+	e_gamma(1)	= -4.0000e-02	# [eV]
+}
+
+
+*  Piezoelectric_Polarization{...}
+*  By default, for mole fraction dependency of parameters
+*  of the model, the following linear interpolation is applied
+*  between two materials: P = x * P(Germanium) + (1-x) * P(Silicon)
+*  where P(m) is a parameter of material m.
+*  If the parameters are specified, then their values
+*  will be used instead of the interpolation.
+
+StressMobility
+{ * Stress-induced electron channel mobility model.
+  * The model is based on 2 band k.p theory for electron bands and 
+  * intervalley/intravelly scattering model with acoustic and optical phonons.
+	Ephonon	= 0.06	# [eV]
+	beta	= 1.22	# [1]
+	beta_mlda	= (1.5, 1.5, 1.5) #[1]
+	Nref	= 3.0000e+19	# [cm^-3]
+	alpha	= 0.65	# [1]
+	Dop	= 1.2500e+09	# [eV/cm]
+	Dac_cl	= 1.0270e-05	# [eVs/cm]
+  * 
+  * Stress-induced change of delta2 electron mass proposed by TU Vienna.
+  * The model is based on 2 band k.p theory for electron bands,
+  * k.p parameters of the model are defined in LatticeParameters section. 
+  * me_l0 and me_t0 are unstressed longitudinal and transverse effective masses:
+	me_l0	= 0.914	# [1]
+	me_t0	= 0.196	# [1]
+  * 
+  * Relaxed effective masses of electrons in L-valleys:
+	me_l0_l	= 1.69	# [1]
+	me_t0_l	= 0.13	# [1]
+  * 
+  * Relaxed effective mass of electrons in Gamma-valley:
+	me0_gamma	= 0.4	# [1]
+  * 
+  * Stress-induced hole channel mobility model.
+  * The model is based on 6 band k.p hole bands and MLDA channel quantization,
+  * k.p parameters of the model are defined in LatticeParameters section. 
+	Ephonon_h	= 0.0612	# [eV]
+	Dop_h	= 7.4700e+08	# [eV/cm]
+	Dac_cl_h	= 7.5100e-06	# [eVs/cm]
+	beta_h	= 1.0000e+10	# [1]
+	beta_mlda_h	= (6.5, 1.2, 2.5) #[1]
+	Nref_h	= 3.0000e+19	# [cm^-3]
+	alpha_h	= 0.85	# [1]
+  * 
+  * Stress-induced hole mobility model is proposed by Intel:
+  * the hole band structure in 100 plane is described by two ellipsoids directed in 
+  * 110 and -110 directions, the multiplication factor of hole mobility in 110 direction
+  * is the following:
+  *             fh_110 = (f_110/mh_l0+f_'110/mh_t'110)/(0.5/mh_l0+0.5/mh_t0),
+  * where:
+  *   f_110 = 1/(1+exp(delta/kT), f_'110 = 1/(1+exp(-delta/kT) - occupation of
+  *           the ellipsoids if just two (ne) considered in the hole band
+  *   mh_l0 is the hole longitudinal mass in the ellipsoid at no stress
+  *   mh_t0 is the hole transverse mass in the ellipsoid at no stress
+  *   delta is stress-induced energy split between the ellipsoids
+  * 
+  *   delta = d1*s
+  *   mh_t110 = mh_t0/(1-st1*s+st2*s^2+bt1*b+bt2*b^2)
+  *   mh_t'110 = mh_t0/(1+st1*s+st2*s^2+bt1*b+bt2*b^2)
+  *      (s is shear and b is biaxial components of the stress)
+  * 
+  * Modification of the Intel model:
+  *   1) considered three 100 plans (6 ellipsoids)
+  *   2) ne is number of ellipsoids in the occupation functions fh*
+  *   3) considered mass in 100 direction: mh_t100 = mh_t0/(1+btt*b)
+	mh_l0	= 0.48	# [1]
+	mh_t0	= 0.15	# [1]
+	d1	= -6.0000e-11	# [eV/Pa]
+	st1	= -9.4426e-10	# [1/Pa]
+	st2	= 4.3066e-19	# [1/Pa^2]
+	bt1	= -1.0086e-10	# [1/Pa]
+	bt2	= 6.5886e-21	# [1/Pa^2]
+	btt	= 1.2000e-10	# [1/Pa]
+	ne	= 2	# [1]
+  * 
+    Xmax(0) = 0.0 
+    Xmax(1) = 1.0 
+  * 
+	me_l0(1)	= 0.915	# [1]
+	me_t0(1)	= 0.201	# [1]
+	me_l0_l(1)	= 1.768	# [1]
+	me_t0_l(1)	= 0.0967	# [1]
+  * 
+	me0_gamma(1)	= 0.05	# [1]
+  * 
+	Ephonon(1)	= 0.03	# [eV]
+	beta(1)	= 1.22	# [1]
+	beta_mlda(1)	= (1.5, 1.2, 1.5) #[1]
+	Nref(1)	= 3.0000e+19	# [cm^-3]
+	alpha(1)	= 0.65	# [1]
+	Dop(1)	= 1.2000e+09	# [eV/cm]
+	Dac_cl(1)	= 1.6700e-05	# [eVs/cm]
+  * 
+	Ephonon_h(1)	= 0.037	# [eV]
+	Dop_h(1)	= 6.0600e+08	# [eV/cm]
+	Dac_cl_h(1)	= 9.9600e-06	# [eVs/cm]
+	beta_h(1)	= 1.0000e+10	# [1]
+	beta_mlda_h(1)	= (3, 0.75, 2.5) #[1]
+	Nref_h(1)	= 3.0000e+19	# [cm^-3]
+	alpha_h(1)	= 0.85	# [1]
+}
+
+Scharfetter * relation and trap level for SRH recombination:
+{ * tau = taumin + ( taumax - taumin ) / ( 1 + ( N/Nref )^gamma)
+  * tau(T) = tau * ( (T/300)^Talpha )          (TempDep)
+  * tau(T) = tau * exp( Tcoeff * ((T/300)-1) ) (ExpTempDep)
+	taumin	= 0.0000e+00 ,	0.0000e+00	# [s]
+	taumax	= 1.0000e-05 ,	3.0000e-06	# [s]
+	Nref	= 1.0000e+16 ,	1.0000e+16	# [cm^(-3)]
+	gamma	= 1 ,	1	# [1]
+	Talpha	= -1.5000e+00 ,	-1.5000e+00	# [1]
+	Tcoeff	= 2.55 ,	2.55	# [1]
+	Etrap	= 0.0000e+00	# [eV]
+}

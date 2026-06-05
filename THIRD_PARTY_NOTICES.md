@@ -8,6 +8,7 @@ as built-in fallback data for the SDEVICE PAR parameter file completion system:
 - `references/MaterialDB/Silicon.par`
 - `references/MaterialDB/Oxide.par`
 - `references/MaterialDB/Germanium.par`
+- `references/MaterialDB/SiliconGermanium.par`
 - `references/MaterialDB/Si3N4.par`
 - `references/MaterialDB/HfO2.par`
 - `references/MaterialDB/4H-SiC.par`
