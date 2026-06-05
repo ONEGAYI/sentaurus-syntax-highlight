@@ -196,7 +196,7 @@ summary();
 
 Run: `node tests/test-sprocess-variant-docs.js`
 
-Expected: 仅 `JSON files parse correctly` 和 `keys are unique` 可能通过，其余因数据未添加而失败。
+Expected: 全部失败。`JSON files parse correctly` 和 `keys are unique` 验证的是现有 JSON 结构（不含新增条目），可能通过但与新增条目相关的测试全部失败。
 
 - [ ] **Step 3: 提交测试文件**
 
@@ -1316,9 +1316,9 @@ const doc = (canonKey && docs[canonKey]) || docs[effectiveWord] || docs[decodeHt
 let doc = (canonKey && docs[canonKey]) || docs[effectiveWord] || docs[decodeHtml(effectiveWord)];
 ```
 
-- [ ] **Step 2: 在 L479 和 L481 之间插入点号 fallback**
+- [ ] **Step 2: 在 Step 1 新增的 `let doc` 行之后、`const docHoverRange` 行之前插入点号 fallback**
 
-在新的 `let doc = ...` 行之后、`const docHoverRange = ...` 之前插入：
+> 注意：源码 L480 是空行，L481 是 `const docHoverRange = ...`。插入位置在 `let doc` 赋值之后、空行之前。
 
 ```javascript
 // 点号 fallback：identWord（/[\w]+/）无法匹配含点号的词如 mask.edge.mns
@@ -1394,9 +1394,9 @@ Issue #87"
 
 **Context:** `buildItems` 函数在 L36-55。
 
-- [ ] **Step 1: 修改 L48-50，增加 alias 展开 guard**
+- [ ] **Step 1: 修改 `buildItems` 函数中 L48-50 的 `funcDocs` 查找块，增加 alias 展开 guard**
 
-将 L48-50:
+将 L48-50（`if (funcDocs[keyword])` 三行块）：
 ```javascript
 if (funcDocs[keyword]) {
     item.documentation = formatDoc(funcDocs[keyword], langId);
@@ -1446,10 +1446,10 @@ Issue #87"
 
 ```javascript
 // === Code Integration Tests ===
-// 需要 mock vscode，扩展 mock-vscode.js
+// 局部扩展 mock-vscode（仅在本测试文件中生效，不修改共享 mock）
 const mockVscode = require('./helpers/mock-vscode');
 
-// 补充 mock-vscode 缺少的构造函数
+// 补充本测试所需的构造函数（不影响其他测试文件）
 mockVscode.MarkdownString = function(value) { this.value = value || ''; };
 mockVscode.Hover = function(content, range) { this.content = content; this.range = range; };
 mockVscode.CompletionItem = function(label, kind) { this.label = label; this.kind = kind; };
@@ -1610,7 +1610,12 @@ Alias 条目使用简化结构，不包含完整文档字段。
 
 - [ ] **Step 2: 在 3.5 节补充 SPROCESS section 值清单**
 
-从现有 `sprocess_command_docs.json` 提取 section 值，补充到文档中。
+运行以下命令提取现有 section 值：
+```bash
+node -e "const d=JSON.parse(require('fs').readFileSync('syntaxes/sprocess_command_docs.json','utf8')); const s=new Set(Object.values(d).filter(e=>e.section).map(e=>e.section)); console.log([...s].sort().join('\n'))"
+```
+
+将输出的 section 值整理为有序列表，补充到文档 3.5 节。
 
 - [ ] **Step 3: 在第 4 节质量检查清单补充 alias 相关检查项**
 
@@ -1668,8 +1673,20 @@ Run: `node -e "const d=JSON.parse(require('fs').readFileSync('syntaxes/sprocess_
 
 ```bash
 gh issue create --title "补全 SPROCESS 后缀关联关键词 Hover 文档" --body "## 背景
-Issue #87 中分类为「后缀关联」的 2 个关键词：- \`data\` → \`print.data\`- \`xy\` → \`point.xy\`
-需要单独判断语义关系并补充文档。
+
+Issue #87 初筛时将缺失文档的 SPROCESS 关键词分为三类：复数变体、点号变体、后缀关联。前两类已在 #87 中完成，本 Issue 处理第三类。
+
+## 范围
+
+| 关键词 | 后缀关联目标 | Kind |
+|--------|-------------|------|
+| \`data\` | \`print.data\` | KEYWORD3 |
+| \`xy\` | \`point.xy\` | KEYWORD3 |
+
+## 初步方案
+
+需判断两者是否为 alias 关系（类似复数变体）还是需要独立文档。参考 #87 的混合策略。
+
 Part of #87"
 ```
 
