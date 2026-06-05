@@ -1229,6 +1229,10 @@
       "reaction"
     ]
   },
+  "ambients": {
+    "aliasOf": "ambient",
+    "aliasType": "plural"
+  },
   "beam": {
     "section": "Implant",
     "signature": "beam name=<c> (direction= {<x> <y>} | incidence=<n>) factor=<n> [list]",
@@ -1478,6 +1482,10 @@
       "TDR",
       "device"
     ]
+  },
+  "contacts": {
+    "aliasOf": "contact",
+    "aliasType": "plural"
   },
   "contour": {
     "section": "Structure",
@@ -3354,6 +3362,10 @@
       "material"
     ]
   },
+  "interfaces": {
+    "aliasOf": "interface",
+    "aliasType": "plural"
+  },
   "interpolate": {
     "section": "Numerics",
     "signature": "interpolate <material> [extract.variable.names= {<c> <c> ...}] [max | min] [name=<c>] [report.location] [value=<n>] [x=<n>] [y=<n>] [z=<n>]",
@@ -4008,6 +4020,10 @@
       "photo",
       "rectangle"
     ]
+  },
+  "masks": {
+    "aliasOf": "mask",
+    "aliasType": "plural"
   },
   "mater": {
     "section": "Material",
@@ -5790,6 +5806,10 @@
       "scatter"
     ]
   },
+  "points": {
+    "aliasOf": "point",
+    "aliasType": "plural"
+  },
   "polygon": {
     "section": "Geometry",
     "signature": "polygon clear | list | (name=<c> [rectangle | points= {<pt1> <pt2> ...} | segments= {<y1> <z1> <y2> <z2> ...} | tdr=<c> [materials= {<mat1> ...}] | min= {<y> <z>} max= {<y> <z>}] [xy])",
@@ -5869,6 +5889,10 @@
       "insertion",
       "2D"
     ]
+  },
+  "polygons": {
+    "aliasOf": "polygon",
+    "aliasType": "plural"
   },
   "polyhedron": {
     "section": "Geometry",
@@ -6720,6 +6744,10 @@
       "initialization",
       "structure"
     ]
+  },
+  "regions": {
+    "aliasOf": "region",
+    "aliasType": "plural"
   },
   "sde": {
     "section": "Structure",
