@@ -1833,6 +1833,38 @@
       "epitaxy"
     ]
   },
+  "deposit.intrinsic": {
+    "section": "Deposit",
+    "signature": "deposit intrinsic",
+    "description": "Deposits an intrinsic (undoped) material layer. Used to deposit a layer without introducing any dopant species.",
+    "parameters": [],
+    "example": "deposit intrinsic Oxide thickness= 0.01",
+    "keywords": [
+      "deposit",
+      "intrinsic",
+      "undoped",
+      "layer"
+    ]
+  },
+  "deposit.type": {
+    "section": "Deposit",
+    "signature": "deposit type = <c>",
+    "description": "Specifies the deposition type for the current deposit command. Controls whether the deposition is anisotropic, isotropic, or uses a specific fill method.",
+    "parameters": [
+      {
+        "name": "type",
+        "type": "enum",
+        "desc": "Deposition type: anisotropic, isotropic, or fill."
+      }
+    ],
+    "example": "deposit type= anisotropic Oxide thickness= 0.1",
+    "keywords": [
+      "deposit",
+      "type",
+      "anisotropic",
+      "isotropic"
+    ]
+  },
   "diffuse": {
     "section": "Diffusion",
     "signature": "diffuse (temp.ramp=<c> | time=<n>[<hr>|<min>|<s>] temperature=<n>[<C>|<K>]) [Adaptive] [?<ambient>?] [pressure=<n>] [ramprate=<n>] [t.final=<n>] [epi.model=<i>] [epi.thickness=<n>] [epi.doping=<list>] [gas.flow=<c>] [kmc] [laser] [lkmc] [ISSG] [stress.relax] [maxstep=<n>] [init=<n>] ...",
@@ -2033,6 +2065,20 @@
       "extraction"
     ]
   },
+  "element.to.gauss": {
+    "section": "Implant",
+    "signature": "element to.gauss",
+    "description": "Enables the conversion of analytic implant profiles (Pearson or dual-Pearson) to Gaussian representations. This allows subsequent analytical operations on the implanted profiles.",
+    "parameters": [],
+    "example": "element to.gauss",
+    "keywords": [
+      "element",
+      "gauss",
+      "implant",
+      "profile",
+      "conversion"
+    ]
+  },
   "equation": {
     "section": "Numerics",
     "signature": "equation eqn=<c> [nodal]",
@@ -2174,6 +2220,25 @@
       "mask"
     ]
   },
+  "etch.rate.modifier": {
+    "section": "Etch",
+    "signature": "etch rate.modifier = <string_list>",
+    "description": "Specifies a multiplier or modification to the etch rate for specific materials. Used to fine-tune etch rates in complex etch processes.",
+    "parameters": [
+      {
+        "name": "rate.modifier",
+        "type": "list",
+        "desc": "Rate modifier expressions paired with material names."
+      }
+    ],
+    "example": "etch rate.modifier= {Oxide 1.5}",
+    "keywords": [
+      "etch",
+      "rate",
+      "modifier",
+      "material"
+    ]
+  },
   "extract": {
     "section": "Numerics",
     "signature": "extract ?<options>?",
@@ -2222,6 +2287,59 @@
       "history",
       "interpolation",
       "data"
+    ]
+  },
+  "extract.moments": {
+    "section": "Extract",
+    "signature": "extract moments",
+    "description": "Extracts the statistical moments (range, straggle, skewness, kurtosis) of implanted dopant profiles. Used for analyzing implant profile characteristics.",
+    "parameters": [],
+    "example": "extract moments",
+    "keywords": [
+      "extract",
+      "moments",
+      "implant",
+      "statistics",
+      "profile"
+    ]
+  },
+  "extract.variable.name": {
+    "section": "Extract",
+    "signature": "extract variable.name = <c>",
+    "description": "Specifies the name of a single variable to extract from the simulation results. The extracted value is stored for later reference.",
+    "parameters": [
+      {
+        "name": "variable.name",
+        "type": "string",
+        "desc": "Name of the variable to extract."
+      }
+    ],
+    "example": "extract variable.name= Xval",
+    "keywords": [
+      "extract",
+      "variable",
+      "name",
+      "result"
+    ]
+  },
+  "extract.variable.names": {
+    "section": "Extract",
+    "signature": "extract variable.names = <string_list>",
+    "description": "Specifies a list of variable names to extract from the simulation results. Used to retrieve multiple simulation quantities at once.",
+    "parameters": [
+      {
+        "name": "variable.names",
+        "type": "list",
+        "desc": "List of variable names to extract."
+      }
+    ],
+    "example": "extract variable.names= {Xval Yval Zval}",
+    "keywords": [
+      "extract",
+      "variable",
+      "names",
+      "result",
+      "list"
     ]
   },
   "fproc": {
